@@ -132,6 +132,15 @@
       background: rgba(88, 166, 255, 0.2);
     }
 
+    /* ── LAYOUT ── */
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 60px 24px 120px;
+      position: relative;
+      z-index: 1;
+    }
+
     .nav-prev {
       display: flex;
       align-items: center;
@@ -156,15 +165,6 @@
     .nav-prev.disabled {
       opacity: 0.3;
       pointer-events: none;
-    }
-
-    /* ── LAYOUT ── */
-    .page {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 60px 24px 120px;
-      position: relative;
-      z-index: 1;
     }
 
     /* ── HERO ── */
@@ -994,8 +994,8 @@
       <div class="nav-position">
         <span class="track">🐙 GitHub</span> · Aula 01 / 50
       </div>
-      <a href="gh-02-branches-merge.html" class="nav-next">Próxima →</a>
     </div>
+    <a href="gh-02-branches-merge.html" class="nav-next">Próxima →</a>
   </nav>
 
   <div class="page">
@@ -1701,7 +1701,6 @@ git log --follow -p src/minha-feature.js</code></pre>
 
   </div><!-- /page -->
 
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
   <script>
     // Syntax highlighting
     document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });

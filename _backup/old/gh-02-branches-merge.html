@@ -1,118 +1,12 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Git — Branches, Merge & Conflitos · GitHub</title>
 
-  <link
-    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@300;400;700&display=swap"
-    rel="stylesheet">
-  <!-- Syntax highlighting — github-dark inlined (funciona offline) -->
-  <style>
-    pre code.hljs {
-      display: block;
-      overflow-x: auto;
-      padding: 1em
-    }
-
-    code.hljs {
-      padding: 3px 5px
-    }
-
-    .hljs {
-      color: #c9d1d9;
-      background: #0d1117
-    }
-
-    .hljs-doctag,
-    .hljs-keyword,
-    .hljs-meta .hljs-keyword,
-    .hljs-template-tag,
-    .hljs-template-variable,
-    .hljs-type,
-    .hljs-variable.language_ {
-      color: #ff7b72
-    }
-
-    .hljs-title,
-    .hljs-title.class_,
-    .hljs-title.class_.inherited__,
-    .hljs-title.function_ {
-      color: #d2a8ff
-    }
-
-    .hljs-attr,
-    .hljs-attribute,
-    .hljs-literal,
-    .hljs-meta,
-    .hljs-number,
-    .hljs-operator,
-    .hljs-variable,
-    .hljs-selector-attr,
-    .hljs-selector-class,
-    .hljs-selector-id {
-      color: #79c0ff
-    }
-
-    .hljs-regexp,
-    .hljs-string,
-    .hljs-meta .hljs-string {
-      color: #a5d6ff
-    }
-
-    .hljs-built_in,
-    .hljs-symbol {
-      color: #ffa657
-    }
-
-    .hljs-comment,
-    .hljs-code,
-    .hljs-formula {
-      color: #8b949e
-    }
-
-    .hljs-name,
-    .hljs-quote,
-    .hljs-selector-tag,
-    .hljs-selector-pseudo {
-      color: #7ee787
-    }
-
-    .hljs-subst {
-      color: #c9d1d9
-    }
-
-    .hljs-section {
-      color: #1f6feb;
-      font-weight: 700
-    }
-
-    .hljs-bullet {
-      color: #f2cc60
-    }
-
-    .hljs-emphasis {
-      color: #c9d1d9;
-      font-style: italic
-    }
-
-    .hljs-strong {
-      color: #c9d1d9;
-      font-weight: 700
-    }
-
-    .hljs-addition {
-      color: #aff5b4;
-      background-color: #033a16
-    }
-
-    .hljs-deletion {
-      color: #ffdcd7;
-      background-color: #67060c
-    }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 
@@ -125,19 +19,15 @@
       --text: #e8e8f0;
       --muted: #8585a8;
       --accent: #58a6ff;
-      --accent-dim: rgba(88, 166, 255, 0.1);
-      --accent-border: rgba(88, 166, 255, 0.3);
+      --accent-dim: rgba(88,166,255,0.1);
+      --accent-border: rgba(88,166,255,0.3);
       --success: #10b981;
       --warn: #f59e0b;
       --danger: #ef4444;
       --info: #06b6d4;
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       background: var(--bg);
@@ -149,909 +39,205 @@
 
     body::before {
       content: '';
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       background-image:
-        linear-gradient(rgba(88, 166, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(88, 166, 255, 0.03) 1px, transparent 1px);
+        linear-gradient(rgba(88,166,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(88,166,255,0.03) 1px, transparent 1px);
       background-size: 40px 40px;
-      pointer-events: none;
-      z-index: 0;
+      pointer-events: none; z-index: 0;
     }
 
     /* ── PROGRESS BAR ── */
-    .progress-bar-wrap {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      z-index: 1000;
-      background: var(--border);
-    }
-
-    #reading-progress {
-      height: 100%;
-      background: linear-gradient(90deg, var(--accent), #a78bfa);
-      width: 0%;
-      transition: width 0.1s;
-    }
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 1000; background: var(--border); }
+    #reading-progress  { height: 100%; background: linear-gradient(90deg, var(--accent), #a78bfa); width: 0%; transition: width 0.1s; }
 
     /* ── TOP NAV ── */
     .top-nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(10, 10, 15, 0.92);
-      backdrop-filter: blur(12px);
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,10,15,0.92); backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
-      padding: 12px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      padding: 12px 24px; display: flex; align-items: center; justify-content: space-between;
     }
-
-    .nav-back {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      text-decoration: none;
-      color: var(--muted);
-      font-size: 12px;
-      letter-spacing: 0.05em;
-      transition: color 0.2s;
-    }
-
-    .nav-back:hover {
-      color: var(--text);
-    }
-
-    .nav-position {
-      font-size: 11px;
-      color: var(--muted);
-      letter-spacing: 0.08em;
-    }
-
-    .nav-position .track {
-      color: var(--accent);
-    }
-
+    .nav-back  { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; transition: color 0.2s; }
+    .nav-back:hover { color: var(--text); }
+    .nav-position { font-size: 11px; color: var(--muted); letter-spacing: 0.08em; }
+    .nav-position .track { color: var(--accent); }
     .nav-next {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      text-decoration: none;
-      color: var(--accent);
-      font-size: 12px;
-      letter-spacing: 0.05em;
-      padding: 6px 14px;
-      border: 1px solid var(--accent-border);
-      border-radius: 6px;
-      background: var(--accent-dim);
-      transition: all 0.2s;
+      display: flex; align-items: center; gap: 6px;
+      text-decoration: none; color: var(--accent); font-size: 12px; letter-spacing: 0.05em;
+      padding: 6px 14px; border: 1px solid var(--accent-border); border-radius: 6px;
+      background: var(--accent-dim); transition: all 0.2s;
     }
-
-    .nav-next:hover {
-      background: rgba(88, 166, 255, 0.2);
-    }
-
-    .nav-prev {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      text-decoration: none;
-      color: var(--muted);
-      font-size: 12px;
-      letter-spacing: 0.05em;
-      padding: 6px 14px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      background: transparent;
-      transition: all 0.2s;
-    }
-
-    .nav-prev:hover {
-      color: var(--text);
-      border-color: rgba(255, 255, 255, 0.15);
-      background: rgba(255, 255, 255, 0.04);
-    }
-
-    .nav-prev.disabled {
-      opacity: 0.3;
-      pointer-events: none;
-    }
+    .nav-next:hover { background: rgba(88,166,255,0.2); }
 
     /* ── LAYOUT ── */
-    .page {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 60px 24px 120px;
-      position: relative;
-      z-index: 1;
-    }
+    .page { max-width: 860px; margin: 0 auto; padding: 60px 24px 120px; position: relative; z-index: 1; }
 
     /* ── HERO ── */
-    .hero {
-      margin-bottom: 64px;
-      padding-bottom: 48px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .hero-eyebrow {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 11px;
-      letter-spacing: 0.2em;
-      color: var(--accent);
-      text-transform: uppercase;
-      margin-bottom: 16px;
-    }
-
-    .hero-badge {
-      background: var(--accent-dim);
-      border: 1px solid var(--accent-border);
-      color: var(--accent);
-      padding: 3px 10px;
-      border-radius: 4px;
-      font-size: 10px;
-    }
-
+    .hero { margin-bottom: 64px; padding-bottom: 48px; border-bottom: 1px solid var(--border); }
+    .hero-eyebrow { display: flex; align-items: center; gap: 10px; font-size: 11px; letter-spacing: 0.2em; color: var(--accent); text-transform: uppercase; margin-bottom: 16px; }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 10px; }
     .hero h1 {
-      font-family: 'Syne', sans-serif;
-      font-size: clamp(2rem, 5vw, 3.2rem);
-      font-weight: 800;
-      line-height: 1.05;
-      letter-spacing: -0.03em;
+      font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800; line-height: 1.05; letter-spacing: -0.03em;
       background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 16px;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 16px;
     }
-
-    .hero-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      color: var(--muted);
-      font-size: 12px;
-      margin-bottom: 20px;
-    }
-
-    .hero-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .tag {
-      padding: 4px 12px;
-      border-radius: 4px;
-      font-size: 11px;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      background: var(--surface);
-    }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 20px; color: var(--muted); font-size: 12px; margin-bottom: 20px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { padding: 4px 12px; border-radius: 4px; font-size: 11px; border: 1px solid var(--border); color: var(--muted); background: var(--surface); }
 
     /* ── SECTIONS ── */
-    .section {
-      margin-bottom: 56px;
-    }
-
-    .section-label {
-      font-size: 10px;
-      letter-spacing: 0.2em;
-      color: var(--accent);
-      text-transform: uppercase;
-      margin-bottom: 8px;
-    }
-
-    .section h2 {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.6rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      margin-bottom: 20px;
-    }
-
-    .section h3 {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.05rem;
-      font-weight: 700;
-      margin: 28px 0 12px;
-      color: var(--text);
-    }
-
-    p {
-      margin-bottom: 16px;
-      font-size: 14px;
-    }
-
-    p strong {
-      color: #fff;
-    }
-
-    a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
+    .section { margin-bottom: 56px; }
+    .section-label { font-size: 10px; letter-spacing: 0.2em; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 20px; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 700; margin: 28px 0 12px; color: var(--text); }
+    p { margin-bottom: 16px; font-size: 14px; }
+    p strong { color: #fff; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
 
     /* ── CALLOUTS ── */
-    .callout {
-      padding: 16px 20px;
-      border-radius: 10px;
-      margin: 20px 0;
-      font-size: 13px;
-      line-height: 1.6;
-      border-left: 3px solid transparent;
-    }
-
-    .callout-title {
-      font-weight: 700;
-      margin-bottom: 6px;
-      font-size: 11px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-    }
-
-    .callout-info {
-      background: rgba(6, 182, 212, 0.08);
-      border-color: var(--info);
-      color: #67e8f9;
-    }
-
-    .callout-warn {
-      background: rgba(245, 158, 11, 0.08);
-      border-color: var(--warn);
-      color: #fcd34d;
-    }
-
-    .callout-tip {
-      background: rgba(16, 185, 129, 0.08);
-      border-color: var(--success);
-      color: #6ee7b7;
-    }
-
-    .callout-check {
-      background: var(--accent-dim);
-      border-color: var(--accent);
-      color: #bfdbfe;
-    }
+    .callout { padding: 16px 20px; border-radius: 10px; margin: 20px 0; font-size: 13px; line-height: 1.6; border-left: 3px solid transparent; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
+    .callout-info  { background: rgba(6,182,212,0.08);   border-color: var(--info);    color: #67e8f9; }
+    .callout-warn  { background: rgba(245,158,11,0.08);  border-color: var(--warn);    color: #fcd34d; }
+    .callout-tip   { background: rgba(16,185,129,0.08);  border-color: var(--success); color: #6ee7b7; }
+    .callout-check { background: var(--accent-dim);       border-color: var(--accent);  color: #bfdbfe; }
 
     /* ── ANALOGY CARD ── */
     .analogy-card {
       background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
-      border: 1px solid var(--border);
-      border-left: 4px solid var(--accent);
-      border-radius: 12px;
-      padding: 28px;
-      margin: 24px 0;
-      position: relative;
-      overflow: hidden;
+      border: 1px solid var(--border); border-left: 4px solid var(--accent);
+      border-radius: 12px; padding: 28px; margin: 24px 0; position: relative; overflow: hidden;
     }
-
-    .analogy-card::before {
-      content: '"';
-      position: absolute;
-      top: -10px;
-      left: 16px;
-      font-size: 80px;
-      color: var(--accent);
-      opacity: 0.12;
-      font-family: 'Syne', sans-serif;
-      line-height: 1;
-    }
-
-    .analogy-label {
-      font-size: 10px;
-      letter-spacing: 0.15em;
-      color: var(--accent);
-      text-transform: uppercase;
-      margin-bottom: 12px;
-    }
-
-    .analogy-text {
-      font-size: 14px;
-      line-height: 1.8;
-      color: var(--text);
-    }
-
-    .analogy-mapping {
-      margin-top: 18px;
-      padding-top: 18px;
-      border-top: 1px solid var(--border);
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      font-size: 12px;
-    }
-
-    .analogy-real {
-      color: var(--muted);
-    }
-
-    .analogy-tech {
-      color: var(--accent);
-      font-weight: 700;
-    }
+    .analogy-card::before { content: '"'; position: absolute; top: -10px; left: 16px; font-size: 80px; color: var(--accent); opacity: 0.12; font-family: 'Syne', sans-serif; line-height: 1; }
+    .analogy-label { font-size: 10px; letter-spacing: 0.15em; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; }
+    .analogy-text  { font-size: 14px; line-height: 1.8; color: var(--text); }
+    .analogy-mapping { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px; }
+    .analogy-real  { color: var(--muted); }
+    .analogy-tech  { color: var(--accent); font-weight: 700; }
 
     /* ── CODE BLOCKS ── */
-    .code-wrap {
-      margin: 20px 0;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      overflow: hidden;
-    }
-
-    .code-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 16px;
-      background: var(--surface2);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .code-filename {
-      font-size: 11px;
-      color: var(--muted);
-      letter-spacing: 0.05em;
-    }
-
-    .code-lang {
-      font-size: 10px;
-      color: var(--accent);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-    }
-
-    pre {
-      margin: 0 !important;
-      border-radius: 0 !important;
-    }
-
-    pre code.hljs {
-      font-size: 13px !important;
-      line-height: 1.65 !important;
-      padding: 20px !important;
-    }
+    .code-wrap { margin: 20px 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .code-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: var(--surface2); border-bottom: 1px solid var(--border); }
+    .code-filename { font-size: 11px; color: var(--muted); letter-spacing: 0.05em; }
+    .code-lang { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; }
+    pre { margin: 0 !important; border-radius: 0 !important; }
+    pre code.hljs { font-size: 13px !important; line-height: 1.65 !important; padding: 20px !important; }
 
     /* ── STEPS ── */
-    .steps {
-      display: flex;
-      flex-direction: column;
-      margin: 28px 0;
-    }
-
-    .step {
-      display: grid;
-      grid-template-columns: 52px 1fr;
-      gap: 0 20px;
-      position: relative;
-    }
-
-    .step:not(:last-child)::after {
-      content: '';
-      position: absolute;
-      left: 25px;
-      top: 52px;
-      bottom: 0;
-      width: 1px;
-      background: linear-gradient(to bottom, var(--accent-border), transparent);
-    }
-
-    .step-num {
-      width: 52px;
-      height: 52px;
-      border-radius: 12px;
-      background: var(--accent-dim);
-      border: 1px solid var(--accent-border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      color: var(--accent);
-      font-size: 18px;
-      flex-shrink: 0;
-    }
-
-    .step-body {
-      padding-bottom: 36px;
-    }
-
-    .step-title {
-      font-family: 'Syne', sans-serif;
-      font-weight: 700;
-      font-size: 14px;
-      margin-bottom: 8px;
-      margin-top: 14px;
-    }
-
-    .step-desc {
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.7;
-      margin-bottom: 12px;
-    }
+    .steps { display: flex; flex-direction: column; margin: 28px 0; }
+    .step { display: grid; grid-template-columns: 52px 1fr; gap: 0 20px; position: relative; }
+    .step:not(:last-child)::after { content: ''; position: absolute; left: 25px; top: 52px; bottom: 0; width: 1px; background: linear-gradient(to bottom, var(--accent-border), transparent); }
+    .step-num { width: 52px; height: 52px; border-radius: 12px; background: var(--accent-dim); border: 1px solid var(--accent-border); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; color: var(--accent); font-size: 18px; flex-shrink: 0; }
+    .step-body { padding-bottom: 36px; }
+    .step-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; margin-bottom: 8px; margin-top: 14px; }
+    .step-desc  { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 12px; }
 
     /* ── TABLE ── */
-    .table-wrap {
-      overflow-x: auto;
-      margin: 20px 0;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-    }
-
-    th {
-      background: var(--surface2);
-      color: var(--accent);
-      font-size: 10px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      padding: 12px 16px;
-      text-align: left;
-      border-bottom: 2px solid var(--accent-border);
-    }
-
-    td {
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--border);
-      color: var(--text);
-      vertical-align: top;
-    }
-
-    tr:last-child td {
-      border-bottom: none;
-    }
-
-    tr:hover td {
-      background: var(--surface2);
-    }
-
-    .td-pro {
-      color: var(--success);
-    }
-
-    .td-con {
-      color: var(--danger);
-    }
-
-    .td-neu {
-      color: var(--muted);
-    }
+    .table-wrap { overflow-x: auto; margin: 20px 0; border: 1px solid var(--border); border-radius: 10px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { background: var(--surface2); color: var(--accent); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; padding: 12px 16px; text-align: left; border-bottom: 2px solid var(--accent-border); }
+    td { padding: 12px 16px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--surface2); }
+    .td-pro { color: var(--success); } .td-con { color: var(--danger); } .td-neu { color: var(--muted); }
 
     /* ── MERMAID ── */
-    .mermaid-wrap {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 28px;
-      margin: 20px 0;
-      overflow-x: auto;
-    }
-
-    .mermaid-label {
-      font-size: 10px;
-      color: var(--muted);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin-bottom: 16px;
-    }
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; margin: 20px 0; overflow-x: auto; }
+    .mermaid-label { font-size: 10px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 16px; }
 
     /* ── DIAGRAM (SVG) ── */
-    .diagram-wrap {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px;
-      margin: 20px 0;
-      overflow-x: auto;
-    }
-
-    .diagram-label {
-      font-size: 10px;
-      color: var(--muted);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin-bottom: 16px;
-    }
+    .diagram-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin: 20px 0; overflow-x: auto; }
+    .diagram-label { font-size: 10px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 16px; }
 
     /* ── CONFLICT VISUAL ── */
     .conflict-block {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      overflow: hidden;
-      margin: 20px 0;
-      font-size: 13px;
+      background: var(--surface2); border: 1px solid var(--border); border-radius: 10px;
+      overflow: hidden; margin: 20px 0; font-size: 13px;
     }
-
-    .conflict-header {
-      padding: 10px 16px;
-      background: rgba(239, 68, 68, 0.1);
-      border-bottom: 1px solid rgba(239, 68, 68, 0.2);
-      color: #fca5a5;
-      font-size: 11px;
-      letter-spacing: 0.08em;
-    }
-
-    .conflict-mine {
-      background: rgba(16, 185, 129, 0.06);
-      padding: 14px 20px;
-      border-bottom: 1px solid var(--border);
-      color: #6ee7b7;
-    }
-
-    .conflict-sep {
-      padding: 8px 20px;
-      background: rgba(245, 158, 11, 0.06);
-      border-bottom: 1px solid var(--border);
-      color: #fcd34d;
-      font-size: 12px;
-    }
-
-    .conflict-theirs {
-      background: rgba(88, 166, 255, 0.06);
-      padding: 14px 20px;
-      color: #93c5fd;
-    }
-
-    .conflict-line {
-      font-size: 12px;
-      font-family: 'JetBrains Mono', monospace;
-      line-height: 1.6;
-    }
+    .conflict-header { padding: 10px 16px; background: rgba(239,68,68,0.1); border-bottom: 1px solid rgba(239,68,68,0.2); color: #fca5a5; font-size: 11px; letter-spacing: 0.08em; }
+    .conflict-mine   { background: rgba(16,185,129,0.06); padding: 14px 20px; border-bottom: 1px solid var(--border); color: #6ee7b7; }
+    .conflict-sep    { padding: 8px 20px; background: rgba(245,158,11,0.06); border-bottom: 1px solid var(--border); color: #fcd34d; font-size: 12px; }
+    .conflict-theirs { background: rgba(88,166,255,0.06); padding: 14px 20px; color: #93c5fd; }
+    .conflict-line   { font-size: 12px; font-family: 'JetBrains Mono', monospace; line-height: 1.6; }
 
     /* ── STRATEGY CARDS ── */
-    .strategies {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 14px;
-      margin: 20px 0;
-    }
-
-    @media (max-width: 680px) {
-      .strategies {
-        grid-template-columns: 1fr;
-      }
-    }
-
+    .strategies { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin: 20px 0; }
+    @media (max-width: 680px) { .strategies { grid-template-columns: 1fr; } }
     .strategy-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 20px;
-      transition: all 0.2s;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      padding: 20px; transition: all 0.2s;
     }
-
-    .strategy-card:hover {
-      border-color: var(--accent-border);
-      transform: translateY(-2px);
-    }
-
-    .strategy-icon {
-      font-size: 24px;
-      margin-bottom: 10px;
-    }
-
-    .strategy-name {
-      font-family: 'Syne', sans-serif;
-      font-weight: 700;
-      font-size: 13px;
-      margin-bottom: 8px;
-      color: var(--text);
-    }
-
-    .strategy-desc {
-      font-size: 11px;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
-    .strategy-best {
-      margin-top: 10px;
-      font-size: 10px;
-      color: var(--accent);
-      letter-spacing: 0.05em;
-    }
+    .strategy-card:hover { border-color: var(--accent-border); transform: translateY(-2px); }
+    .strategy-icon  { font-size: 24px; margin-bottom: 10px; }
+    .strategy-name  { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px; margin-bottom: 8px; color: var(--text); }
+    .strategy-desc  { font-size: 11px; color: var(--muted); line-height: 1.6; }
+    .strategy-best  { margin-top: 10px; font-size: 10px; color: var(--accent); letter-spacing: 0.05em; }
 
     /* ── VIDEO CARDS ── */
-    .videos-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin-top: 8px;
-    }
-
-    @media (max-width: 600px) {
-      .videos-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .video-card {
-      display: flex;
-      gap: 14px;
-      align-items: flex-start;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 16px;
-      transition: all 0.2s;
-      text-decoration: none;
-    }
-
-    .video-card:hover {
-      border-color: #ef4444;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-    }
-
-    .video-thumb {
-      width: 44px;
-      height: 44px;
-      border-radius: 8px;
-      flex-shrink: 0;
-      background: rgba(239, 68, 68, 0.12);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-    }
-
-    .video-title {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 4px;
-      line-height: 1.4;
-    }
-
-    .video-channel {
-      font-size: 11px;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-
-    .video-why {
-      font-size: 11px;
-      color: var(--muted);
-      line-height: 1.5;
-    }
-
-    .video-watch {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 11px;
-      color: #ef4444;
-      margin-top: 8px;
-    }
+    .videos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 8px; }
+    @media (max-width: 600px) { .videos-grid { grid-template-columns: 1fr; } }
+    .video-card { display: flex; gap: 14px; align-items: flex-start; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; transition: all 0.2s; text-decoration: none; }
+    .video-card:hover { border-color: #ef4444; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+    .video-thumb { width: 44px; height: 44px; border-radius: 8px; flex-shrink: 0; background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .video-title   { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 4px; line-height: 1.4; }
+    .video-channel { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+    .video-why     { font-size: 11px; color: var(--muted); line-height: 1.5; }
+    .video-watch   { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: #ef4444; margin-top: 8px; }
 
     /* ── PITFALLS ── */
-    .pitfall {
-      background: rgba(239, 68, 68, 0.06);
-      border: 1px solid rgba(239, 68, 68, 0.2);
-      border-left: 3px solid var(--danger);
-      border-radius: 10px;
-      padding: 16px 20px;
-      margin: 14px 0;
-      font-size: 13px;
-    }
-
-    .pitfall-title {
-      color: #fca5a5;
-      font-weight: 700;
-      font-size: 12px;
-      letter-spacing: 0.05em;
-      margin-bottom: 6px;
-    }
-
-    .pitfall p {
-      color: var(--muted);
-      margin: 0;
-    }
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.2); border-left: 3px solid var(--danger); border-radius: 10px; padding: 16px 20px; margin: 14px 0; font-size: 13px; }
+    .pitfall-title { color: #fca5a5; font-weight: 700; font-size: 12px; letter-spacing: 0.05em; margin-bottom: 6px; }
+    .pitfall p { color: var(--muted); margin: 0; }
 
     /* ── CHECKPOINT ── */
-    .checkpoint {
-      background: linear-gradient(135deg, var(--accent-dim) 0%, rgba(88, 166, 255, 0.04) 100%);
-      border: 1px solid var(--accent-border);
-      border-radius: 16px;
-      padding: 36px;
-      margin: 48px 0;
-    }
-
-    .checkpoint-label {
-      font-size: 10px;
-      letter-spacing: 0.2em;
-      color: var(--accent);
-      text-transform: uppercase;
-      margin-bottom: 8px;
-    }
-
-    .checkpoint h3 {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.4rem;
-      font-weight: 800;
-      margin-bottom: 16px;
-    }
-
-    .checkpoint p {
-      font-size: 14px;
-      color: var(--muted);
-      margin-bottom: 4px;
-    }
-
-    .checkpoint ul {
-      list-style: none;
-      margin: 20px 0;
-    }
-
-    .checkpoint li {
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-      padding: 8px 0;
-      font-size: 13px;
-      color: var(--muted);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-    }
-
-    .checkpoint li::before {
-      content: '✦';
-      color: var(--accent);
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-
-    .checkpoint-hint {
-      margin-top: 20px;
-      padding: 14px 18px;
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 8px;
-      font-size: 12px;
-      color: var(--muted);
-    }
+    .checkpoint { background: linear-gradient(135deg, var(--accent-dim) 0%, rgba(88,166,255,0.04) 100%); border: 1px solid var(--accent-border); border-radius: 16px; padding: 36px; margin: 48px 0; }
+    .checkpoint-label { font-size: 10px; letter-spacing: 0.2em; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; margin-bottom: 16px; }
+    .checkpoint p  { font-size: 14px; color: var(--muted); margin-bottom: 4px; }
+    .checkpoint ul { list-style: none; margin: 20px 0; }
+    .checkpoint li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; font-size: 13px; color: var(--muted); border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .checkpoint li::before { content: '✦'; color: var(--accent); flex-shrink: 0; margin-top: 2px; }
+    .checkpoint-hint { margin-top: 20px; padding: 14px 18px; background: rgba(0,0,0,0.3); border-radius: 8px; font-size: 12px; color: var(--muted); }
 
     /* ── NEXT LESSON ── */
-    .next-lesson {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px 28px;
-      margin-top: 48px;
-      text-decoration: none;
-      transition: all 0.2s;
-    }
-
-    .next-lesson:hover {
-      border-color: var(--accent-border);
-      background: var(--surface2);
-      transform: translateX(4px);
-    }
-
-    .next-label {
-      font-size: 10px;
-      color: var(--muted);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin-bottom: 6px;
-    }
-
-    .next-title {
-      font-family: 'Syne', sans-serif;
-      font-weight: 700;
-      font-size: 15px;
-      color: var(--text);
-    }
-
-    .next-arrow {
-      font-size: 24px;
-      color: var(--accent);
-    }
+    .next-lesson { display: flex; align-items: center; justify-content: space-between; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; margin-top: 48px; text-decoration: none; transition: all 0.2s; }
+    .next-lesson:hover { border-color: var(--accent-border); background: var(--surface2); transform: translateX(4px); }
+    .next-label { font-size: 10px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+    .next-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; color: var(--text); }
+    .next-arrow { font-size: 24px; color: var(--accent); }
 
     /* ── FOOTER ── */
-    .footer {
-      margin-top: 80px;
-      padding-top: 28px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    .footer a {
-      color: var(--muted);
-      text-decoration: none;
-    }
-
-    .footer a:hover {
-      color: var(--text);
-    }
+    .footer { margin-top: 80px; padding-top: 28px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--muted); }
+    .footer a { color: var(--muted); text-decoration: none; }
+    .footer a:hover { color: var(--text); }
 
     /* ── INLINE CODE ── */
-    code:not(.hljs) {
-      background: rgba(88, 166, 255, 0.1);
-      border: 1px solid rgba(88, 166, 255, 0.2);
-      color: #93c5fd;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 12px;
-    }
+    code:not(.hljs) { background: rgba(88,166,255,0.1); border: 1px solid rgba(88,166,255,0.2); color: #93c5fd; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
 
     /* ── ANIMATIONS ── */
-    @keyframes fadeDown {
-      from {
-        opacity: 0;
-        transform: translateY(-20px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes fadeUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .hero {
-      animation: fadeDown 0.7s ease both;
-    }
-
-    .section {
-      animation: fadeUp 0.6s ease both;
-    }
+    @keyframes fadeDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeUp   { from { opacity:0; transform:translateY(20px);  } to { opacity:1; transform:translateY(0); } }
+    .hero    { animation: fadeDown 0.7s ease both; }
+    .section { animation: fadeUp  0.6s ease both; }
 
     @media (max-width: 640px) {
-      .analogy-mapping {
-        grid-template-columns: 1fr;
-      }
+      .analogy-mapping { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 
 <body>
-  <div class="progress-bar-wrap">
-    <div id="reading-progress"></div>
-  </div>
+  <div class="progress-bar-wrap"><div id="reading-progress"></div></div>
 
   <nav class="top-nav">
     <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
-    <div style="display:flex;align-items:center;gap:10px;">
-      <a href="gh-01-primeiro-commit.html" class="nav-prev">← Anterior</a>
-      <div class="nav-position">
-        <span class="track">🐙 GitHub</span> · Aula 02 / 50
-      </div>
-      <a href="html-01-semantico-estrutura.html" class="nav-next">Próxima →</a>
+    <div class="nav-position">
+      <span class="track">🐙 GitHub</span> · Aula 02 / 50
     </div>
+    <a href="html-01-semantico-estrutura.html" class="nav-next">Próxima →</a>
   </nav>
 
   <div class="page">
@@ -1090,14 +276,13 @@
       <div class="section-label">// 01 — motivação</div>
       <h2>Por que isso importa?</h2>
       <p>
-        A aula anterior te deu o básico de commits. Mas trabalhar em projeto real tem um problema sério:
-        você precisa desenvolver uma nova feature sem quebrar o que já funciona, enquanto corrige um bug urgente,
+        A aula anterior te deu o básico de commits. Mas trabalhar em projeto real tem um problema sério: 
+        você precisa desenvolver uma nova feature sem quebrar o que já funciona, enquanto corrige um bug urgente, 
         enquanto um colega trabalha no mesmo arquivo. Sem branches, isso é impossível.
       </p>
       <p>
-        Branches são o que transformam o Git de uma ferramenta de backup em uma <strong>plataforma de
-          colaboração</strong>.
-        Toda empresa de tecnologia opera com branches — entender merge e resolução de conflitos é
+        Branches são o que transformam o Git de uma ferramenta de backup em uma <strong>plataforma de colaboração</strong>. 
+        Toda empresa de tecnologia opera com branches — entender merge e resolução de conflitos é 
         o que separa quem usa Git de quem <em>domina</em> Git.
       </p>
 
@@ -1105,8 +290,8 @@
         <div class="callout-title">💼 Por que um engenheiro sênior usa isso hoje</div>
         Em qualquer time profissional, <code>main</code> é protegida — ninguém commita direto nela.
         Todo trabalho acontece em branches: <code>feat/user-auth</code>, <code>fix/login-crash</code>,
-        <code>chore/update-deps</code>. Quando a feature está pronta, abre-se um Pull Request,
-        outro engenheiro revisa, e o merge acontece de forma controlada. Saber resolver conflitos
+        <code>chore/update-deps</code>. Quando a feature está pronta, abre-se um Pull Request, 
+        outro engenheiro revisa, e o merge acontece de forma controlada. Saber resolver conflitos 
         rápido e sem estresse é uma das habilidades mais valorizadas em code reviews.
       </div>
     </div>
@@ -1121,14 +306,14 @@
       <div class="analogy-card">
         <div class="analogy-label">🎬 Mundo Real → Git</div>
         <div class="analogy-text">
-          Imagine que você está escrevendo um roteiro de filme. Você tem a versão principal já aprovada —
-          o <strong>rascunho final</strong>. Agora o diretor pede para você testar um final alternativo,
+          Imagine que você está escrevendo um roteiro de filme. Você tem a versão principal já aprovada — 
+          o <strong>rascunho final</strong>. Agora o diretor pede para você testar um final alternativo, 
           mas sem apagar o original. Você <strong>tira uma fotocópia</strong> e trabalha nela.
           <br><br>
-          Se o final alternativo for aprovado, você <strong>mescla</strong> as mudanças de volta ao original.
+          Se o final alternativo for aprovado, você <strong>mescla</strong> as mudanças de volta ao original. 
           Se não funcionar, simplesmente descarta a cópia. O original nunca foi tocado.
           <br><br>
-          Quando dois roteiristas editam a mesma cena ao mesmo tempo e as versões são incompatíveis,
+          Quando dois roteiristas editam a mesma cena ao mesmo tempo e as versões são incompatíveis, 
           alguém precisa sentar e decidir qual versão prevalece — isso é resolver um <strong>conflito de merge</strong>.
         </div>
         <div class="analogy-mapping">
@@ -1155,12 +340,11 @@
 
       <p>
         Uma branch no Git não é uma cópia de arquivos. É simplesmente um <strong>ponteiro leve para um commit</strong>.
-        Quando você cria uma branch, o Git cria apenas um arquivo de ~41 bytes com o hash do commit atual.
+        Quando você cria uma branch, o Git cria apenas um arquivo de ~41 bytes com o hash do commit atual. 
         É por isso que criar branches no Git é instantâneo, ao contrário de outros sistemas de versão.
       </p>
       <p>
-        O <strong>HEAD</strong> é um ponteiro especial que diz ao Git em qual branch (e commit) você está trabalhando
-        agora.
+        O <strong>HEAD</strong> é um ponteiro especial que diz ao Git em qual branch (e commit) você está trabalhando agora.
       </p>
 
       <div class="diagram-wrap">
@@ -1168,71 +352,61 @@
         <svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg" font-family="JetBrains Mono, monospace">
           <defs>
             <marker id="a1" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
-              <path d="M0,0 L0,6 L7,3 z" fill="#58a6ff" />
+              <path d="M0,0 L0,6 L7,3 z" fill="#58a6ff"/>
             </marker>
             <marker id="a2" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
-              <path d="M0,0 L0,6 L7,3 z" fill="#10b981" />
+              <path d="M0,0 L0,6 L7,3 z" fill="#10b981"/>
             </marker>
             <marker id="a3" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
-              <path d="M0,0 L0,6 L7,3 z" fill="#f59e0b" />
+              <path d="M0,0 L0,6 L7,3 z" fill="#f59e0b"/>
             </marker>
           </defs>
 
           <!-- Commits na linha do tempo -->
-          <circle cx="60" cy="100" r="22" fill="rgba(88,166,255,0.12)" stroke="rgba(88,166,255,0.5)"
-            stroke-width="1.5" />
-          <text x="60" y="105" text-anchor="middle" fill="#79c0ff" font-size="10">C1</text>
-          <circle cx="160" cy="100" r="22" fill="rgba(88,166,255,0.12)" stroke="rgba(88,166,255,0.5)"
-            stroke-width="1.5" />
+          <circle cx="60"  cy="100" r="22" fill="rgba(88,166,255,0.12)" stroke="rgba(88,166,255,0.5)" stroke-width="1.5"/>
+          <text x="60"  y="105" text-anchor="middle" fill="#79c0ff" font-size="10">C1</text>
+          <circle cx="160" cy="100" r="22" fill="rgba(88,166,255,0.12)" stroke="rgba(88,166,255,0.5)" stroke-width="1.5"/>
           <text x="160" y="105" text-anchor="middle" fill="#79c0ff" font-size="10">C2</text>
-          <circle cx="260" cy="100" r="22" fill="rgba(88,166,255,0.12)" stroke="rgba(88,166,255,0.5)"
-            stroke-width="1.5" />
+          <circle cx="260" cy="100" r="22" fill="rgba(88,166,255,0.12)" stroke="rgba(88,166,255,0.5)" stroke-width="1.5"/>
           <text x="260" y="105" text-anchor="middle" fill="#79c0ff" font-size="10">C3</text>
 
           <!-- Branch feature saindo de C2 -->
-          <circle cx="360" cy="40" r="22" fill="rgba(16,185,129,0.12)" stroke="rgba(16,185,129,0.5)"
-            stroke-width="1.5" />
-          <text x="360" y="45" text-anchor="middle" fill="#6ee7b7" font-size="10">F1</text>
-          <circle cx="460" cy="40" r="22" fill="rgba(16,185,129,0.12)" stroke="rgba(16,185,129,0.5)"
-            stroke-width="1.5" />
-          <text x="460" y="45" text-anchor="middle" fill="#6ee7b7" font-size="10">F2</text>
+          <circle cx="360" cy="40"  r="22" fill="rgba(16,185,129,0.12)" stroke="rgba(16,185,129,0.5)" stroke-width="1.5"/>
+          <text x="360" y="45"  text-anchor="middle" fill="#6ee7b7" font-size="10">F1</text>
+          <circle cx="460" cy="40"  r="22" fill="rgba(16,185,129,0.12)" stroke="rgba(16,185,129,0.5)" stroke-width="1.5"/>
+          <text x="460" y="45"  text-anchor="middle" fill="#6ee7b7" font-size="10">F2</text>
 
           <!-- Commit main avançando -->
-          <circle cx="360" cy="100" r="22" fill="rgba(88,166,255,0.12)" stroke="rgba(88,166,255,0.5)"
-            stroke-width="1.5" />
+          <circle cx="360" cy="100" r="22" fill="rgba(88,166,255,0.12)" stroke="rgba(88,166,255,0.5)" stroke-width="1.5"/>
           <text x="360" y="105" text-anchor="middle" fill="#79c0ff" font-size="10">C4</text>
 
           <!-- Merge commit -->
-          <circle cx="560" cy="100" r="24" fill="rgba(168,85,247,0.18)" stroke="rgba(168,85,247,0.7)"
-            stroke-width="2" />
+          <circle cx="560" cy="100" r="24" fill="rgba(168,85,247,0.18)" stroke="rgba(168,85,247,0.7)" stroke-width="2"/>
           <text x="560" y="105" text-anchor="middle" fill="#d8b4fe" font-size="10">M</text>
 
           <!-- Arrows linha main -->
-          <path d="M83 100 L137 100" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#a1)" />
-          <path d="M183 100 L237 100" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#a1)" />
-          <path d="M283 100 L337 100" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#a1)" />
-          <path d="M383 100 L535 100" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#a1)" />
+          <path d="M83 100 L137 100"  stroke="#58a6ff" stroke-width="1.5" marker-end="url(#a1)"/>
+          <path d="M183 100 L237 100" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#a1)"/>
+          <path d="M283 100 L337 100" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#a1)"/>
+          <path d="M383 100 L535 100" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#a1)"/>
 
           <!-- Arrow C2 → branch feature (diagonal) -->
-          <path d="M275 82 L337 55" stroke="#10b981" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#a2)" />
-          <path d="M383 40  L437 40" stroke="#10b981" stroke-width="1.5" marker-end="url(#a2)" />
+          <path d="M275 82 L337 55"   stroke="#10b981" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#a2)"/>
+          <path d="M383 40  L437 40"  stroke="#10b981" stroke-width="1.5" marker-end="url(#a2)"/>
           <!-- Arrow feature → merge -->
-          <path d="M482 50  L542 85" stroke="#10b981" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#a2)" />
+          <path d="M482 50  L542 85"  stroke="#10b981" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#a2)"/>
 
           <!-- Labels de branch -->
-          <rect x="220" y="130" width="56" height="20" rx="4" fill="rgba(88,166,255,0.1)" stroke="rgba(88,166,255,0.3)"
-            stroke-width="1" />
+          <rect x="220" y="130" width="56" height="20" rx="4" fill="rgba(88,166,255,0.1)" stroke="rgba(88,166,255,0.3)" stroke-width="1"/>
           <text x="248" y="144" text-anchor="middle" fill="#79c0ff" font-size="9" font-weight="700">main</text>
 
-          <rect x="418" y="12" width="84" height="20" rx="4" fill="rgba(16,185,129,0.1)" stroke="rgba(16,185,129,0.3)"
-            stroke-width="1" />
+          <rect x="418" y="12" width="84" height="20" rx="4" fill="rgba(16,185,129,0.1)" stroke="rgba(16,185,129,0.3)" stroke-width="1"/>
           <text x="460" y="26" text-anchor="middle" fill="#6ee7b7" font-size="9" font-weight="700">feat/login</text>
 
           <!-- HEAD pointer -->
-          <rect x="530" y="132" width="60" height="20" rx="4" fill="rgba(245,158,11,0.15)" stroke="rgba(245,158,11,0.4)"
-            stroke-width="1" />
+          <rect x="530" y="132" width="60" height="20" rx="4" fill="rgba(245,158,11,0.15)" stroke="rgba(245,158,11,0.4)" stroke-width="1"/>
           <text x="560" y="146" text-anchor="middle" fill="#fcd34d" font-size="9" font-weight="700">HEAD</text>
-          <path d="M560 132 L560 125" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#a3)" />
+          <path d="M560 132 L560 125" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#a3)"/>
 
           <!-- Labels merge commit -->
           <text x="560" y="148" text-anchor="middle" fill="#d8b4fe" font-size="9"></text>
@@ -1245,12 +419,7 @@
       <div class="table-wrap">
         <table>
           <thead>
-            <tr>
-              <th>Tipo</th>
-              <th>Quando ocorre</th>
-              <th>Histórico</th>
-              <th>Quando usar</th>
-            </tr>
+            <tr><th>Tipo</th><th>Quando ocorre</th><th>Histórico</th><th>Quando usar</th></tr>
           </thead>
           <tbody>
             <tr>
@@ -1296,12 +465,11 @@
           <div class="step-body">
             <div class="step-title">Crie uma branch para sua feature</div>
             <div class="step-desc">
-              Sempre crie branches a partir da <code>main</code> atualizada.
+              Sempre crie branches a partir da <code>main</code> atualizada. 
               O padrão de nomenclatura <code>tipo/descricao-curta</code> é usado em 90% dos times profissionais.
             </div>
             <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
-              </div>
+              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span></div>
               <pre><code class="language-bash"># Ver branches existentes (o * indica onde você está)
 git branch
 
@@ -1328,10 +496,9 @@ git branch
               Tudo que você commitar aqui fica isolado — a <code>main</code> não é afetada.
             </div>
             <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
-              </div>
+              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span></div>
               <pre><code class="language-bash"># Crie ou edite arquivos normalmente
-echo "Nome: João · Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="412b2e202e012439242c312d2e6f222e2c">[email&#160;protected]</a>" > contato.txt
+echo "Nome: João · Email: joao@exemplo.com" > contato.txt
 
 git add contato.txt
 git commit -m "feat: add contact page with basic info"
@@ -1356,8 +523,7 @@ git log --oneline</code></pre>
               A direção é importante: você "puxa" a branch para dentro da atual.
             </div>
             <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
-              </div>
+              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span></div>
               <pre><code class="language-bash"># Voltar para a main
 git switch main
 
@@ -1392,15 +558,15 @@ git branch -d feat/adicionar-contato</code></pre>
       <h2>Resolvendo conflitos — sem pânico</h2>
 
       <p>
-        Um conflito acontece quando duas branches modificaram a <strong>mesma linha do mesmo arquivo</strong>
+        Um conflito acontece quando duas branches modificaram a <strong>mesma linha do mesmo arquivo</strong> 
         de formas diferentes. O Git não sabe qual versão você quer — então ele para e pede que você decida.
         Não é erro, é uma feature.
       </p>
 
       <div class="callout callout-warn">
         <div class="callout-title">⚠️ Conflito não é catástrofe</div>
-        Engenheiros iniciantes ficam com medo de conflitos. Seniores encaram como parte normal do trabalho.
-        Um conflito significa que duas pessoas estavam trabalhando produtivamente no mesmo código —
+        Engenheiros iniciantes ficam com medo de conflitos. Seniores encaram como parte normal do trabalho. 
+        Um conflito significa que duas pessoas estavam trabalhando produtivamente no mesmo código — 
         é um sinal de colaboração, não de falha.
       </div>
 
@@ -1410,16 +576,14 @@ git branch -d feat/adicionar-contato</code></pre>
         <div class="conflict-header">⚠️ contato.txt — CONFLITO DE MERGE</div>
         <div class="conflict-line conflict-mine">
           &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD (sua versão — branch atual)<br>
-          Nome: João · Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__"
-            data-cfemail="12787d737d52776a777f627e7d3c717d7f">[email&#160;protected]</a><br>
+          Nome: João · Email: joao@exemplo.com<br>
           Tel: (11) 99999-9999
         </div>
         <div class="conflict-line conflict-sep">
           ======= (separador)
         </div>
         <div class="conflict-line conflict-theirs">
-          Nome: João Silva · Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__"
-            data-cfemail="e08a8f818fce93898c9681a0858d9092859381ce838f8d">[email&#160;protected]</a><br>
+          Nome: João Silva · Email: joao.silva@empresa.com<br>
           Tel: (11) 88888-8888<br>
           LinkedIn: linkedin.com/in/joaosilva
           <br><br>
@@ -1434,8 +598,7 @@ git branch -d feat/adicionar-contato</code></pre>
           <div class="step-body">
             <div class="step-title">Identifique todos os arquivos em conflito</div>
             <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
-              </div>
+              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span></div>
               <pre><code class="language-bash"># Git mostra o status com os conflitos
 git status
 
@@ -1453,23 +616,22 @@ git status
           <div class="step-body">
             <div class="step-title">Abra o arquivo e escolha o que manter</div>
             <div class="step-desc">
-              Edite o arquivo manualmente: remova os marcadores <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>,
+              Edite o arquivo manualmente: remova os marcadores <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, 
               <code>=======</code> e <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code> e deixe apenas o conteúdo final desejado.
               Você pode manter uma versão, a outra, ou combinar as duas.
             </div>
             <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">contato.txt — após resolução</span><span
-                  class="code-lang">texto</span></div>
+              <div class="code-header"><span class="code-filename">contato.txt — após resolução</span><span class="code-lang">texto</span></div>
               <pre><code class="language-bash"># Versão final que você decidiu manter (sem marcadores):
-Nome: João Silva · Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d5bfbab4bafba6bcb9a3b495b0b8a5a7b0a6b4fbb6bab8">[email&#160;protected]</a>
+Nome: João Silva · Email: joao.silva@empresa.com
 Tel: (11) 99999-9999
 LinkedIn: linkedin.com/in/joaosilva</code></pre>
             </div>
             <div class="callout callout-tip">
               <div class="callout-title">🔥 Pro tip — VS Code resolve conflitos com cliques</div>
-              O VS Code destaca os conflitos com botões visuais:
-              <strong>Accept Current Change</strong> (HEAD),
-              <strong>Accept Incoming Change</strong> (branch mergeada),
+              O VS Code destaca os conflitos com botões visuais: 
+              <strong>Accept Current Change</strong> (HEAD), 
+              <strong>Accept Incoming Change</strong> (branch mergeada), 
               <strong>Accept Both Changes</strong>, ou <strong>Compare Changes</strong>.
               Você raramente precisa editar os marcadores manualmente.
             </div>
@@ -1481,8 +643,7 @@ LinkedIn: linkedin.com/in/joaosilva</code></pre>
           <div class="step-body">
             <div class="step-title">Marque como resolvido e finalize o merge</div>
             <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
-              </div>
+              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span></div>
               <pre><code class="language-bash"># Após editar o arquivo, marque como resolvido
 git add contato.txt
 
@@ -1516,12 +677,7 @@ git log --oneline --graph --all</code></pre>
       <div class="table-wrap">
         <table>
           <thead>
-            <tr>
-              <th>Comando</th>
-              <th>O que faz</th>
-              <th>Seguro em remote?</th>
-              <th>Quando usar</th>
-            </tr>
+            <tr><th>Comando</th><th>O que faz</th><th>Seguro em remote?</th><th>Quando usar</th></tr>
           </thead>
           <tbody>
             <tr>
@@ -1553,8 +709,7 @@ git log --oneline --graph --all</code></pre>
       </div>
 
       <div class="code-wrap">
-        <div class="code-header"><span class="code-filename">desfazendo-mudancas.sh</span><span
-            class="code-lang">bash</span></div>
+        <div class="code-header"><span class="code-filename">desfazendo-mudancas.sh</span><span class="code-lang">bash</span></div>
         <pre><code class="language-bash">### ─── ANTES DE COMMITAR ──────────────────────────────
 # Descartar mudanças em um arquivo específico
 git restore contato.txt
@@ -1603,24 +758,23 @@ git revert abc1234 --no-edit</code></pre>
         <div class="mermaid-label">// fluxo típico de uso do stash</div>
         <div class="mermaid">
           sequenceDiagram
-          participant WD as Working Dir
-          participant ST as Stash
-          participant BR as Branch fix/bug
+            participant WD as Working Dir
+            participant ST as Stash
+            participant BR as Branch fix/bug
 
-          Note over WD: Trabalhando em feat/nova-feature
-          WD->>ST: git stash (guarda rascunho)
-          Note over WD: Working dir limpo
-          WD->>BR: git switch fix/bug
-          Note over BR: Corrige bug urgente, commita
-          BR->>WD: git switch feat/nova-feature
-          ST->>WD: git stash pop (recupera rascunho)
-          Note over WD: Continua de onde parou
+            Note over WD: Trabalhando em feat/nova-feature
+            WD->>ST: git stash (guarda rascunho)
+            Note over WD: Working dir limpo
+            WD->>BR: git switch fix/bug
+            Note over BR: Corrige bug urgente, commita
+            BR->>WD: git switch feat/nova-feature
+            ST->>WD: git stash pop (recupera rascunho)
+            Note over WD: Continua de onde parou
         </div>
       </div>
 
       <div class="code-wrap">
-        <div class="code-header"><span class="code-filename">git-stash-guia.sh</span><span class="code-lang">bash</span>
-        </div>
+        <div class="code-header"><span class="code-filename">git-stash-guia.sh</span><span class="code-lang">bash</span></div>
         <pre><code class="language-bash"># Guardar mudanças no stash (com descrição — sempre use!)
 git stash push -m "feat: metade da página de contato implementada"
 
@@ -1647,7 +801,7 @@ git stash clear</code></pre>
 
       <div class="callout callout-tip">
         <div class="callout-title">🔥 Pro tip — stash também salva arquivos novos</div>
-        Por padrão, <code>git stash</code> não guarda arquivos untracked (novos).
+        Por padrão, <code>git stash</code> não guarda arquivos untracked (novos). 
         Use <code>git stash push -u</code> para incluir arquivos novos também.
         Use <code>git stash push -a</code> para incluir até arquivos no <code>.gitignore</code>.
       </div>
@@ -1665,7 +819,7 @@ git stash clear</code></pre>
           <div class="strategy-icon">🌊</div>
           <div class="strategy-name">GitHub Flow</div>
           <div class="strategy-desc">
-            Só <code>main</code> + branches de feature. Simples e direto.
+            Só <code>main</code> + branches de feature. Simples e direto. 
             Feature pronta → PR → merge → deploy imediato.
           </div>
           <div class="strategy-best">Ideal para: SaaS, deploy contínuo, times ágeis</div>
@@ -1674,8 +828,7 @@ git stash clear</code></pre>
           <div class="strategy-icon">🌲</div>
           <div class="strategy-name">Git Flow</div>
           <div class="strategy-desc">
-            <code>main</code>, <code>develop</code>, <code>feature/*</code>, <code>release/*</code>,
-            <code>hotfix/*</code>.
+            <code>main</code>, <code>develop</code>, <code>feature/*</code>, <code>release/*</code>, <code>hotfix/*</code>. 
             Mais controle, mais cerimônia.
           </div>
           <div class="strategy-best">Ideal para: produtos com releases versionadas</div>
@@ -1684,7 +837,7 @@ git stash clear</code></pre>
           <div class="strategy-icon">🛤️</div>
           <div class="strategy-name">Trunk-Based</div>
           <div class="strategy-desc">
-            Todo mundo commita direto na <code>main</code> (ou branches curtíssimas de 1-2 dias).
+            Todo mundo commita direto na <code>main</code> (ou branches curtíssimas de 1-2 dias). 
             Feature flags controlam o que está ativo.
           </div>
           <div class="strategy-best">Ideal para: grandes times com CI/CD maduro</div>
@@ -1693,7 +846,7 @@ git stash clear</code></pre>
 
       <div class="callout callout-check">
         <div class="callout-title">✅ Qual usar agora?</div>
-        Para 90% dos projetos pessoais e profissionais: <strong>GitHub Flow</strong>.
+        Para 90% dos projetos pessoais e profissionais: <strong>GitHub Flow</strong>. 
         É o que o próprio GitHub usa. Simples de entender, fácil de executar, funciona muito bem.
       </div>
     </div>
@@ -1706,8 +859,7 @@ git stash clear</code></pre>
       <h2>Referência rápida — o que você vai usar todo dia</h2>
 
       <div class="code-wrap">
-        <div class="code-header"><span class="code-filename">git-branches-cheatsheet.sh</span><span
-            class="code-lang">bash</span></div>
+        <div class="code-header"><span class="code-filename">git-branches-cheatsheet.sh</span><span class="code-lang">bash</span></div>
         <pre><code class="language-bash">### ─── BRANCHES ──────────────────────────────────────
 git branch                       # listar branches locais
 git branch -a                    # listar locais + remotas
@@ -1754,30 +906,22 @@ git branch --no-merged           # branches ainda não mergeadas</code></pre>
 
       <div class="pitfall">
         <div class="pitfall-title">⚠️ git reset --hard em commits já pushed</div>
-        <p>Se você fez <code>reset --hard</code> em commits que já foram para o GitHub, a sua branch local e a remota
-          divergiram. Forçar um <code>git push --force</code> pode apagar trabalho de colegas. Use sempre
-          <code>git revert</code> para desfazer coisas públicas.</p>
+        <p>Se você fez <code>reset --hard</code> em commits que já foram para o GitHub, a sua branch local e a remota divergiram. Forçar um <code>git push --force</code> pode apagar trabalho de colegas. Use sempre <code>git revert</code> para desfazer coisas públicas.</p>
       </div>
 
       <div class="pitfall">
         <div class="pitfall-title">⚠️ Branches de longa duração acumulam conflitos</div>
-        <p>Quanto mais tempo uma branch fica sem sincronizar com a <code>main</code>, mais conflitos você vai ter no
-          merge. A solução: faça <code>git merge main</code> (ou <code>git rebase main</code>) periodicamente na sua
-          feature branch para trazer as mudanças mais recentes.</p>
+        <p>Quanto mais tempo uma branch fica sem sincronizar com a <code>main</code>, mais conflitos você vai ter no merge. A solução: faça <code>git merge main</code> (ou <code>git rebase main</code>) periodicamente na sua feature branch para trazer as mudanças mais recentes.</p>
       </div>
 
       <div class="pitfall">
         <div class="pitfall-title">⚠️ Criar branches a partir de outra branch (que não é main)</div>
-        <p>Se você criar <code>feat/b</code> a partir de <code>feat/a</code>, você vai incluir todos os commits de
-          <code>feat/a</code> quando fizer o merge de <code>feat/b</code>. Sempre crie branches a partir da
-          <code>main</code> atualizada, a não ser que haja dependência explícita.</p>
+        <p>Se você criar <code>feat/b</code> a partir de <code>feat/a</code>, você vai incluir todos os commits de <code>feat/a</code> quando fizer o merge de <code>feat/b</code>. Sempre crie branches a partir da <code>main</code> atualizada, a não ser que haja dependência explícita.</p>
       </div>
 
       <div class="pitfall">
         <div class="pitfall-title">⚠️ Esquecer que stash é global, não por branch</div>
-        <p>O <code>git stash</code> não pertence a uma branch — ele fica numa pilha global. Se você fizer stash na
-          <code>feat/a</code> e aplicar na <code>main</code>, vai funcionar (e pode causar confusão). Sempre adicione
-          uma mensagem descritiva ao stash.</p>
+        <p>O <code>git stash</code> não pertence a uma branch — ele fica numa pilha global. Se você fizer stash na <code>feat/a</code> e aplicar na <code>main</code>, vai funcionar (e pode causar confusão). Sempre adicione uma mensagem descritiva ao stash.</p>
       </div>
     </div>
 
@@ -1794,8 +938,7 @@ git branch --no-merged           # branches ainda não mergeadas</code></pre>
           <div>
             <div class="video-title">Git Branches Tutorial</div>
             <div class="video-channel">freeCodeCamp · ~33 min</div>
-            <div class="video-why">Por que assistir: Explicação visual completa de branches, merge e resolução de
-              conflitos com exemplos reais no terminal.</div>
+            <div class="video-why">Por que assistir: Explicação visual completa de branches, merge e resolução de conflitos com exemplos reais no terminal.</div>
             <span class="video-watch">Assistir →</span>
           </div>
         </a>
@@ -1805,8 +948,7 @@ git branch --no-merged           # branches ainda não mergeadas</code></pre>
           <div>
             <div class="video-title">Resolvendo conflitos de Merge no Git — PT-BR</div>
             <div class="video-channel">Filipe Deschamps · ~18 min</div>
-            <div class="video-why">Por que assistir: Desmistifica conflitos de forma prática e mostra como usar o VS
-              Code para resolvê-los sem stress.</div>
+            <div class="video-why">Por que assistir: Desmistifica conflitos de forma prática e mostra como usar o VS Code para resolvê-los sem stress.</div>
             <span class="video-watch">Assistir →</span>
           </div>
         </a>
@@ -1816,8 +958,7 @@ git branch --no-merged           # branches ainda não mergeadas</code></pre>
           <div>
             <div class="video-title">Git Stash Tutorial</div>
             <div class="video-channel">Corey Schafer · ~20 min</div>
-            <div class="video-why">Por que assistir: Tutorial focado em stash com todos os casos de uso. Corey Schafer é
-              o melhor professor de Git em vídeo.</div>
+            <div class="video-why">Por que assistir: Tutorial focado em stash com todos os casos de uso. Corey Schafer é o melhor professor de Git em vídeo.</div>
             <span class="video-watch">Assistir →</span>
           </div>
         </a>
@@ -1827,8 +968,7 @@ git branch --no-merged           # branches ainda não mergeadas</code></pre>
           <div>
             <div class="video-title">Git Flow vs GitHub Flow</div>
             <div class="video-channel">TechWorld with Nana · ~16 min</div>
-            <div class="video-why">Por que assistir: Comparação clara das estratégias de branch com exemplos de times
-              reais. Essencial para trabalhar em equipe.</div>
+            <div class="video-why">Por que assistir: Comparação clara das estratégias de branch com exemplos de times reais. Essencial para trabalhar em equipe.</div>
             <span class="video-watch">Assistir →</span>
           </div>
         </a>
@@ -1841,24 +981,19 @@ git branch --no-merged           # branches ainda não mergeadas</code></pre>
     <div class="checkpoint">
       <div class="checkpoint-label">// 12 — desafio</div>
       <h3>🏁 Checkpoint — simule um fluxo de trabalho real</h3>
-      <p>Use o repositório criado na Aula 01 (<code>checkpoint-git</code>) ou crie um novo. Execute este fluxo completo:
-      </p>
+      <p>Use o repositório criado na Aula 01 (<code>checkpoint-git</code>) ou crie um novo. Execute este fluxo completo:</p>
       <ul>
         <li>Crie uma branch <code>feat/nova-secao</code> a partir da main e adicione um arquivo novo com 2 commits</li>
         <li>Volte para a main, edite o mesmo arquivo de uma forma diferente e faça 1 commit</li>
         <li>Faça o merge da <code>feat/nova-secao</code> na main — <strong>vai gerar conflito</strong></li>
         <li>Resolva o conflito manualmente (edite o arquivo, remova os marcadores, decida o conteúdo final)</li>
         <li>Finalize o merge e confirme o histórico com <code>git log --oneline --graph</code></li>
-        <li>Crie outra branch <code>feat/experimento</code>, faça mudanças, use <code>git stash</code> para guardar
-          rascunho, mude para a main, volte e recupere o stash</li>
-        <li>Use <code>git reset --soft HEAD~1</code> para desfazer o último commit (sem perder as mudanças) e recomitar
-          com mensagem melhor</li>
+        <li>Crie outra branch <code>feat/experimento</code>, faça mudanças, use <code>git stash</code> para guardar rascunho, mude para a main, volte e recupere o stash</li>
+        <li>Use <code>git reset --soft HEAD~1</code> para desfazer o último commit (sem perder as mudanças) e recomitar com mensagem melhor</li>
       </ul>
       <div class="checkpoint-hint">
-        💬 Dica: Para provocar o conflito intencionalmente, edite a linha 1 do mesmo arquivo nas duas branches antes de
-        mergear.
-        O git log --oneline --graph --all vai mostrar visualmente a bifurcação e o merge — é muito satisfatório ver isso
-        funcionando.
+        💬 Dica: Para provocar o conflito intencionalmente, edite a linha 1 do mesmo arquivo nas duas branches antes de mergear. 
+        O git log --oneline --graph --all vai mostrar visualmente a bifurcação e o merge — é muito satisfatório ver isso funcionando.
       </div>
     </div>
 
@@ -1898,5 +1033,4 @@ git branch --no-merged           # branches ainda não mergeadas</code></pre>
     });
   </script>
 </body>
-
 </html>
