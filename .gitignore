@@ -1,0 +1,32 @@
+# Variáveis de ambiente (NUNCA commite isso)
+.env
+.env.local
+*.env
+
+# Arquivos de configuração
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Arquivos de build e dependências
+node_modules/
+dist/
+build/
+
+# Arquivos de log
+*.log
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos de desenvolvimento
+*.test.js
+*.spec.js
+coverage/
+
+# Arquivos de desenvolvimento
+*.test.js
+*.spec.js
+coverage/
