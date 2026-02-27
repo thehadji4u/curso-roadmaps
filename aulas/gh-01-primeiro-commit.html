@@ -899,6 +899,59 @@
         grid-template-columns: 1fr;
       }
     }
+
+    /* ── DIAGRAM ── */
+    .diagram-wrap {
+      margin: 24px 0 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 12px;
+      padding: 20px;
+      overflow-x: auto;
+    }
+
+    .diagram-label {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.25);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .diagram-wrap svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      min-width: 600px;
+    }
+
+    .diagram-explanation {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .diagram-explanation .explain-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+
+    .diagram-explanation .explain-card h4 {
+      font-family: 'Syne', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      letter-spacing: 0.05em;
+    }
+
+    .diagram-explanation .explain-card p {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
   </style>
 </head>
 
@@ -1410,10 +1463,13 @@ git log --follow -p src/minha-feature.js</code></pre>
 
       <div class="diagram-wrap">
         <div class="diagram-label">// estrutura interna de um commit Git</div>
-        <svg viewBox="0 0 740 200" xmlns="http://www.w3.org/2000/svg" font-family="JetBrains Mono, monospace">
+        <svg viewBox="-60 20 800 195" xmlns="http://www.w3.org/2000/svg" font-family="JetBrains Mono, monospace">
           <defs>
             <marker id="arr" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
               <path d="M0,0 L0,6 L7,3 z" fill="#58a6ff" />
+            </marker>
+            <marker id="arr-left" markerWidth="7" markerHeight="7" refX="2" refY="3" orient="auto">
+              <path d="M7,0 L7,6 L0,3 z" fill="rgba(88,166,255,0.5)" />
             </marker>
           </defs>
           <!-- Commit box -->
@@ -1448,12 +1504,37 @@ git log --follow -p src/minha-feature.js</code></pre>
           <text x="544" y="117" text-anchor="middle" fill="#6ee7b7" font-size="10" font-weight="700">BLOB
             (arquivo)</text>
           <text x="544" y="133" text-anchor="middle" fill="#8585a8" font-size="9">conteúdo do index.js</text>
-          <!-- Parent arrow -->
-          <path d="M110 172 L110 185 Q110 195 100 195 L60 195 Q10 195 10 170 L10 40" stroke="rgba(88,166,255,0.3)"
-            stroke-width="1" fill="none" stroke-dasharray="5,3" marker-end="url(#arr)" />
-          <text x="45" y="192" fill="#8585a8" font-size="9">aponta para</text>
-          <text x="38" y="203" fill="#8585a8" font-size="9">commit anterior</text>
+          <!-- Parent arrow (exits bottom, curves left → previous commit) -->
+          <path d="M110 172 L110 192 Q110 202 95 202 L-30 202" stroke="rgba(88,166,255,0.3)" stroke-width="1.5"
+            fill="none" stroke-dasharray="5,3" marker-end="url(#arr)" />
+          <text x="45" y="213" text-anchor="middle" fill="#8585a8" font-size="8">aponta para commit anterior</text>
         </svg>
+      </div>
+
+      <div class="diagram-explanation">
+        <div class="explain-card">
+          <h4 style="color: #93c5fd;">📦 COMMIT</h4>
+          <p>O objeto principal. Contém metadados (autor, data, mensagem) e um ponteiro para a <strong>tree</strong> que
+            representa o estado dos arquivos naquele momento. Também aponta para o commit anterior (parent).</p>
+        </div>
+        <div class="explain-card">
+          <h4 style="color: #93c5fd;">🌳 TREE</h4>
+          <p>Um diretório. Lista todos os arquivos e subpastas daquele commit, apontando para <strong>blobs</strong>
+            (arquivos) ou outras <strong>trees</strong> (subpastas).</p>
+        </div>
+        <div class="explain-card">
+          <h4 style="color: #6ee7b7;">📄 BLOB</h4>
+          <p>O conteúdo real de um arquivo. O Git armazena cada versão como um blob único identificado por um hash SHA.
+            Se dois arquivos forem idênticos, compartilham o mesmo blob.</p>
+        </div>
+      </div>
+
+      <div class="callout callout-info" style="margin-top: 20px;">
+        <div class="callout-title">🔗 Como ler o diagrama</div>
+        Quando você faz <code>git commit</code>, o Git cria esse grafo: o <strong>COMMIT</strong> aponta para uma
+        <strong>TREE</strong> (a "foto" da pasta raiz), que por sua vez aponta para os <strong>BLOBs</strong> (o
+        conteúdo de cada arquivo). A seta tracejada na parte inferior mostra que cada commit aponta para seu commit
+        anterior — formando a linha do tempo do projeto.
       </div>
     </div>
 
