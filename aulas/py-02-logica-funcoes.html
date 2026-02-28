@@ -1,36 +1,145 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Python — Lógica &amp; Funções · Aula 06</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@300;400;700&display=swap"
+    rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 
   <style>
     /* ── HLJS github-dark inline ─────────────────────────────── */
-    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+    pre code.hljs {
+      display: block;
+      overflow-x: auto;
+      padding: 1em
+    }
+
+    code.hljs {
+      padding: 3px 5px
+    }
+
+    .hljs {
+      color: #c9d1d9;
+      background: #0d1117
+    }
+
+    .hljs-doctag,
+    .hljs-keyword,
+    .hljs-meta .hljs-keyword,
+    .hljs-template-tag,
+    .hljs-template-variable,
+    .hljs-type,
+    .hljs-variable.language_ {
+      color: #ff7b72
+    }
+
+    .hljs-title,
+    .hljs-title.class_,
+    .hljs-title.class_.inherited__,
+    .hljs-title.function_ {
+      color: #d2a8ff
+    }
+
+    .hljs-attr,
+    .hljs-attribute,
+    .hljs-literal,
+    .hljs-meta,
+    .hljs-number,
+    .hljs-operator,
+    .hljs-variable,
+    .hljs-selector-attr,
+    .hljs-selector-class,
+    .hljs-selector-id {
+      color: #79c0ff
+    }
+
+    .hljs-regexp,
+    .hljs-string,
+    .hljs-meta .hljs-string {
+      color: #a5d6ff
+    }
+
+    .hljs-built_in,
+    .hljs-symbol {
+      color: #ffa657
+    }
+
+    .hljs-comment,
+    .hljs-code,
+    .hljs-formula {
+      color: #8b949e
+    }
+
+    .hljs-name,
+    .hljs-quote,
+    .hljs-selector-tag,
+    .hljs-selector-pseudo {
+      color: #7ee787
+    }
+
+    .hljs-subst {
+      color: #c9d1d9
+    }
+
+    .hljs-section {
+      color: #1f6feb;
+      font-weight: 700
+    }
+
+    .hljs-bullet {
+      color: #f2cc60
+    }
+
+    .hljs-emphasis {
+      color: #c9d1d9;
+      font-style: italic
+    }
+
+    .hljs-strong {
+      color: #c9d1d9;
+      font-weight: 700
+    }
+
+    .hljs-addition {
+      color: #aff5b4;
+      background-color: #033a16
+    }
+
+    .hljs-deletion {
+      color: #ffdcd7;
+      background-color: #67060c
+    }
 
     /* ── TOKENS ──────────────────────────────────────────────── */
     :root {
-      --bg:            #0a0a0f;
-      --surface:       #111118;
-      --surface2:      #16161f;
-      --border:        #1e1e2e;
-      --text:          #e8e8f0;
-      --muted:         #8585a8;
-      --accent:        #3b82f6;
-      --accent-dim:    rgba(59,130,246,0.12);
-      --accent-border: rgba(59,130,246,0.35);
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #3b82f6;
+      --accent-dim: rgba(59, 130, 246, 0.12);
+      --accent-border: rgba(59, 130, 246, 0.35);
       --success: #10b981;
-      --warn:    #f59e0b;
-      --danger:  #ef4444;
-      --info:    #06b6d4;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
     }
 
-    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     body {
       background: var(--bg);
@@ -42,283 +151,772 @@
 
     body::before {
       content: '';
-      position: fixed; inset: 0;
+      position: fixed;
+      inset: 0;
       background-image:
         linear-gradient(var(--accent-dim) 1px, transparent 1px),
         linear-gradient(90deg, var(--accent-dim) 1px, transparent 1px);
       background-size: 40px 40px;
-      pointer-events: none; z-index: 0; opacity: 0.35;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.35;
     }
 
     /* ── PROGRESS BAR (leitura) ──────────────────────────────── */
     .progress-bar-wrap {
-      position: fixed; top: 0; left: 0; right: 0;
-      height: 3px; z-index: 1000; background: var(--border);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      z-index: 1000;
+      background: var(--border);
     }
+
     #reading-progress {
       height: 100%;
       background: linear-gradient(90deg, var(--accent), #60a5fa);
-      width: 0%; transition: width 0.1s;
+      width: 0%;
+      transition: width 0.1s;
     }
 
     /* ── TOP NAV ─────────────────────────────────────────────── */
     .top-nav {
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(10,10,15,0.92);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 10, 15, 0.92);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
       padding: 12px 24px;
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
+
     .nav-back {
-      display: flex; align-items: center; gap: 8px;
-      text-decoration: none; color: var(--muted);
-      font-size: 12px; letter-spacing: 0.05em; transition: color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      transition: color 0.2s;
     }
-    .nav-back:hover { color: var(--text); }
-    .nav-center { display: flex; align-items: center; gap: 10px; }
+
+    .nav-back:hover {
+      color: var(--text);
+    }
+
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
     .nav-prev {
-      display: flex; align-items: center; gap: 6px;
-      text-decoration: none; color: var(--muted);
-      font-size: 12px; letter-spacing: 0.05em;
-      padding: 6px 14px; border: 1px solid var(--border);
-      border-radius: 6px; background: transparent; transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: transparent;
+      transition: all 0.2s;
     }
-    .nav-prev:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
-    .nav-position { font-size: 11px; color: var(--muted); letter-spacing: 0.08em; }
-    .nav-position .track { color: var(--accent); }
+
+    .nav-prev:hover {
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .nav-position {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+
+    .nav-position .track {
+      color: var(--accent);
+    }
+
     .nav-next {
-      display: flex; align-items: center; gap: 6px;
-      text-decoration: none; color: var(--accent);
-      font-size: 12px; letter-spacing: 0.05em;
-      padding: 6px 14px; border: 1px solid var(--accent-border);
-      border-radius: 6px; background: var(--accent-dim); transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      color: var(--accent);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      padding: 6px 14px;
+      border: 1px solid var(--accent-border);
+      border-radius: 6px;
+      background: var(--accent-dim);
+      transition: all 0.2s;
     }
-    .nav-next:hover { background: rgba(59,130,246,0.25); }
+
+    .nav-next:hover {
+      background: rgba(59, 130, 246, 0.25);
+    }
 
     /* ── LAYOUT ──────────────────────────────────────────────── */
     .page {
-      max-width: 860px; margin: 0 auto;
+      max-width: 860px;
+      margin: 0 auto;
       padding: 60px 24px 120px;
-      position: relative; z-index: 1;
+      position: relative;
+      z-index: 1;
     }
 
     /* ── HERO ────────────────────────────────────────────────── */
     .hero {
-      margin-bottom: 64px; padding-bottom: 48px;
+      margin-bottom: 64px;
+      padding-bottom: 48px;
       border-bottom: 1px solid var(--border);
       animation: fadeDown 0.8s ease both;
     }
-    @keyframes fadeDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:none} }
-    @keyframes fadeUp   { from{opacity:0;transform:translateY( 20px)} to{opacity:1;transform:none} }
+
+    @keyframes fadeDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
 
     .hero-eyebrow {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 11px; letter-spacing: 0.2em; color: var(--accent);
-      text-transform: uppercase; margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 16px;
     }
+
     .hero-badge {
-      background: var(--accent-dim); border: 1px solid var(--accent-border);
-      color: var(--accent); padding: 3px 8px; border-radius: 4px; font-size: 10px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 10px;
     }
+
     .hero h1 {
       font-family: 'Syne', sans-serif;
       font-size: clamp(2rem, 5vw, 3.2rem);
-      font-weight: 800; line-height: 1.05; letter-spacing: -0.03em;
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
       background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text; margin-bottom: 16px;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
     }
+
     .hero-meta {
-      display: flex; flex-wrap: wrap; gap: 16px;
-      color: var(--muted); font-size: 12px; margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 20px;
     }
-    .hero-meta span { display: flex; align-items: center; gap: 5px; }
-    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .hero-meta span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
     .tag {
-      padding: 4px 10px; border-radius: 4px; font-size: 11px;
-      border: 1px solid var(--border); color: var(--muted); background: var(--surface);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: var(--surface);
     }
 
     /* ── SECTIONS ────────────────────────────────────────────── */
-    .section { margin-bottom: 56px; animation: fadeUp 0.6s ease both; }
-    .section-label {
-      font-size: 10px; letter-spacing: 0.2em; color: var(--accent);
-      text-transform: uppercase; margin-bottom: 8px;
+    .section {
+      margin-bottom: 56px;
+      animation: fadeUp 0.6s ease both;
     }
+
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
     .section h2 {
       font-family: 'Syne', sans-serif;
-      font-size: 1.6rem; font-weight: 800;
-      letter-spacing: -0.02em; margin-bottom: 20px; color: var(--text);
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+      color: var(--text);
     }
+
     .section h3 {
       font-family: 'Syne', sans-serif;
-      font-size: 1.1rem; font-weight: 700; margin: 28px 0 12px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 28px 0 12px;
     }
-    p { color: var(--text); margin-bottom: 16px; }
-    p strong { color: #fff; }
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
+
+    p {
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    p strong {
+      color: #fff;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
 
     /* ── CALLOUTS ────────────────────────────────────────────── */
     .callout {
-      padding: 16px 20px; border-radius: 10px;
-      margin: 20px 0; font-size: 13px; line-height: 1.6;
+      padding: 16px 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-size: 13px;
+      line-height: 1.6;
       border-left: 3px solid transparent;
     }
-    .callout-info  { background: rgba(6,182,212,0.08);   border-color: var(--info);    color: #67e8f9; }
-    .callout-warn  { background: rgba(245,158,11,0.08);  border-color: var(--warn);    color: #fcd34d; }
-    .callout-tip   { background: rgba(16,185,129,0.08);  border-color: var(--success); color: #6ee7b7; }
-    .callout-check { background: var(--accent-dim);      border-color: var(--accent);  color: #93c5fd; }
-    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
+
+    .callout-info {
+      background: rgba(6, 182, 212, 0.08);
+      border-color: var(--info);
+      color: #67e8f9;
+    }
+
+    .callout-warn {
+      background: rgba(245, 158, 11, 0.08);
+      border-color: var(--warn);
+      color: #fcd34d;
+    }
+
+    .callout-tip {
+      background: rgba(16, 185, 129, 0.08);
+      border-color: var(--success);
+      color: #6ee7b7;
+    }
+
+    .callout-check {
+      background: var(--accent-dim);
+      border-color: var(--accent);
+      color: #93c5fd;
+    }
+
+    .callout-title {
+      font-weight: 700;
+      margin-bottom: 6px;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
 
     /* ── ANALOGY CARD ────────────────────────────────────────── */
     .analogy-card {
       background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
-      border: 1px solid var(--border); border-left: 4px solid var(--accent);
-      border-radius: 12px; padding: 24px 28px; margin: 24px 0;
-      position: relative; overflow: hidden;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin: 24px 0;
+      position: relative;
+      overflow: hidden;
     }
+
     .analogy-card::before {
-      content: '"'; position: absolute; top: -10px; left: 16px;
-      font-size: 80px; color: var(--accent); opacity: 0.12;
-      font-family: 'Syne', sans-serif; line-height: 1;
+      content: '"';
+      position: absolute;
+      top: -10px;
+      left: 16px;
+      font-size: 80px;
+      color: var(--accent);
+      opacity: 0.12;
+      font-family: 'Syne', sans-serif;
+      line-height: 1;
     }
-    .analogy-label { font-size: 10px; letter-spacing: 0.15em; color: var(--accent); text-transform: uppercase; margin-bottom: 10px; }
-    .analogy-text  { font-size: 14px; line-height: 1.7; color: var(--text); }
+
+    .analogy-label {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .analogy-text {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--text);
+    }
+
     .analogy-mapping {
-      margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);
-      display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      font-size: 12px;
     }
-    .analogy-real { color: var(--muted); }
-    .analogy-tech { color: var(--accent); }
+
+    .analogy-real {
+      color: var(--muted);
+    }
+
+    .analogy-tech {
+      color: var(--accent);
+    }
 
     /* ── CODE BLOCKS ─────────────────────────────────────────── */
-    .code-wrap { margin: 20px 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-    .code-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 16px; background: var(--surface2); border-bottom: 1px solid var(--border);
+    .code-wrap {
+      margin: 20px 0;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
     }
-    .code-filename { font-size: 11px; color: var(--muted); letter-spacing: 0.05em; }
-    .code-lang     { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; }
-    .code-wrap pre { margin: 0; }
-    .code-wrap pre code { border-radius: 0; font-size: 13px; }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .code-filename {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    .code-lang {
+      font-size: 10px;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .code-wrap pre {
+      margin: 0;
+    }
+
+    .code-wrap pre code {
+      border-radius: 0;
+      font-size: 13px;
+    }
 
     /* ── MERMAID ─────────────────────────────────────────────── */
-    .mermaid-wrap { margin: 24px 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-    .mermaid-label {
-      padding: 8px 16px; background: var(--surface2); border-bottom: 1px solid var(--border);
-      font-size: 10px; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase;
+    .mermaid-wrap {
+      margin: 24px 0;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
     }
-    .mermaid-wrap .mermaid { padding: 24px; background: var(--surface); }
+
+    .mermaid-label {
+      padding: 8px 16px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      font-size: 10px;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .mermaid-wrap .mermaid {
+      padding: 24px;
+      background: var(--surface);
+    }
 
     /* ── TABLE ───────────────────────────────────────────────── */
-    .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); margin: 20px 0; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th {
-      background: var(--surface2); padding: 12px 16px; text-align: left;
-      font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
-      color: var(--accent); border-bottom: 2px solid var(--accent-border);
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin: 20px 0;
     }
-    td { padding: 12px 16px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: var(--surface2); }
-    td code { background: var(--surface2); padding: 2px 6px; border-radius: 4px; font-size: 12px; color: #93c5fd; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th {
+      background: var(--surface2);
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border-bottom: 2px solid var(--accent-border);
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      vertical-align: top;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: var(--surface2);
+    }
+
+    td code {
+      background: var(--surface2);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #93c5fd;
+    }
 
     /* ── STEPS ───────────────────────────────────────────────── */
-    .steps { display: flex; flex-direction: column; margin: 24px 0; }
-    .step {
-      display: grid; grid-template-columns: 48px 1fr;
-      gap: 0 20px; position: relative;
+    .steps {
+      display: flex;
+      flex-direction: column;
+      margin: 24px 0;
     }
+
+    .step {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 0 20px;
+      position: relative;
+    }
+
     .step:not(:last-child)::after {
-      content: ''; position: absolute;
-      left: 23px; top: 48px; bottom: 0; width: 1px;
+      content: '';
+      position: absolute;
+      left: 23px;
+      top: 48px;
+      bottom: 0;
+      width: 1px;
       background: linear-gradient(to bottom, var(--accent-border), transparent);
     }
+
     .step-num {
-      width: 48px; height: 48px; border-radius: 12px;
-      background: var(--accent-dim); border: 1px solid var(--accent-border);
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Syne', sans-serif; font-weight: 800;
-      color: var(--accent); font-size: 18px; flex-shrink: 0;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      color: var(--accent);
+      font-size: 18px;
+      flex-shrink: 0;
     }
-    .step-body { padding-bottom: 32px; }
-    .step-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; margin-bottom: 8px; color: var(--text); }
-    .step-desc  { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 12px; }
+
+    .step-body {
+      padding-bottom: 32px;
+    }
+
+    .step-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .step-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
 
     /* ── COMPREHENSION COMPARE ───────────────────────────────── */
     .compare-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 20px 0;
     }
+
     .compare-card {
-      border-radius: 10px; overflow: hidden; border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
     }
+
     .compare-label {
-      padding: 8px 14px; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 8px 14px;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
       border-bottom: 1px solid var(--border);
     }
-    .compare-label.bad  { background: rgba(239,68,68,0.1);  color: #fca5a5; }
-    .compare-label.good { background: rgba(16,185,129,0.1); color: #6ee7b7; }
-    @media (max-width: 600px) { .compare-grid { grid-template-columns: 1fr; } }
+
+    .compare-label.bad {
+      background: rgba(239, 68, 68, 0.1);
+      color: #fca5a5;
+    }
+
+    .compare-label.good {
+      background: rgba(16, 185, 129, 0.1);
+      color: #6ee7b7;
+    }
+
+    @media (max-width: 600px) {
+      .compare-grid {
+        grid-template-columns: 1fr;
+      }
+    }
 
     /* ── VIDEO CARDS ─────────────────────────────────────────── */
-    .videos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    @media (max-width: 600px) { .videos-grid { grid-template-columns: 1fr; } }
+    .videos-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 600px) {
+      .videos-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .video-card {
-      display: flex; gap: 14px; padding: 16px;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 10px; text-decoration: none; color: inherit;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      transition: all 0.2s;
+      text-decoration: none;
     }
-    .video-card:hover { border-color: var(--accent-border); box-shadow: 0 0 20px var(--accent-dim); text-decoration: none; }
+
+    .video-card:hover {
+      border-color: #ef4444;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
     .video-thumb {
-      width: 40px; height: 40px; min-width: 40px;
-      background: var(--accent-dim); border: 1px solid var(--accent-border);
-      border-radius: 8px; display: flex; align-items: center; justify-content: center;
-      font-size: 16px; color: var(--accent);
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      flex-shrink: 0;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
     }
-    .video-title   { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 4px; line-height: 1.4; }
-    .video-channel { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
-    .video-why     { font-size: 11px; color: var(--muted); line-height: 1.5; }
-    .video-watch   { font-size: 11px; color: var(--accent); margin-top: 8px; display: block; }
+
+    .video-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+
+    .video-channel {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .video-why {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .video-watch {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: #ef4444;
+      margin-top: 8px;
+    }
 
     /* ── CHECKPOINT ──────────────────────────────────────────── */
     .checkpoint {
       background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
-      border: 1px solid var(--accent-border); border-radius: 14px;
-      padding: 32px 36px; margin: 48px 0;
+      border: 1px solid var(--accent-border);
+      border-radius: 14px;
+      padding: 32px 36px;
+      margin: 48px 0;
     }
-    .checkpoint-label { font-size: 10px; letter-spacing: 0.2em; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; }
-    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; margin-bottom: 12px; }
-    .checkpoint p  { color: var(--muted); margin-bottom: 16px; font-size: 14px; }
-    .checkpoint ul { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
-    .checkpoint li { display: flex; gap: 10px; font-size: 13px; color: var(--text); }
-    .checkpoint li::before { content: '✦'; color: var(--accent); flex-shrink: 0; }
-    .checkpoint-hint { padding: 12px 16px; background: var(--accent-dim); border-radius: 8px; font-size: 13px; color: #93c5fd; }
+
+    .checkpoint-label {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .checkpoint h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .checkpoint p {
+      color: var(--muted);
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .checkpoint ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .checkpoint li {
+      position: relative;
+      padding-left: 20px;
+      line-height: 1.6;
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .checkpoint li::before {
+      content: '✦';
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: var(--accent);
+    }
+
+    .checkpoint-hint {
+      padding: 12px 16px;
+      background: var(--accent-dim);
+      border-radius: 8px;
+      font-size: 13px;
+      color: #93c5fd;
+    }
 
     /* ── NEXT LESSON ─────────────────────────────────────────── */
     .next-lesson {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 24px 28px;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 14px; text-decoration: none; color: inherit;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      margin: 48px 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-top: 48px;
+      text-decoration: none;
+      transition: all .2s
     }
-    .next-lesson:hover { border-color: var(--accent-border); box-shadow: 0 0 30px var(--accent-dim); text-decoration: none; }
-    .next-label { font-size: 10px; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
-    .next-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--text); }
-    .next-arrow { font-size: 24px; color: var(--accent); }
 
-    /* ── FOOTER ──────────────────────────────────────────────── */
-    .footer {
-      display: flex; justify-content: space-between; align-items: center;
-      padding-top: 32px; border-top: 1px solid var(--border);
-      font-size: 11px; color: var(--muted);
+    .next-lesson:hover {
+      border-color: var(--accent-border);
+      background: var(--surface2);
+      text-decoration: none
     }
-    .footer a { color: var(--muted); }
-    .footer a:hover { color: var(--text); }
+
+    .next-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: .1em;
+      margin-bottom: 4px
+    }
+
+    .next-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      color: var(--text);
+      font-size: 1.1rem
+    }
+
+    .next-arrow {
+      font-size: 24px;
+      color: var(--accent)
+    }
+
+    .footer {
+      margin-top: 80px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--muted)
+    }
+
+    .footer a {
+      color: var(--muted)
+    }
+
+    .footer a:hover {
+      color: var(--text)
+    }
   </style>
 </head>
 
@@ -374,14 +972,21 @@
       <div class="section-label">// 01 — motivação</div>
       <h2>Por que isso importa?</h2>
       <p>
-        Toda lógica de negócio se reduz a três operações: <strong>decidir</strong> (if/elif/else), <strong>repetir</strong> (for/while) e <strong>encapsular</strong> (funções). Sem dominar esses três pilares, você não consegue escrever nem o script mais simples de automação.
+        Toda lógica de negócio se reduz a três operações: <strong>decidir</strong> (if/elif/else),
+        <strong>repetir</strong> (for/while) e <strong>encapsular</strong> (funções). Sem dominar esses três pilares,
+        você não consegue escrever nem o script mais simples de automação.
       </p>
       <p>
-        E as <strong>list comprehensions</strong> — junto com <code>map</code>, <code>filter</code>, <code>zip</code> e expressões geradoras — são a diferença entre código Python que parece C traduzido e código Python idiomático que sêniors reconhecem como profissional. São a ferramenta que transforma 5 linhas de loop em 1 linha elegante e legível.
+        E as <strong>list comprehensions</strong> — junto com <code>map</code>, <code>filter</code>, <code>zip</code> e
+        expressões geradoras — são a diferença entre código Python que parece C traduzido e código Python idiomático que
+        sêniors reconhecem como profissional. São a ferramenta que transforma 5 linhas de loop em 1 linha elegante e
+        legível.
       </p>
       <div class="callout callout-info">
         <div class="callout-title">💼 Por que um engenheiro sênior usa isso hoje</div>
-        Em revisões de código, sêniors sinalizam três coisas: funções que fazem mais de uma coisa, loops que poderiam ser comprehensions, e parâmetros sem type hints. Dominar esses padrões é o que separa código que "funciona" de código que é <em>aprovado em PR</em>.
+        Em revisões de código, sêniors sinalizam três coisas: funções que fazem mais de uma coisa, loops que poderiam
+        ser comprehensions, e parâmetros sem type hints. Dominar esses padrões é o que separa código que "funciona" de
+        código que é <em>aprovado em PR</em>.
       </div>
     </div>
 
@@ -394,10 +999,18 @@
       <div class="analogy-card">
         <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
         <div class="analogy-text">
-          Pense numa <strong>linha de montagem de fábrica</strong>. Existe um operador que inspeciona cada peça e toma decisões: "se a peça está dentro da especificação, segue; se não, vai para retrabalho" — isso é o <strong>if/elif/else</strong>.<br><br>
-          A esteira em movimento é o <strong>for loop</strong>: processa cada peça em sequência, uma a uma, até acabar o lote. O inspetor de qualidade parado na mesma posição enquanto o produto não atinge o critério é o <strong>while loop</strong>: continua até a condição ser satisfeita.<br><br>
-          Um <strong>departamento especializado</strong> dentro da fábrica é uma <strong>função</strong>: recebe matéria-prima (parâmetros), executa um processo definido, e retorna o produto (return). A fábrica não precisa saber o que acontece lá dentro — só o que entra e o que sai.<br><br>
-          E a <strong>list comprehension</strong> é uma máquina CNC automatizada: em vez de um operador processar peça por peça manualmente (loop explícito), a máquina recebe o lote inteiro, aplica a transformação e retorna tudo pronto em um único passo.
+          Pense numa <strong>linha de montagem de fábrica</strong>. Existe um operador que inspeciona cada peça e toma
+          decisões: "se a peça está dentro da especificação, segue; se não, vai para retrabalho" — isso é o
+          <strong>if/elif/else</strong>.<br><br>
+          A esteira em movimento é o <strong>for loop</strong>: processa cada peça em sequência, uma a uma, até acabar o
+          lote. O inspetor de qualidade parado na mesma posição enquanto o produto não atinge o critério é o
+          <strong>while loop</strong>: continua até a condição ser satisfeita.<br><br>
+          Um <strong>departamento especializado</strong> dentro da fábrica é uma <strong>função</strong>: recebe
+          matéria-prima (parâmetros), executa um processo definido, e retorna o produto (return). A fábrica não precisa
+          saber o que acontece lá dentro — só o que entra e o que sai.<br><br>
+          E a <strong>list comprehension</strong> é uma máquina CNC automatizada: em vez de um operador processar peça
+          por peça manualmente (loop explícito), a máquina recebe o lote inteiro, aplica a transformação e retorna tudo
+          pronto em um único passo.
         </div>
         <div class="analogy-mapping">
           <span class="analogy-real">Inspetor tomando decisão</span>
@@ -424,20 +1037,20 @@
       <div class="mermaid-wrap">
         <div class="mermaid-label">// fluxo de decisão if/elif/else</div>
         <div class="mermaid">
-flowchart TD
-    A([início]) --> B{condição 1?}
-    B -- True  --> C[bloco if]
-    B -- False --> D{condição 2?}
-    D -- True  --> E[bloco elif]
-    D -- False --> F[bloco else]
-    C --> G([fim])
-    E --> G
-    F --> G
-    style A fill:#1e3a5f,stroke:#3b82f6,color:#93c5fd
-    style G fill:#1e3a5f,stroke:#3b82f6,color:#93c5fd
-    style C fill:#0f3020,stroke:#10b981,color:#6ee7b7
-    style E fill:#3d2f0f,stroke:#f59e0b,color:#fcd34d
-    style F fill:#2d1515,stroke:#ef4444,color:#fca5a5
+          flowchart TD
+          A([início]) --> B{condição 1?}
+          B -- True --> C[bloco if]
+          B -- False --> D{condição 2?}
+          D -- True --> E[bloco elif]
+          D -- False --> F[bloco else]
+          C --> G([fim])
+          E --> G
+          F --> G
+          style A fill:#1e3a5f,stroke:#3b82f6,color:#93c5fd
+          style G fill:#1e3a5f,stroke:#3b82f6,color:#93c5fd
+          style C fill:#0f3020,stroke:#10b981,color:#6ee7b7
+          style E fill:#3d2f0f,stroke:#f59e0b,color:#fcd34d
+          style F fill:#2d1515,stroke:#ef4444,color:#fca5a5
         </div>
       </div>
 
@@ -559,13 +1172,33 @@ def funcao_ainda_nao_implementada():
       <div class="table-wrap">
         <table>
           <thead>
-            <tr><th>Comando</th><th>O que faz</th><th>Quando usar</th></tr>
+            <tr>
+              <th>Comando</th>
+              <th>O que faz</th>
+              <th>Quando usar</th>
+            </tr>
           </thead>
           <tbody>
-            <tr><td><code>break</code></td><td>Interrompe o loop imediatamente — sai dele</td><td>Encontrou o que buscava; condição de erro; loop infinito controlado</td></tr>
-            <tr><td><code>continue</code></td><td>Pula para a próxima iteração — ignora o resto do bloco atual</td><td>Filtrar itens inválidos; pular casos especiais no meio do loop</td></tr>
-            <tr><td><code>pass</code></td><td>Não faz absolutamente nada — bloco válido sintaticamente</td><td>Placeholder em funções/classes/branches ainda não implementados</td></tr>
-            <tr><td><code>else</code> no loop</td><td>Executa ao final do loop <em>somente se não houve</em> <code>break</code></td><td>Confirmar que a busca no loop não encontrou nada</td></tr>
+            <tr>
+              <td><code>break</code></td>
+              <td>Interrompe o loop imediatamente — sai dele</td>
+              <td>Encontrou o que buscava; condição de erro; loop infinito controlado</td>
+            </tr>
+            <tr>
+              <td><code>continue</code></td>
+              <td>Pula para a próxima iteração — ignora o resto do bloco atual</td>
+              <td>Filtrar itens inválidos; pular casos especiais no meio do loop</td>
+            </tr>
+            <tr>
+              <td><code>pass</code></td>
+              <td>Não faz absolutamente nada — bloco válido sintaticamente</td>
+              <td>Placeholder em funções/classes/branches ainda não implementados</td>
+            </tr>
+            <tr>
+              <td><code>else</code> no loop</td>
+              <td>Executa ao final do loop <em>somente se não houve</em> <code>break</code></td>
+              <td>Confirmar que a busca no loop não encontrou nada</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -578,7 +1211,9 @@ def funcao_ainda_nao_implementada():
       <div class="section-label">// 04 — funções</div>
       <h2>def — encapsulando lógica reutilizável</h2>
       <p>
-        Uma função bem escrita faz <strong>uma única coisa</strong>, faz bem, e tem um nome que descreve o que ela faz. Esse princípio — <em>Single Responsibility</em> — é a regra mais importante ao escrever funções em qualquer linguagem.
+        Uma função bem escrita faz <strong>uma única coisa</strong>, faz bem, e tem um nome que descreve o que ela faz.
+        Esse princípio — <em>Single Responsibility</em> — é a regra mais importante ao escrever funções em qualquer
+        linguagem.
       </p>
 
       <div class="code-wrap">
@@ -656,7 +1291,8 @@ por_idade = sorted(pessoas, key=lambda p: p[1])
 
       <div class="callout callout-tip">
         <div class="callout-title">🔥 Pro tip — docstrings são contratos</div>
-        Toda função pública deve ter docstring. IDEs as mostram no hover; ferramentas como <code>pydoc</code> e <code>Sphinx</code> geram documentação automaticamente a partir delas. Use o formato Google ou NumPy:
+        Toda função pública deve ter docstring. IDEs as mostram no hover; ferramentas como <code>pydoc</code> e
+        <code>Sphinx</code> geram documentação automaticamente a partir delas. Use o formato Google ou NumPy:
         <br><br>
         <pre style="background:var(--surface2);padding:12px;border-radius:6px;font-size:12px;margin-top:8px;">def calcular_imc(peso: float, altura: float) -> float:
     """Calcula o Índice de Massa Corporal.
@@ -684,7 +1320,9 @@ por_idade = sorted(pessoas, key=lambda p: p[1])
       <div class="section-label">// 05 — comprehensions &amp; itertools funcionais</div>
       <h2>List comprehensions, generators, map, filter e zip</h2>
       <p>
-        List comprehensions são a forma <strong>mais Pythônica de transformar e filtrar listas</strong>. A sintaxe: <code>[expressão for item in iterável if condição]</code>. A condição é opcional. Quando ficam complexas demais, use um loop explícito — legibilidade sempre vence.
+        List comprehensions são a forma <strong>mais Pythônica de transformar e filtrar listas</strong>. A sintaxe:
+        <code>[expressão for item in iterável if condição]</code>. A condição é opcional. Quando ficam complexas demais,
+        use um loop explícito — legibilidade sempre vence.
       </p>
 
       <div class="compare-grid">
@@ -791,7 +1429,11 @@ list(zip_longest(a, b, fillvalue=None))   # [(1,"x"), (2,"y"), (3,None)]</code><
       <div class="table-wrap">
         <table>
           <thead>
-            <tr><th>Ferramenta</th><th>Retorna</th><th>Quando preferir</th></tr>
+            <tr>
+              <th>Ferramenta</th>
+              <th>Retorna</th>
+              <th>Quando preferir</th>
+            </tr>
           </thead>
           <tbody>
             <tr>
@@ -827,7 +1469,8 @@ list(zip_longest(a, b, fillvalue=None))   # [(1,"x"), (2,"y"), (3,None)]</code><
         <div class="callout-title">⚠️ Comprehension aninhada: cuidado com a legibilidade</div>
         <code>[x for row in matrix for x in row]</code> é legível: achata uma matriz.<br>
         <code>[[f(x) for x in row] for row in matrix if row]</code> já está no limite.<br>
-        <code>[x for a in b for c in d if e for f in g]</code> — use um loop explícito. Código que não se consegue ler em 5 segundos é código que vai causar bug.
+        <code>[x for a in b for c in d if e for f in g]</code> — use um loop explícito. Código que não se consegue ler
+        em 5 segundos é código que vai causar bug.
       </div>
     </div>
 
@@ -837,7 +1480,8 @@ list(zip_longest(a, b, fillvalue=None))   # [(1,"x"), (2,"y"), (3,None)]</code><
     <div class="section">
       <div class="section-label">// 06 — hands-on</div>
       <h2>Mãos na massa — processador de notas escolares</h2>
-      <p>Vamos construir um script que processa uma lista de alunos e notas, aplicando lógica, funções e comprehensions juntos.</p>
+      <p>Vamos construir um script que processa uma lista de alunos e notas, aplicando lógica, funções e comprehensions
+        juntos.</p>
 
       <div class="steps">
         <div class="step">
@@ -846,7 +1490,8 @@ list(zip_longest(a, b, fillvalue=None))   # [(1,"x"), (2,"y"), (3,None)]</code><
             <div class="step-title">Crie o arquivo</div>
             <div class="step-desc">No venv da aula anterior (ou crie um novo), crie <code>notas.py</code>.</div>
             <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span></div>
+              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
+              </div>
               <pre><code class="language-bash">cd meu-primeiro-projeto
 source .venv/bin/activate
 touch notas.py</code></pre>
@@ -859,7 +1504,8 @@ touch notas.py</code></pre>
           <div class="step-body">
             <div class="step-title">Escreva as funções</div>
             <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">📄 notas.py</span><span class="code-lang">Python</span></div>
+              <div class="code-header"><span class="code-filename">📄 notas.py</span><span
+                  class="code-lang">Python</span></div>
               <pre><code class="language-python">"""Processador de notas escolares — demonstração de lógica e funções."""
 
 # ─── Dados de entrada ─────────────────────────────────────────
@@ -943,12 +1589,15 @@ for i, (media, nome) in enumerate(ranking, 1):
           <div class="step-body">
             <div class="step-title">Execute e analise</div>
             <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span></div>
+              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
+              </div>
               <pre><code class="language-bash">python notas.py</code></pre>
             </div>
             <div class="callout callout-check">
               <div class="callout-title">✅ O que observar</div>
-              Note como <code>formatar_aluno</code> faz <em>uma única coisa</em>. As funções <code>calcular_media</code> e <code>determinar_conceito</code> são independentes e testáveis isoladamente. A list comprehension na linha <code>resultado = [...]</code> substitui um loop de 5+ linhas por 1 linha legível.
+              Note como <code>formatar_aluno</code> faz <em>uma única coisa</em>. As funções <code>calcular_media</code>
+              e <code>determinar_conceito</code> são independentes e testáveis isoladamente. A list comprehension na
+              linha <code>resultado = [...]</code> substitui um loop de 5+ linhas por 1 linha legível.
             </div>
           </div>
         </div>
@@ -964,7 +1613,9 @@ for i, (media, nome) in enumerate(ranking, 1):
 
       <div class="callout callout-warn">
         <div class="callout-title">⚠️ Default mutável em parâmetro de função</div>
-        <code>def adicionar(item, lista=[]):</code> — a lista padrão é criada <strong>uma vez</strong> quando a função é definida, não a cada chamada. Todas as chamadas compartilham a mesma lista. Use <code>None</code> como default e crie dentro da função.
+        <code>def adicionar(item, lista=[]):</code> — a lista padrão é criada <strong>uma vez</strong> quando a função é
+        definida, não a cada chamada. Todas as chamadas compartilham a mesma lista. Use <code>None</code> como default e
+        crie dentro da função.
       </div>
 
       <div class="callout callout-warn">
@@ -979,12 +1630,16 @@ nums = [n for n in nums if n % 2 != 0]</pre>
 
       <div class="callout callout-warn">
         <div class="callout-title">⚠️ Usar range(len(lista)) quando não precisa do índice</div>
-        <code>for i in range(len(nomes)): print(nomes[i])</code> é código C em Python. O idiomático é <code>for nome in nomes: print(nome)</code>. Se precisar do índice E do valor: <code>for i, nome in enumerate(nomes)</code>.
+        <code>for i in range(len(nomes)): print(nomes[i])</code> é código C em Python. O idiomático é
+        <code>for nome in nomes: print(nome)</code>. Se precisar do índice E do valor:
+        <code>for i, nome in enumerate(nomes)</code>.
       </div>
 
       <div class="callout callout-warn">
         <div class="callout-title">⚠️ Comprehension com efeitos colaterais</div>
-        List comprehension é para <em>criar listas</em>, não para executar efeitos colaterais. <code>[print(x) for x in lista]</code> é antipadrão — cria uma lista de <code>None</code> desnecessariamente. Use um <code>for</code> loop quando o objetivo é efeito colateral (imprimir, salvar, enviar).
+        List comprehension é para <em>criar listas</em>, não para executar efeitos colaterais.
+        <code>[print(x) for x in lista]</code> é antipadrão — cria uma lista de <code>None</code> desnecessariamente.
+        Use um <code>for</code> loop quando o objetivo é efeito colateral (imprimir, salvar, enviar).
       </div>
     </div>
 
@@ -999,8 +1654,10 @@ nums = [n for n in nums if n % 2 != 0]</pre>
           <div class="video-thumb">▶</div>
           <div>
             <div class="video-title">Python Functions — Corey Schafer</div>
-            <div class="video-channel">Corey Schafer · ~30 min</div>
-            <div class="video-why">Por que assistir: Cobre def, args, kwargs, default params e closures de forma progressiva com exemplos reais. É a referência mais clara sobre funções Python em português do conteúdo disponível.</div>
+            <div class="video-channel">Corey Schafer · ~22 min</div>
+            <div class="video-why">Por que assistir: Cobre def, args, kwargs, default params e closures de forma
+              progressiva com exemplos reais. É a referência mais clara sobre funções Python em português do conteúdo
+              disponível.</div>
             <span class="video-watch">Assistir →</span>
           </div>
         </a>
@@ -1009,8 +1666,9 @@ nums = [n for n in nums if n % 2 != 0]</pre>
           <div class="video-thumb">▶</div>
           <div>
             <div class="video-title">Python List Comprehensions — Corey Schafer</div>
-            <div class="video-channel">Corey Schafer · ~11 min</div>
-            <div class="video-why">Por que assistir: Desmonta a sintaxe de comprehension passo a passo, mostrando a equivalência com loops e quando usar cada abordagem. Exemplos com map, filter e geradoras.</div>
+            <div class="video-channel">Corey Schafer · ~18 min</div>
+            <div class="video-why">Por que assistir: Desmonta a sintaxe de comprehension passo a passo, mostrando a
+              equivalência com loops e quando usar cada abordagem. Exemplos com map, filter e geradoras.</div>
             <span class="video-watch">Assistir →</span>
           </div>
         </a>
@@ -1018,19 +1676,21 @@ nums = [n for n in nums if n % 2 != 0]</pre>
         <a class="video-card" href="https://www.youtube.com/watch?v=C-gEQdGVXbk" target="_blank">
           <div class="video-thumb">▶</div>
           <div>
-            <div class="video-title">Python Tutorial for Beginners — Functions</div>
-            <div class="video-channel">Programming with Mosh · ~18 min</div>
-            <div class="video-why">Por que assistir: Foco em boas práticas de design de funções — princípio de responsabilidade única, naming, parâmetros. Ideal para desenvolver o instinto certo desde o início.</div>
+            <div class="video-title">10 Python Tips and Tricks</div>
+            <div class="video-channel">Corey Schafer · ~40 min</div>
+            <div class="video-why">Por que assistir: Foco em boas práticas de design de funções — princípio de
+              responsabilidade única, naming, parâmetros. Ideal para desenvolver o instinto certo desde o início.</div>
             <span class="video-watch">Assistir →</span>
           </div>
         </a>
 
-        <a class="video-card" href="https://www.youtube.com/watch?v=eiDyK_ofCCM" target="_blank">
+        <a class="video-card" href="https://www.youtube.com/watch?v=hUes6y2b--0" target="_blank">
           <div class="video-thumb">▶</div>
           <div>
             <div class="video-title">map, filter and reduce — Socratica</div>
-            <div class="video-channel">Socratica · ~14 min</div>
-            <div class="video-why">Por que assistir: Explicação precisa e elegante das funções de ordem superior do Python. Mostra os padrões funcionais com exemplos limpos, deixando claro quando usar cada um.</div>
+            <div class="video-channel">Socratica · ~8 min</div>
+            <div class="video-why">Por que assistir: Explicação precisa e elegante das funções de ordem superior do
+              Python. Mostra os padrões funcionais com exemplos limpos, deixando claro quando usar cada um.</div>
             <span class="video-watch">Assistir →</span>
           </div>
         </a>
@@ -1045,15 +1705,21 @@ nums = [n for n in nums if n % 2 != 0]</pre>
       <h3>🏁 Checkpoint — valide seu aprendizado</h3>
       <p>Construa um <strong>analisador de temperaturas</strong> para uma série de cidades:</p>
       <ul>
-        <li>Crie uma lista de dicionários com pelo menos 5 cidades e suas temperaturas diárias (7 dias cada) — use valores realistas para o Brasil</li>
-        <li>Escreva funções separadas para: calcular média, mínimo e máximo; classificar o clima (<code>"frio"</code>, <code>"ameno"</code>, <code>"quente"</code>) baseado na média; e formatar o resumo da cidade</li>
+        <li>Crie uma lista de dicionários com pelo menos 5 cidades e suas temperaturas diárias (7 dias cada) — use
+          valores realistas para o Brasil</li>
+        <li>Escreva funções separadas para: calcular média, mínimo e máximo; classificar o clima (<code>"frio"</code>,
+          <code>"ameno"</code>, <code>"quente"</code>) baseado na média; e formatar o resumo da cidade
+        </li>
         <li>Use <strong>*args</strong> na função de estatísticas para aceitar qualquer quantidade de temperaturas</li>
-        <li>Processe todas as cidades com uma <strong>list comprehension</strong>, chamando a função de formatação em cada uma</li>
+        <li>Processe todas as cidades com uma <strong>list comprehension</strong>, chamando a função de formatação em
+          cada uma</li>
         <li>Use <strong>filter()</strong> para extrair só as cidades classificadas como "quente"</li>
-        <li>Use <strong>zip()</strong> para combinar os nomes das cidades com suas médias e exibir um ranking ordenado</li>
+        <li>Use <strong>zip()</strong> para combinar os nomes das cidades com suas médias e exibir um ranking ordenado
+        </li>
         <li>Implemente o loop de exibição usando <code>enumerate()</code> para mostrar a posição no ranking</li>
       </ul>
-      <div class="checkpoint-hint">💬 Dica: comece pelas funções, teste cada uma isoladamente com <code>print()</code> antes de montar o pipeline completo. Função que funciona sozinha raramente quebra quando combinada.</div>
+      <div class="checkpoint-hint">💬 Dica: comece pelas funções, teste cada uma isoladamente com <code>print()</code>
+        antes de montar o pipeline completo. Função que funciona sozinha raramente quebra quando combinada.</div>
     </div>
 
     <!-- ══════════════════════════════════════════
@@ -1094,4 +1760,5 @@ nums = [n for n in nums if n % 2 != 0]</pre>
   </script>
 
 </body>
+
 </html>
