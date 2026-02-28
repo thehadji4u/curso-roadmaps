@@ -1,14 +1,117 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HTML Semântico & Estrutura · HTML/CSS</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@300;400;700&display=swap"
+    rel="stylesheet">
   <!-- Syntax highlighting — github-dark inlined (funciona offline) -->
   <style>
-    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+    pre code.hljs {
+      display: block;
+      overflow-x: auto;
+      padding: 1em
+    }
+
+    code.hljs {
+      padding: 3px 5px
+    }
+
+    .hljs {
+      color: #c9d1d9;
+      background: #0d1117
+    }
+
+    .hljs-doctag,
+    .hljs-keyword,
+    .hljs-meta .hljs-keyword,
+    .hljs-template-tag,
+    .hljs-template-variable,
+    .hljs-type,
+    .hljs-variable.language_ {
+      color: #ff7b72
+    }
+
+    .hljs-title,
+    .hljs-title.class_,
+    .hljs-title.class_.inherited__,
+    .hljs-title.function_ {
+      color: #d2a8ff
+    }
+
+    .hljs-attr,
+    .hljs-attribute,
+    .hljs-literal,
+    .hljs-meta,
+    .hljs-number,
+    .hljs-operator,
+    .hljs-variable,
+    .hljs-selector-attr,
+    .hljs-selector-class,
+    .hljs-selector-id {
+      color: #79c0ff
+    }
+
+    .hljs-regexp,
+    .hljs-string,
+    .hljs-meta .hljs-string {
+      color: #a5d6ff
+    }
+
+    .hljs-built_in,
+    .hljs-symbol {
+      color: #ffa657
+    }
+
+    .hljs-comment,
+    .hljs-code,
+    .hljs-formula {
+      color: #8b949e
+    }
+
+    .hljs-name,
+    .hljs-quote,
+    .hljs-selector-tag,
+    .hljs-selector-pseudo {
+      color: #7ee787
+    }
+
+    .hljs-subst {
+      color: #c9d1d9
+    }
+
+    .hljs-section {
+      color: #1f6feb;
+      font-weight: 700
+    }
+
+    .hljs-bullet {
+      color: #f2cc60
+    }
+
+    .hljs-emphasis {
+      color: #c9d1d9;
+      font-style: italic
+    }
+
+    .hljs-strong {
+      color: #c9d1d9;
+      font-weight: 700
+    }
+
+    .hljs-addition {
+      color: #aff5b4;
+      background-color: #033a16
+    }
+
+    .hljs-deletion {
+      color: #ffdcd7;
+      background-color: #67060c
+    }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
@@ -22,15 +125,19 @@
       --text: #e8e8f0;
       --muted: #8585a8;
       --accent: #ef4444;
-      --accent-dim: rgba(239,68,68,0.1);
-      --accent-border: rgba(239,68,68,0.3);
+      --accent-dim: rgba(239, 68, 68, 0.1);
+      --accent-border: rgba(239, 68, 68, 0.3);
       --success: #10b981;
       --warn: #f59e0b;
       --danger: #ef4444;
       --info: #06b6d4;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     body {
       background: var(--bg);
@@ -42,225 +149,1025 @@
 
     body::before {
       content: '';
-      position: fixed; inset: 0;
+      position: fixed;
+      inset: 0;
       background-image:
-        linear-gradient(rgba(239,68,68,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(239,68,68,0.03) 1px, transparent 1px);
+        linear-gradient(rgba(239, 68, 68, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(239, 68, 68, 0.03) 1px, transparent 1px);
       background-size: 40px 40px;
-      pointer-events: none; z-index: 0;
+      pointer-events: none;
+      z-index: 0;
     }
 
     /* ── PROGRESS BAR ── */
-    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 1000; background: var(--border); }
-    #reading-progress  { height: 100%; background: linear-gradient(90deg, var(--accent), #f97316); width: 0%; transition: width 0.1s; }
+    .progress-bar-wrap {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      z-index: 1000;
+      background: var(--border);
+    }
+
+    #reading-progress {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #f97316);
+      width: 0%;
+      transition: width 0.1s;
+    }
 
     /* ── TOP NAV ── */
     .top-nav {
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(10,10,15,0.92); backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 10, 15, 0.92);
+      backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
-      padding: 12px 24px; display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
-    .nav-back  { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; transition: color 0.2s; }
-    .nav-back:hover { color: var(--text); }
-    .nav-position { font-size: 11px; color: var(--muted); letter-spacing: 0.08em; }
-    .nav-position .track { color: var(--accent); }
-    .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--accent); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--accent-border); border-radius: 6px; background: var(--accent-dim); transition: all 0.2s; }
-    .nav-next:hover { background: rgba(239,68,68,0.2); }
+
+    .nav-back {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      transition: color 0.2s;
+    }
+
+    .nav-back:hover {
+      color: var(--text);
+    }
+
+    .nav-position {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+
+    .nav-position .track {
+      color: var(--accent);
+    }
+
+    .nav-next {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      color: var(--accent);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      padding: 6px 14px;
+      border: 1px solid var(--accent-border);
+      border-radius: 6px;
+      background: var(--accent-dim);
+      transition: all 0.2s;
+    }
+
+    .nav-next:hover {
+      background: rgba(239, 68, 68, 0.2);
+    }
 
     .nav-prev {
-      display: flex; align-items: center; gap: 6px;
-      text-decoration: none; color: var(--muted);
-      font-size: 12px; letter-spacing: 0.05em;
-      padding: 6px 14px; border: 1px solid var(--border);
-      border-radius: 6px; background: transparent; transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: transparent;
+      transition: all 0.2s;
     }
-    .nav-prev:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
-    .nav-prev.disabled { opacity: 0.3; pointer-events: none; }
+
+    .nav-prev:hover {
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .nav-prev.disabled {
+      opacity: 0.3;
+      pointer-events: none;
+    }
 
     /* ── LAYOUT ── */
-    .page { max-width: 860px; margin: 0 auto; padding: 60px 24px 120px; position: relative; z-index: 1; }
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 60px 24px 120px;
+      position: relative;
+      z-index: 1;
+    }
 
     /* ── HERO ── */
-    .hero { margin-bottom: 64px; padding-bottom: 48px; border-bottom: 1px solid var(--border); }
-    .hero-eyebrow { display: flex; align-items: center; gap: 10px; font-size: 11px; letter-spacing: 0.2em; color: var(--accent); text-transform: uppercase; margin-bottom: 16px; }
-    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 10px; }
-    .hero h1 {
-      font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3.2rem);
-      font-weight: 800; line-height: 1.05; letter-spacing: -0.03em;
-      background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 16px;
+    .hero {
+      margin-bottom: 64px;
+      padding-bottom: 48px;
+      border-bottom: 1px solid var(--border);
     }
-    .hero-meta { display: flex; flex-wrap: wrap; gap: 20px; color: var(--muted); font-size: 12px; margin-bottom: 20px; }
-    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
-    .tag { padding: 4px 12px; border-radius: 4px; font-size: 11px; border: 1px solid var(--border); color: var(--muted); background: var(--surface); }
+
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .hero-badge {
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 10px;
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 20px;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 11px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: var(--surface);
+    }
 
     /* ── SECTIONS ── */
-    .section { margin-bottom: 56px; }
-    .section-label { font-size: 10px; letter-spacing: 0.2em; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; }
-    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 20px; }
-    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 700; margin: 28px 0 12px; color: var(--text); }
-    p { margin-bottom: 16px; font-size: 14px; }
-    p strong { color: #fff; }
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
+    .section {
+      margin-bottom: 56px;
+    }
+
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .section h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+    }
+
+    .section h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin: 28px 0 12px;
+      color: var(--text);
+    }
+
+    p {
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    p strong {
+      color: #fff;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
 
     /* ── CALLOUTS ── */
-    .callout { padding: 16px 20px; border-radius: 10px; margin: 20px 0; font-size: 13px; line-height: 1.6; border-left: 3px solid transparent; }
-    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
-    .callout-info  { background: rgba(6,182,212,0.08);   border-color: var(--info);    color: #67e8f9; }
-    .callout-warn  { background: rgba(245,158,11,0.08);  border-color: var(--warn);    color: #fcd34d; }
-    .callout-tip   { background: rgba(16,185,129,0.08);  border-color: var(--success); color: #6ee7b7; }
-    .callout-check { background: var(--accent-dim);       border-color: var(--accent);  color: #fecaca; }
+    .callout {
+      padding: 16px 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-size: 13px;
+      line-height: 1.6;
+      border-left: 3px solid transparent;
+    }
+
+    .callout-title {
+      font-weight: 700;
+      margin-bottom: 6px;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .callout-info {
+      background: rgba(6, 182, 212, 0.08);
+      border-color: var(--info);
+      color: #67e8f9;
+    }
+
+    .callout-warn {
+      background: rgba(245, 158, 11, 0.08);
+      border-color: var(--warn);
+      color: #fcd34d;
+    }
+
+    .callout-tip {
+      background: rgba(16, 185, 129, 0.08);
+      border-color: var(--success);
+      color: #6ee7b7;
+    }
+
+    .callout-check {
+      background: var(--accent-dim);
+      border-color: var(--accent);
+      color: #fecaca;
+    }
 
     /* ── ANALOGY CARD ── */
     .analogy-card {
       background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
-      border: 1px solid var(--border); border-left: 4px solid var(--accent);
-      border-radius: 12px; padding: 28px; margin: 24px 0; position: relative; overflow: hidden;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: 12px;
+      padding: 28px;
+      margin: 24px 0;
+      position: relative;
+      overflow: hidden;
     }
-    .analogy-card::before { content: '"'; position: absolute; top: -10px; left: 16px; font-size: 80px; color: var(--accent); opacity: 0.1; font-family: 'Syne', sans-serif; line-height: 1; }
-    .analogy-label { font-size: 10px; letter-spacing: 0.15em; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; }
-    .analogy-text  { font-size: 14px; line-height: 1.8; color: var(--text); }
-    .analogy-mapping { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px; }
-    .analogy-real  { color: var(--muted); }
-    .analogy-tech  { color: var(--accent); font-weight: 700; }
+
+    .analogy-card::before {
+      content: '"';
+      position: absolute;
+      top: -10px;
+      left: 16px;
+      font-size: 80px;
+      color: var(--accent);
+      opacity: 0.1;
+      font-family: 'Syne', sans-serif;
+      line-height: 1;
+    }
+
+    .analogy-label {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .analogy-text {
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--text);
+    }
+
+    .analogy-mapping {
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      font-size: 12px;
+    }
+
+    .analogy-real {
+      color: var(--muted);
+    }
+
+    .analogy-tech {
+      color: var(--accent);
+      font-weight: 700;
+    }
 
     /* ── CODE BLOCKS ── */
-    .code-wrap { margin: 20px 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-    .code-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: var(--surface2); border-bottom: 1px solid var(--border); }
-    .code-filename { font-size: 11px; color: var(--muted); letter-spacing: 0.05em; }
-    .code-lang { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; }
-    pre { margin: 0 !important; border-radius: 0 !important; }
-    pre code.hljs { font-size: 13px !important; line-height: 1.65 !important; padding: 20px !important; }
+    .code-wrap {
+      margin: 20px 0;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .code-filename {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    .code-lang {
+      font-size: 10px;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    pre {
+      margin: 0 !important;
+      border-radius: 0 !important;
+    }
+
+    pre code.hljs {
+      font-size: 13px !important;
+      line-height: 1.65 !important;
+      padding: 20px !important;
+    }
 
     /* ── STEPS ── */
-    .steps { display: flex; flex-direction: column; margin: 28px 0; }
-    .step { display: grid; grid-template-columns: 52px 1fr; gap: 0 20px; position: relative; }
-    .step:not(:last-child)::after { content: ''; position: absolute; left: 25px; top: 52px; bottom: 0; width: 1px; background: linear-gradient(to bottom, var(--accent-border), transparent); }
-    .step-num { width: 52px; height: 52px; border-radius: 12px; background: var(--accent-dim); border: 1px solid var(--accent-border); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; color: var(--accent); font-size: 18px; flex-shrink: 0; }
-    .step-body { padding-bottom: 36px; }
-    .step-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; margin-bottom: 8px; margin-top: 14px; }
-    .step-desc  { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 12px; }
+    .steps {
+      display: flex;
+      flex-direction: column;
+      margin: 28px 0;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      gap: 0 20px;
+      position: relative;
+    }
+
+    .step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 25px;
+      top: 52px;
+      bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, var(--accent-border), transparent);
+    }
+
+    .step-num {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      color: var(--accent);
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .step-body {
+      padding-bottom: 36px;
+    }
+
+    .step-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 8px;
+      margin-top: 14px;
+    }
+
+    .step-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
 
     /* ── TABLE ── */
-    .table-wrap { overflow-x: auto; margin: 20px 0; border: 1px solid var(--border); border-radius: 10px; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th { background: var(--surface2); color: var(--accent); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; padding: 12px 16px; text-align: left; border-bottom: 2px solid var(--accent-border); }
-    td { padding: 12px 16px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: var(--surface2); }
-    .td-pro { color: var(--success); } .td-con { color: var(--danger); } .td-neu { color: var(--muted); }
+    .table-wrap {
+      overflow-x: auto;
+      margin: 20px 0;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th {
+      background: var(--surface2);
+      color: var(--accent);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 2px solid var(--accent-border);
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      vertical-align: top;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: var(--surface2);
+    }
+
+    .td-pro {
+      color: var(--success);
+    }
+
+    .td-con {
+      color: var(--danger);
+    }
+
+    .td-neu {
+      color: var(--muted);
+    }
 
     /* ── MERMAID ── */
-    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; margin: 20px 0; overflow-x: auto; }
-    .mermaid-label { font-size: 10px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 16px; }
+    .mermaid-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      margin: 20px 0;
+      overflow-x: auto;
+    }
+
+    .mermaid-label {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
 
     /* ── SVG DIAGRAM ── */
-    .diagram-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin: 20px 0; overflow-x: auto; }
-    .diagram-label { font-size: 10px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 16px; }
+    .diagram-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin: 20px 0;
+      overflow-x: auto;
+    }
+
+    .diagram-label {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
 
     /* ── SEMANTIC LAYOUT VISUAL ── */
     .html-layout {
       border: 2px solid var(--accent-border);
-      border-radius: 10px; overflow: hidden; margin: 24px 0;
-      font-size: 12px; font-family: 'JetBrains Mono', monospace;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 24px 0;
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
     }
-    .hl-header { background: rgba(239,68,68,0.15); border-bottom: 1px solid var(--accent-border); padding: 12px 16px; color: #fca5a5; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-    .hl-nav    { background: rgba(239,68,68,0.08); border-bottom: 1px solid var(--border); padding: 10px 16px; color: #fca5a5; display: flex; align-items: center; gap: 8px; }
-    .hl-body   { display: grid; grid-template-columns: 1fr 220px; }
-    .hl-main   { background: rgba(255,255,255,0.02); padding: 16px; border-right: 1px solid var(--border); }
-    .hl-aside  { background: rgba(239,68,68,0.04); padding: 16px; }
-    .hl-article { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 6px; padding: 12px; margin-bottom: 10px; }
-    .hl-section { border: 1px dashed var(--border); border-radius: 6px; padding: 10px; margin-top: 10px; }
-    .hl-footer { background: rgba(239,68,68,0.08); border-top: 1px solid var(--border); padding: 12px 16px; color: #fca5a5; display: flex; align-items: center; gap: 8px; }
-    .hl-tag  { color: var(--accent); font-weight: 700; font-size: 11px; }
-    .hl-desc { color: var(--muted); font-size: 11px; margin-left: 8px; }
-    @media (max-width: 580px) { .hl-body { grid-template-columns: 1fr; } .hl-aside { border-top: 1px solid var(--border); } }
+
+    .hl-header {
+      background: rgba(239, 68, 68, 0.15);
+      border-bottom: 1px solid var(--accent-border);
+      padding: 12px 16px;
+      color: #fca5a5;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hl-nav {
+      background: rgba(239, 68, 68, 0.08);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px;
+      color: #fca5a5;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hl-body {
+      display: grid;
+      grid-template-columns: 1fr 220px;
+    }
+
+    .hl-main {
+      background: rgba(255, 255, 255, 0.02);
+      padding: 16px;
+      border-right: 1px solid var(--border);
+    }
+
+    .hl-aside {
+      background: rgba(239, 68, 68, 0.04);
+      padding: 16px;
+    }
+
+    .hl-article {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+
+    .hl-section {
+      border: 1px dashed var(--border);
+      border-radius: 6px;
+      padding: 10px;
+      margin-top: 10px;
+    }
+
+    .hl-footer {
+      background: rgba(239, 68, 68, 0.08);
+      border-top: 1px solid var(--border);
+      padding: 12px 16px;
+      color: #fca5a5;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hl-tag {
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 11px;
+    }
+
+    .hl-desc {
+      color: var(--muted);
+      font-size: 11px;
+      margin-left: 8px;
+    }
+
+    @media (max-width: 580px) {
+      .hl-body {
+        grid-template-columns: 1fr;
+      }
+
+      .hl-aside {
+        border-top: 1px solid var(--border);
+      }
+    }
 
     /* ── FORM VISUAL ── */
     .form-demo {
-      background: var(--surface2); border: 1px solid var(--border); border-radius: 10px;
-      padding: 24px; margin: 20px 0;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+      margin: 20px 0;
     }
-    .form-demo-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; margin-bottom: 16px; color: var(--text); }
-    .form-row { margin-bottom: 14px; }
-    .form-label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 6px; letter-spacing: 0.05em; }
+
+    .form-demo-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .form-row {
+      margin-bottom: 14px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      letter-spacing: 0.05em;
+    }
+
     .form-input {
-      width: 100%; padding: 8px 12px; background: var(--bg); border: 1px solid var(--border);
-      border-radius: 6px; color: var(--text); font-family: 'JetBrains Mono', monospace;
-      font-size: 12px; outline: none; transition: border-color 0.2s;
+      width: 100%;
+      padding: 8px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      outline: none;
+      transition: border-color 0.2s;
     }
-    .form-input:focus { border-color: var(--accent); }
-    .form-input[type="range"] { padding: 4px 0; }
-    .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238585a8' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
-    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    @media (max-width: 540px) { .form-grid-2 { grid-template-columns: 1fr; } }
+
+    .form-input:focus {
+      border-color: var(--accent);
+    }
+
+    .form-input[type="range"] {
+      padding: 4px 0;
+    }
+
+    .form-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238585a8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 32px;
+    }
+
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    @media (max-width: 540px) {
+      .form-grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
 
     /* ── MEDIA CARDS ── */
-    .media-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 20px 0; }
-    @media (max-width: 560px) { .media-grid { grid-template-columns: 1fr; } }
-    .media-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; transition: all 0.2s; }
-    .media-card:hover { border-color: var(--accent-border); transform: translateY(-2px); }
-    .media-thumb { height: 80px; background: var(--accent-dim); display: flex; align-items: center; justify-content: center; font-size: 32px; border-bottom: 1px solid var(--border); }
-    .media-body { padding: 14px; }
-    .media-element { font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
-    .media-desc    { font-size: 11px; color: var(--muted); line-height: 1.5; margin-bottom: 8px; }
-    .media-attr    { font-size: 10px; color: var(--info); letter-spacing: 0.05em; }
+    .media-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 20px 0;
+    }
+
+    @media (max-width: 560px) {
+      .media-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .media-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+
+    .media-card:hover {
+      border-color: var(--accent-border);
+      transform: translateY(-2px);
+    }
+
+    .media-thumb {
+      height: 80px;
+      background: var(--accent-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .media-body {
+      padding: 14px;
+    }
+
+    .media-element {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .media-desc {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    .media-attr {
+      font-size: 10px;
+      color: var(--info);
+      letter-spacing: 0.05em;
+    }
 
     /* ── VIDEO CARDS ── */
-    .videos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 8px; }
-    @media (max-width: 600px) { .videos-grid { grid-template-columns: 1fr; } }
-    .video-card { display: flex; gap: 14px; align-items: flex-start; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; transition: all 0.2s; text-decoration: none; }
-    .video-card:hover { border-color: #ef4444; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
-    .video-thumb { width: 44px; height: 44px; border-radius: 8px; flex-shrink: 0; background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3); display: flex; align-items: center; justify-content: center; font-size: 18px; }
-    .video-title   { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 4px; line-height: 1.4; }
-    .video-channel { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
-    .video-why     { font-size: 11px; color: var(--muted); line-height: 1.5; }
-    .video-watch   { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: #ef4444; margin-top: 8px; }
+    .videos-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 600px) {
+      .videos-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .video-card {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .video-card:hover {
+      border-color: #ef4444;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .video-thumb {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      flex-shrink: 0;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .video-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+
+    .video-channel {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .video-why {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .video-watch {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: #ef4444;
+      margin-top: 8px;
+    }
 
     /* ── PITFALLS ── */
-    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.2); border-left: 3px solid var(--danger); border-radius: 10px; padding: 16px 20px; margin: 14px 0; font-size: 13px; }
-    .pitfall-title { color: #fca5a5; font-weight: 700; font-size: 12px; letter-spacing: 0.05em; margin-bottom: 6px; }
-    .pitfall p { color: var(--muted); margin: 0; }
+    .pitfall {
+      background: rgba(239, 68, 68, 0.06);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-left: 3px solid var(--danger);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin: 14px 0;
+      font-size: 13px;
+    }
+
+    .pitfall-title {
+      color: #fca5a5;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+
+    .pitfall p {
+      color: var(--muted);
+      margin: 0;
+    }
 
     /* ── CHECKPOINT ── */
-    .checkpoint { background: linear-gradient(135deg, var(--accent-dim) 0%, rgba(239,68,68,0.04) 100%); border: 1px solid var(--accent-border); border-radius: 16px; padding: 36px; margin: 48px 0; }
-    .checkpoint-label { font-size: 10px; letter-spacing: 0.2em; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; }
-    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; margin-bottom: 16px; }
-    .checkpoint p  { font-size: 14px; color: var(--muted); margin-bottom: 4px; }
-    .checkpoint ul { list-style: none; margin: 20px 0; }
-    .checkpoint li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; font-size: 13px; color: var(--muted); border-bottom: 1px solid rgba(255,255,255,0.04); }
-    .checkpoint li::before { content: '✦'; color: var(--accent); flex-shrink: 0; margin-top: 2px; }
-    .checkpoint-hint { margin-top: 20px; padding: 14px 18px; background: rgba(0,0,0,0.3); border-radius: 8px; font-size: 12px; color: var(--muted); }
+    .checkpoint {
+      background: linear-gradient(135deg, var(--accent-dim) 0%, rgba(239, 68, 68, 0.04) 100%);
+      border: 1px solid var(--accent-border);
+      border-radius: 16px;
+      padding: 36px;
+      margin: 48px 0;
+    }
+
+    .checkpoint-label {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .checkpoint h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+
+    .checkpoint p {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .checkpoint ul {
+      list-style: none;
+      margin: 20px 0;
+    }
+
+    .checkpoint li {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 8px 0;
+      font-size: 13px;
+      color: var(--muted);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .checkpoint li::before {
+      content: '✦';
+      color: var(--accent);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .checkpoint-hint {
+      margin-top: 20px;
+      padding: 14px 18px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      font-size: 12px;
+      color: var(--muted);
+    }
 
     /* ── NEXT LESSON ── */
-    .next-lesson { display: flex; align-items: center; justify-content: space-between; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; margin-top: 48px; text-decoration: none; transition: all 0.2s; }
-    .next-lesson:hover { border-color: var(--accent-border); background: var(--surface2); transform: translateX(4px); }
-    .next-label { font-size: 10px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
-    .next-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; color: var(--text); }
-    .next-arrow { font-size: 24px; color: var(--accent); }
+    .next-lesson {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin-top: 48px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .next-lesson:hover {
+      border-color: var(--accent-border);
+      background: var(--surface2);
+      transform: translateX(4px);
+    }
+
+    .next-label {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .next-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--text);
+    }
+
+    .next-arrow {
+      font-size: 24px;
+      color: var(--accent);
+    }
 
     /* ── FOOTER ── */
-    .footer { margin-top: 80px; padding-top: 28px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--muted); }
-    .footer a { color: var(--muted); text-decoration: none; }
-    .footer a:hover { color: var(--text); }
+    .footer {
+      margin-top: 80px;
+      padding-top: 28px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .footer a {
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      color: var(--text);
+    }
 
     /* ── INLINE CODE ── */
-    code:not(.hljs) { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: #fca5a5; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+    code:not(.hljs) {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
 
     /* ── ANIMATIONS ── */
-    @keyframes fadeDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
-    @keyframes fadeUp   { from { opacity:0; transform:translateY(20px);  } to { opacity:1; transform:translateY(0); } }
-    .hero    { animation: fadeDown 0.7s ease both; }
-    .section { animation: fadeUp  0.6s ease both; }
+    @keyframes fadeDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
 
-    @media (max-width: 640px) { .analogy-mapping { grid-template-columns: 1fr; } }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hero {
+      animation: fadeDown 0.7s ease both;
+    }
+
+    .section {
+      animation: fadeUp 0.6s ease both;
+    }
+
+    @media (max-width: 640px) {
+      .analogy-mapping {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 
 <body>
-  <div class="progress-bar-wrap"><div id="reading-progress"></div></div>
+  <div class="progress-bar-wrap">
+    <div id="reading-progress"></div>
+  </div>
 
   <nav class="top-nav">
     <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
@@ -310,24 +1217,25 @@
       <div class="section-label">// 01 — motivação</div>
       <h2>Por que isso importa?</h2>
       <p>
-        Todo mundo consegue fazer uma página web funcionar com <code>&lt;div&gt;</code> para tudo. 
-        O problema é que um navegador, um leitor de tela e um crawler do Google não têm a menor ideia 
-        do que cada parte da sua página significa — e isso custa caro: em acessibilidade, em SEO, 
+        Todo mundo consegue fazer uma página web funcionar com <code>&lt;div&gt;</code> para tudo.
+        O problema é que um navegador, um leitor de tela e um crawler do Google não têm a menor ideia
+        do que cada parte da sua página significa — e isso custa caro: em acessibilidade, em SEO,
         e em manutenibilidade do código.
       </p>
       <p>
-        HTML semântico é usar o elemento <strong>certo para o significado certo</strong>. 
-        É a diferença entre um arquiteto que usa plantas detalhadas e um pedreiro que improvisa. 
+        HTML semântico é usar o elemento <strong>certo para o significado certo</strong>.
+        É a diferença entre um arquiteto que usa plantas detalhadas e um pedreiro que improvisa.
         O resultado pode parecer igual visualmente, mas internamente é completamente diferente.
       </p>
 
       <div class="callout callout-info">
         <div class="callout-title">💼 Por que um engenheiro sênior se importa com isso</div>
-        HTML semântico impacta diretamente três áreas que empresas medem: <strong>SEO</strong> 
-        (o Google entende melhor a hierarquia do conteúdo), <strong>acessibilidade</strong> 
-        (leitores de tela navegam por landmarks semânticos — <code>header</code>, <code>main</code>, <code>nav</code>), 
-        e <strong>Core Web Vitals</strong> (estrutura limpa ajuda parsers de renderização). 
-        Em auditorias de código, um HTML cheio de divs sem semântica é sinal imediato de código legado com dívida técnica.
+        HTML semântico impacta diretamente três áreas que empresas medem: <strong>SEO</strong>
+        (o Google entende melhor a hierarquia do conteúdo), <strong>acessibilidade</strong>
+        (leitores de tela navegam por landmarks semânticos — <code>header</code>, <code>main</code>, <code>nav</code>),
+        e <strong>Core Web Vitals</strong> (estrutura limpa ajuda parsers de renderização).
+        Em auditorias de código, um HTML cheio de divs sem semântica é sinal imediato de código legado com dívida
+        técnica.
       </div>
     </div>
 
@@ -341,15 +1249,16 @@
       <div class="analogy-card">
         <div class="analogy-label">🏛️ Mundo Real → HTML</div>
         <div class="analogy-text">
-          Imagine um edifício. Você consegue entrar numa sala qualquer e perceber: <em>"isso é a recepção"</em>, 
-          <em>"aqui é a área de espera"</em>, <em>"lá no fundo é a sala de reuniões"</em>. 
-          Como? Pelo <strong>contexto e pelos sinais visuais</strong> — recepcionista, cadeiras enfileiradas, mesa grande.
+          Imagine um edifício. Você consegue entrar numa sala qualquer e perceber: <em>"isso é a recepção"</em>,
+          <em>"aqui é a área de espera"</em>, <em>"lá no fundo é a sala de reuniões"</em>.
+          Como? Pelo <strong>contexto e pelos sinais visuais</strong> — recepcionista, cadeiras enfileiradas, mesa
+          grande.
           <br><br>
-          Agora imagine o mesmo edifício sem nenhuma indicação. Todas as salas com as mesmas paredes brancas, 
-          sem sinalização, sem móveis identificadores. Para um humano com tempo, dá para descobrir. 
+          Agora imagine o mesmo edifício sem nenhuma indicação. Todas as salas com as mesmas paredes brancas,
+          sem sinalização, sem móveis identificadores. Para um humano com tempo, dá para descobrir.
           Para um robô (Google, leitor de tela) — impossível.
           <br><br>
-          HTML semântico é a sinalização do edifício. Cada elemento diz ao navegador, ao crawler e ao 
+          HTML semântico é a sinalização do edifício. Cada elemento diz ao navegador, ao crawler e ao
           leitor de tela: <em>"esta área é a entrada principal"</em>, <em>"aqui estão os artigos de conteúdo"</em>.
         </div>
         <div class="analogy-mapping">
@@ -422,7 +1331,12 @@
       <div class="table-wrap">
         <table>
           <thead>
-            <tr><th>Elemento</th><th>Significado semântico</th><th>Pode ser reutilizado?</th><th>Substitui o quê</th></tr>
+            <tr>
+              <th>Elemento</th>
+              <th>Significado semântico</th>
+              <th>Pode ser reutilizado?</th>
+              <th>Substitui o quê</th>
+            </tr>
           </thead>
           <tbody>
             <tr>
@@ -482,7 +1396,7 @@
         Pergunte: <em>"esse conteúdo faz sentido sozinho, fora desta página?"</em>
         Se sim → <code>&lt;article&gt;</code> (um post de blog, uma review de produto faz sentido isolado).
         Se só faz sentido dentro do contexto da página → <code>&lt;section&gt;</code>.
-        Ainda em dúvida? Use <code>&lt;div&gt;</code> sem culpa — semântica ruim não quebra nada, 
+        Ainda em dúvida? Use <code>&lt;div&gt;</code> sem culpa — semântica ruim não quebra nada,
         mas semântica certa agrega valor.
       </div>
     </div>
@@ -609,8 +1523,8 @@
       <h2>Formulários — todos os inputs que você precisa saber</h2>
 
       <p>
-        Formulários são uma das partes mais negligenciadas do HTML. O navegador oferece 
-        validação, tipos especializados e acessibilidade gratuitamente — mas só se você usar 
+        Formulários são uma das partes mais negligenciadas do HTML. O navegador oferece
+        validação, tipos especializados e acessibilidade gratuitamente — mas só se você usar
         os elementos e atributos corretos.
       </p>
 
@@ -623,7 +1537,8 @@
           </div>
           <div class="form-row">
             <label class="form-label" for="demo-email">E-mail *</label>
-            <input class="form-input" type="email" id="demo-email" placeholder="joao@email.com" required autocomplete="email">
+            <input class="form-input" type="email" id="demo-email" placeholder="joao@email.com" required
+              autocomplete="email">
           </div>
         </div>
         <div class="form-grid-2">
@@ -715,9 +1630,9 @@
 
       <div class="callout callout-warn">
         <div class="callout-title">⚠️ Nunca use &lt;div&gt; ou &lt;span&gt; como botão clicável</div>
-        <code>&lt;div onclick="..."&gt;</code> quebra acessibilidade (não é focável por teclado), 
+        <code>&lt;div onclick="..."&gt;</code> quebra acessibilidade (não é focável por teclado),
         não dispara em Enter/Space, e não tem estado <code>disabled</code>.
-        Use sempre <code>&lt;button&gt;</code> ou <code>&lt;a href&gt;</code>. 
+        Use sempre <code>&lt;button&gt;</code> ou <code>&lt;a href&gt;</code>.
         Se precisar de estilo customizado, estilize o button — não invente substitutos.
       </div>
     </div>
@@ -731,7 +1646,7 @@
 
       <p>
         Imagens responsivas e vídeo bem implementados são um dos maiores impactos em performance web.
-        O HTML moderno tem elementos e atributos específicos para cada caso — e usar <code>img src</code> 
+        O HTML moderno tem elementos e atributos específicos para cada caso — e usar <code>img src</code>
         simples para tudo é deixar performance na mesa.
       </p>
 
@@ -740,7 +1655,8 @@
           <div class="media-thumb">🖼️</div>
           <div class="media-body">
             <div class="media-element">&lt;img&gt;</div>
-            <div class="media-desc">Imagem simples. Sempre com <strong>alt</strong> descritivo (ou alt="" se decorativa).</div>
+            <div class="media-desc">Imagem simples. Sempre com <strong>alt</strong> descritivo (ou alt="" se
+              decorativa).</div>
             <div class="media-attr">loading="lazy" · width · height · decoding="async"</div>
           </div>
         </div>
@@ -748,7 +1664,8 @@
           <div class="media-thumb">📐</div>
           <div class="media-body">
             <div class="media-element">&lt;picture&gt;</div>
-            <div class="media-desc">Imagem com múltiplos formatos e breakpoints. Para arte direcionada (mudar o enquadramento em mobile).</div>
+            <div class="media-desc">Imagem com múltiplos formatos e breakpoints. Para arte direcionada (mudar o
+              enquadramento em mobile).</div>
             <div class="media-attr">source · media · srcset · type</div>
           </div>
         </div>
@@ -756,7 +1673,8 @@
           <div class="media-thumb">🎬</div>
           <div class="media-body">
             <div class="media-element">&lt;video&gt;</div>
-            <div class="media-desc">Vídeo nativo sem player externo. Múltiplos formatos via <code>&lt;source&gt;</code>.</div>
+            <div class="media-desc">Vídeo nativo sem player externo. Múltiplos formatos via <code>&lt;source&gt;</code>.
+            </div>
             <div class="media-attr">controls · autoplay · muted · loop · poster · preload</div>
           </div>
         </div>
@@ -854,7 +1772,7 @@
 
       <div class="callout callout-tip">
         <div class="callout-title">🔥 Pro tip — loading="lazy" em tudo abaixo da dobra</div>
-        Adicionar <code>loading="lazy"</code> em todas as imagens que não aparecem na tela inicial 
+        Adicionar <code>loading="lazy"</code> em todas as imagens que não aparecem na tela inicial
         é uma das melhorias de performance mais fáceis que existem — e é 1 atributo a mais no HTML.
         O navegador só vai baixar a imagem quando o usuário estiver chegando perto dela no scroll.
         Não use em imagens acima da dobra (hero, logo) — isso piora o LCP.
@@ -869,8 +1787,8 @@
       <h2>A hierarquia de headings — H1 a H6</h2>
 
       <p>
-        Os headings (<code>&lt;h1&gt;</code> a <code>&lt;h6&gt;</code>) não são só "texto grande" — 
-        eles formam o <strong>outline do documento</strong>, usado por leitores de tela para navegação 
+        Os headings (<code>&lt;h1&gt;</code> a <code>&lt;h6&gt;</code>) não são só "texto grande" —
+        eles formam o <strong>outline do documento</strong>, usado por leitores de tela para navegação
         e pelo Google para entender a estrutura do conteúdo.
       </p>
 
@@ -878,30 +1796,30 @@
         <div class="mermaid-label">// outline correto de uma página de blog</div>
         <div class="mermaid">
           graph TD
-            H1["H1 — Título da página (único)"]
-            H2a["H2 — Seção: Artigos Recentes"]
-            H2b["H2 — Seção: Sobre o Autor"]
-            H3a["H3 — Título do Artigo 1"]
-            H3b["H3 — Título do Artigo 2"]
-            H4a["H4 — Subtópico dentro do artigo"]
-            H1 --> H2a
-            H1 --> H2b
-            H2a --> H3a
-            H2a --> H3b
-            H3a --> H4a
-            style H1 fill:#ef4444,color:#fff,stroke:none
-            style H2a fill:#16161f,stroke:#ef4444,color:#e8e8f0
-            style H2b fill:#16161f,stroke:#ef4444,color:#e8e8f0
-            style H3a fill:#16161f,stroke:#8585a8,color:#e8e8f0
-            style H3b fill:#16161f,stroke:#8585a8,color:#e8e8f0
-            style H4a fill:#16161f,stroke:#1e1e2e,color:#8585a8
+          H1["H1 — Título da página (único)"]
+          H2a["H2 — Seção: Artigos Recentes"]
+          H2b["H2 — Seção: Sobre o Autor"]
+          H3a["H3 — Título do Artigo 1"]
+          H3b["H3 — Título do Artigo 2"]
+          H4a["H4 — Subtópico dentro do artigo"]
+          H1 --> H2a
+          H1 --> H2b
+          H2a --> H3a
+          H2a --> H3b
+          H3a --> H4a
+          style H1 fill:#ef4444,color:#fff,stroke:none
+          style H2a fill:#16161f,stroke:#ef4444,color:#e8e8f0
+          style H2b fill:#16161f,stroke:#ef4444,color:#e8e8f0
+          style H3a fill:#16161f,stroke:#8585a8,color:#e8e8f0
+          style H3b fill:#16161f,stroke:#8585a8,color:#e8e8f0
+          style H4a fill:#16161f,stroke:#1e1e2e,color:#8585a8
         </div>
       </div>
 
       <div class="callout callout-warn">
         <div class="callout-title">⚠️ Não pule níveis de heading</div>
-        Ir de <code>&lt;h2&gt;</code> direto para <code>&lt;h4&gt;</code> é como pular capítulos num livro. 
-        Quebre a hierarquia e leitores de tela perdem o contexto. 
+        Ir de <code>&lt;h2&gt;</code> direto para <code>&lt;h4&gt;</code> é como pular capítulos num livro.
+        Quebre a hierarquia e leitores de tela perdem o contexto.
         Se você quer um texto menor visualmente, use CSS — não mude o nível do heading.
       </div>
     </div>
@@ -920,7 +1838,8 @@
           <div class="step-body">
             <div class="step-title">Crie a estrutura de arquivos</div>
             <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span></div>
+              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
+              </div>
               <pre><code class="language-bash">mkdir meu-portfolio
 cd meu-portfolio
 touch index.html
@@ -934,11 +1853,13 @@ code .</code></pre>
           <div class="step-num">2</div>
           <div class="step-body">
             <div class="step-title">Cole o boilerplate semântico</div>
-            <div class="step-desc">No VS Code, abra o <code>index.html</code> e use o snippet <code>html:5</code> + Tab para gerar o DOCTYPE, depois construa a estrutura semântica completa baseada no exemplo desta aula.</div>
+            <div class="step-desc">No VS Code, abra o <code>index.html</code> e use o snippet <code>html:5</code> + Tab
+              para gerar o DOCTYPE, depois construa a estrutura semântica completa baseada no exemplo desta aula.</div>
             <div class="callout callout-tip">
               <div class="callout-title">🔥 Extensões VS Code essenciais para HTML</div>
-              Instale <strong>Live Server</strong> (atualiza o browser automaticamente ao salvar) e 
-              <strong>HTML CSS Support</strong>. Com Live Server, clique em "Go Live" no rodapé — seu browser abre e atualiza em tempo real.
+              Instale <strong>Live Server</strong> (atualiza o browser automaticamente ao salvar) e
+              <strong>HTML CSS Support</strong>. Com Live Server, clique em "Go Live" no rodapé — seu browser abre e
+              atualiza em tempo real.
             </div>
           </div>
         </div>
@@ -947,7 +1868,9 @@ code .</code></pre>
           <div class="step-num">3</div>
           <div class="step-body">
             <div class="step-title">Valide com o W3C Validator</div>
-            <div class="step-desc">Cole o HTML em <a href="https://validator.w3.org/#validate_by_input" target="_blank">validator.w3.org</a> e corrija qualquer erro. Zero errors, zero warnings é o objetivo.</div>
+            <div class="step-desc">Cole o HTML em <a href="https://validator.w3.org/#validate_by_input"
+                target="_blank">validator.w3.org</a> e corrija qualquer erro. Zero errors, zero warnings é o objetivo.
+            </div>
           </div>
         </div>
 
@@ -955,7 +1878,8 @@ code .</code></pre>
           <div class="step-num">4</div>
           <div class="step-body">
             <div class="step-title">Audite com o Lighthouse do Chrome</div>
-            <div class="step-desc">Abra o DevTools (F12) → aba Lighthouse → gere um relatório. Mire 90+ em Accessibility e SEO. Os problemas encontrados são lições diretas de HTML semântico.</div>
+            <div class="step-desc">Abra o DevTools (F12) → aba Lighthouse → gere um relatório. Mire 90+ em Accessibility
+              e SEO. Os problemas encontrados são lições diretas de HTML semântico.</div>
           </div>
         </div>
       </div>
@@ -970,27 +1894,40 @@ code .</code></pre>
 
       <div class="pitfall">
         <div class="pitfall-title">⚠️ Div soup — o pesadelo semântico</div>
-        <p>Páginas com dezenas de <code>&lt;div class="wrapper"&gt;&lt;div class="container"&gt;&lt;div class="inner"&gt;</code> são a norma em código legado. Cada div extra é um elemento sem significado que polui o DOM. Revise: pode ser substituído por um elemento semântico?</p>
+        <p>Páginas com dezenas de
+          <code>&lt;div class="wrapper"&gt;&lt;div class="container"&gt;&lt;div class="inner"&gt;</code> são a norma em
+          código legado. Cada div extra é um elemento sem significado que polui o DOM. Revise: pode ser substituído por
+          um elemento semântico?
+        </p>
       </div>
 
       <div class="pitfall">
         <div class="pitfall-title">⚠️ Imagens sem alt ou com alt genérico</div>
-        <p><code>alt="imagem"</code> ou <code>alt="foto"</code> é pior do que um alt vazio. Descreva o que a imagem comunica: <code>alt="Gráfico mostrando crescimento de 40% em receita no Q3 2024"</code>. Imagens puramente decorativas? Use <code>alt=""</code> — leitores de tela vão pular.</p>
+        <p><code>alt="imagem"</code> ou <code>alt="foto"</code> é pior do que um alt vazio. Descreva o que a imagem
+          comunica: <code>alt="Gráfico mostrando crescimento de 40% em receita no Q3 2024"</code>. Imagens puramente
+          decorativas? Use <code>alt=""</code> — leitores de tela vão pular.</p>
       </div>
 
       <div class="pitfall">
         <div class="pitfall-title">⚠️ &lt;label&gt; sem conexão com o &lt;input&gt;</div>
-        <p>Um <code>&lt;label&gt;</code> solto sem o atributo <code>for</code> apontando para o <code>id</code> do input não tem efeito nenhum — nem visual (clicar no label não foca o input) nem de acessibilidade. É um dos erros mais comuns em formulários e um dos mais impactantes.</p>
+        <p>Um <code>&lt;label&gt;</code> solto sem o atributo <code>for</code> apontando para o <code>id</code> do input
+          não tem efeito nenhum — nem visual (clicar no label não foca o input) nem de acessibilidade. É um dos erros
+          mais comuns em formulários e um dos mais impactantes.</p>
       </div>
 
       <div class="pitfall">
         <div class="pitfall-title">⚠️ Múltiplos &lt;h1&gt; numa página</div>
-        <p>Antes do HTML5, múltiplos <code>&lt;h1&gt;</code> eram tecnicamente válidos em contextos de sectioning elements. Na prática hoje: use um único <code>&lt;h1&gt;</code> por página. Todos os motores de busca e leitores de tela modernos esperam isso. Segundo título? Use <code>&lt;h2&gt;</code>.</p>
+        <p>Antes do HTML5, múltiplos <code>&lt;h1&gt;</code> eram tecnicamente válidos em contextos de sectioning
+          elements. Na prática hoje: use um único <code>&lt;h1&gt;</code> por página. Todos os motores de busca e
+          leitores de tela modernos esperam isso. Segundo título? Use <code>&lt;h2&gt;</code>.</p>
       </div>
 
       <div class="pitfall">
         <div class="pitfall-title">⚠️ &lt;b&gt; e &lt;i&gt; ao invés de &lt;strong&gt; e &lt;em&gt;</div>
-        <p><code>&lt;b&gt;</code> e <code>&lt;i&gt;</code> são elementos de apresentação — apenas mudam a aparência. <code>&lt;strong&gt;</code> e <code>&lt;em&gt;</code> têm significado semântico (importância e ênfase) e são lidos com entonação diferente por leitores de tela. Use sempre os semânticos.</p>
+        <p><code>&lt;b&gt;</code> e <code>&lt;i&gt;</code> são elementos de apresentação — apenas mudam a aparência.
+          <code>&lt;strong&gt;</code> e <code>&lt;em&gt;</code> têm significado semântico (importância e ênfase) e são
+          lidos com entonação diferente por leitores de tela. Use sempre os semânticos.
+        </p>
       </div>
     </div>
 
@@ -1005,29 +1942,32 @@ code .</code></pre>
         <a class="video-card" href="https://www.youtube.com/watch?v=kGW8Al_cga4" target="_blank">
           <div class="video-thumb">▶</div>
           <div>
-            <div class="video-title">HTML Semântico — por que ele importa</div>
-            <div class="video-channel">Rocketseat · ~15 min · PT-BR</div>
-            <div class="video-why">Por que assistir: explicação direta em português com exemplos práticos da diferença entre div e elementos semânticos. Perfeito como reforço desta aula.</div>
+            <div class="video-title"> HTML 5 Semantics</div>
+            <div class="video-channel">Net Ninja · ~14 min</div>
+            <div class="video-why">Por que assistir: explicação direta em português com exemplos práticos da diferença
+              entre div e elementos semânticos. Perfeito como reforço desta aula.</div>
             <span class="video-watch">Assistir →</span>
           </div>
         </a>
 
-        <a class="video-card" href="https://www.youtube.com/watch?v=YrdwJSdGxYI" target="_blank">
+        <a class="video-card" href="https://www.youtube.com/watch?v=frAGrGN00OA" target="_blank">
           <div class="video-thumb">▶</div>
           <div>
-            <div class="video-title">HTML Forms Full Course</div>
-            <div class="video-channel">Dave Gray · ~47 min</div>
-            <div class="video-why">Por que assistir: curso completo sobre formulários HTML, cobrindo todos os tipos de input com exemplos reais e foco em acessibilidade.</div>
+            <div class="video-title">HTML Forms and Inputs | HTML5 Tutorial for Beginners</div>
+            <div class="video-channel">Dave Gray · ~45 min</div>
+            <div class="video-why">Por que assistir: curso completo sobre formulários HTML, cobrindo todos os tipos de
+              input com exemplos reais e foco em acessibilidade.</div>
             <span class="video-watch">Assistir →</span>
           </div>
         </a>
 
-        <a class="video-card" href="https://www.youtube.com/watch?v=bn-DQznLZdM" target="_blank">
+        <a class="video-card" href="https://www.youtube.com/watch?v=ok-plXXHlWw" target="_blank">
           <div class="video-thumb">▶</div>
           <div>
             <div class="video-title">HTML in 100 Seconds</div>
-            <div class="video-channel">Fireship · 2 min</div>
-            <div class="video-why">Por que assistir: resumo visual relâmpago dos conceitos centrais do HTML. Ideal como revisão rápida antes de praticar.</div>
+            <div class="video-channel">Fireship · ~2 min</div>
+            <div class="video-why">Por que assistir: resumo visual relâmpago dos conceitos centrais do HTML. Ideal como
+              revisão rápida antes de praticar.</div>
             <span class="video-watch">Assistir →</span>
           </div>
         </a>
@@ -1036,8 +1976,9 @@ code .</code></pre>
           <div class="video-thumb">▶</div>
           <div>
             <div class="video-title">The HTML picture Element Explained</div>
-            <div class="video-channel">Kevin Powell · ~10 min</div>
-            <div class="video-why">Por que assistir: Kevin Powell é o melhor professor de CSS/HTML do YouTube. Este vídeo desmistifica o elemento picture e srcset de forma definitiva para imagens responsivas.</div>
+            <div class="video-channel">Kevin Powell · ~20 min</div>
+            <div class="video-why">Por que assistir: Kevin Powell é o melhor professor de CSS/HTML do YouTube. Este
+              vídeo desmistifica o elemento picture e srcset de forma definitiva para imagens responsivas.</div>
             <span class="video-watch">Assistir →</span>
           </div>
         </a>
@@ -1050,20 +1991,27 @@ code .</code></pre>
     <div class="checkpoint">
       <div class="checkpoint-label">// 11 — desafio</div>
       <h3>🏁 Checkpoint — construa uma página de portfólio</h3>
-      <p>Crie um arquivo <code>portfolio.html</code> do zero com a seguinte estrutura — sem usar CSS ainda, só HTML semântico:</p>
+      <p>Crie um arquivo <code>portfolio.html</code> do zero com a seguinte estrutura — sem usar CSS ainda, só HTML
+        semântico:</p>
       <ul>
-        <li>Um <code>&lt;header&gt;</code> com seu nome em <code>&lt;h1&gt;</code> e um <code>&lt;nav&gt;</code> com 3 links internos (âncoras com <code>#</code>)</li>
-        <li>Um <code>&lt;main&gt;</code> contendo: uma <code>&lt;section&gt;</code> "Sobre mim", uma <code>&lt;section&gt;</code> "Projetos" com pelo menos 2 <code>&lt;article&gt;</code> dentro</li>
-        <li>Cada article com: <code>&lt;h3&gt;</code>, <code>&lt;p&gt;</code>, e uma imagem com <code>alt</code> descritivo e <code>loading="lazy"</code></li>
-        <li>Um formulário de contato com: campo nome (<code>type="text"</code>), email (<code>type="email"</code>), mensagem (<code>&lt;textarea&gt;</code>), e botão submit — todos com <code>&lt;label&gt;</code> conectado</li>
+        <li>Um <code>&lt;header&gt;</code> com seu nome em <code>&lt;h1&gt;</code> e um <code>&lt;nav&gt;</code> com 3
+          links internos (âncoras com <code>#</code>)</li>
+        <li>Um <code>&lt;main&gt;</code> contendo: uma <code>&lt;section&gt;</code> "Sobre mim", uma
+          <code>&lt;section&gt;</code> "Projetos" com pelo menos 2 <code>&lt;article&gt;</code> dentro
+        </li>
+        <li>Cada article com: <code>&lt;h3&gt;</code>, <code>&lt;p&gt;</code>, e uma imagem com <code>alt</code>
+          descritivo e <code>loading="lazy"</code></li>
+        <li>Um formulário de contato com: campo nome (<code>type="text"</code>), email (<code>type="email"</code>),
+          mensagem (<code>&lt;textarea&gt;</code>), e botão submit — todos com <code>&lt;label&gt;</code> conectado</li>
         <li>Um <code>&lt;aside&gt;</code> com lista de habilidades</li>
         <li>Um <code>&lt;footer&gt;</code> com copyright e links de redes sociais</li>
-        <li>Valide em <a href="https://validator.w3.org/#validate_by_input" target="_blank">validator.w3.org</a> e corrija todos os erros</li>
+        <li>Valide em <a href="https://validator.w3.org/#validate_by_input" target="_blank">validator.w3.org</a> e
+          corrija todos os erros</li>
       </ul>
       <div class="checkpoint-hint">
-        💬 Dica: Comece pelo esqueleto (header, main, aside, footer) antes de preencher o conteúdo. 
-        Use a extensão Live Server no VS Code para ver as mudanças em tempo real. 
-        O HTML sem CSS vai parecer feio — isso é totalmente normal e esperado. 
+        💬 Dica: Comece pelo esqueleto (header, main, aside, footer) antes de preencher o conteúdo.
+        Use a extensão Live Server no VS Code para ver as mudanças em tempo real.
+        O HTML sem CSS vai parecer feio — isso é totalmente normal e esperado.
         Na próxima aula você vai estilizar tudo isso com CSS.
       </div>
     </div>
@@ -1103,4 +2051,5 @@ code .</code></pre>
     });
   </script>
 </body>
+
 </html>

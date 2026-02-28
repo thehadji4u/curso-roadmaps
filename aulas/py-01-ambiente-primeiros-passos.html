@@ -1,0 +1,1743 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Python — Ambiente &amp; Primeiros Passos · Aula 05</title>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@300;400;700&display=swap"
+    rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+  <style>
+    /* ── HLJS github-dark inline ─────────────────────────────── */
+    pre code.hljs {
+      display: block;
+      overflow-x: auto;
+      padding: 1em
+    }
+
+    code.hljs {
+      padding: 3px 5px
+    }
+
+    .hljs {
+      color: #c9d1d9;
+      background: #0d1117
+    }
+
+    .hljs-doctag,
+    .hljs-keyword,
+    .hljs-meta .hljs-keyword,
+    .hljs-template-tag,
+    .hljs-template-variable,
+    .hljs-type,
+    .hljs-variable.language_ {
+      color: #ff7b72
+    }
+
+    .hljs-title,
+    .hljs-title.class_,
+    .hljs-title.class_.inherited__,
+    .hljs-title.function_ {
+      color: #d2a8ff
+    }
+
+    .hljs-attr,
+    .hljs-attribute,
+    .hljs-literal,
+    .hljs-meta,
+    .hljs-number,
+    .hljs-operator,
+    .hljs-variable,
+    .hljs-selector-attr,
+    .hljs-selector-class,
+    .hljs-selector-id {
+      color: #79c0ff
+    }
+
+    .hljs-regexp,
+    .hljs-string,
+    .hljs-meta .hljs-string {
+      color: #a5d6ff
+    }
+
+    .hljs-built_in,
+    .hljs-symbol {
+      color: #ffa657
+    }
+
+    .hljs-comment,
+    .hljs-code,
+    .hljs-formula {
+      color: #8b949e
+    }
+
+    .hljs-name,
+    .hljs-quote,
+    .hljs-selector-tag,
+    .hljs-selector-pseudo {
+      color: #7ee787
+    }
+
+    .hljs-subst {
+      color: #c9d1d9
+    }
+
+    .hljs-section {
+      color: #1f6feb;
+      font-weight: 700
+    }
+
+    .hljs-bullet {
+      color: #f2cc60
+    }
+
+    .hljs-emphasis {
+      color: #c9d1d9;
+      font-style: italic
+    }
+
+    .hljs-strong {
+      color: #c9d1d9;
+      font-weight: 700
+    }
+
+    .hljs-addition {
+      color: #aff5b4;
+      background-color: #033a16
+    }
+
+    .hljs-deletion {
+      color: #ffdcd7;
+      background-color: #67060c
+    }
+
+    /* ── TOKENS ──────────────────────────────────────────────── */
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #3b82f6;
+      --accent-dim: rgba(59, 130, 246, 0.12);
+      --accent-border: rgba(59, 130, 246, 0.35);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--accent-dim) 1px, transparent 1px),
+        linear-gradient(90deg, var(--accent-dim) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.35;
+    }
+
+    /* ── PROGRESS BAR (leitura) ──────────────────────────────── */
+    .progress-bar-wrap {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      z-index: 1000;
+      background: var(--border);
+    }
+
+    #reading-progress {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #60a5fa);
+      width: 0%;
+      transition: width 0.1s;
+    }
+
+    /* ── TOP NAV ─────────────────────────────────────────────── */
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 10, 15, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-back {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      transition: color 0.2s;
+    }
+
+    .nav-back:hover {
+      color: var(--text);
+    }
+
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-prev {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: transparent;
+      transition: all 0.2s;
+    }
+
+    .nav-prev:hover {
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .nav-position {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+
+    .nav-position .track {
+      color: var(--accent);
+    }
+
+    .nav-next {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      color: var(--accent);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      padding: 6px 14px;
+      border: 1px solid var(--accent-border);
+      border-radius: 6px;
+      background: var(--accent-dim);
+      transition: all 0.2s;
+    }
+
+    .nav-next:hover {
+      background: rgba(59, 130, 246, 0.25);
+    }
+
+    /* ── LAYOUT ──────────────────────────────────────────────── */
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 60px 24px 120px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── HERO ────────────────────────────────────────────────── */
+    .hero {
+      margin-bottom: 64px;
+      padding-bottom: 48px;
+      border-bottom: 1px solid var(--border);
+      animation: fadeDown 0.8s ease both;
+    }
+
+    @keyframes fadeDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .hero-badge {
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 20px;
+    }
+
+    .hero-meta span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: var(--surface);
+    }
+
+    /* ── SECTIONS ────────────────────────────────────────────── */
+    .section {
+      margin-bottom: 56px;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .section h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+      color: var(--text);
+    }
+
+    .section h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 28px 0 12px;
+    }
+
+    p {
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    p strong {
+      color: #fff;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* ── CALLOUTS ────────────────────────────────────────────── */
+    .callout {
+      padding: 16px 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-size: 13px;
+      line-height: 1.6;
+      border-left: 3px solid transparent;
+    }
+
+    .callout-info {
+      background: rgba(6, 182, 212, 0.08);
+      border-color: var(--info);
+      color: #67e8f9;
+    }
+
+    .callout-warn {
+      background: rgba(245, 158, 11, 0.08);
+      border-color: var(--warn);
+      color: #fcd34d;
+    }
+
+    .callout-tip {
+      background: rgba(16, 185, 129, 0.08);
+      border-color: var(--success);
+      color: #6ee7b7;
+    }
+
+    .callout-check {
+      background: var(--accent-dim);
+      border-color: var(--accent);
+      color: #93c5fd;
+    }
+
+    .callout-title {
+      font-weight: 700;
+      margin-bottom: 6px;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* ── ANALOGY CARD ────────────────────────────────────────── */
+    .analogy-card {
+      background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin: 24px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .analogy-card::before {
+      content: '"';
+      position: absolute;
+      top: -10px;
+      left: 16px;
+      font-size: 80px;
+      color: var(--accent);
+      opacity: 0.12;
+      font-family: 'Syne', sans-serif;
+      line-height: 1;
+    }
+
+    .analogy-label {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .analogy-text {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--text);
+    }
+
+    .analogy-mapping {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      font-size: 12px;
+    }
+
+    .analogy-real {
+      color: var(--muted);
+    }
+
+    .analogy-tech {
+      color: var(--accent);
+    }
+
+    /* ── CODE BLOCKS ─────────────────────────────────────────── */
+    .code-wrap {
+      margin: 20px 0;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .code-filename {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    .code-lang {
+      font-size: 10px;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .code-wrap pre {
+      margin: 0;
+    }
+
+    .code-wrap pre code {
+      border-radius: 0;
+      font-size: 13px;
+    }
+
+    /* ── MERMAID ─────────────────────────────────────────────── */
+    .mermaid-wrap {
+      margin: 24px 0;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .mermaid-label {
+      padding: 8px 16px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      font-size: 10px;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .mermaid-wrap .mermaid {
+      padding: 24px;
+      background: var(--surface);
+    }
+
+    /* ── TABLE ───────────────────────────────────────────────── */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin: 20px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th {
+      background: var(--surface2);
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border-bottom: 2px solid var(--accent-border);
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      vertical-align: top;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: var(--surface2);
+    }
+
+    td code {
+      background: var(--surface2);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #93c5fd;
+    }
+
+    /* ── STEPS ───────────────────────────────────────────────── */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      margin: 24px 0;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 0 20px;
+      position: relative;
+    }
+
+    .step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 23px;
+      top: 48px;
+      bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, var(--accent-border), transparent);
+    }
+
+    .step-num {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      color: var(--accent);
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .step-body {
+      padding-bottom: 32px;
+    }
+
+    .step-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .step-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    /* ── TYPE PILLS ──────────────────────────────────────────── */
+    .types-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .type-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+      transition: border-color 0.2s;
+    }
+
+    .type-card:hover {
+      border-color: var(--accent-border);
+    }
+
+    .type-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .type-kw {
+      font-size: 11px;
+      color: #d2a8ff;
+      margin-bottom: 8px;
+    }
+
+    .type-ex {
+      font-size: 11px;
+      background: var(--surface2);
+      padding: 3px 8px;
+      border-radius: 4px;
+      color: #a5d6ff;
+    }
+
+    /* ── VIDEO CARDS ─────────────────────────────────────────── */
+    .videos-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 600px) {
+      .videos-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .video-card {
+      display: flex;
+      gap: 14px;
+      padding: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .video-card:hover {
+      border-color: var(--accent-border);
+      box-shadow: 0 0 20px var(--accent-dim);
+      text-decoration: none;
+    }
+
+    .video-thumb {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: var(--accent);
+    }
+
+    .video-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+
+    .video-channel {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .video-why {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .video-watch {
+      font-size: 11px;
+      color: var(--accent);
+      margin-top: 8px;
+      display: block;
+    }
+
+    /* ── CHECKPOINT ──────────────────────────────────────────── */
+    .checkpoint {
+      background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
+      border: 1px solid var(--accent-border);
+      border-radius: 14px;
+      padding: 32px 36px;
+      margin: 48px 0;
+    }
+
+    .checkpoint-label {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .checkpoint h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .checkpoint p {
+      color: var(--muted);
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .checkpoint ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .checkpoint li {
+      display: flex;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .checkpoint li::before {
+      content: '✦';
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .checkpoint-hint {
+      padding: 12px 16px;
+      background: var(--accent-dim);
+      border-radius: 8px;
+      font-size: 13px;
+      color: #93c5fd;
+    }
+
+    /* ── NEXT LESSON ─────────────────────────────────────────── */
+    .next-lesson {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 28px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      margin: 48px 0 32px;
+    }
+
+    .next-lesson:hover {
+      border-color: var(--accent-border);
+      box-shadow: 0 0 30px var(--accent-dim);
+      text-decoration: none;
+    }
+
+    .next-label {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .next-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .next-arrow {
+      font-size: 24px;
+      color: var(--accent);
+    }
+
+    /* ── FOOTER ──────────────────────────────────────────────── */
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .footer a {
+      color: var(--muted);
+    }
+
+    .footer a:hover {
+      color: var(--text);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Barra de leitura -->
+  <div class="progress-bar-wrap">
+    <div id="reading-progress"></div>
+  </div>
+
+  <!-- Navegação principal -->
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="html-02-box-flexbox-grid.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">🐍 Python</span> · Aula 05 / 50
+      </div>
+      <a href="py-02-logica-funcoes.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- ══════════════════════════════════════════
+         HERO
+    ══════════════════════════════════════════ -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>🐍 Python</span>
+        <span class="hero-badge">Aula 05</span>
+      </div>
+      <h1>Python — Ambiente &amp; Primeiros Passos</h1>
+      <div class="hero-meta">
+        <span>⏱ ~35 min de leitura</span>
+        <span>🎯 Fundamentos</span>
+        <span>🔧 Hands-on incluído</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag">Python 3</span>
+        <span class="tag">pip</span>
+        <span class="tag">venv</span>
+        <span class="tag">VS Code</span>
+        <span class="tag">int / float / str / bool</span>
+        <span class="tag">tipagem dinâmica</span>
+        <span class="tag">f-strings</span>
+        <span class="tag">slicing</span>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         01 — POR QUE ISSO IMPORTA?
+    ══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">// 01 — motivação</div>
+      <h2>Por que isso importa?</h2>
+      <p>
+        Python é a linguagem mais usada em ciência de dados, automação, back-end e inteligência artificial. A sintaxe
+        limpa, o ecossistema gigante de bibliotecas e a facilidade de leitura tornam Python a melhor escolha para quem
+        quer escrever código que <em>outros humanos consigam entender</em>.
+      </p>
+      <p>
+        Mas antes de escrever qualquer script útil, é preciso entender três coisas: como configurar o <strong>ambiente
+          isolado</strong> para cada projeto (venv), quais são os <strong>tipos primitivos</strong> da linguagem (int,
+        float, str, bool, None) e como <strong>formatar e manipular texto</strong> com f-strings e métodos de string.
+        Esses são os tijolos de tudo que virá depois.
+      </p>
+      <div class="callout callout-info">
+        <div class="callout-title">💼 Por que um engenheiro sênior usa isso hoje</div>
+        Sêniors nunca instalam bibliotecas no Python global do sistema. Cada projeto tem seu próprio <code>venv</code>
+        com dependências declaradas em <code>requirements.txt</code> ou <code>pyproject.toml</code>. Isso garante
+        reprodutibilidade: qualquer colega (ou servidor de CI) consegue recriar o ambiente exato com um único comando.
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         02 — ANALOGIA
+    ══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">// 02 — analogia</div>
+      <h2>Antes do código: uma analogia</h2>
+      <div class="analogy-card">
+        <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
+        <div class="analogy-text">
+          Imagine que você é um chef de cozinha. Você tem uma <strong>cozinha industrial compartilhada</strong> no
+          restaurante — mas cada receita exige ingredientes específicos e versões diferentes de equipamentos. Se você
+          usar a cozinha geral para tudo, os ingredientes de um prato vão contaminar outro.<br><br>
+          A solução profissional é ter <strong>estações de trabalho individuais e isoladas</strong> — uma para
+          confeitaria, outra para grelhados, outra para pratos frios. Cada estação tem exatamente o que precisa, sem
+          interferir nas outras.<br><br>
+          No Python, essa "estação isolada" se chama <strong>virtualenv (venv)</strong>. O Python global do sistema
+          operacional é a cozinha industrial — você nunca mexe nela diretamente. Para cada projeto, você cria um venv
+          limpo.
+        </div>
+        <div class="analogy-mapping">
+          <span class="analogy-real">Cozinha industrial global</span>
+          <span class="analogy-tech">→ Python do sistema (nunca toque)</span>
+          <span class="analogy-real">Estação de trabalho isolada</span>
+          <span class="analogy-tech">→ <code>venv</code> do projeto</span>
+          <span class="analogy-real">Lista de ingredientes da receita</span>
+          <span class="analogy-tech">→ <code>requirements.txt</code></span>
+          <span class="analogy-real">Tipo de ingrediente (líquido, sólido…)</span>
+          <span class="analogy-tech">→ tipo de dado (<code>int</code>, <code>str</code>…)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         03 — INSTALAÇÃO & AMBIENTE
+    ══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">// 03 — instalação &amp; ambiente</div>
+      <h2>Python 3, pip e venv</h2>
+      <p>
+        O ecossistema Python tem três peças fundamentais: o <strong>interpretador</strong> (Python 3), o
+        <strong>gerenciador de pacotes</strong> (pip) e o <strong>ambiente virtual</strong> (venv). Entender como as
+        três se relacionam elimina 80% dos problemas de iniciantes.
+      </p>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// relação entre Python, pip e venv</div>
+        <div class="mermaid">
+          graph TD
+          A[🖥️ Sistema Operacional] --> B[Python 3 global]
+          B --> C[pip global]
+          B --> D[python -m venv meu-projeto]
+          D --> E[📁 meu-projeto/venv/]
+          E --> F[Python 3 isolado]
+          E --> G[pip isolado]
+          G --> H[requests 2.31]
+          G --> I[pandas 2.0]
+          H --> J[✅ só neste projeto]
+          I --> J
+          style B fill:#1e3a5f,stroke:#3b82f6,color:#93c5fd
+          style E fill:#0f3020,stroke:#10b981,color:#6ee7b7
+          style J fill:#0f3020,stroke:#10b981,color:#6ee7b7
+        </div>
+      </div>
+
+      <h3>Comparativo: pip global vs venv</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Abordagem</th>
+              <th>Como funciona</th>
+              <th>Problema</th>
+              <th>Usar quando?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>pip install</code> global</td>
+              <td>Instala no Python do sistema</td>
+              <td>Conflito de versões entre projetos. Projeto A quer <code>requests==2.28</code>, projeto B quer
+                <code>requests==2.31</code> — impossível ter os dois
+              </td>
+              <td>❌ Nunca. Mesmo para testar rapidamente, use <code>pipx</code> para CLIs globais</td>
+            </tr>
+            <tr>
+              <td><code>venv</code> + <code>pip install</code></td>
+              <td>Cria Python isolado por projeto</td>
+              <td>Nenhum — é o padrão correto</td>
+              <td>✅ Sempre. Para qualquer projeto Python</td>
+            </tr>
+            <tr>
+              <td><code>conda</code></td>
+              <td>Gerenciador de ambiente alternativo</td>
+              <td>Mais pesado; útil para data science com dependências nativas (NumPy, OpenCV)</td>
+              <td>✅ Para projetos de data science com dependências C/CUDA</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>VS Code ou PyCharm?</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Editor</th>
+              <th>Prós</th>
+              <th>Contras</th>
+              <th>Melhor para</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>VS Code</strong></td>
+              <td>Leve, extensível, gratuito, multi-linguagem, terminal integrado, extensão Pylance excelente</td>
+              <td>Requer configuração inicial do ambiente Python</td>
+              <td>Maioria dos projetos, full-stack, devs que usam mais de uma linguagem</td>
+            </tr>
+            <tr>
+              <td><strong>PyCharm</strong></td>
+              <td>Zero configuração para Python, debugger poderoso, refatoração avançada, gerencia venv automaticamente
+              </td>
+              <td>Pesado, versão Community limitada, só Python</td>
+              <td>Projetos Python puros, quem quer um IDE que "só funciona"</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         04 — TIPOS & VARIÁVEIS
+    ══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">// 04 — tipos &amp; variáveis</div>
+      <h2>Tipos primitivos e tipagem dinâmica</h2>
+      <p>
+        Python é <strong>dinamicamente tipado</strong>: a variável não tem tipo — o <em>objeto que ela referencia</em>
+        tem. Isso significa que <code>x = 10</code> cria um objeto <code>int</code> e aponta <code>x</code> para ele. Em
+        seguida, <code>x = "hello"</code> aponta <code>x</code> para um objeto <code>str</code> diferente. O tipo
+        anterior simplesmente deixa de ser referenciado.
+      </p>
+
+      <div class="types-grid">
+        <div class="type-card">
+          <div class="type-name">int</div>
+          <div class="type-kw">inteiro</div>
+          <div class="type-ex">42 · -7 · 0</div>
+        </div>
+        <div class="type-card">
+          <div class="type-name">float</div>
+          <div class="type-kw">ponto flutuante</div>
+          <div class="type-ex">3.14 · -0.5 · 1e10</div>
+        </div>
+        <div class="type-card">
+          <div class="type-name">str</div>
+          <div class="type-kw">string / texto</div>
+          <div class="type-ex">"olá" · 'mundo'</div>
+        </div>
+        <div class="type-card">
+          <div class="type-name">bool</div>
+          <div class="type-kw">booleano</div>
+          <div class="type-ex">True · False</div>
+        </div>
+        <div class="type-card">
+          <div class="type-name">None</div>
+          <div class="type-kw">ausência de valor</div>
+          <div class="type-ex">None (único valor)</div>
+        </div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-filename">📄 tipos.py</span>
+          <span class="code-lang">Python</span>
+        </div>
+        <pre><code class="language-python"># ─── Tipagem dinâmica: a variável aponta para um objeto ───────
+x = 42             # x aponta para um int
+print(type(x))     # &lt;class 'int'&gt;
+
+x = 3.14           # agora aponta para um float
+print(type(x))     # &lt;class 'float'&gt;
+
+x = "Python"       # agora aponta para uma str
+print(type(x))     # &lt;class 'str'&gt;
+
+# ─── int ──────────────────────────────────────────────────────
+idade = 25
+ano = 2024
+resultado = idade + ano          # 2049
+grande = 1_000_000               # underscores para legibilidade
+
+# Conversão (casting)
+texto_numero = "42"
+numero = int(texto_numero)       # "42" → 42
+pi_inteiro = int(3.99)           # trunca (não arredonda): 3
+
+# ─── float ────────────────────────────────────────────────────
+preco = 29.90
+taxa = 0.1
+total = preco * (1 + taxa)       # 32.89
+
+# ⚠️ Cuidado: ponto flutuante não é exato
+print(0.1 + 0.2)                 # 0.30000000000000004
+# Use Decimal para valores financeiros:
+from decimal import Decimal
+print(Decimal("0.1") + Decimal("0.2"))  # 0.3
+
+# ─── bool ─────────────────────────────────────────────────────
+ativo = True
+desativado = False
+
+# Em Python, bool é subclasse de int
+print(int(True))   # 1
+print(int(False))  # 0
+print(True + True) # 2 (!!)
+
+# Valores "falsy" (avaliam como False):
+# False, 0, 0.0, "", [], {}, (), None
+# Tudo o mais é "truthy"
+if []:             # lista vazia → False
+    print("nunca")
+if [0]:            # lista com um elemento → True
+    print("sempre")
+
+# ─── None ─────────────────────────────────────────────────────
+resultado = None   # variável sem valor definido ainda
+print(resultado is None)  # True — use 'is', não '=='
+
+# Função que não retorna nada explicitamente
+def sem_retorno():
+    pass
+
+print(sem_retorno())  # None</code></pre>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Pro tip — type hints (desde Python 3.5+)</div>
+        Python moderno usa <strong>anotações de tipo</strong> para documentar intenção e habilitar checagem estática com
+        <code>mypy</code> ou Pylance. Não é obrigatório, mas é padrão em código profissional:<br><br>
+        <code>nome: str = "Ana"</code><br>
+        <code>idade: int = 30</code><br>
+        <code>preco: float = 9.99</code><br>
+        <code>ativo: bool = True</code><br>
+        <code>resultado: int | None = None</code> &nbsp;← <em>union type — pode ser int ou None</em>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         05 — STRINGS & FORMATAÇÃO
+    ══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">// 05 — strings &amp; formatação</div>
+      <h2>Strings — f-strings, métodos e slicing</h2>
+      <p>
+        Strings em Python são <strong>imutáveis e indexadas</strong>. Cada caractere tem uma posição (índice) começando
+        do zero. Isso permite acessar partes específicas com a notação de <em>slicing</em>:
+        <code>texto[início:fim:passo]</code>.
+      </p>
+
+      <h3>Formas de criar strings</h3>
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-filename">📄 strings_basico.py</span>
+          <span class="code-lang">Python</span>
+        </div>
+        <pre><code class="language-python"># Aspas simples ou duplas — equivalentes
+nome = 'Ana'
+sobrenome = "Silva"
+
+# Triple quotes: strings multilinhas
+descricao = """
+Engenheira de Software
+São Paulo, SP
+"""
+
+# ─── Concatenação vs f-string ─────────────────────────────────
+# ❌ Evite concatenação com +
+mensagem_ruim = "Olá, " + nome + "! Você tem " + str(30) + " anos."
+
+# ✅ Prefira f-string (desde Python 3.6)
+mensagem = f"Olá, {nome}! Você tem {30} anos."
+
+# f-strings aceitam expressões inteiras
+preco = 49.9
+print(f"Preço: R$ {preco:.2f}")          # Preço: R$ 49.90
+print(f"Dobro: R$ {preco * 2:.2f}")      # Dobro: R$ 99.80
+print(f"{'centralizado':^20}")            # texto centralizado em 20 chars
+print(f"{1_000_000:,}")                   # 1,000,000 (separador de milhar)
+
+# Diagnóstico rápido com f-string (Python 3.8+)
+x = 42
+print(f"{x = }")   # x = 42 (útil para debug)</code></pre>
+      </div>
+
+      <h3>Slicing — fatiando strings</h3>
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-filename">📄 slicing.py</span>
+          <span class="code-lang">Python</span>
+        </div>
+        <pre><code class="language-python">texto = "Python 3.12"
+#        0123456789...
+#       -11-10-9...  (índices negativos)
+
+# Sintaxe: texto[início:fim:passo]
+# fim é EXCLUSIVO — texto[0:6] pega índices 0,1,2,3,4,5
+
+print(texto[0])        # 'P'          — primeiro caractere
+print(texto[-1])       # '2'          — último caractere
+print(texto[0:6])      # 'Python'     — do 0 ao 5 (fim=6 excl.)
+print(texto[7:])       # '3.12'       — do 7 até o fim
+print(texto[:6])       # 'Python'     — do início até 5
+print(texto[::2])      # 'Pto .2'     — de 2 em 2
+print(texto[::-1])     # '21.3 nohtyP' — invertido
+
+# Casos práticos de slicing
+cpf = "123.456.789-00"
+apenas_digitos = cpf.replace(".", "").replace("-", "")  # "12345678900"
+primeiros_3 = cpf[:3]  # "123"
+
+url = "https://exemplo.com/path"
+sem_https = url[8:]    # "exemplo.com/path"</code></pre>
+      </div>
+
+      <h3>Métodos essenciais de string</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Método</th>
+              <th>O que faz</th>
+              <th>Exemplo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>.upper()</code> / <code>.lower()</code></td>
+              <td>Converte maiúscula/minúscula</td>
+              <td><code>"Ana".upper()</code> → <code>"ANA"</code></td>
+            </tr>
+            <tr>
+              <td><code>.strip()</code></td>
+              <td>Remove espaços (e \n, \t) no início e fim</td>
+              <td><code>"  oi  ".strip()</code> → <code>"oi"</code></td>
+            </tr>
+            <tr>
+              <td><code>.split(sep)</code></td>
+              <td>Divide em lista pelo separador</td>
+              <td><code>"a,b,c".split(",")</code> → <code>["a","b","c"]</code></td>
+            </tr>
+            <tr>
+              <td><code>.join(lista)</code></td>
+              <td>Une lista em string com separador</td>
+              <td><code>", ".join(["a","b"])</code> → <code>"a, b"</code></td>
+            </tr>
+            <tr>
+              <td><code>.replace(old, new)</code></td>
+              <td>Substitui todas as ocorrências</td>
+              <td><code>"aabaa".replace("a","x")</code> → <code>"xxbxx"</code></td>
+            </tr>
+            <tr>
+              <td><code>.startswith()</code> / <code>.endswith()</code></td>
+              <td>Verifica prefixo/sufixo</td>
+              <td><code>"foto.png".endswith(".png")</code> → <code>True</code></td>
+            </tr>
+            <tr>
+              <td><code>.find(sub)</code></td>
+              <td>Retorna índice da primeira ocorrência (ou -1)</td>
+              <td><code>"abcabc".find("c")</code> → <code>2</code></td>
+            </tr>
+            <tr>
+              <td><code>.count(sub)</code></td>
+              <td>Conta quantas vezes sub aparece</td>
+              <td><code>"banana".count("a")</code> → <code>3</code></td>
+            </tr>
+            <tr>
+              <td><code>.zfill(width)</code></td>
+              <td>Preenche à esquerda com zeros</td>
+              <td><code>"42".zfill(5)</code> → <code>"00042"</code></td>
+            </tr>
+            <tr>
+              <td><code>.isdigit()</code></td>
+              <td>True se todos os chars são dígitos</td>
+              <td><code>"123".isdigit()</code> → <code>True</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-filename">📄 strings_metodos.py</span>
+          <span class="code-lang">Python</span>
+        </div>
+        <pre><code class="language-python"># ─── Pipeline de limpeza de dados (padrão real) ───────────────
+entrada_usuario = "  ana.silva@GMAIL.COM  "
+
+email_limpo = (entrada_usuario
+    .strip()           # remove espaços externos
+    .lower()           # normaliza para minúsculo
+)
+print(email_limpo)     # "ana.silva@gmail.com"
+
+# ─── Split e Join — transformar estrutura ────────────────────
+csv_linha = "Ana,30,São Paulo,Engenheira"
+campos = csv_linha.split(",")
+# ['Ana', '30', 'São Paulo', 'Engenheira']
+
+# Reconstruir como TSV (tab-separated)
+tsv_linha = "\t".join(campos)
+
+# ─── Verificações práticas ────────────────────────────────────
+extensoes_permitidas = (".jpg", ".jpeg", ".png", ".webp")
+arquivo = "foto_perfil.PNG"
+
+if arquivo.lower().endswith(extensoes_permitidas):
+    print("Arquivo de imagem válido")
+
+# ─── Formatação de números com f-string ──────────────────────
+populacao = 215_300_000
+pib = 2_081_235_000_000.50
+
+print(f"Brasil: {populacao:,} habitantes")     # 215,300,000
+print(f"PIB: R$ {pib:,.2f}")                  # R$ 2,081,235,000,000.50
+print(f"Crescimento: {0.0312:.1%}")            # 3.1%</code></pre>
+      </div>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Strings são imutáveis — não se alteram no lugar</div>
+        Todos os métodos de string retornam uma <strong>nova string</strong>. O original nunca muda. Um erro clássico:
+        <br><br>
+        <code>texto = "  olá  "</code><br>
+        <code>texto.strip()         # ← não faz nada! resultado é descartado</code><br>
+        <code>texto = texto.strip() # ← correto: reatribua</code>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         06 — HANDS-ON PASSO A PASSO
+    ══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">// 06 — hands-on</div>
+      <h2>Mãos na massa — configure e rode seu primeiro projeto</h2>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Instale o Python 3 (se necessário)</div>
+            <div class="step-desc">Verifique se já tem Python 3 instalado:</div>
+            <div class="code-wrap">
+              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
+              </div>
+              <pre><code class="language-bash">python3 --version   # deve mostrar Python 3.11+ ou 3.12+
+# Se não tiver: https://python.org/downloads
+# macOS com Homebrew:  brew install python@3.12
+# Ubuntu/Debian:       sudo apt install python3.12 python3.12-venv</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Crie o projeto e o ambiente virtual</div>
+            <div class="step-desc">A ordem importa: crie a pasta, entre nela, crie o venv, ative.</div>
+            <div class="code-wrap">
+              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
+              </div>
+              <pre><code class="language-bash">mkdir meu-primeiro-projeto
+cd meu-primeiro-projeto
+
+# Criar o venv (convenção: nomear de .venv)
+python3 -m venv .venv
+
+# Ativar o venv
+# macOS/Linux:
+source .venv/bin/activate
+# Windows (PowerShell):
+# .venv\Scripts\Activate.ps1
+
+# Confirmar que está ativo (prompt muda para (.venv))
+which python   # deve apontar para .venv/bin/python</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Instale uma biblioteca e registre as dependências</div>
+            <div class="step-desc">Instale <code>rich</code> (biblioteca de output bonito no terminal) e salve em
+              <code>requirements.txt</code>:
+            </div>
+            <div class="code-wrap">
+              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
+              </div>
+              <pre><code class="language-bash">pip install rich
+
+# Registrar todas as dependências instaladas
+pip freeze > requirements.txt
+
+# Ver o que foi instalado
+cat requirements.txt   # rich==13.x.x</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Crie o script principal</div>
+            <div class="step-desc">Crie <code>main.py</code> e rode com o Python do venv:</div>
+            <div class="code-wrap">
+              <div class="code-header"><span class="code-filename">📄 main.py</span><span
+                  class="code-lang">Python</span></div>
+              <pre><code class="language-python">from rich import print as rprint
+from rich.table import Table
+
+# ─── Tipos primitivos em ação ──────────────────────────────
+nome: str   = "Ana Silva"
+idade: int  = 28
+altura: float = 1.65
+ativo: bool = True
+cargo: str | None = None   # ainda não definido
+
+# ─── f-strings ─────────────────────────────────────────────
+rprint(f"[bold blue]Usuário:[/] {nome}")
+rprint(f"Idade: [green]{idade}[/] anos | Altura: {altura:.2f}m")
+rprint(f"Ativo: {'✅' if ativo else '❌'}")
+rprint(f"Cargo: {cargo if cargo is not None else '[dim]não definido[/]'}")
+
+# ─── Manipulação de strings ─────────────────────────────────
+email_bruto = "  ANA.SILVA@EMPRESA.COM  "
+email = email_bruto.strip().lower()
+rprint(f"\nEmail normalizado: [cyan]{email}[/]")
+
+usuario, dominio = email.split("@")
+rprint(f"Usuário: {usuario} | Domínio: {dominio}")
+
+# ─── Slicing ────────────────────────────────────────────────
+rprint(f"\nPrimeiro nome: [yellow]{nome[:3]}[/]")   # "Ana"
+rprint(f"Invertido: {nome[::-1]}")
+
+# ─── Tabela com rich ────────────────────────────────────────
+tabela = Table(title="Resumo do perfil")
+tabela.add_column("Campo",  style="cyan")
+tabela.add_column("Valor",  style="white")
+tabela.add_column("Tipo",   style="dim")
+
+campos = [
+    ("nome",   nome,         type(nome).__name__),
+    ("idade",  str(idade),   type(idade).__name__),
+    ("altura", str(altura),  type(altura).__name__),
+    ("ativo",  str(ativo),   type(ativo).__name__),
+    ("cargo",  str(cargo),   type(cargo).__name__),
+]
+
+for campo, valor, tipo in campos:
+    tabela.add_row(campo, valor, tipo)
+
+rprint(tabela)</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Execute e observe</div>
+            <div class="code-wrap">
+              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
+              </div>
+              <pre><code class="language-bash">python main.py
+# Você verá uma tabela colorida no terminal com os tipos
+# e valores de cada variável</code></pre>
+            </div>
+            <div class="callout callout-tip">
+              <div class="callout-title">🔥 Pro tip — .gitignore para Python</div>
+              Nunca commite o <code>.venv</code> no Git. Crie um <code>.gitignore</code> com:
+              <br><br>
+              <code>.venv/<br>__pycache__/<br>*.pyc<br>.env</code>
+              <br><br>
+              Qualquer colega recria o ambiente com:
+              <code>python3 -m venv .venv &amp;&amp; pip install -r requirements.txt</code>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         07 — PITFALLS COMUNS
+    ══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">// 07 — armadilhas</div>
+      <h2>Erros que todo mundo comete</h2>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Usar pip install sem ativar o venv</div>
+        Se você esquecer de ativar o venv e rodar <code>pip install</code>, a biblioteca vai para o Python global do
+        sistema. Seu projeto vai funcionar na sua máquina, mas não em outro ambiente. <strong>Sempre verifique se o
+          prompt mostra <code>(.venv)</code> antes de instalar.</strong>
+      </div>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Comparar None com ==</div>
+        Use sempre <code>x is None</code>, não <code>x == None</code>. A razão: <code>==</code> chama o método
+        <code>__eq__</code> do objeto, que pode ser sobrescrito. <code>is</code> compara identidade de objeto — mais
+        seguro e mais idiomático em Python.
+      </div>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Aritmética de ponto flutuante para dinheiro</div>
+        <code>0.1 + 0.2 != 0.3</code> em Python (e em qualquer linguagem que usa IEEE 754). Para valores financeiros,
+        use sempre <code>from decimal import Decimal</code> e passe os valores como strings:
+        <code>Decimal("0.10") + Decimal("0.20")</code>.
+      </div>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Strings mutáveis — armadilha clássica</div>
+        <code>nome = "ana"</code><br>
+        <code>nome.capitalize()  # retorna "Ana" mas NÃO altera nome</code><br>
+        <code>print(nome)        # ainda "ana"!</code><br><br>
+        Correto: <code>nome = nome.capitalize()</code>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         08 — VÍDEOS
+    ══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">// 08 — curadoria</div>
+      <h2>Referências em vídeo</h2>
+
+      <div class="videos-grid">
+        <a class="video-card" href="https://www.youtube.com/watch?v=rfscVS0vtbw" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div>
+            <div class="video-title">Learn Python — Full Course for Beginners</div>
+            <div class="video-channel">freeCodeCamp · ~4h 26min</div>
+            <div class="video-why">Por que assistir: Referência definitiva para quem começa do zero. Os primeiros 90
+              minutos cobrem exatamente esta aula — instalação, tipos, strings, operadores. Use como suporte prático.
+            </div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+
+        <a class="video-card" href="https://www.youtube.com/watch?v=_uQrJ0TkZlc" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div>
+            <div class="video-title">Python Tutorial — Python Full Course for Beginners</div>
+            <div class="video-channel">Programming with Mosh · ~6h</div>
+            <div class="video-why">Por que assistir: Cobertura profunda de tipos, strings e fundamentos com ênfase em
+              boas práticas. Mosh explica o "porquê" de cada decisão de design da linguagem.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+
+        <a class="video-card" href="https://www.youtube.com/watch?v=x7X9w_GIm1s" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div>
+            <div class="video-title">Python in 100 Seconds</div>
+            <div class="video-channel">Fireship · ~2 min</div>
+            <div class="video-why">Por que assistir: Visão ultrarrápida da linguagem — sintaxe, tipagem dinâmica,
+              ecossistema. Ótimo para consolidar o big picture antes de se aprofundar nos detalhes.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+
+        <a class="video-card" href="https://www.youtube.com/watch?v=kqtD5dpn9C8" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div>
+            <div class="video-title">Python for Beginners — Learn Python in 1 Hour</div>
+            <div class="video-channel">Programming with Mosh · ~1h</div>
+            <div class="video-why">Por que assistir: Versão condensada focada nos fundamentos essenciais. Ideal para
+              quem quer fazer a primeira passagem rápida antes de ir para os exemplos hands-on.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         09 — CHECKPOINT
+    ══════════════════════════════════════════ -->
+    <div class="checkpoint">
+      <div class="checkpoint-label">// desafio</div>
+      <h3>🏁 Checkpoint — valide seu aprendizado</h3>
+      <p>Crie um script <code>perfil.py</code> que simula o cadastro e exibição de um perfil de usuário:</p>
+      <ul>
+        <li>Configure um <code>venv</code> isolado, instale a biblioteca <code>rich</code> e salve as dependências em
+          <code>requirements.txt</code>
+        </li>
+        <li>Declare variáveis com type hints para: <code>nome</code> (str), <code>idade</code> (int),
+          <code>altura</code> (float), <code>ativo</code> (bool) e <code>bio</code> (str | None)
+        </li>
+        <li>Normalize um e-mail de entrada com <code>.strip().lower()</code> e valide se termina com
+          <code>@gmail.com</code> ou <code>@outlook.com</code>
+        </li>
+        <li>Use f-strings para exibir: nome em maiúsculas, altura com 2 casas decimais, e a mensagem "Usuário ativo ✅"
+          ou "Usuário inativo ❌" baseada no bool</li>
+        <li>Aplique slicing para extrair: primeiro nome, inicial do sobrenome, e inverta o nome completo</li>
+        <li>Mostre o tipo de cada variável com <code>type(x).__name__</code> numa tabela formatada</li>
+      </ul>
+      <div class="checkpoint-hint">💬 Dica: use <code>rich.table.Table</code> para formatar a saída — é uma ótima forma
+        de visualizar tipos e valores ao mesmo tempo. Se travar no venv, revise o Passo 2 do hands-on.</div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         PRÓXIMA AULA
+    ══════════════════════════════════════════ -->
+    <a href="py-02-logica-funcoes.html" class="next-lesson">
+      <div>
+        <div class="next-label">Próxima aula →</div>
+        <div class="next-title">Python — Lógica &amp; Funções</div>
+      </div>
+      <div class="next-arrow">→</div>
+    </a>
+
+    <div class="footer">
+      <span>🐍 Python · Aula 05 / 50</span>
+      <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+    </div>
+
+  </div><!-- /page -->
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+
+    mermaid.initialize({
+      startOnLoad: true, theme: 'dark',
+      themeVariables: {
+        primaryColor: '#3b82f6', primaryTextColor: '#e8e8f0',
+        primaryBorderColor: 'rgba(59,130,246,0.4)',
+        lineColor: '#8585a8', background: '#111118', mainBkg: '#16161f'
+      }
+    });
+
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('reading-progress').style.width = ((scrollTop / docHeight) * 100) + '%';
+    });
+  </script>
+
+</body>
+
+</html>

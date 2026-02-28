@@ -1754,7 +1754,8 @@ git branch --no-merged           # branches ainda não mergeadas</code></pre>
         <div class="pitfall-title">⚠️ git reset --hard em commits já pushed</div>
         <p>Se você fez <code>reset --hard</code> em commits que já foram para o GitHub, a sua branch local e a remota
           divergiram. Forçar um <code>git push --force</code> pode apagar trabalho de colegas. Use sempre
-          <code>git revert</code> para desfazer coisas públicas.</p>
+          <code>git revert</code> para desfazer coisas públicas.
+        </p>
       </div>
 
       <div class="pitfall">
@@ -1768,14 +1769,16 @@ git branch --no-merged           # branches ainda não mergeadas</code></pre>
         <div class="pitfall-title">⚠️ Criar branches a partir de outra branch (que não é main)</div>
         <p>Se você criar <code>feat/b</code> a partir de <code>feat/a</code>, você vai incluir todos os commits de
           <code>feat/a</code> quando fizer o merge de <code>feat/b</code>. Sempre crie branches a partir da
-          <code>main</code> atualizada, a não ser que haja dependência explícita.</p>
+          <code>main</code> atualizada, a não ser que haja dependência explícita.
+        </p>
       </div>
 
       <div class="pitfall">
         <div class="pitfall-title">⚠️ Esquecer que stash é global, não por branch</div>
         <p>O <code>git stash</code> não pertence a uma branch — ele fica numa pilha global. Se você fizer stash na
           <code>feat/a</code> e aplicar na <code>main</code>, vai funcionar (e pode causar confusão). Sempre adicione
-          uma mensagem descritiva ao stash.</p>
+          uma mensagem descritiva ao stash.
+        </p>
       </div>
     </div>
 
@@ -1790,19 +1793,19 @@ git branch --no-merged           # branches ainda não mergeadas</code></pre>
         <a class="video-card" href="https://www.youtube.com/watch?v=Q1kHG842HoI" target="_blank">
           <div class="video-thumb">▶</div>
           <div>
-            <div class="video-title">Git Branches Tutorial</div>
-            <div class="video-channel">freeCodeCamp · ~33 min</div>
+            <div class="video-title">Git Branching and Merging</div>
+            <div class="video-channel">SuperSimpleDev · ~54 min</div>
             <div class="video-why">Por que assistir: Explicação visual completa de branches, merge e resolução de
               conflitos com exemplos reais no terminal.</div>
             <span class="video-watch">Assistir →</span>
           </div>
         </a>
 
-        <a class="video-card" href="https://www.youtube.com/watch?v=DkWDHzmMvyg" target="_blank">
+        <a class="video-card" href="https://www.youtube.com/watch?v=-xxhkAPJZPY" target="_blank">
           <div class="video-thumb">▶</div>
           <div>
-            <div class="video-title">Resolvendo conflitos de Merge no Git — PT-BR</div>
-            <div class="video-channel">Filipe Deschamps · ~18 min</div>
+            <div class="video-title">Merge conflicts | Como resolver os conflitos do jeito mais simples</div>
+            <div class="video-channel">Refúgio Code · ~24 min</div>
             <div class="video-why">Por que assistir: Desmistifica conflitos de forma prática e mostra como usar o VS
               Code para resolvê-los sem stress.</div>
             <span class="video-watch">Assistir →</span>
@@ -1814,7 +1817,8 @@ git branch --no-merged           # branches ainda não mergeadas</code></pre>
           <div>
             <div class="video-title">Git MERGE vs REBASE: Everything You Need to Know</div>
             <div class="video-channel">ByteByteGo · ~4 min</div>
-            <div class="video-why">Por que assistir: Explica visualmente a diferença entre merge e rebase — quando usar cada estratégia e qual preserva ou reescreve o histórico.</div>
+            <div class="video-why">Por que assistir: Explica visualmente a diferença entre merge e rebase — quando usar
+              cada estratégia e qual preserva ou reescreve o histórico.</div>
             <span class="video-watch">Assistir →</span>
           </div>
         </a>
@@ -1822,8 +1826,8 @@ git branch --no-merged           # branches ainda não mergeadas</code></pre>
         <a class="video-card" href="https://www.youtube.com/watch?v=Uszj_k0DGsg" target="_blank">
           <div class="video-thumb">▶</div>
           <div>
-            <div class="video-title">Git Flow vs GitHub Flow</div>
-            <div class="video-channel">TechWorld with Nana · ~16 min</div>
+            <div class="video-title">Tutorial Git Para Profissionais</div>
+            <div class="video-channel">freeCodeCamp · ~40 min</div>
             <div class="video-why">Por que assistir: Comparação clara das estratégias de branch com exemplos de times
               reais. Essencial para trabalhar em equipe.</div>
             <span class="video-watch">Assistir →</span>

@@ -1,0 +1,2168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS — Box Model, Flexbox &amp; Grid · Aula 04</title>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@300;400;700&display=swap"
+    rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+  <style>
+    /* ── HLJS github-dark inline ────────────────────────────── */
+    pre code.hljs {
+      display: block;
+      overflow-x: auto;
+      padding: 1em
+    }
+
+    code.hljs {
+      padding: 3px 5px
+    }
+
+    .hljs {
+      color: #c9d1d9;
+      background: #0d1117
+    }
+
+    .hljs-doctag,
+    .hljs-keyword,
+    .hljs-meta .hljs-keyword,
+    .hljs-template-tag,
+    .hljs-template-variable,
+    .hljs-type,
+    .hljs-variable.language_ {
+      color: #ff7b72
+    }
+
+    .hljs-title,
+    .hljs-title.class_,
+    .hljs-title.class_.inherited__,
+    .hljs-title.function_ {
+      color: #d2a8ff
+    }
+
+    .hljs-attr,
+    .hljs-attribute,
+    .hljs-literal,
+    .hljs-meta,
+    .hljs-number,
+    .hljs-operator,
+    .hljs-variable,
+    .hljs-selector-attr,
+    .hljs-selector-class,
+    .hljs-selector-id {
+      color: #79c0ff
+    }
+
+    .hljs-regexp,
+    .hljs-string,
+    .hljs-meta .hljs-string {
+      color: #a5d6ff
+    }
+
+    .hljs-built_in,
+    .hljs-symbol {
+      color: #ffa657
+    }
+
+    .hljs-comment,
+    .hljs-code,
+    .hljs-formula {
+      color: #8b949e
+    }
+
+    .hljs-name,
+    .hljs-quote,
+    .hljs-selector-tag,
+    .hljs-selector-pseudo {
+      color: #7ee787
+    }
+
+    .hljs-subst {
+      color: #c9d1d9
+    }
+
+    .hljs-section {
+      color: #1f6feb;
+      font-weight: 700
+    }
+
+    .hljs-bullet {
+      color: #f2cc60
+    }
+
+    .hljs-emphasis {
+      color: #c9d1d9;
+      font-style: italic
+    }
+
+    .hljs-strong {
+      color: #c9d1d9;
+      font-weight: 700
+    }
+
+    .hljs-addition {
+      color: #aff5b4;
+      background-color: #033a16
+    }
+
+    .hljs-deletion {
+      color: #ffdcd7;
+      background-color: #67060c
+    }
+
+    /* ── TOKENS ─────────────────────────────────────────────── */
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #ef4444;
+      --accent-dim: rgba(239, 68, 68, 0.12);
+      --accent-border: rgba(239, 68, 68, 0.35);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--accent-dim) 1px, transparent 1px),
+        linear-gradient(90deg, var(--accent-dim) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.35;
+    }
+
+    /* ── PROGRESS BAR ────────────────────────────────────────── */
+    .progress-bar-wrap {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      z-index: 1000;
+      background: var(--border);
+    }
+
+    #reading-progress {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #fb923c);
+      width: 0%;
+      transition: width 0.1s;
+    }
+
+    /* ── TOP NAV ─────────────────────────────────────────────── */
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 10, 15, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-back {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      transition: color 0.2s;
+    }
+
+    .nav-back:hover {
+      color: var(--text);
+    }
+
+    .nav-position {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+
+    .nav-position .track {
+      color: var(--accent);
+    }
+
+    .nav-prev {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: transparent;
+      transition: all 0.2s;
+    }
+
+    .nav-prev:hover {
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .nav-next {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      color: var(--accent);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      transition: all 0.2s;
+      padding: 6px 14px;
+      border: 1px solid var(--accent-border);
+      border-radius: 6px;
+      background: var(--accent-dim);
+    }
+
+    .nav-next:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+
+    /* ── LAYOUT ──────────────────────────────────────────────── */
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 60px 24px 120px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── HERO ────────────────────────────────────────────────── */
+    .hero {
+      margin-bottom: 64px;
+      padding-bottom: 48px;
+      border-bottom: 1px solid var(--border);
+      animation: fadeDown 0.8s ease both;
+    }
+
+    @keyframes fadeDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .hero-badge {
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 20px;
+    }
+
+    .hero-meta span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: var(--surface);
+    }
+
+    /* ── SECTIONS ────────────────────────────────────────────── */
+    .section {
+      margin-bottom: 56px;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .section h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+      color: var(--text);
+    }
+
+    .section h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 28px 0 12px;
+    }
+
+    p {
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    p strong {
+      color: #fff;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* ── CALLOUTS ────────────────────────────────────────────── */
+    .callout {
+      padding: 16px 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-size: 13px;
+      line-height: 1.6;
+      border-left: 3px solid transparent;
+    }
+
+    .callout-info {
+      background: rgba(6, 182, 212, 0.08);
+      border-color: var(--info);
+      color: #67e8f9;
+    }
+
+    .callout-warn {
+      background: rgba(245, 158, 11, 0.08);
+      border-color: var(--warn);
+      color: #fcd34d;
+    }
+
+    .callout-tip {
+      background: rgba(16, 185, 129, 0.08);
+      border-color: var(--success);
+      color: #6ee7b7;
+    }
+
+    .callout-check {
+      background: var(--accent-dim);
+      border-color: var(--accent);
+      color: #fca5a5;
+    }
+
+    .callout-title {
+      font-weight: 700;
+      margin-bottom: 6px;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* ── ANALOGY CARD ────────────────────────────────────────── */
+    .analogy-card {
+      background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin: 24px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .analogy-card::before {
+      content: '"';
+      position: absolute;
+      top: -10px;
+      left: 16px;
+      font-size: 80px;
+      color: var(--accent);
+      opacity: 0.12;
+      font-family: 'Syne', sans-serif;
+      line-height: 1;
+    }
+
+    .analogy-label {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .analogy-text {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--text);
+    }
+
+    .analogy-mapping {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      font-size: 12px;
+    }
+
+    .analogy-real {
+      color: var(--muted);
+    }
+
+    .analogy-tech {
+      color: var(--accent);
+    }
+
+    /* ── CODE BLOCKS ─────────────────────────────────────────── */
+    .code-wrap {
+      margin: 20px 0;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .code-filename {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .code-lang {
+      font-size: 10px;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .code-wrap pre {
+      margin: 0;
+    }
+
+    .code-wrap pre code {
+      border-radius: 0;
+      font-size: 13px;
+    }
+
+    /* ── MERMAID ─────────────────────────────────────────────── */
+    .mermaid-wrap {
+      margin: 24px 0;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .mermaid-label {
+      padding: 8px 16px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      font-size: 10px;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .mermaid-wrap .mermaid {
+      padding: 24px;
+      background: var(--surface);
+    }
+
+    /* ── TABLE ───────────────────────────────────────────────── */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th {
+      background: var(--surface2);
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      vertical-align: top;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    td code {
+      background: var(--surface2);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #fca5a5;
+    }
+
+    /* ── STEPS ───────────────────────────────────────────────── */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .step {
+      display: flex;
+      gap: 20px;
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .step:last-child {
+      border-bottom: none;
+    }
+
+    .step-num {
+      width: 32px;
+      height: 32px;
+      min-width: 32px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .step-body {
+      flex: 1;
+    }
+
+    .step-title {
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #fff;
+      font-size: 14px;
+    }
+
+    .step-desc {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    /* ── BOX MODEL VISUAL ────────────────────────────────────── */
+    .box-model-demo {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+      margin: 24px 0;
+      text-align: center;
+    }
+
+    .bm-margin {
+      background: rgba(239, 68, 68, 0.1);
+      border: 2px dashed rgba(239, 68, 68, 0.5);
+      border-radius: 8px;
+      padding: 16px;
+      position: relative;
+    }
+
+    .bm-border {
+      background: rgba(239, 68, 68, 0.18);
+      border: 4px solid rgba(239, 68, 68, 0.7);
+      border-radius: 6px;
+      padding: 12px;
+      position: relative;
+    }
+
+    .bm-padding {
+      background: rgba(239, 68, 68, 0.1);
+      border: 2px solid rgba(239, 68, 68, 0.3);
+      border-radius: 4px;
+      padding: 12px;
+    }
+
+    .bm-content {
+      background: rgba(239, 68, 68, 0.25);
+      border: 1px solid rgba(239, 68, 68, 0.5);
+      border-radius: 4px;
+      padding: 12px 20px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .bm-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    /* ── FLEX DEMO ───────────────────────────────────────────── */
+    .flex-demo-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+
+    .flex-demo-header {
+      padding: 10px 16px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .flex-demo-body {
+      padding: 20px;
+    }
+
+    .flex-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .flex-col {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .flex-item {
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: var(--accent);
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .flex-label {
+      font-size: 10px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* ── GRID DEMO ───────────────────────────────────────────── */
+    .grid-demo {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: auto;
+      gap: 8px;
+      margin: 16px 0;
+    }
+
+    .grid-item {
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 12px;
+      color: var(--accent);
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .grid-item.span-2 {
+      grid-column: span 2;
+    }
+
+    .grid-item.span-3 {
+      grid-column: span 3;
+    }
+
+    /* ── SPECIFICITY VISUAL ──────────────────────────────────── */
+    .specificity-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 12px 0;
+      padding: 14px 18px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .spec-score {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 18px;
+      min-width: 60px;
+      color: var(--accent);
+    }
+
+    .spec-desc {
+      color: var(--text);
+    }
+
+    .spec-example {
+      margin-left: auto;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* ── VIDEO CARDS ─────────────────────────────────────────── */
+    .videos-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 600px) {
+      .videos-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .video-card {
+      display: flex;
+      gap: 14px;
+      padding: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .video-card:hover {
+      border-color: var(--accent-border);
+      box-shadow: 0 0 20px var(--accent-dim);
+      text-decoration: none;
+    }
+
+    .video-thumb {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: var(--accent);
+    }
+
+    .video-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+
+    .video-channel {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .video-why {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .video-watch {
+      font-size: 11px;
+      color: var(--accent);
+      margin-top: 8px;
+      display: block;
+    }
+
+    /* ── CHECKPOINT ──────────────────────────────────────────── */
+    .checkpoint {
+      background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
+      border: 1px solid var(--accent-border);
+      border-radius: 14px;
+      padding: 32px 36px;
+      margin: 48px 0;
+    }
+
+    .checkpoint-label {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .checkpoint h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .checkpoint p {
+      color: var(--muted);
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .checkpoint ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .checkpoint li {
+      display: flex;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .checkpoint li::before {
+      content: '✦';
+      color: var(--accent);
+    }
+
+    .checkpoint-hint {
+      padding: 12px 16px;
+      background: var(--accent-dim);
+      border-radius: 8px;
+      font-size: 13px;
+      color: #fca5a5;
+    }
+
+    /* ── NEXT LESSON ─────────────────────────────────────────── */
+    .next-lesson {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 28px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      margin: 48px 0 32px;
+    }
+
+    .next-lesson:hover {
+      border-color: var(--accent-border);
+      box-shadow: 0 0 30px var(--accent-dim);
+      text-decoration: none;
+    }
+
+    .next-label {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .next-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .next-arrow {
+      font-size: 24px;
+      color: var(--accent);
+    }
+
+    /* ── FOOTER ──────────────────────────────────────────────── */
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .footer a {
+      color: var(--muted);
+    }
+
+    .footer a:hover {
+      color: var(--text);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="progress-bar-wrap">
+    <div id="reading-progress"></div>
+  </div>
+
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <a href="html-01-semantico-estrutura.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">🌐 HTML/CSS</span> · Aula 04 / 50
+      </div>
+      <a href="py-01-ambiente-primeiros-passos.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- ══════════════════════════════════════════
+         HERO
+    ══════════════════════════════════════════ -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>🌐 HTML/CSS</span>
+        <span class="hero-badge">Aula 04</span>
+      </div>
+      <h1>CSS — Box Model, Flexbox &amp; Grid</h1>
+      <div class="hero-meta">
+        <span>⏱ ~35 min de leitura</span>
+        <span>🎯 Fundamentos</span>
+        <span>🔧 Hands-on incluído</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag">box-model</span>
+        <span class="tag">flexbox</span>
+        <span class="tag">css-grid</span>
+        <span class="tag">cascade</span>
+        <span class="tag">specificity</span>
+        <span class="tag">border-box</span>
+        <span class="tag">:is()</span>
+        <span class="tag">:has()</span>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         1. POR QUE ISSO IMPORTA?
+    ══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">// 01 — motivação</div>
+      <h2>Por que isso importa?</h2>
+      <p>
+        Todo elemento HTML é uma <strong>caixa retangular</strong>. Não importa se é um parágrafo, um botão ou um card
+        de produto — o browser enxerga tudo como caixas empilhadas ou enfileiradas. Se você não entende como essas
+        caixas se comportam, o CSS vai parecer mágica negra.
+      </p>
+      <p>
+        Box Model, Flexbox e Grid são os três pilares do layout CSS. Box Model define o <em>espaçamento interno e
+          externo</em> de cada elemento. Flexbox organiza itens em <em>uma dimensão</em> (linha ou coluna). Grid
+        organiza em <em>duas dimensões</em> simultaneamente. Cascade & Specificity explicam <em>por que</em> um estilo
+        prevalece sobre outro — o debugger mais importante do CSS.
+      </p>
+
+      <div class="callout callout-info">
+        <div class="callout-title">💼 Por que um engenheiro sênior usa isso hoje</div>
+        Todo time de produto tem debates sobre layout. Sêniors escolhem <code>grid</code> para layouts de página e
+        <code>flexbox</code> para componentes internos — e justificam essa escolha. Eles também debugam conflitos de
+        especificidade sem chutar: calculam o score e sabem exatamente qual regra vai ganhar. Nunca usam
+        <code>!important</code> como solução.
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         2. ANALOGIA
+    ══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">// 02 — analogia</div>
+      <h2>Antes do código: uma analogia</h2>
+
+      <div class="analogy-card">
+        <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
+        <div class="analogy-text">
+          Imagine uma <strong>exposição de arte</strong>. Cada quadro tem seu próprio suporte embutido
+          (<em>padding</em>), uma moldura que o circunda (<em>border</em>), e a distância que o separa do quadro ao lado
+          (<em>margin</em>). A tela pintada em si é o <em>content</em>.<br><br>
+          Os quadros numa parede lado a lado são <strong>Flexbox</strong> — o curador decide se ficam numa linha ou numa
+          coluna, como se alinham, se o espaço entre eles é igual ou se algum ocupa mais área.<br><br>
+          A planta baixa do museu é o <strong>Grid</strong> — salas definidas em linhas e colunas, onde cada peça pode
+          ocupar uma ou mais salas ao mesmo tempo.<br><br>
+          E a <strong>Cascade</strong> é a hierarquia de decisões do curador: as regras do museu nacional prevalecem
+          sobre as do museu local, que prevalecem sobre a preferência do artista individual.
+        </div>
+        <div class="analogy-mapping">
+          <span class="analogy-real">Tela do quadro</span>
+          <span class="analogy-tech">→ <code>content</code></span>
+          <span class="analogy-real">Suporte embutido</span>
+          <span class="analogy-tech">→ <code>padding</code></span>
+          <span class="analogy-real">Moldura</span>
+          <span class="analogy-tech">→ <code>border</code></span>
+          <span class="analogy-real">Espaço entre quadros</span>
+          <span class="analogy-tech">→ <code>margin</code></span>
+          <span class="analogy-real">Curador alinhando obras</span>
+          <span class="analogy-tech">→ Flexbox</span>
+          <span class="analogy-real">Planta baixa do museu</span>
+          <span class="analogy-tech">→ CSS Grid</span>
+          <span class="analogy-real">Hierarquia de regras</span>
+          <span class="analogy-tech">→ Cascade &amp; Specificity</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         3. BOX MODEL
+    ══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">// 03 — box model</div>
+      <h2>Box Model — a anatomia de todo elemento</h2>
+      <p>
+        Todo elemento CSS é composto de quatro camadas concêntricas. De dentro para fora:
+        <strong>content → padding → border → margin</strong>.
+      </p>
+
+      <!-- Visual Box Model -->
+      <div class="box-model-demo">
+        <div class="bm-label">margin</div>
+        <div class="bm-margin">
+          <div class="bm-label">border</div>
+          <div class="bm-border">
+            <div class="bm-label">padding</div>
+            <div class="bm-padding">
+              <div class="bm-content">content (width × height)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3>content-box vs border-box</h3>
+      <p>
+        O CSS tem dois modelos de cálculo de largura, definidos pela propriedade <code>box-sizing</code>. Este é um dos
+        maiores causadores de bugs em iniciantes:
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>box-sizing</th>
+              <th>Como width é calculado</th>
+              <th>Comportamento</th>
+              <th>Recomendação</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>content-box</code></td>
+              <td>width = apenas o conteúdo. padding e border são <strong>adicionados por fora</strong></td>
+              <td>Um div com <code>width:200px; padding:20px</code> ocupa 240px no total</td>
+              <td>❌ Padrão do browser — evite usar sozinho</td>
+            </tr>
+            <tr>
+              <td><code>border-box</code></td>
+              <td>width = content + padding + border juntos. Tudo <strong>fica dentro</strong> do valor declarado</td>
+              <td>Um div com <code>width:200px; padding:20px</code> ocupa exatamente 200px</td>
+              <td>✅ Use sempre — ative globalmente com <code>*</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Pro tip — ative border-box globalmente</div>
+        Todo projeto CSS profissional começa com este reset. Coloque-o no topo do seu CSS principal e esqueça os bugs de
+        tamanho para sempre:
+        <br><br>
+        <code>*, *::before, *::after { box-sizing: border-box; }</code>
+      </div>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// fluxo do Box Model</div>
+        <div class="mermaid">
+          graph LR
+          A[content<br />width × height] --> B[+ padding<br />espaço interno]
+          B --> C[+ border<br />borda visível]
+          C --> D[+ margin<br />espaço externo]
+          D --> E[espaço total<br />ocupado]
+          style A fill:#3d0f0f,stroke:#ef4444,color:#fca5a5
+          style B fill:#3d1f0f,stroke:#f97316,color:#fdba74
+          style C fill:#3d2f0f,stroke:#eab308,color:#fde047
+          style D fill:#1f3d0f,stroke:#22c55e,color:#86efac
+          style E fill:#0f1f3d,stroke:#60a5fa,color:#93c5fd
+        </div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-filename">📄 box-model.css</span>
+          <span class="code-lang">CSS</span>
+        </div>
+        <pre><code class="language-css">/* ─── Reset universal: SEMPRE coloque isso primeiro ─── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* ─── Exemplo prático ─── */
+.card {
+  width: 300px;            /* com border-box: card ocupa exatamente 300px */
+  padding: 24px;           /* espaço interno — não aumenta a largura total  */
+  border: 2px solid #ef4444; /* borda — incluída nos 300px                 */
+  margin: 16px auto;       /* espaço externo + centralizado horizontalmente */
+}
+
+/* ─── Colapso de margin: margem entre dois elementos ─── */
+/* Quando dois elementos com margin se tocam verticalmente,
+   a margem NÃO soma: vence o maior valor (colapso de margin) */
+.titulo  { margin-bottom: 32px; }
+.subtitulo { margin-top: 16px; }
+/* Espaço real entre eles: 32px (não 48px!) */
+
+/* ─── Margin auto: centralizar horizontalmente ─── */
+.container {
+  width: 860px;
+  max-width: 100%;
+  margin: 0 auto;   /* left e right auto = centralizado */
+}</code></pre>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         4. FLEXBOX
+    ══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">// 04 — flexbox</div>
+      <h2>Flexbox — layout em uma dimensão</h2>
+      <p>
+        Flexbox (<em>Flexible Box Layout</em>) resolve o problema de distribuir e alinhar itens em <strong>uma única
+          direção</strong> — linha ou coluna. É ideal para componentes: navbars, cards, botões agrupados, listas de
+        itens.
+      </p>
+      <p>
+        O modelo tem dois atores: o <strong>flex container</strong> (pai que recebe <code>display: flex</code>) e os
+        <strong>flex items</strong> (filhos diretos). Propriedades do container controlam o layout coletivo;
+        propriedades do item controlam o comportamento individual.
+      </p>
+
+      <!-- Demo visual -->
+      <div class="flex-demo-wrap">
+        <div class="flex-demo-header">// flex-direction: row (padrão) — justify-content: space-between</div>
+        <div class="flex-demo-body">
+          <div class="flex-label">container</div>
+          <div class="flex-row" style="justify-content:space-between;">
+            <div class="flex-item">item 1</div>
+            <div class="flex-item">item 2</div>
+            <div class="flex-item">item 3</div>
+          </div>
+          <div class="flex-label" style="margin-top:16px;">flex-direction: column — align-items: center</div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div class="flex-item">item A</div>
+            <div class="flex-item">item B</div>
+            <div class="flex-item">item C</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Propriedades do container</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Propriedade</th>
+              <th>Valores principais</th>
+              <th>O que faz</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>flex-direction</code></td>
+              <td><code>row</code> · <code>column</code> · <code>row-reverse</code></td>
+              <td>Define o eixo principal (horizontal ou vertical)</td>
+            </tr>
+            <tr>
+              <td><code>justify-content</code></td>
+              <td><code>flex-start</code> · <code>center</code> · <code>space-between</code> · <code>space-around</code>
+              </td>
+              <td>Alinha no eixo principal</td>
+            </tr>
+            <tr>
+              <td><code>align-items</code></td>
+              <td><code>stretch</code> · <code>center</code> · <code>flex-start</code> · <code>flex-end</code></td>
+              <td>Alinha no eixo cruzado (perpendicular)</td>
+            </tr>
+            <tr>
+              <td><code>flex-wrap</code></td>
+              <td><code>nowrap</code> · <code>wrap</code> · <code>wrap-reverse</code></td>
+              <td>Quebra ou não os itens em múltiplas linhas</td>
+            </tr>
+            <tr>
+              <td><code>gap</code></td>
+              <td><code>8px</code> · <code>16px 8px</code></td>
+              <td>Espaçamento entre itens (substituiu margin hacks)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Propriedades do item</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Propriedade</th>
+              <th>Valores</th>
+              <th>O que faz</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>flex-grow</code></td>
+              <td><code>0</code> (padrão) · <code>1</code> · <code>2</code></td>
+              <td>Quanto o item cresce para preencher espaço livre. <code>1</code> = ocupa todo o espaço disponível</td>
+            </tr>
+            <tr>
+              <td><code>flex-shrink</code></td>
+              <td><code>1</code> (padrão) · <code>0</code></td>
+              <td>Se o item pode encolher quando falta espaço. <code>0</code> = nunca encolhe</td>
+            </tr>
+            <tr>
+              <td><code>flex-basis</code></td>
+              <td><code>auto</code> · <code>200px</code> · <code>30%</code></td>
+              <td>Tamanho inicial antes de grow/shrink serem aplicados</td>
+            </tr>
+            <tr>
+              <td><code>flex</code></td>
+              <td><code>1</code> = <code>1 1 0%</code></td>
+              <td>Shorthand de grow + shrink + basis. Use sempre o shorthand</td>
+            </tr>
+            <tr>
+              <td><code>order</code></td>
+              <td><code>0</code> (padrão) · valores negativos e positivos</td>
+              <td>Reordena itens visualmente sem alterar o HTML</td>
+            </tr>
+            <tr>
+              <td><code>align-self</code></td>
+              <td>mesmos valores de <code>align-items</code></td>
+              <td>Sobrescreve o <code>align-items</code> do container só para este item</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-filename">📄 flexbox.css</span>
+          <span class="code-lang">CSS</span>
+        </div>
+        <pre><code class="language-css">/* ─── Navbar clássica com flexbox ─── */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;  /* logo à esquerda, links à direita */
+  padding: 0 24px;
+  height: 64px;
+  gap: 16px;
+}
+
+/* ─── Card grid responsivo com flex-wrap ─── */
+.cards {
+  display: flex;
+  flex-wrap: wrap;        /* quebra em nova linha quando necessário */
+  gap: 20px;
+}
+
+.card {
+  flex: 1 1 280px;        /* grow=1, shrink=1, base=280px */
+  /* cada card cresce, encolhe, mas nunca fica menor que 280px */
+}
+
+/* ─── Centralizar qualquer coisa com flex ─── */
+.center-tudo {
+  display: flex;
+  align-items: center;      /* eixo cruzado: vertical */
+  justify-content: center;  /* eixo principal: horizontal */
+  min-height: 100vh;        /* ocupa toda a altura da viewport */
+}
+
+/* ─── Barra lateral que não encolhe ─── */
+.layout {
+  display: flex;
+  gap: 24px;
+}
+.sidebar { flex: 0 0 240px; }  /* não cresce (0), não encolhe (0), sempre 240px */
+.main    { flex: 1; }           /* ocupa todo o restante */</code></pre>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         5. CSS GRID
+    ══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">// 05 — css grid</div>
+      <h2>CSS Grid — layout em duas dimensões</h2>
+      <p>
+        Enquanto Flexbox trabalha em uma direção por vez, CSS Grid define <strong>linhas e colunas
+          simultaneamente</strong>. É o sistema de layout mais poderoso do CSS e ideal para estruturas de página:
+        header, sidebar, main, footer.
+      </p>
+
+      <!-- Grid demo visual -->
+      <div class="flex-demo-wrap">
+        <div class="flex-demo-header">// grid-template-columns: repeat(3, 1fr)</div>
+        <div class="flex-demo-body">
+          <div class="grid-demo">
+            <div class="grid-item span-3" style="background:rgba(239,68,68,0.2);">header (span 3)</div>
+            <div class="grid-item">item 1</div>
+            <div class="grid-item">item 2</div>
+            <div class="grid-item">item 3</div>
+            <div class="grid-item span-2">item 4 (span 2)</div>
+            <div class="grid-item">item 5</div>
+            <div class="grid-item span-3" style="background:rgba(239,68,68,0.2);">footer (span 3)</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Propriedades essenciais do Grid</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Propriedade</th>
+              <th>Exemplo</th>
+              <th>O que faz</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>grid-template-columns</code></td>
+              <td><code>1fr 2fr 1fr</code></td>
+              <td>Define as colunas. <code>fr</code> = fração do espaço disponível</td>
+            </tr>
+            <tr>
+              <td><code>grid-template-rows</code></td>
+              <td><code>auto 1fr auto</code></td>
+              <td>Define as linhas. <code>auto</code> = tamanho pelo conteúdo</td>
+            </tr>
+            <tr>
+              <td><code>grid-template-areas</code></td>
+              <td><code>"header header" "sidebar main"</code></td>
+              <td>Nomeia áreas para posicionar itens por nome (muito legível)</td>
+            </tr>
+            <tr>
+              <td><code>gap</code></td>
+              <td><code>20px</code> · <code>16px 24px</code></td>
+              <td>Espaçamento entre linhas e colunas</td>
+            </tr>
+            <tr>
+              <td><code>repeat()</code></td>
+              <td><code>repeat(4, 1fr)</code></td>
+              <td>Repete padrões — evita repetição manual</td>
+            </tr>
+            <tr>
+              <td><code>auto-fit</code> + <code>minmax()</code></td>
+              <td><code>repeat(auto-fit, minmax(200px, 1fr))</code></td>
+              <td>Grid responsivo automático: cria quantas colunas couberem no espaço disponível</td>
+            </tr>
+            <tr>
+              <td><code>grid-column</code></td>
+              <td><code>1 / 3</code> ou <code>span 2</code></td>
+              <td>Item ocupa da coluna 1 até a 3 (ou se expande 2 colunas)</td>
+            </tr>
+            <tr>
+              <td><code>subgrid</code></td>
+              <td><code>grid-template-columns: subgrid</code></td>
+              <td>Item filho herda as trilhas do grid pai — alinha conteúdo interno ao grid externo</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-filename">📄 grid-layout.css</span>
+          <span class="code-lang">CSS</span>
+        </div>
+        <pre><code class="language-css">/* ─── Layout de página clássico com grid-areas ─── */
+.app {
+  display: grid;
+  grid-template-areas:
+    "header  header"
+    "sidebar main"
+    "footer  footer";
+  grid-template-columns: 240px 1fr;
+  grid-template-rows: 64px 1fr 48px;
+  min-height: 100vh;
+  gap: 0;
+}
+
+.header  { grid-area: header; }
+.sidebar { grid-area: sidebar; }
+.main    { grid-area: main; }
+.footer  { grid-area: footer; }
+
+/* ─── Grid de cards totalmente responsivo (sem media queries!) ─── */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  /* cria automaticamente 1, 2, 3 ou mais colunas
+     conforme o espaço disponível — cada coluna min 280px */
+}
+
+/* ─── Subgrid: alinhar conteúdo interno ao grid pai ─── */
+.card-grid-pai {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.card {
+  display: grid;
+  grid-template-rows: subgrid;  /* herda linhas do pai */
+  grid-row: span 3;             /* ocupa 3 linhas do pai */
+  /* resultado: imagem, título e texto de todos os cards
+     ficam alinhados horizontalmente, mesmo com alturas diferentes */
+}</code></pre>
+      </div>
+
+      <div class="callout callout-info">
+        <div class="callout-title">💡 Flexbox vs Grid — quando usar cada um?</div>
+        <strong>Flexbox:</strong> quando o conteúdo dita o layout. "Quero que esses itens fiquem em linha e se
+        distribuam bem." → navbars, grupos de botões, listas de chips, layouts de componente interno.<br><br>
+        <strong>Grid:</strong> quando o layout dita o conteúdo. "Preciso de 3 colunas e o segundo item deve sempre
+        ocupar 2 delas." → página inteira, dashboard, galeria de fotos, card com campos alinhados.
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         6. CASCADE & SPECIFICITY
+    ══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">// 06 — cascade &amp; specificity</div>
+      <h2>Cascade &amp; Specificity — quem ganha o conflito?</h2>
+      <p>
+        Quando duas regras CSS tentam estilizar o mesmo elemento, o browser precisa decidir qual vence. Essa decisão
+        segue três critérios em ordem de importância: <strong>origem</strong>, <strong>especificidade</strong> e
+        <strong>ordem de aparecimento</strong>.
+      </p>
+
+      <h3>Especificidade — o score</h3>
+      <p>
+        Cada seletor tem um score de especificidade representado como três números: <code>(A, B, C)</code>.
+      </p>
+
+      <div class="specificity-bar">
+        <span class="spec-score">(1,0,0)</span>
+        <span class="spec-desc">Seletor de <strong>ID</strong></span>
+        <span class="spec-example">#header, #main-nav</span>
+      </div>
+      <div class="specificity-bar">
+        <span class="spec-score">(0,1,0)</span>
+        <span class="spec-desc">Seletor de <strong>classe</strong>, pseudo-classe, atributo</span>
+        <span class="spec-example">.card, :hover, [type="text"]</span>
+      </div>
+      <div class="specificity-bar">
+        <span class="spec-score">(0,0,1)</span>
+        <span class="spec-desc">Seletor de <strong>tag</strong>, pseudo-elemento</span>
+        <span class="spec-example">div, p, ::before</span>
+      </div>
+      <div class="specificity-bar">
+        <span class="spec-score">(0,0,0)</span>
+        <span class="spec-desc">Seletor universal</span>
+        <span class="spec-example">* { ... }</span>
+      </div>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Especificidade se soma — cuidado com seletores longos</div>
+        <code>nav ul li a.active</code> tem score <code>(0,1,4)</code> — uma classe + quatro tags. Isso é muito
+        específico e dificulta sobrescrever depois. Prefira seletores curtos com classes bem nomeadas:
+        <code>.nav-link--active</code> tem score <code>(0,1,0)</code> e é muito mais fácil de manter.
+      </div>
+
+      <h3>:is(), :where() e :has() — seletores modernos</h3>
+      <p>
+        CSS moderno oferece pseudo-classes que simplificam seletores complexos e controlam a especificidade de forma
+        precisa:
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Pseudo-classe</th>
+              <th>Especificidade</th>
+              <th>Uso</th>
+              <th>Exemplo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>:is()</code></td>
+              <td>Herda do seletor mais específico dentro dela</td>
+              <td>Agrupa seletores — reduz repetição de código</td>
+              <td><code>:is(h1, h2, h3) { margin: 0; }</code></td>
+            </tr>
+            <tr>
+              <td><code>:where()</code></td>
+              <td>Sempre <strong>zero</strong> — não contribui para especificidade</td>
+              <td>Agrupa sem aumentar especificidade. Ideal para resets e utilitários</td>
+              <td><code>:where(article, section) p { ... }</code></td>
+            </tr>
+            <tr>
+              <td><code>:has()</code></td>
+              <td>Herda do seletor interno (como <code>:is()</code>)</td>
+              <td>"Seletor pai" — estiliza um elemento baseado no que ele contém</td>
+              <td><code>figure:has(figcaption) { ... }</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-filename">📄 cascade-modern.css</span>
+          <span class="code-lang">CSS</span>
+        </div>
+        <pre><code class="language-css">/* ─── :is() — agrupar seletores sem repetição ─── */
+/* antes (repetitivo e sujeito a erro) */
+h1, h2, h3, h4, h5, h6 { font-family: 'Syne', sans-serif; }
+
+/* depois (mais limpo) */
+:is(h1, h2, h3, h4, h5, h6) { font-family: 'Syne', sans-serif; }
+
+/* ─── :where() — reset de zero especificidade ─── */
+/* perfeito para CSS de biblioteca: fácil de sobrescrever */
+:where(button, input, select, textarea) {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* ─── :has() — o "seletor pai" que o CSS nunca teve ─── */
+
+/* card com imagem: layout diferente de card sem imagem */
+.card:has(img) {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+}
+
+/* label de campo inválido muda de cor */
+label:has(+ input:invalid) {
+  color: #ef4444;
+}
+
+/* formulário com campos obrigatórios não preenchidos: botão desabilitado */
+form:has(input:required:placeholder-shown) .btn-submit {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* ─── Cascade layers — controle explícito da ordem ─── */
+@layer reset, base, components, utilities;
+
+@layer reset {
+  *, *::before, *::after { box-sizing: border-box; }
+}
+
+@layer base {
+  body { font-family: 'JetBrains Mono', monospace; }
+}
+
+@layer utilities {
+  .mt-auto { margin-top: auto; }
+}
+/* Regras em "utilities" sempre ganham de regras em "base",
+   independente da especificidade — é a ordem da layer que decide */</code></pre>
+      </div>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// como o browser decide qual CSS aplicar</div>
+        <div class="mermaid">
+          flowchart TD
+          A[Conflito de regras CSS] --> B{Qual tem maior<br />origem?}
+          B -->|!important user-agent| C[Vence — fim]
+          B -->|!important author| D[Vence — fim]
+          B -->|empate| E{Qual tem maior<br />especificidade?}
+          E -->|A tem mais| F[A vence — fim]
+          E -->|B tem mais| G[B vence — fim]
+          E -->|empate| H{Qual aparece<br />por último no CSS?}
+          H -->|A aparece depois| I[A vence — fim]
+          H -->|B aparece depois| J[B vence — fim]
+          style A fill:#1e1e2e,stroke:#ef4444,color:#e8e8f0
+          style C fill:#033a16,stroke:#22c55e,color:#86efac
+          style D fill:#033a16,stroke:#22c55e,color:#86efac
+          style F fill:#033a16,stroke:#22c55e,color:#86efac
+          style G fill:#033a16,stroke:#22c55e,color:#86efac
+          style I fill:#033a16,stroke:#22c55e,color:#86efac
+          style J fill:#033a16,stroke:#22c55e,color:#86efac
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         7. HANDS-ON PASSO A PASSO
+    ══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">// 07 — hands-on</div>
+      <h2>Mãos na massa — construa um layout completo</h2>
+      <p>Vamos criar uma página com layout real: header, sidebar, conteúdo principal e grid de cards responsivo.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Crie os arquivos</div>
+            <div class="step-desc">Crie uma pasta <code>css-layout/</code> com um HTML e um CSS.</div>
+            <div class="code-wrap">
+              <div class="code-header">
+                <span class="code-filename">📁 estrutura</span>
+                <span class="code-lang">bash</span>
+              </div>
+              <pre><code class="language-bash">mkdir css-layout && cd css-layout
+touch index.html styles.css</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Estrutura HTML com Grid</div>
+            <div class="step-desc">Cole este HTML no <code>index.html</code>:</div>
+            <div class="code-wrap">
+              <div class="code-header">
+                <span class="code-filename">📄 index.html</span>
+                <span class="code-lang">HTML</span>
+              </div>
+              <pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="pt-BR"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;CSS Layout Demo&lt;/title&gt;
+  &lt;link rel="stylesheet" href="styles.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="app"&gt;
+    &lt;header class="header"&gt;
+      &lt;nav class="navbar"&gt;
+        &lt;span class="logo"&gt;MeuSite&lt;/span&gt;
+        &lt;ul class="nav-links"&gt;
+          &lt;li&gt;&lt;a href="#"&gt;Home&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href="#"&gt;Sobre&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href="#"&gt;Contato&lt;/a&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/nav&gt;
+    &lt;/header&gt;
+
+    &lt;aside class="sidebar"&gt;
+      &lt;h3&gt;Categorias&lt;/h3&gt;
+      &lt;ul&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Design&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;CSS&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;JavaScript&lt;/a&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/aside&gt;
+
+    &lt;main class="main"&gt;
+      &lt;h1&gt;Últimos Posts&lt;/h1&gt;
+      &lt;div class="cards-grid"&gt;
+        &lt;article class="card"&gt;
+          &lt;h2&gt;Box Model Explicado&lt;/h2&gt;
+          &lt;p&gt;Entenda margin, padding e border de uma vez por todas.&lt;/p&gt;
+          &lt;a class="btn" href="#"&gt;Ler mais&lt;/a&gt;
+        &lt;/article&gt;
+        &lt;article class="card"&gt;
+          &lt;h2&gt;Flexbox na Prática&lt;/h2&gt;
+          &lt;p&gt;Construa navbars e cards com Flexbox sem stress.&lt;/p&gt;
+          &lt;a class="btn" href="#"&gt;Ler mais&lt;/a&gt;
+        &lt;/article&gt;
+        &lt;article class="card"&gt;
+          &lt;h2&gt;CSS Grid Completo&lt;/h2&gt;
+          &lt;p&gt;Layouts complexos com elegância usando Grid.&lt;/p&gt;
+          &lt;a class="btn" href="#"&gt;Ler mais&lt;/a&gt;
+        &lt;/article&gt;
+        &lt;article class="card"&gt;
+          &lt;h2&gt;Cascade &amp; Specificity&lt;/h2&gt;
+          &lt;p&gt;Debugging de CSS sem adivinhar — calcule o score.&lt;/p&gt;
+          &lt;a class="btn" href="#"&gt;Ler mais&lt;/a&gt;
+        &lt;/article&gt;
+      &lt;/div&gt;
+    &lt;/main&gt;
+
+    &lt;footer class="footer"&gt;
+      &lt;p&gt;&amp;copy; 2025 MeuSite — feito com CSS Grid e Flexbox&lt;/p&gt;
+    &lt;/footer&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">CSS completo</div>
+            <div class="step-desc">Cole em <code>styles.css</code>:</div>
+            <div class="code-wrap">
+              <div class="code-header">
+                <span class="code-filename">📄 styles.css</span>
+                <span class="code-lang">CSS</span>
+              </div>
+              <pre><code class="language-css">/* ─── 1. Reset ─── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: #f5f5f5;
+  color: #1a1a2e;
+}
+
+/* ─── 2. Grid de página principal ─── */
+.app {
+  display: grid;
+  grid-template-areas:
+    "header  header"
+    "sidebar main"
+    "footer  footer";
+  grid-template-columns: 220px 1fr;
+  grid-template-rows: 64px 1fr 48px;
+  min-height: 100vh;
+}
+
+.header  { grid-area: header;  }
+.sidebar { grid-area: sidebar; }
+.main    { grid-area: main;    }
+.footer  { grid-area: footer;  }
+
+/* ─── 3. Navbar com Flexbox ─── */
+.header {
+  background: #1a1a2e;
+  border-bottom: 1px solid #2d2d4e;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding: 0 24px;
+}
+
+.logo {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links a {
+  color: #a0a0c0;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover { color: #fff; }
+
+/* ─── 4. Sidebar ─── */
+.sidebar {
+  background: #fff;
+  border-right: 1px solid #e0e0e8;
+  padding: 24px;
+}
+
+.sidebar h3 {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #888;
+  margin-bottom: 12px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar a {
+  color: #444;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s;
+}
+
+.sidebar a:hover { color: #1a1a2e; }
+
+/* ─── 5. Main content ─── */
+.main { padding: 32px; }
+
+.main h1 {
+  font-size: 24px;
+  margin-bottom: 24px;
+  color: #1a1a2e;
+}
+
+/* ─── 6. Cards grid — auto-fit responsivo ─── */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #e0e0e8;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;           /* card interno com flexbox */
+  flex-direction: column;
+  gap: 12px;
+  transition: box-shadow 0.2s;
+}
+
+.card:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.card h2 { font-size: 16px; margin: 0; }
+.card p  { font-size: 14px; color: #666; margin: 0; flex: 1; }
+
+.btn {
+  display: inline-block;
+  padding: 8px 16px;
+  background: #1a1a2e;
+  color: #fff;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 13px;
+  text-align: center;
+  margin-top: auto;        /* empurra o botão para o fundo do card */
+  transition: background 0.2s;
+}
+
+.btn:hover { background: #2d2d4e; }
+
+/* ─── 7. Footer ─── */
+.footer {
+  background: #1a1a2e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24px;
+}
+
+.footer p {
+  font-size: 12px;
+  color: #888;
+  margin: 0;
+}</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Abra no browser e experimente</div>
+            <div class="step-desc">Abra o <code>index.html</code> no browser. Experimente redimensionar a janela — os
+              cards se reorganizam automaticamente. Inspecione o layout com DevTools (F12 → Elements) para visualizar o
+              Box Model de cada elemento.</div>
+            <div class="callout callout-tip">
+              <div class="callout-title">🔥 DevTools pro tip</div>
+              No Chrome/Edge DevTools, selecione qualquer elemento → aba Computed → role até "Box Model". Você vê o
+              diagrama interativo de margin, border, padding e content. Clique nos valores para editá-los ao vivo.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         8. PITFALLS COMUNS
+    ══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">// 08 — armadilhas</div>
+      <h2>Erros que todo mundo comete</h2>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Esquecer box-sizing: border-box</div>
+        Sem esse reset, padding e border aumentam a largura total do elemento de forma inesperada. Qualquer cálculo de
+        layout quebra. <strong>Sempre comece com
+          <code>*, *::before, *::after { box-sizing: border-box; }</code>.</strong>
+      </div>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Usar margin em vez de gap no Flexbox/Grid</div>
+        <code>margin</code> em flex items causa problemas: o último item não tem margem e o primeiro também não, então
+        você usa <code>margin: 0 8px</code> e tenta compensar. Com <code>gap: 16px</code> no container, o espaçamento é
+        uniforme e sem efeitos colaterais. Sempre prefira <code>gap</code>.
+      </div>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Usar !important para resolver conflito de especificidade</div>
+        <code>!important</code> não resolve o problema — apenas mascara. Quando dois seletores têm
+        <code>!important</code>, o de maior especificidade vence. E agora você tem dois bugs em vez de um. <strong>A
+          solução real é entender o score e reescever o seletor.</strong>
+      </div>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Usar Grid para tudo ou Flexbox para tudo</div>
+        Grid e Flexbox não são concorrentes — são ferramentas complementares. Navbars e componentes internos → Flexbox.
+        Layout de página e alinhamento multi-eixo → Grid. Projetos reais usam os dois juntos.
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         9. VÍDEOS
+    ══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">// 09 — curadoria</div>
+      <h2>Referências em vídeo</h2>
+
+      <div class="videos-grid">
+        <a class="video-card" href="https://www.youtube.com/watch?v=JJSoEo8JSnc" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div>
+            <div class="video-title">Flexbox CSS In 20 Minutes</div>
+            <div class="video-channel">Traversy Media · ~20 min</div>
+            <div class="video-why">Por que assistir: Tutorial prático e direto ao ponto — cobre flex-direction,
+              justify-content, align-items e flex shorthand com exemplos reais no browser.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+
+        <a class="video-card" href="https://www.youtube.com/watch?v=jV8B24rSN5o" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div>
+            <div class="video-title">CSS Grid Crash Course</div>
+            <div class="video-channel">Traversy Media · ~28 min</div>
+            <div class="video-why">Por que assistir: Cobre grid-template, areas, auto-fit, minmax e posicionamento de
+              itens — com exemplos de layouts reais construídos do zero.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+
+        <a class="video-card" href="https://www.youtube.com/watch?v=OEV8gMkCHXQ" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div>
+            <div class="video-title">CSS in 100 Seconds</div>
+            <div class="video-channel">Fireship · ~2 min</div>
+            <div class="video-why">Por que assistir: Recapitulação visual e acelerada de como a Cascade, Box Model e os
+              conceitos de layout se conectam — ideal como revisão rápida.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+
+        <a class="video-card" href="https://www.youtube.com/watch?v=Qhaz36TZG5Y" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div>
+            <div class="video-title">10 CSS Pro Tips - Code this, NOT that!</div>
+            <div class="video-channel">Fireship · ~9 min</div>
+            <div class="video-why">Por que assistir: Responde definitivamente quando usar Flexbox e quando usar Grid,
+              com comparações lado a lado. Essencial para desenvolver bom julgamento de layout.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         10. CHECKPOINT
+    ══════════════════════════════════════════ -->
+    <div class="checkpoint">
+      <div class="checkpoint-label">// desafio</div>
+      <h3>🏁 Checkpoint — valide seu aprendizado</h3>
+      <p>Construa um layout de perfil de usuário com as seguintes características:</p>
+      <ul>
+        <li>Ative <code>box-sizing: border-box</code> globalmente e use margin/padding de forma consciente em cada
+          elemento</li>
+        <li>Use <strong>CSS Grid</strong> para o layout geral da página: header, sidebar com info do perfil e área de
+          posts</li>
+        <li>Use <strong>Flexbox</strong> dentro da sidebar para alinhar avatar + nome + bio verticalmente e
+          centralizados</li>
+        <li>Crie um grid de posts (<code>auto-fit, minmax()</code>) que seja responsivo sem media queries</li>
+        <li>Aplique pelo menos um seletor <code>:has()</code> — por exemplo: card que tem imagem recebe layout diferente
+        </li>
+        <li>Use <code>:is()</code> para estilizar todos os headings da página de uma só vez</li>
+      </ul>
+      <div class="checkpoint-hint">💬 Dica: use o DevTools com o modo "Grid overlay" e "Flexbox overlay" ativados para
+        visualizar as trilhas enquanto constrói. No Chrome, no painel Elements, há um badge colorido "grid" ou "flex" ao
+        lado de cada container — clique para ver a sobreposição no browser.</div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         PRÓXIMA AULA
+    ══════════════════════════════════════════ -->
+    <a href="py-01-ambiente-primeiros-passos.html" class="next-lesson">
+      <div>
+        <div class="next-label">Próxima aula →</div>
+        <div class="next-title">Python — Ambiente &amp; Primeiros Passos</div>
+      </div>
+      <div class="next-arrow">→</div>
+    </a>
+
+    <div class="footer">
+      <span>🌐 HTML/CSS · Aula 04 / 50</span>
+      <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+    </div>
+
+  </div><!-- /page -->
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+
+    mermaid.initialize({
+      startOnLoad: true, theme: 'dark',
+      themeVariables: {
+        primaryColor: '#ef4444', primaryTextColor: '#e8e8f0',
+        primaryBorderColor: 'rgba(239,68,68,0.4)',
+        lineColor: '#8585a8', background: '#111118', mainBkg: '#16161f'
+      }
+    });
+
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('reading-progress').style.width = ((scrollTop / docHeight) * 100) + '%';
+    });
+  </script>
+
+</body>
+
+</html>
