@@ -371,10 +371,6 @@
       color: var(--python);
     }
 
-    .python-theme .topic-btn {
-      /* no-op */
-    }
-
     .js-theme .phase.active-phase .phase-label::after {
       background: var(--js);
       border-color: var(--js);
@@ -744,10 +740,12 @@
       color: inherit;
       display: block;
     }
+
     a.item:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
     }
+
     .lesson-badge {
       display: inline-flex;
       align-items: center;
@@ -761,24 +759,95 @@
       transition: all 0.2s;
       font-weight: 700;
     }
-    /* Badge por trilha */
-    .badge-github  { background: rgba(88,166,255,0.15); border: 1px solid rgba(88,166,255,0.35); color: #79c0ff; }
-    .badge-python  { background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.35); color: #93c5fd; }
-    .badge-html    { background: rgba(239,68,68,0.15);  border: 1px solid rgba(239,68,68,0.35);  color: #fca5a5; }
-    .badge-js      { background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.35); color: #fcd34d; }
-    .badge-docker  { background: rgba(6,182,212,0.15);  border: 1px solid rgba(6,182,212,0.35);  color: #67e8f9; }
-    .badge-n8n     { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.35); color: #6ee7b7; }
-    .badge-ai      { background: rgba(168,85,247,0.15); border: 1px solid rgba(168,85,247,0.35); color: #d8b4fe; }
-    .badge-oc      { background: rgba(249,115,22,0.15); border: 1px solid rgba(249,115,22,0.35); color: #fdba74; }
 
-    a.item.github-theme-link:hover { border-color: rgba(88,166,255,0.6);  box-shadow: 0 8px 24px rgba(88,166,255,0.1); }
-    a.item.python-theme-link:hover { border-color: rgba(59,130,246,0.6);  box-shadow: 0 8px 24px rgba(59,130,246,0.1); }
-    a.item.html-theme-link:hover   { border-color: rgba(239,68,68,0.6);   box-shadow: 0 8px 24px rgba(239,68,68,0.1);  }
-    a.item.js-theme-link:hover     { border-color: rgba(245,158,11,0.6);  box-shadow: 0 8px 24px rgba(245,158,11,0.1); }
-    a.item.docker-theme-link:hover { border-color: rgba(6,182,212,0.6);   box-shadow: 0 8px 24px rgba(6,182,212,0.1);  }
-    a.item.n8n-theme-link:hover    { border-color: rgba(16,185,129,0.6);  box-shadow: 0 8px 24px rgba(16,185,129,0.1); }
-    a.item.ai-theme-link:hover     { border-color: rgba(168,85,247,0.6);  box-shadow: 0 8px 24px rgba(168,85,247,0.1); }
-    a.item.oc-theme-link:hover     { border-color: rgba(249,115,22,0.6);  box-shadow: 0 8px 24px rgba(249,115,22,0.1); }
+    /* Badge por trilha */
+    .badge-github {
+      background: rgba(88, 166, 255, 0.15);
+      border: 1px solid rgba(88, 166, 255, 0.35);
+      color: #79c0ff;
+    }
+
+    .badge-python {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      color: #93c5fd;
+    }
+
+    .badge-html {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #fca5a5;
+    }
+
+    .badge-js {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: #fcd34d;
+    }
+
+    .badge-docker {
+      background: rgba(6, 182, 212, 0.15);
+      border: 1px solid rgba(6, 182, 212, 0.35);
+      color: #67e8f9;
+    }
+
+    .badge-n8n {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #6ee7b7;
+    }
+
+    .badge-ai {
+      background: rgba(168, 85, 247, 0.15);
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      color: #d8b4fe;
+    }
+
+    .badge-oc {
+      background: rgba(249, 115, 22, 0.15);
+      border: 1px solid rgba(249, 115, 22, 0.35);
+      color: #fdba74;
+    }
+
+    a.item.github-theme-link:hover {
+      border-color: rgba(88, 166, 255, 0.6);
+      box-shadow: 0 8px 24px rgba(88, 166, 255, 0.1);
+    }
+
+    a.item.python-theme-link:hover {
+      border-color: rgba(59, 130, 246, 0.6);
+      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.1);
+    }
+
+    a.item.html-theme-link:hover {
+      border-color: rgba(239, 68, 68, 0.6);
+      box-shadow: 0 8px 24px rgba(239, 68, 68, 0.1);
+    }
+
+    a.item.js-theme-link:hover {
+      border-color: rgba(245, 158, 11, 0.6);
+      box-shadow: 0 8px 24px rgba(245, 158, 11, 0.1);
+    }
+
+    a.item.docker-theme-link:hover {
+      border-color: rgba(6, 182, 212, 0.6);
+      box-shadow: 0 8px 24px rgba(6, 182, 212, 0.1);
+    }
+
+    a.item.n8n-theme-link:hover {
+      border-color: rgba(16, 185, 129, 0.6);
+      box-shadow: 0 8px 24px rgba(16, 185, 129, 0.1);
+    }
+
+    a.item.ai-theme-link:hover {
+      border-color: rgba(168, 85, 247, 0.6);
+      box-shadow: 0 8px 24px rgba(168, 85, 247, 0.1);
+    }
+
+    a.item.oc-theme-link:hover {
+      border-color: rgba(249, 115, 22, 0.6);
+      box-shadow: 0 8px 24px rgba(249, 115, 22, 0.1);
+    }
   </style>
 </head>
 
@@ -822,11 +891,13 @@
           <div class="phase-content">
             <div class="items-grid">
               <a href="aulas/py-01-ambiente-primeiros-passos.html" class="item highlight python-theme-link">
-                <div class="item-title">Instalação &amp; ambiente <span class="lesson-badge badge-python">▶ Aula 05</span></div>
+                <div class="item-title">Instalação &amp; ambiente <span class="lesson-badge badge-python">▶ Aula
+                    05</span></div>
                 <div class="item-desc">Python 3, pip, venv, VS Code ou PyCharm</div>
               </a>
               <a href="aulas/py-01-ambiente-primeiros-passos.html" class="item python-theme-link">
-                <div class="item-title">Tipos &amp; variáveis <span class="lesson-badge badge-python">▶ Aula 05</span></div>
+                <div class="item-title">Tipos &amp; variáveis <span class="lesson-badge badge-python">▶ Aula 05</span>
+                </div>
                 <div class="item-desc">int, float, str, bool, None, tipagem dinâmica</div>
               </a>
               <div class="item">
@@ -842,7 +913,8 @@
                 <div class="item-desc">list, tuple, dict, set — métodos e iterações</div>
               </div>
               <a href="aulas/py-01-ambiente-primeiros-passos.html" class="item python-theme-link">
-                <div class="item-title">Strings &amp; formatação <span class="lesson-badge badge-python">▶ Aula 05</span></div>
+                <div class="item-title">Strings &amp; formatação <span class="lesson-badge badge-python">▶ Aula
+                    05</span></div>
                 <div class="item-desc">f-strings, métodos de string, slicing</div>
               </a>
             </div>
@@ -1500,11 +1572,11 @@
           </div>
           <div class="phase-content">
             <div class="items-grid">
-              <a href="aulas/html-01-semantico-estrutura.html"  class="item highlight html-theme-link">
+              <a href="aulas/html-01-semantico-estrutura.html" class="item highlight html-theme-link">
                 <div class="item-title">Semântica <span class="lesson-badge badge-html">▶ Aula 03</span></div>
                 <div class="item-desc">header, nav, main, section, article, aside, footer</div>
               </a>
-              <a href="aulas/html-01-semantico-estrutura.html"  class="item html-theme-link">
+              <a href="aulas/html-01-semantico-estrutura.html" class="item html-theme-link">
                 <div class="item-title">Formulários <span class="lesson-badge badge-html">▶ Aula 03</span></div>
                 <div class="item-desc">todos os tipos de input, validação nativa, atributos</div>
               </a>
@@ -1516,7 +1588,7 @@
                 <div class="item-title">SEO básico</div>
                 <div class="item-desc">meta tags, Open Graph, estrutura de headings</div>
               </div>
-              <a href="aulas/html-01-semantico-estrutura.html"  class="item html-theme-link">
+              <a href="aulas/html-01-semantico-estrutura.html" class="item html-theme-link">
                 <div class="item-title">Media & embeds <span class="lesson-badge badge-html">▶ Aula 03</span></div>
                 <div class="item-desc">img srcset, video, audio, picture, iframe</div>
               </a>
@@ -1545,7 +1617,8 @@
                 <div class="item-desc">grid-template, areas, auto-fit, minmax, subgrid</div>
               </a>
               <a href="aulas/html-02-box-flexbox-grid.html" class="item html-theme-link">
-                <div class="item-title">Cascade &amp; Specificity <span class="lesson-badge badge-html">▶ Aula 04</span></div>
+                <div class="item-title">Cascade &amp; Specificity <span class="lesson-badge badge-html">▶ Aula 04</span>
+                </div>
                 <div class="item-desc">como a cascata funciona, :is(), :where(), :has()</div>
               </a>
               <div class="item">
@@ -2169,11 +2242,13 @@
               </div>
               <div class="item highlight">
                 <div class="item-title">Prompt Engineering — Fundamentos</div>
-                <div class="item-desc">zero-shot, few-shot, chain-of-thought (CoT), role prompting, system prompt vs user prompt, instrução vs exemplo</div>
+                <div class="item-desc">zero-shot, few-shot, chain-of-thought (CoT), role prompting, system prompt vs
+                  user prompt, instrução vs exemplo</div>
               </div>
               <div class="item highlight">
                 <div class="item-title">Prompt Engineering — Avançado</div>
-                <div class="item-desc">Tree-of-Thought, Self-Consistency, ReAct prompting, meta-prompting, prompt chaining, structured output (JSON mode), jailbreak awareness e defesas</div>
+                <div class="item-desc">Tree-of-Thought, Self-Consistency, ReAct prompting, meta-prompting, prompt
+                  chaining, structured output (JSON mode), jailbreak awareness e defesas</div>
               </div>
               <div class="item">
                 <div class="item-title">APIs de LLM</div>
@@ -2184,50 +2259,79 @@
                 <div class="item-desc">como medir qualidade de respostas, benchmarks</div>
               </div>
             </div>
-            <div class="tip-box"><strong>// dica</strong>Prompt Engineering é a habilidade mais subestimada em IA. Um prompt bem construído pode eliminar a necessidade de fine-tuning. Estude o <em>Anthropic Prompt Library</em> e o <em>OpenAI Prompt Engineering Guide</em>. Leia também "Attention Is All You Need" (resumido) e o blog do Andrej Karpathy para entender intuição por trás dos modelos.</div>
+            <div class="tip-box"><strong>// dica</strong>Prompt Engineering é a habilidade mais subestimada em IA. Um
+              prompt bem construído pode eliminar a necessidade de fine-tuning. Estude o <em>Anthropic Prompt
+                Library</em> e o <em>OpenAI Prompt Engineering Guide</em>. Leia também "Attention Is All You Need"
+              (resumido) e o blog do Andrej Karpathy para entender intuição por trás dos modelos.</div>
 
             <div class="relation-diagram">
               <div class="diagram-label">// hierarquia de técnicas de prompt engineering</div>
               <svg viewBox="0 0 680 200" xmlns="http://www.w3.org/2000/svg" font-family="JetBrains Mono, monospace">
                 <!-- Nível 1: Básico -->
                 <text x="10" y="18" fill="#8585a8" font-size="9" letter-spacing="0.1em">NÍVEL 1 — BÁSICO</text>
-                <rect x="10" y="24" width="130" height="38" rx="6" fill="rgba(168,85,247,0.08)" stroke="rgba(168,85,247,0.3)" stroke-width="1.5"/>
-                <text x="75" y="40" text-anchor="middle" fill="#d8b4fe" font-size="10" font-weight="700">Zero-shot</text>
+                <rect x="10" y="24" width="130" height="38" rx="6" fill="rgba(168,85,247,0.08)"
+                  stroke="rgba(168,85,247,0.3)" stroke-width="1.5" />
+                <text x="75" y="40" text-anchor="middle" fill="#d8b4fe" font-size="10"
+                  font-weight="700">Zero-shot</text>
                 <text x="75" y="54" text-anchor="middle" fill="#8585a8" font-size="8.5">instrução direta</text>
-                <rect x="155" y="24" width="130" height="38" rx="6" fill="rgba(168,85,247,0.08)" stroke="rgba(168,85,247,0.3)" stroke-width="1.5"/>
-                <text x="220" y="40" text-anchor="middle" fill="#d8b4fe" font-size="10" font-weight="700">Few-shot</text>
+                <rect x="155" y="24" width="130" height="38" rx="6" fill="rgba(168,85,247,0.08)"
+                  stroke="rgba(168,85,247,0.3)" stroke-width="1.5" />
+                <text x="220" y="40" text-anchor="middle" fill="#d8b4fe" font-size="10"
+                  font-weight="700">Few-shot</text>
                 <text x="220" y="54" text-anchor="middle" fill="#8585a8" font-size="8.5">exemplos no prompt</text>
-                <rect x="300" y="24" width="130" height="38" rx="6" fill="rgba(168,85,247,0.08)" stroke="rgba(168,85,247,0.3)" stroke-width="1.5"/>
-                <text x="365" y="40" text-anchor="middle" fill="#d8b4fe" font-size="10" font-weight="700">Role Prompting</text>
-                <text x="365" y="54" text-anchor="middle" fill="#8585a8" font-size="8.5">você é especialista em...</text>
-                <rect x="445" y="24" width="130" height="38" rx="6" fill="rgba(168,85,247,0.08)" stroke="rgba(168,85,247,0.3)" stroke-width="1.5"/>
-                <text x="510" y="40" text-anchor="middle" fill="#d8b4fe" font-size="10" font-weight="700">System Prompt</text>
+                <rect x="300" y="24" width="130" height="38" rx="6" fill="rgba(168,85,247,0.08)"
+                  stroke="rgba(168,85,247,0.3)" stroke-width="1.5" />
+                <text x="365" y="40" text-anchor="middle" fill="#d8b4fe" font-size="10" font-weight="700">Role
+                  Prompting</text>
+                <text x="365" y="54" text-anchor="middle" fill="#8585a8" font-size="8.5">você é especialista
+                  em...</text>
+                <rect x="445" y="24" width="130" height="38" rx="6" fill="rgba(168,85,247,0.08)"
+                  stroke="rgba(168,85,247,0.3)" stroke-width="1.5" />
+                <text x="510" y="40" text-anchor="middle" fill="#d8b4fe" font-size="10" font-weight="700">System
+                  Prompt</text>
                 <text x="510" y="54" text-anchor="middle" fill="#8585a8" font-size="8.5">contexto persistente</text>
                 <!-- Nível 2: Raciocínio -->
                 <text x="10" y="82" fill="#8585a8" font-size="9" letter-spacing="0.1em">NÍVEL 2 — RACIOCÍNIO</text>
-                <rect x="10" y="88" width="195" height="38" rx="6" fill="rgba(168,85,247,0.11)" stroke="rgba(168,85,247,0.4)" stroke-width="1.5"/>
-                <text x="107" y="104" text-anchor="middle" fill="#d8b4fe" font-size="10" font-weight="700">Chain-of-Thought (CoT)</text>
+                <rect x="10" y="88" width="195" height="38" rx="6" fill="rgba(168,85,247,0.11)"
+                  stroke="rgba(168,85,247,0.4)" stroke-width="1.5" />
+                <text x="107" y="104" text-anchor="middle" fill="#d8b4fe" font-size="10"
+                  font-weight="700">Chain-of-Thought (CoT)</text>
                 <text x="107" y="118" text-anchor="middle" fill="#8585a8" font-size="8.5">pense passo a passo...</text>
-                <rect x="218" y="88" width="195" height="38" rx="6" fill="rgba(168,85,247,0.11)" stroke="rgba(168,85,247,0.4)" stroke-width="1.5"/>
-                <text x="315" y="104" text-anchor="middle" fill="#d8b4fe" font-size="10" font-weight="700">Self-Consistency</text>
-                <text x="315" y="118" text-anchor="middle" fill="#8585a8" font-size="8.5">múltiplas respostas → votação</text>
-                <rect x="426" y="88" width="195" height="38" rx="6" fill="rgba(168,85,247,0.11)" stroke="rgba(168,85,247,0.4)" stroke-width="1.5"/>
-                <text x="523" y="104" text-anchor="middle" fill="#d8b4fe" font-size="10" font-weight="700">Tree-of-Thought</text>
-                <text x="523" y="118" text-anchor="middle" fill="#8585a8" font-size="8.5">explorar múltiplos caminhos</text>
+                <rect x="218" y="88" width="195" height="38" rx="6" fill="rgba(168,85,247,0.11)"
+                  stroke="rgba(168,85,247,0.4)" stroke-width="1.5" />
+                <text x="315" y="104" text-anchor="middle" fill="#d8b4fe" font-size="10"
+                  font-weight="700">Self-Consistency</text>
+                <text x="315" y="118" text-anchor="middle" fill="#8585a8" font-size="8.5">múltiplas respostas →
+                  votação</text>
+                <rect x="426" y="88" width="195" height="38" rx="6" fill="rgba(168,85,247,0.11)"
+                  stroke="rgba(168,85,247,0.4)" stroke-width="1.5" />
+                <text x="523" y="104" text-anchor="middle" fill="#d8b4fe" font-size="10"
+                  font-weight="700">Tree-of-Thought</text>
+                <text x="523" y="118" text-anchor="middle" fill="#8585a8" font-size="8.5">explorar múltiplos
+                  caminhos</text>
                 <!-- Nível 3: Avançado -->
                 <text x="10" y="148" fill="#8585a8" font-size="9" letter-spacing="0.1em">NÍVEL 3 — AVANÇADO</text>
-                <rect x="10" y="154" width="148" height="38" rx="6" fill="rgba(168,85,247,0.15)" stroke="#a855f7" stroke-width="2"/>
+                <rect x="10" y="154" width="148" height="38" rx="6" fill="rgba(168,85,247,0.15)" stroke="#a855f7"
+                  stroke-width="2" />
                 <text x="84" y="170" text-anchor="middle" fill="#e9d5ff" font-size="10" font-weight="700">ReAct</text>
                 <text x="84" y="184" text-anchor="middle" fill="#8585a8" font-size="8.5">raciocínio + ação + obs.</text>
-                <rect x="170" y="154" width="148" height="38" rx="6" fill="rgba(168,85,247,0.15)" stroke="#a855f7" stroke-width="2"/>
-                <text x="244" y="170" text-anchor="middle" fill="#e9d5ff" font-size="10" font-weight="700">Prompt Chaining</text>
-                <text x="244" y="184" text-anchor="middle" fill="#8585a8" font-size="8.5">output → input em cadeia</text>
-                <rect x="330" y="154" width="160" height="38" rx="6" fill="rgba(168,85,247,0.15)" stroke="#a855f7" stroke-width="2"/>
-                <text x="410" y="170" text-anchor="middle" fill="#e9d5ff" font-size="10" font-weight="700">Structured Output</text>
+                <rect x="170" y="154" width="148" height="38" rx="6" fill="rgba(168,85,247,0.15)" stroke="#a855f7"
+                  stroke-width="2" />
+                <text x="244" y="170" text-anchor="middle" fill="#e9d5ff" font-size="10" font-weight="700">Prompt
+                  Chaining</text>
+                <text x="244" y="184" text-anchor="middle" fill="#8585a8" font-size="8.5">output → input em
+                  cadeia</text>
+                <rect x="330" y="154" width="160" height="38" rx="6" fill="rgba(168,85,247,0.15)" stroke="#a855f7"
+                  stroke-width="2" />
+                <text x="410" y="170" text-anchor="middle" fill="#e9d5ff" font-size="10" font-weight="700">Structured
+                  Output</text>
                 <text x="410" y="184" text-anchor="middle" fill="#8585a8" font-size="8.5">JSON mode, XML tags</text>
-                <rect x="502" y="154" width="165" height="38" rx="6" fill="rgba(168,85,247,0.15)" stroke="#a855f7" stroke-width="2"/>
-                <text x="584" y="170" text-anchor="middle" fill="#e9d5ff" font-size="10" font-weight="700">Meta-prompting</text>
-                <text x="584" y="184" text-anchor="middle" fill="#8585a8" font-size="8.5">LLM gera seus próprios prompts</text>
+                <rect x="502" y="154" width="165" height="38" rx="6" fill="rgba(168,85,247,0.15)" stroke="#a855f7"
+                  stroke-width="2" />
+                <text x="584" y="170" text-anchor="middle" fill="#e9d5ff" font-size="10"
+                  font-weight="700">Meta-prompting</text>
+                <text x="584" y="184" text-anchor="middle" fill="#8585a8" font-size="8.5">LLM gera seus próprios
+                  prompts</text>
               </svg>
             </div>
 
@@ -2679,27 +2783,32 @@
           </div>
           <div class="phase-content">
             <div class="items-grid">
-              <a href="aulas/gh-01-primeiro-commit.html"  class="item highlight github-theme-link">
-                <div class="item-title">O que é controle de versão <span class="lesson-badge badge-github">▶ Aula 01</span></div>
+              <a href="aulas/gh-01-primeiro-commit.html" class="item highlight github-theme-link">
+                <div class="item-title">O que é controle de versão <span class="lesson-badge badge-github">▶ Aula
+                    01</span></div>
                 <div class="item-desc">Por que usar Git, diferença entre Git e GitHub, histórico de mudanças</div>
               </a>
-              <a href="aulas/gh-01-primeiro-commit.html"  class="item github-theme-link">
-                <div class="item-title">Instalação & configuração <span class="lesson-badge badge-github">▶ Aula 01</span></div>
-                <div class="item-desc">git install, git config --global, editor padrão <em style="color:#8585a8;font-size:11px">(SSH → Aula 11)</em></div>
+              <a href="aulas/gh-01-primeiro-commit.html" class="item github-theme-link">
+                <div class="item-title">Instalação & configuração <span class="lesson-badge badge-github">▶ Aula
+                    01</span></div>
+                <div class="item-desc">git install, git config --global, editor padrão <em
+                    style="color:#8585a8;font-size:11px">(SSH → Aula 11)</em></div>
               </a>
-              <a href="aulas/gh-01-primeiro-commit.html"  class="item github-theme-link">
+              <a href="aulas/gh-01-primeiro-commit.html" class="item github-theme-link">
                 <div class="item-title">Repositório local <span class="lesson-badge badge-github">▶ Aula 01</span></div>
                 <div class="item-desc">git init, git status, staging area, .gitignore</div>
               </a>
-              <a href="aulas/gh-01-primeiro-commit.html"  class="item github-theme-link">
+              <a href="aulas/gh-01-primeiro-commit.html" class="item github-theme-link">
                 <div class="item-title">Commit <span class="lesson-badge badge-github">▶ Aula 01</span></div>
-                <div class="item-desc">git add, git commit -m, git log <em style="color:#8585a8;font-size:11px">(Conventional Commits → Aula 16)</em></div>
+                <div class="item-desc">git add, git commit -m, git log <em
+                    style="color:#8585a8;font-size:11px">(Conventional Commits → Aula 16)</em></div>
               </a>
-              <a href="aulas/gh-02-branches-merge.html"  class="item github-theme-link">
-                <div class="item-title">Desfazendo mudanças <span class="lesson-badge badge-github">▶ Aula 02</span></div>
+              <a href="aulas/gh-02-branches-merge.html" class="item github-theme-link">
+                <div class="item-title">Desfazendo mudanças <span class="lesson-badge badge-github">▶ Aula 02</span>
+                </div>
                 <div class="item-desc">git restore, git reset, git revert — quando usar cada um</div>
               </a>
-              <a href="aulas/gh-01-primeiro-commit.html"  class="item github-theme-link">
+              <a href="aulas/gh-01-primeiro-commit.html" class="item github-theme-link">
                 <div class="item-title">Diff & inspeção <span class="lesson-badge badge-github">▶ Aula 01</span></div>
                 <div class="item-desc">git diff, git show, git blame, git log --oneline --graph</div>
               </a>
@@ -2766,11 +2875,11 @@
           </div>
           <div class="phase-content">
             <div class="items-grid">
-              <a href="aulas/gh-02-branches-merge.html"  class="item highlight github-theme-link">
+              <a href="aulas/gh-02-branches-merge.html" class="item highlight github-theme-link">
                 <div class="item-title">Branches <span class="lesson-badge badge-github">▶ Aula 02</span></div>
                 <div class="item-desc">git branch, git checkout -b, git switch — ramificação do código</div>
               </a>
-              <a href="aulas/gh-02-branches-merge.html"  class="item github-theme-link">
+              <a href="aulas/gh-02-branches-merge.html" class="item github-theme-link">
                 <div class="item-title">Merge <span class="lesson-badge badge-github">▶ Aula 02</span></div>
                 <div class="item-desc">fast-forward, merge commit, conflitos e como resolvê-los</div>
               </a>
@@ -2782,7 +2891,7 @@
                 <div class="item-title">Estratégias de branch</div>
                 <div class="item-desc">Git Flow, GitHub Flow, trunk-based development</div>
               </div>
-              <a href="aulas/gh-02-branches-merge.html"  class="item github-theme-link">
+              <a href="aulas/gh-02-branches-merge.html" class="item github-theme-link">
                 <div class="item-title">Stash <span class="lesson-badge badge-github">▶ Aula 02</span></div>
                 <div class="item-desc">git stash, pop, list — guardar trabalho temporariamente</div>
               </a>
@@ -2791,7 +2900,8 @@
                 <div class="item-desc">git tag, tags anotadas, versionamento semântico (v1.2.3)</div>
               </div>
               <div class="item">
-                <div class="item-title">Conventional Commits <em style="color:#8585a8;font-size:10px">▶ Aula 16</em></div>
+                <div class="item-title">Conventional Commits <em style="color:#8585a8;font-size:10px">▶ Aula 16</em>
+                </div>
                 <div class="item-desc">feat:, fix:, chore:, BREAKING CHANGE — padrão de mensagens semânticas</div>
               </div>
             </div>
@@ -2859,19 +2969,20 @@
           </div>
           <div class="phase-content">
             <div class="items-grid">
-              <a href="aulas/gh-03-colaboracao-prs.html"  class="item highlight github-theme-link">
+              <a href="aulas/gh-03-colaboracao-prs.html" class="item highlight github-theme-link">
                 <div class="item-title">Chave SSH <span class="lesson-badge badge-github">▶ Aula 11</span></div>
                 <div class="item-desc">gerar chave SSH, adicionar ao GitHub, autenticação sem senha</div>
               </a>
-              <a href="aulas/gh-03-colaboracao-prs.html"  class="item github-theme-link">
-                <div class="item-title">Remote & Push/Pull <span class="lesson-badge badge-github">▶ Aula 11</span></div>
+              <a href="aulas/gh-03-colaboracao-prs.html" class="item github-theme-link">
+                <div class="item-title">Remote & Push/Pull <span class="lesson-badge badge-github">▶ Aula 11</span>
+                </div>
                 <div class="item-desc">git remote, git push, git pull, git fetch, origin vs upstream</div>
               </a>
-              <a href="aulas/gh-03-colaboracao-prs.html"  class="item github-theme-link">
+              <a href="aulas/gh-03-colaboracao-prs.html" class="item github-theme-link">
                 <div class="item-title">Pull Requests <span class="lesson-badge badge-github">▶ Aula 11</span></div>
                 <div class="item-desc">abrir PR, code review, comentários, aprovação, squash & merge</div>
               </a>
-              <a href="aulas/gh-03-colaboracao-prs.html"  class="item github-theme-link">
+              <a href="aulas/gh-03-colaboracao-prs.html" class="item github-theme-link">
                 <div class="item-title">Issues & Projects <span class="lesson-badge badge-github">▶ Aula 11</span></div>
                 <div class="item-desc">criar issues, labels, milestones, GitHub Projects (kanban)</div>
               </a>
@@ -2879,7 +2990,7 @@
                 <div class="item-title">Fork & contribuição</div>
                 <div class="item-desc">forkar repos, sync com upstream, contribuir em open source</div>
               </div>
-              <a href="aulas/gh-03-colaboracao-prs.html"  class="item github-theme-link">
+              <a href="aulas/gh-03-colaboracao-prs.html" class="item github-theme-link">
                 <div class="item-title">README & Docs <span class="lesson-badge badge-github">▶ Aula 11</span></div>
                 <div class="item-desc">Markdown, badges, wiki, GitHub Pages para documentação</div>
               </a>
