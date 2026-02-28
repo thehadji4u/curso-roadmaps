@@ -1331,7 +1331,7 @@ git branch
               <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
               </div>
               <pre><code class="language-bash"># Crie ou edite arquivos normalmente
-echo "Nome: João · Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="412b2e202e012439242c312d2e6f222e2c">[email&#160;protected]</a>" > contato.txt
+echo "Nome: João · Email: joao&#64;exemplo.com" > contato.txt
 
 git add contato.txt
 git commit -m "feat: add contact page with basic info"
@@ -1410,16 +1410,14 @@ git branch -d feat/adicionar-contato</code></pre>
         <div class="conflict-header">⚠️ contato.txt — CONFLITO DE MERGE</div>
         <div class="conflict-line conflict-mine">
           &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD (sua versão — branch atual)<br>
-          Nome: João · Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__"
-            data-cfemail="12787d737d52776a777f627e7d3c717d7f">[email&#160;protected]</a><br>
+          Nome: João · Email: joao&#64;exemplo.com<br>
           Tel: (11) 99999-9999
         </div>
         <div class="conflict-line conflict-sep">
           ======= (separador)
         </div>
         <div class="conflict-line conflict-theirs">
-          Nome: João Silva · Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__"
-            data-cfemail="e08a8f818fce93898c9681a0858d9092859381ce838f8d">[email&#160;protected]</a><br>
+          Nome: João Silva · Email: joao.silva&#64;empresa.com<br>
           Tel: (11) 88888-8888<br>
           LinkedIn: linkedin.com/in/joaosilva
           <br><br>
@@ -1461,7 +1459,7 @@ git status
               <div class="code-header"><span class="code-filename">contato.txt — após resolução</span><span
                   class="code-lang">texto</span></div>
               <pre><code class="language-bash"># Versão final que você decidiu manter (sem marcadores):
-Nome: João Silva · Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d5bfbab4bafba6bcb9a3b495b0b8a5a7b0a6b4fbb6bab8">[email&#160;protected]</a>
+Nome: João Silva · Email: joao.silva&#64;empresa.com
 Tel: (11) 99999-9999
 LinkedIn: linkedin.com/in/joaosilva</code></pre>
             </div>
@@ -1814,10 +1812,9 @@ git branch --no-merged           # branches ainda não mergeadas</code></pre>
         <a class="video-card" href="https://www.youtube.com/watch?v=0chZFIZLR_0" target="_blank">
           <div class="video-thumb">▶</div>
           <div>
-            <div class="video-title">Git Stash Tutorial</div>
-            <div class="video-channel">Corey Schafer · ~20 min</div>
-            <div class="video-why">Por que assistir: Tutorial focado em stash com todos os casos de uso. Corey Schafer é
-              o melhor professor de Git em vídeo.</div>
+            <div class="video-title">Git MERGE vs REBASE: Everything You Need to Know</div>
+            <div class="video-channel">ByteByteGo · ~4 min</div>
+            <div class="video-why">Por que assistir: Explica visualmente a diferença entre merge e rebase — quando usar cada estratégia e qual preserva ou reescreve o histórico.</div>
             <span class="video-watch">Assistir →</span>
           </div>
         </a>
