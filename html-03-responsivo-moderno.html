@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS Responsivo & Moderno · HTML/CSS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <style>
+    /* ─── TOKENS ────────────────────────────────────────────── */
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+
+      --accent: #ef4444;
+      --accent-dim: rgba(239, 68, 68, 0.12);
+      --accent-border: rgba(239, 68, 68, 0.35);
+
+      /* Semantic colors */
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+  </style>
+  <link rel="stylesheet" href="../assets/css/lesson.css">
+</head>
+
+<body>
+
+  <!-- Progress Bar -->
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill"></div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="py-04-poo.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">🌐 HTML/CSS</span> · Aula 09 / 50
+      </div>
+      <a href="html-04-animacoes-transicoes.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- ── HERO ── -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>🌐 HTML/CSS</span>
+        <span class="hero-badge">Aula 09</span>
+      </div>
+      <h1>CSS — Responsivo & Moderno</h1>
+      <div class="hero-meta">
+        <span>⏱ ~30 min de leitura</span>
+        <span>🎯 Intermediário</span>
+        <span>🔧 Hands-on incluído</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag">@media</span>
+        <span class="tag">min-width</span>
+        <span class="tag">mobile-first</span>
+        <span class="tag">breakpoints</span>
+        <span class="tag">container queries</span>
+        <span class="tag">clamp()</span>
+        <span class="tag">viewport units</span>
+      </div>
+    </div>
+
+    <!-- ── 1. POR QUE ISSO IMPORTA ── -->
+    <div class="section">
+      <div class="section-label">// motivação</div>
+      <h2>Por que isso importa?</h2>
+      <p>
+        Mais de <strong>60% do tráfego web global</strong> vem de dispositivos móveis. Se seu site não adapta
+        seu layout ao tamanho da tela do usuário, você está essencialmente bloqueando mais da metade dos seus
+        visitantes de ter uma boa experiência. Design responsivo não é opcional — é o mínimo esperado.
+      </p>
+      <p>
+        Mas responsividade moderna vai além de media queries tradicionais. Com <strong>container queries</strong>,
+        <code>clamp()</code>, e unidades de viewport dinâmicas, você escreve CSS que se adapta não apenas
+        ao tamanho da janela, mas ao contexto do próprio componente.
+      </p>
+
+      <div class="callout callout-info">
+        <div class="callout-title">💼 Como engenheiros sênior usam isso hoje</div>
+        <p>
+          Equipes de front-end em empresas como Nubank e iFood constroem sistemas de design com
+          <strong>breakpoints padronizados</strong> e <strong>tokens de tipografia fluida</strong> usando
+          <code>clamp()</code>. Um componente de card, por exemplo, reage ao espaço disponível em seu
+          container (container queries) — não ao viewport inteiro. Isso permite reutilizar o mesmo
+          componente em uma sidebar estreita ou em um grid de tela cheia sem alterar o HTML.
+        </p>
+      </div>
+    </div>
+
+    <!-- ── 2. ANALOGIA ── -->
+    <div class="section">
+      <div class="section-label">// analogia</div>
+      <h2>Antes do código: uma analogia</h2>
+      <div class="analogy-card">
+        <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
+        <div class="analogy-text">
+          Imagine uma <strong>peça de roupa com tecnologia de compressão adaptável</strong> — ela se ajusta
+          automaticamente ao corpo de quem a veste: fica mais larga para alguém grande, mais compacta para
+          alguém pequeno, mas sempre com o mesmo design elegante. Você não precisa de versões separadas da
+          roupa para cada tamanho.
+          <br><br>
+          Em CSS, as <strong>media queries</strong> são esse mecanismo de adaptação. Você escreve um único
+          conjunto de regras que o navegador aplica de forma diferente dependendo do "tamanho" (viewport)
+          do dispositivo. Com <code>clamp()</code>, é como se a roupa se ajustasse <em>continuamente</em>
+          em vez de em saltos.
+        </div>
+        <div class="analogy-mapping">
+          <span class="analogy-real">👗 Tamanho da roupa (P/M/G/GG)</span>
+          <span class="analogy-tech">→ Breakpoints (480px / 768px / 1024px / 1280px)</span>
+          <span class="analogy-real">🪡 Tecido elástico que se ajusta</span>
+          <span class="analogy-tech">→ <code>clamp(min, ideal, max)</code></span>
+          <span class="analogy-real">📐 Medida a partir do corpo (não da vitrine)</span>
+          <span class="analogy-tech">→ Container queries</span>
+          <span class="analogy-real">👕 Começa pelo menor tamanho</span>
+          <span class="analogy-tech">→ Mobile-first approach</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 3. CONCEITO ── -->
+    <div class="section">
+      <div class="section-label">// conceito</div>
+      <h2>Media Queries — o coração da responsividade</h2>
+      <p>
+        Uma media query é uma condição que o CSS avalia antes de aplicar um bloco de estilos.
+        A sintaxe básica é:
+      </p>
+
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-filename">syntax.css</span>
+          <span class="code-lang">CSS</span>
+        </div>
+        <pre><code class="language-css">/* ─── Sintaxe básica ────────────────────────────── */
+@media (condição) {
+  /* CSS aplicado apenas quando condição for verdadeira */
+}
+
+/* ─── Exemplos reais ─────────────────────────────── */
+
+/* Mobile-first: estilos base para mobile */
+.card {
+  flex-direction: column;
+  padding: 16px;
+}
+
+/* Tablet: muda quando tela tem pelo menos 768px */
+@media (min-width: 768px) {
+  .card {
+    flex-direction: row;
+    padding: 24px;
+  }
+}
+
+/* Desktop: muda quando tela tem pelo menos 1024px */
+@media (min-width: 1024px) {
+  .card {
+    padding: 32px;
+    gap: 32px;
+  }
+}
+
+/* Orientação: regras para tela em paisagem */
+@media (orientation: landscape) and (max-height: 500px) {
+  .hero { min-height: 60vh; }
+}
+
+/* Preferência do sistema: modo escuro/claro */
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #0a0a0f; }
+}
+
+/* Redução de movimento: acessibilidade */
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; }
+}</code></pre>
+      </div>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// fluxo de decisão: qual CSS aplicar?</div>
+        <div class="mermaid">
+          graph TD
+            A[Usuário acessa o site] --> B{Tamanho da tela?}
+            B -->|< 768px| C[📱 Mobile]
+            B -->|768px - 1023px| D[📟 Tablet]
+            B -->|>= 1024px| E[🖥️ Desktop]
+            C --> F[Estilos base<br/>flex-column, fonte 16px]
+            D --> G[Media 768px<br/>flex-row, navegação expandida]
+            E --> H[Media 1024px<br/>grid multi-coluna, sidebar]
+            F --> I[Sistema operacional]
+            G --> I
+            H --> I
+            I -->|prefers-dark| J[🌙 Modo escuro ativado]
+            I -->|prefers-reduced-motion| K[♿ Animações removidas]
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 4. TABELA ── -->
+    <div class="section">
+      <div class="section-label">// comparação</div>
+      <h2>Breakpoints padrão da indústria</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Breakpoint</th>
+              <th>Largura</th>
+              <th>Dispositivos-alvo</th>
+              <th>Abordagem</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Base (default)</td>
+              <td>0px +</td>
+              <td>Celulares menores (320px–480px)</td>
+              <td>Mobile-first: sem media query</td>
+            </tr>
+            <tr>
+              <td><code>sm</code></td>
+              <td>480px +</td>
+              <td>Celulares grandes, phablets</td>
+              <td><code>@media (min-width: 480px)</code></td>
+            </tr>
+            <tr>
+              <td><code>md</code></td>
+              <td>768px +</td>
+              <td>Tablets em retrato, landscape mobile</td>
+              <td><code>@media (min-width: 768px)</code></td>
+            </tr>
+            <tr>
+              <td><code>lg</code></td>
+              <td>1024px +</td>
+              <td>Tablets landscape, laptops pequenos</td>
+              <td><code>@media (min-width: 1024px)</code></td>
+            </tr>
+            <tr>
+              <td><code>xl</code></td>
+              <td>1280px +</td>
+              <td>Desktops padrão</td>
+              <td><code>@media (min-width: 1280px)</code></td>
+            </tr>
+            <tr>
+              <td><code>2xl</code></td>
+              <td>1536px +</td>
+              <td>Monitores grandes, 4K</td>
+              <td><code>@media (min-width: 1536px)</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── 5. HANDS-ON ── -->
+    <div class="section">
+      <div class="section-label">// prática</div>
+      <h2>Mãos na massa</h2>
+      <p>Crie um arquivo <code>responsivo.html</code> e implemente um layout completo mobile-first:</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Configure o viewport e estrutura base</div>
+            <div class="step-desc">Sem a meta tag viewport, as media queries não funcionam em dispositivos móveis reais.</div>
+            <div class="code-wrap">
+              <div class="code-header">
+                <span class="code-filename">responsivo.html</span>
+                <span class="code-lang">HTML</span>
+              </div>
+              <pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="pt-BR"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;!-- CRÍTICO: sem isso, mobile ignora suas media queries! --&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Layout Responsivo&lt;/title&gt;
+  &lt;link rel="stylesheet" href="styles.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;header class="header"&gt;
+    &lt;div class="logo"&gt;DevBlog&lt;/div&gt;
+    &lt;nav class="nav"&gt;
+      &lt;a href="#"&gt;Início&lt;/a&gt;
+      &lt;a href="#"&gt;Artigos&lt;/a&gt;
+      &lt;a href="#"&gt;Sobre&lt;/a&gt;
+    &lt;/nav&gt;
+    &lt;button class="menu-toggle"&gt;☰&lt;/button&gt;
+  &lt;/header&gt;
+
+  &lt;main class="layout"&gt;
+    &lt;section class="content"&gt;
+      &lt;h1&gt;Artigo Principal&lt;/h1&gt;
+      &lt;div class="cards-grid"&gt;
+        &lt;div class="card"&gt;Card 1&lt;/div&gt;
+        &lt;div class="card"&gt;Card 2&lt;/div&gt;
+        &lt;div class="card"&gt;Card 3&lt;/div&gt;
+        &lt;div class="card"&gt;Card 4&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/section&gt;
+    &lt;aside class="sidebar"&gt;
+      &lt;h2&gt;Sidebar&lt;/h2&gt;
+      &lt;p&gt;Conteúdo complementar&lt;/p&gt;
+    &lt;/aside&gt;
+  &lt;/main&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Estilos base (mobile-first)</div>
+            <div class="step-desc">Comece pelo menor. Estilos sem media query são o ponto de partida para mobile.</div>
+            <div class="code-wrap">
+              <div class="code-header">
+                <span class="code-filename">styles.css — parte 1: base mobile</span>
+                <span class="code-lang">CSS</span>
+              </div>
+              <pre><code class="language-css">/* ─── RESET & BASE ────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: system-ui, sans-serif;
+  font-size: 1rem; /* 16px base */
+  line-height: 1.6;
+  color: #333;
+}
+
+/* ─── HEADER — mobile: stacked ──────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: #1e293b;
+  color: white;
+}
+
+/* Navegação OCULTA no mobile */
+.nav {
+  display: none;
+  gap: 16px;
+}
+
+.nav a { color: white; text-decoration: none; }
+
+/* Botão hamburguer VISÍVEL no mobile */
+.menu-toggle { display: block; background: none; border: none; color: white; font-size: 24px; }
+
+/* ─── LAYOUT — mobile: uma coluna ───────────────── */
+.layout {
+  display: flex;
+  flex-direction: column; /* empilhado no mobile */
+  gap: 24px;
+  padding: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ─── CARDS GRID — mobile: 1 coluna ─────────────── */
+.cards-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* 1 coluna */
+  gap: 16px;
+}
+
+.card {
+  padding: 20px;
+  background: #f1f5f9;
+  border-radius: 8px;
+  border-left: 4px solid #ef4444;
+}
+
+/* ─── TIPOGRAFIA FLUIDA com clamp() ─────────────── */
+h1 {
+  /* mínimo 24px, ideal 5vw, máximo 40px */
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  margin-bottom: 24px;
+}
+
+h2 {
+  font-size: clamp(1.2rem, 3.5vw, 1.8rem);
+  margin-bottom: 16px;
+}</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Adicione os breakpoints progressivos</div>
+            <div class="step-desc">Cada breakpoint expande o layout — nunca redefinindo, apenas expandindo.</div>
+            <div class="code-wrap">
+              <div class="code-header">
+                <span class="code-filename">styles.css — parte 2: media queries</span>
+                <span class="code-lang">CSS</span>
+              </div>
+              <pre><code class="language-css">/* ─── TABLET (768px+) ──────────────────────────── */
+@media (min-width: 768px) {
+  /* Header: mostra nav, esconde botão */
+  .nav { display: flex; }
+  .menu-toggle { display: none; }
+
+  /* Cards: 2 colunas */
+  .cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Padding aumentado */
+  .layout { padding: 24px; }
+}
+
+/* ─── DESKTOP (1024px+) ─────────────────────────── */
+@media (min-width: 1024px) {
+  /* Layout: conteúdo + sidebar lado a lado */
+  .layout {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .content { flex: 1; }    /* ocupa o espaço disponível */
+  .sidebar { width: 280px; flex-shrink: 0; } /* largura fixa */
+
+  /* Cards: 2 colunas (dentro do .content, não tela cheia) */
+  .cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ─── MONITOR GRANDE (1280px+) ──────────────────── */
+@media (min-width: 1280px) {
+  /* Cards: 4 colunas no desktop grande */
+  .cards-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ─── PREFERÊNCIA DE MOVIMENTO ──────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Container Queries — o futuro do CSS responsivo</div>
+            <div class="step-desc">Com container queries, o componente reage ao seu próprio container, não ao viewport.</div>
+            <div class="code-wrap">
+              <div class="code-header">
+                <span class="code-filename">container-query.css</span>
+                <span class="code-lang">CSS</span>
+              </div>
+              <pre><code class="language-css">/* ─── CONTAINER QUERIES (CSS moderno, 2023+) ──── */
+
+/* 1. Declare o container que será monitorado */
+.cards-grid {
+  container-type: inline-size; /* monitora a largura */
+  container-name: cards;       /* nome opcional */
+}
+
+/* 2. Regras para o FILHO baseadas no tamanho do CONTAINER */
+@container cards (min-width: 400px) {
+  .card {
+    display: flex;
+    gap: 16px;
+  }
+}
+
+@container cards (min-width: 600px) {
+  .card {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+/* ─── VANTAGEM: mesmo componente em sidebar (estreita)
+   e em grid (largo) — comportamento diferente automaticamente!
+   A sidebar pode ter 280px e o card fica empilhado,
+   enquanto o grid tem 800px e o card fica lado a lado. ───── */</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 6. CÓDIGO COMPLETO ── -->
+    <div class="section">
+      <div class="section-label">// código</div>
+      <h2>Técnicas modernas de tipografia fluida</h2>
+      <p>
+        <code>clamp()</code> é a forma mais elegante de criar tipografia que escala suavemente entre
+        tamanhos de tela, sem <strong>nenhuma media query</strong> para fonte.
+      </p>
+
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-filename">fluid-typography.css</span>
+          <span class="code-lang">CSS</span>
+        </div>
+        <pre><code class="language-css">/*
+  Sistema de tipografia fluida — sem media queries!
+  Execute no browser: abra DevTools → toggle device toolbar
+  Redimensione a janela e veja as fontes se adaptarem suavemente.
+*/
+
+:root {
+  /* ─── ESCALA FLUIDA ───────────────────────────────────────
+     clamp(MÍNIMO, IDEAL, MÁXIMO)
+     IDEAL: vw = viewport width, dvw = dynamic viewport width
+     ─────────────────────────────────────────────────────── */
+
+  --font-xs:   clamp(0.75rem,  1.5vw, 0.875rem);  /* 12px → 14px */
+  --font-sm:   clamp(0.875rem, 2vw,   1rem);       /* 14px → 16px */
+  --font-base: clamp(1rem,     2.5vw, 1.125rem);   /* 16px → 18px */
+  --font-lg:   clamp(1.125rem, 3vw,   1.5rem);     /* 18px → 24px */
+  --font-xl:   clamp(1.5rem,   4vw,   2rem);       /* 24px → 32px */
+  --font-2xl:  clamp(2rem,     6vw,   3rem);       /* 32px → 48px */
+  --font-3xl:  clamp(2.5rem,   8vw,   4.5rem);     /* 40px → 72px */
+
+  /* ─── ESPAÇAMENTO FLUIDO ─────────────────────────────── */
+  --space-sm:  clamp(8px,  2vw, 16px);
+  --space-md:  clamp(16px, 3vw, 24px);
+  --space-lg:  clamp(24px, 5vw, 48px);
+  --space-xl:  clamp(48px, 8vw, 96px);
+}
+
+/* Uso: */
+h1 { font-size: var(--font-2xl); margin-bottom: var(--space-md); }
+h2 { font-size: var(--font-xl);  margin-bottom: var(--space-sm); }
+p  { font-size: var(--font-base); line-height: 1.7; }
+
+/* ─── UNIDADES MODERNAS DE VIEWPORT ──────────────────────
+   Problema: 100vh em mobile inclui a barra de endereço.
+   Solução: unidades dinâmicas (suporte 2022+)         */
+
+.hero {
+  min-height: 100dvh; /* dynamic viewport height */
+  width: 100dvw;      /* dynamic viewport width */
+}
+
+/* svh = small viewport height (sem barras do browser) */
+/* lvh = large viewport height (com barras do browser) */
+/* dvh = dynamic (muda conforme barras aparecem/somem) */
+
+.section-tall { min-height: 60svh; } /* sempre seguro */</code></pre>
+      </div>
+    </div>
+
+    <!-- ── 7. ERROS COMUNS ── -->
+    <div class="section">
+      <div class="section-label">// armadilhas</div>
+      <h2>Erros comuns em CSS responsivo</h2>
+
+      <div class="callout callout-warn" style="margin-bottom: 16px;">
+        <div class="callout-title">⚠️ Esquecer a meta tag viewport</div>
+        <p>
+          Sem <code>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</code>,
+          o navegador móvel renderiza a página como se tivesse 980px de largura e suas media queries
+          para mobile nunca disparam. É o erro #1 de quem começa com responsividade.
+        </p>
+      </div>
+
+      <div class="callout callout-warn" style="margin-bottom: 16px;">
+        <div class="callout-title">⚠️ Desktop-first em vez de mobile-first</div>
+        <p>
+          Usar <code>max-width</code> em vez de <code>min-width</code> força você a sobrescrever
+          estilos de desktop para mobile. Mobile-first com <code>min-width</code> é mais limpo:
+          você começa simples e <em>adiciona</em> complexidade para telas maiores.
+          Estilos base para o menor dispositivo, expansão para telas maiores.
+        </p>
+      </div>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Pixels fixos que quebram o layout</div>
+        <p>
+          Usar <code>width: 400px</code> em um container que pode aparecer em telas de 320px.
+          Prefira <code>max-width: 400px; width: 100%</code> ou unidades relativas.
+          <strong>Nunca</strong> use <code>height</code> fixo para textos — deixe o conteúdo
+          determinar a altura. Use <code>min-height</code> quando necessário.
+        </p>
+      </div>
+    </div>
+
+    <!-- ── 8. VÍDEOS ── -->
+    <div class="section">
+      <div class="section-label">// curadoria</div>
+      <h2>Referências em vídeo</h2>
+      <p>Vídeos validados para aprofundar CSS responsivo:</p>
+      <div class="videos-grid">
+
+        <a class="video-card" href="https://www.youtube.com/watch?v=srvUrASNj0s" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div>
+            <div class="video-title">Are you using media queries wrong?</div>
+            <div class="video-channel">Kevin Powell · ~15 min (EN)</div>
+            <div class="video-why">Por que assistir: Kevin Powell é a referência absoluta em CSS moderno. Neste vídeo ele desmonta o approach desktop-first e ensina definitivamente por que mobile-first é o caminho — com exemplos práticos claros.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+
+        <a class="video-card" href="https://www.youtube.com/watch?v=K24lUqcT0Ms" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div>
+            <div class="video-title">Learn CSS Media Query in 7 Minutes</div>
+            <div class="video-channel">Web Dev Simplified · ~7 min (EN)</div>
+            <div class="video-why">Por que assistir: Explicação rápida e direta da sintaxe de media queries com exemplos visuais imediatos. Ideal para quem quer entender a mecânica básica antes de partir para técnicas avançadas.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+
+        <a class="video-card" href="https://www.youtube.com/watch?v=p0bGHP-PXD4" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div>
+            <div class="video-title">Flexbox CSS Complete Tutorial</div>
+            <div class="video-channel">Traversy Media · ~20 min (EN)</div>
+            <div class="video-why">Por que assistir: Flexbox e responsividade andam juntos. Este tutorial consolida as bases de Flexbox que você precisa dominar antes de construir layouts responsivos complexos com sidebar + content.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+
+        <a class="video-card" href="https://www.youtube.com/watch?v=bn-DQznEItU" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div>
+            <div class="video-title">Masterclass de Responsividade — HTML e CSS</div>
+            <div class="video-channel">Rocketseat · ~1h (PT-BR)</div>
+            <div class="video-why">Por que assistir: Masterclass completa em português com projeto real. Cobre viewport meta tag, media queries, imagens responsivas e boas práticas de acessibilidade. Produção de qualidade da Rocketseat.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- ── CHECKPOINT ── -->
+    <div class="checkpoint">
+      <div class="checkpoint-label">// desafio</div>
+      <h3>🏁 Checkpoint — valide seu aprendizado</h3>
+      <p>
+        Construa uma <strong>página de portfólio responsiva</strong> do zero, com layout mobile-first.
+        A página deve se adaptar corretamente em 3 breakpoints distintos:
+      </p>
+      <ul>
+        <li>✓ <strong>Mobile (base)</strong>: header empilhado com botão hamburguer visível, navegação oculta,
+          seção de projetos em 1 coluna, tipografia base de 16px</li>
+        <li>✓ <strong>Tablet (768px+)</strong>: navegação exposta horizontalmente, grid de projetos em 2 colunas,
+          sem botão hamburguer</li>
+        <li>✓ <strong>Desktop (1024px+)</strong>: sidebar "sobre mim" ao lado do conteúdo principal,
+          projetos em 3 colunas, header com mais espaçamento</li>
+        <li>✓ Use <code>clamp()</code> para pelo menos o tamanho do <code>h1</code> e um elemento de espaçamento —
+          confirme que a fonte escala suavemente ao redimensionar</li>
+        <li>✓ Adicione <code>@media (prefers-color-scheme: dark)</code> com pelo menos 2 variáveis CSS alteradas
+          para o modo escuro</li>
+      </ul>
+      <div class="checkpoint-hint">
+        💬 Dica: Comece pelo mobile sem <em>nenhuma</em> media query. Só adicione o breakpoint de 768px quando
+        o mobile estiver perfeito. Use o Chrome DevTools (F12 → ícone de celular) para testar cada breakpoint.
+        Confirme que a meta viewport está presente ou nada vai funcionar no mobile real.
+      </div>
+    </div>
+
+    <!-- ── PRÓXIMA AULA ── -->
+    <div class="section">
+      <a href="html-04-animacoes-transicoes.html" class="next-lesson">
+        <div>
+          <div class="next-label">Próxima aula →</div>
+          <div class="next-title">CSS — Animações & Transições</div>
+        </div>
+        <div class="next-arrow">→</div>
+      </a>
+    </div>
+
+  </div><!-- /page -->
+
+  <script>
+    // Initialize syntax highlighting
+    document.addEventListener('DOMContentLoaded', () => {
+      hljs.highlightAll();
+    });
+
+    // Initialize Mermaid
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      themeVariables: {
+        primaryColor: '#ef4444',
+        primaryTextColor: '#e8e8f0',
+        primaryBorderColor: 'rgba(239, 68, 68, 0.35)',
+        lineColor: '#8585a8',
+        background: '#111118',
+        mainBkg: '#16161f',
+        nodeBorder: '#ef4444'
+      }
+    });
+
+    // Scroll progress indicator
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = (scrollTop / docHeight) * 100;
+      document.querySelector('.progress-bar-fill').style.width = progress + '%';
+    });
+  </script>
+
+</body>
+
+</html>

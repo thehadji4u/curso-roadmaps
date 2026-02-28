@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{TOPICO}} · {{CATEGORIA}}</title>
+
+  <!-- Fonts (same as roadmap) -->
+  <!-- Syntax highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <!-- Mermaid diagrams -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+  <style>
+    /* ─── TOKENS ────────────────────────────────────────────── */
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+
+      --accent: {
+          {
+          ACCENT_COLOR
+        }
+      }
+
+      ;
+
+      /* ex: #3b82f6 para Python */
+      --accent-dim: {
+          {
+          ACCENT_DIM
+        }
+      }
+
+      ;
+
+      /* ex: rgba(59,130,246,0.15) */
+      --accent-border: {
+          {
+          ACCENT_BORDER
+        }
+      }
+
+      ;
+      /* ex: rgba(59,130,246,0.3) */
+
+      /* Semantic colors */
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+  </style>
+  <link rel="stylesheet" href="assets/css/lesson.css">
+</head>
+
+<body>
+
+  <!-- Progress Bar -->
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill"></div>
+  </div>
+
+  <!-- Top Navigation -->
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-position">
+      <span class="track">{{TOPICO}}</span> · Aula {{NUM_AULA}}/{{TOTAL_AULAS}}
+    </div>
+    <a href="{{PROXIMA_AULA}}" class="nav-next">Próxima →</a>
+  </nav>
+
+  <div class="page">
+
+    <!-- ── HERO ──────────────────────────────────── -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>{{TOPICO}}</span>
+        <span class="hero-badge">Aula {{NUM_AULA}}</span>
+      </div>
+      <h1>{{AULA_TITULO}}</h1>
+      <div class="hero-meta">
+        <span>⏱ {{DURACAO}} de leitura</span>
+        <span>🎯 {{NIVEL}}</span>
+        <span>🔧 Hands-on incluído</span>
+      </div>
+      <div class="hero-tags">
+        {{TAGS_HTML}} <!-- ex: <span class="tag">pip</span> <span class="tag">venv</span> -->
+      </div>
+    </div>
+
+    <!-- ── 1. POR QUE ISSO IMPORTA? ──────────────── -->
+    <div class="section">
+      <div class="section-label">// motivação</div>
+      <h2>Por que isso importa?</h2>
+      <p>
+        {{MOTIVACAO_TEXTO}}
+      </p>
+      <div class="callout callout-info">
+        <div class="callout-title">💼 Por que um engenheiro sênior usa isso hoje</div>
+        {{SENIOR_USE_CASE}}
+      </div>
+    </div>
+
+    <!-- ── 2. ANALOGIA DO MUNDO REAL ─────────────── -->
+    <div class="section">
+      <div class="section-label">// analogia</div>
+      <h2>Antes do código: uma analogia</h2>
+      <div class="analogy-card">
+        <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
+        <div class="analogy-text">{{ANALOGIA_TEXTO}}</div>
+        <div class="analogy-mapping">
+          <!-- Preencher com pares: conceito real → conceito técnico -->
+          <span class="analogy-real">{{REAL_1}}</span>
+          <span class="analogy-tech">→ {{TECH_1}}</span>
+          <span class="analogy-real">{{REAL_2}}</span>
+          <span class="analogy-tech">→ {{TECH_2}}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 3. CONCEITO CENTRAL ────────────────────── -->
+    <div class="section">
+      <div class="section-label">// conceito</div>
+      <h2>O conceito</h2>
+      <p>{{CONCEITO_INTRO}}</p>
+
+      <!-- Diagrama Mermaid -->
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// diagrama</div>
+        <div class="mermaid">
+          {{MERMAID_DIAGRAM}}
+          <!-- Exemplo:
+          graph TD
+            A[Início] -\-> B{Condição?}
+            B --Sim-\-> C[Ação A]
+            B --Não-\-> D[Ação B]
+          -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 4. TABELA COMPARATIVA ──────────────────── -->
+    <div class="section">
+      <div class="section-label">// comparação</div>
+      <h2>{{TITULO_TABELA}}</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              {{TABELA_HEADERS}} <!-- ex: <th>Opção</th><th>Quando usar</th><th>Prós</th><th>Contras</th> -->
+            </tr>
+          </thead>
+          <tbody>
+            {{TABELA_ROWS}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── 4B. GRID DE CARDS (OPCIONAL) ───────────── -->
+    <div class="section">
+      <div class="section-label">// conceitos</div>
+      <h2>{{GRID_TITULO}}</h2>
+      <div class="grid-2">
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(59,130,246,0.2);color:#60a5fa;">Item 1</span>
+          <h4>{{CARD_1_TITULO}}</h4>
+          <p>{{CARD_1_DESC}}</p>
+        </div>
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(34,197,94,0.2);color:#4ade80;">Item 2</span>
+          <h4>{{CARD_2_TITULO}}</h4>
+          <p>{{CARD_2_DESC}}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 5. HANDS-ON PASSO A PASSO ─────────────── -->
+    <div class="section">
+      <div class="section-label">// prática</div>
+      <h2>Mãos na massa</h2>
+      <p>Abra o terminal e siga os passos:</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">{{PASSO_1_TITULO}}</div>
+            <div class="step-desc">{{PASSO_1_DESC}}</div>
+            <!-- Bloco de código dentro do passo -->
+          </div>
+        </div>
+        <!-- Repetir para cada passo -->
+      </div>
+    </div>
+
+    <!-- ── 6. CÓDIGO COMENTADO ───────────────────── -->
+    <div class="section">
+      <div class="section-label">// código</div>
+      <h2>Exemplo completo</h2>
+      <p>{{CODIGO_INTRO}}</p>
+
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-filename">{{FILENAME}}</span>
+          <span class="code-lang">{{LINGUAGEM}}</span>
+        </div>
+        <pre><code class="language-{{LINGUAGEM_HLJS}}">
+{{CODIGO_COMPLETO}}
+        </code></pre>
+      </div>
+    </div>
+
+    <!-- ── 7. PITFALLS (OPCIONAL) ────────────────── -->
+    <div class="section">
+      <div class="section-label">// armadilhas</div>
+      <h2>Erros comuns</h2>
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ {{PITFALL_1_TITULO}}</div>
+        {{PITFALL_1_DESC}}
+      </div>
+    </div>
+
+    <!-- ── 8. CURADORIA DE VÍDEOS ────────────────── -->
+    <div class="section">
+      <div class="section-label">// curadoria</div>
+      <h2>Referências em vídeo</h2>
+      <p>Vídeos específicos para aprofundar este tema:</p>
+      <div class="videos-grid">
+        <a class="video-card" href="{{VIDEO_1_URL}}" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div>
+            <div class="video-title">{{VIDEO_1_TITULO}}</div>
+            <div class="video-channel">{{VIDEO_1_CANAL}} · {{VIDEO_1_DURACAO}}</div>
+            <div class="video-why">Por que assistir: {{VIDEO_1_WHY}}</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+        <!-- Repetir para 2-4 vídeos -->
+      </div>
+    </div>
+
+    <!-- ── 9. CHECKPOINT ─────────────────────────── -->
+    <div class="checkpoint">
+      <div class="checkpoint-label">// desafio</div>
+      <h3>🏁 Checkpoint — valide seu aprendizado</h3>
+      <p>{{CHECKPOINT_DESC}}</p>
+      <ul>
+        <li>{{CRITERIO_1}}</li>
+        <li>{{CRITERIO_2}}</li>
+        <li>{{CRITERIO_3}}</li>
+      </ul>
+      <div class="checkpoint-hint">💬 Dica: {{CHECKPOINT_HINT}}</div>
+    </div>
+
+    <!-- ── PRÓXIMA AULA ───────────────────────────── -->
+    <a href="{{PROXIMA_AULA}}" class="next-lesson">
+      <div>
+        <div class="next-label">Próxima aula →</div>
+        <div class="next-title">{{PROXIMA_TITULO}}</div>
+      </div>
+      <div class="next-arrow">→</div>
+    </a>
+
+    <!-- ── FOOTER ────────────────────────────────── -->
+    <div class="footer">
+      <span>{{TOPICO}} · Aula {{NUM_AULA}}/{{TOTAL_AULAS}}</span>
+      <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+    </div>
+
+  </div><!-- /page -->
+
+  <script>
+    // Initialize syntax highlighting
+    document.addEventListener('DOMContentLoaded', () => {
+      hljs.highlightAll();
+    });
+
+    // Initialize Mermaid
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      themeVariables: {
+        primaryColor: '{{ACCENT_COLOR}}',
+        primaryTextColor: '#e8e8f0',
+        primaryBorderColor: '{{ACCENT_BORDER}}',
+        lineColor: '#8585a8',
+        background: '#111118',
+        mainBkg: '#16161f',
+        nodeBorder: '{{ACCENT_COLOR}}'
+      }
+    });
+
+    // Scroll progress indicator (update progress bar)
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = (scrollTop / docHeight) * 100;
+      document.querySelector('.progress-bar-fill').style.width = progress + '%';
+    });
+  </script>
+
+</body>
+
+</html>
