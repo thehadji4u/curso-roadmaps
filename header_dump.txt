@@ -1,0 +1,82 @@
+
+
+--- aulas/py-04-orientacao-objetos.html ---
+
+      <a href="html-03-responsivo-moderno.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- ── HERO ── -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>🐍 Python</span>
+        <span class="hero-badge">Aula 08</span>
+      </div>
+      <h1>Orientação a Objetos</h1>
+      <div class="hero-meta">
+        <span>⏱ ~55 min de leitura</span>
+        <span>🎯 Intermediário</span>
+        <span>🔧 Hands-on incluído</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">class</span>
+        <span class="tag accent">__init__</span>
+        <span class="tag accent">herança</span>
+        <span class="tag accent">encapsulamento</span>
+        <span class="tag accent">polimorfismo</span>
+        <span class="tag">
+
+--- aulas/html-03-responsivo-moderno.html ---
+ass="page">
+
+    <!-- ═══════════════════════════════════════════ HERO -->
+    <header class="hero">
+      <div class="hero-eyebrow">
+        <span class="hero-badge">AULA 09</span>
+        <span>🌐 Trilha HTML/CSS</span>
+        <span>·</span>
+        <span>⏱ ~3h de estudo</span>
+      </div>
+      <h1>CSS — Responsivo<br>& Moderno</h1>
+      <div class="hero-meta">
+        <span>📅 Módulo 3 de 4 (HTML/CSS)</span>
+        <span>·</span>
+        <span>🎯 Nível: Intermediário</span>
+        <span>·</span>
+        <span>🔁 Anterior: Python OOP</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">Media Queries</span>
+        <span class="tag accent">Custom Properties</span>
+        <span class="tag accent">Cascade Avançado</span>
+        <span class="tag">Mobile-Firs
+
+--- aulas/html-04-animacoes-efeitos.html ---
+iv>
+      <a href="gh-03-colaboracao-prs.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- ── HERO ── -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>🌐 HTML/CSS</span>
+        <span class="hero-badge">Aula 10</span>
+      </div>
+      <h1>CSS — Animações, Tipografia & Efeitos</h1>
+      <div class="hero-meta">
+        <span>⏱ ~60 min de leitura</span>
+        <span>🎯 Intermediário</span>
+        <span>🔧 Hands-on incluído</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">@keyframes</span>
+        <span class="tag accent">animation</span>
+        <span class="tag accent">transition</span>
+        <span class="tag accent">transform</span>
+        <span class="tag accent">filter</span>
+        <sp

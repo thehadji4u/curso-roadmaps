@@ -4,17 +4,121 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HTML Semântico & Estrutura · HTML/CSS</title>
+  <title>HTML Semântico & Estrutura · Aula 03</title>
 
-  <!-- Syntax highlighting — github-dark inlined (funciona offline) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap"
+    rel="stylesheet">
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
   <style>
-    /* ─── TOKENS ────────────────────────────────────────────── */
+    /* ── Highlight.js github-dark inlined ── */
+    pre code.hljs {
+      display: block;
+      overflow-x: auto;
+      padding: 1em
+    }
+
+    code.hljs {
+      padding: 3px 5px
+    }
+
+    .hljs {
+      color: #c9d1d9;
+      background: #0d1117
+    }
+
+    .hljs-doctag,
+    .hljs-keyword,
+    .hljs-meta .hljs-keyword,
+    .hljs-template-tag,
+    .hljs-template-variable,
+    .hljs-type,
+    .hljs-variable.language_ {
+      color: #ff7b72
+    }
+
+    .hljs-title,
+    .hljs-title.class_,
+    .hljs-title.class_.inherited__,
+    .hljs-title.function_ {
+      color: #d2a8ff
+    }
+
+    .hljs-attr,
+    .hljs-attribute,
+    .hljs-literal,
+    .hljs-meta,
+    .hljs-number,
+    .hljs-operator,
+    .hljs-variable,
+    .hljs-selector-attr,
+    .hljs-selector-class,
+    .hljs-selector-id {
+      color: #79c0ff
+    }
+
+    .hljs-regexp,
+    .hljs-string,
+    .hljs-meta .hljs-string {
+      color: #a5d6ff
+    }
+
+    .hljs-built_in,
+    .hljs-symbol {
+      color: #ffa657
+    }
+
+    .hljs-comment,
+    .hljs-code,
+    .hljs-formula {
+      color: #8b949e
+    }
+
+    .hljs-name,
+    .hljs-quote,
+    .hljs-selector-tag,
+    .hljs-selector-pseudo {
+      color: #7ee787
+    }
+
+    .hljs-subst {
+      color: #c9d1d9
+    }
+
+    .hljs-section {
+      color: #1f6feb;
+      font-weight: 700
+    }
+
+    .hljs-bullet {
+      color: #f2cc60
+    }
+
+    .hljs-emphasis {
+      color: #c9d1d9;
+      font-style: italic
+    }
+
+    .hljs-strong {
+      color: #c9d1d9;
+      font-weight: 700
+    }
+
+    .hljs-addition {
+      color: #aff5b4;
+      background-color: #033a16
+    }
+
+    .hljs-deletion {
+      color: #ffdcd7;
+      background-color: #67060c
+    }
+
     :root {
       --bg: #0a0a0f;
       --surface: #111118;
@@ -22,27 +126,862 @@
       --border: #1e1e2e;
       --text: #e8e8f0;
       --muted: #8585a8;
-
       --accent: #ef4444;
-      /* ex: #3b82f6 para Python */
-      --accent-dim: rgba(239, 68, 68, 0.1);
-      /* ex: rgba(59,130,246,0.15) */
-      --accent-border: rgba(239, 68, 68, 0.3);
-      /* ex: rgba(59,130,246,0.3) */
-
-      /* Semantic colors */
+      --accent-dim: rgba(239, 68, 68, 0.15);
+      --accent-border: rgba(239, 68, 68, 0.35);
       --success: #10b981;
       --warn: #f59e0b;
       --danger: #ef4444;
       --info: #06b6d4;
     }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    /* ── Progress Bar ── */
+    .progress-bar-wrap {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--border);
+      z-index: 1000;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #f87171);
+      width: 0%;
+      transition: width 0.1s;
+    }
+
+    /* ── Top Nav ── */
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 32px;
+      background: rgba(10, 10, 15, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-back {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .nav-back:hover {
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-position {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+
+    .nav-position .track {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .nav-prev,
+    .nav-next {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: transparent;
+      transition: all 0.2s;
+    }
+
+    .nav-prev:hover,
+    .nav-next:hover {
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .nav-prev.disabled {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    .nav-next {
+      border-color: var(--accent-border);
+      color: var(--accent);
+    }
+
+    .nav-next:hover {
+      background: var(--accent-dim);
+      color: #f87171;
+    }
+
+    /* ── Layout ── */
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 48px 24px 96px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 52px 0 40px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 56px;
+    }
+
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .hero-badge {
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #fff 40%, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+    }
+
+    .tag.accent {
+      background: var(--accent-dim);
+      border-color: var(--accent-border);
+      color: var(--accent);
+    }
+
+    /* ── Sections ── */
+    .section {
+      margin-bottom: 64px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .section h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+
+    .section h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 28px 0 12px;
+      color: #fff;
+    }
+
+    .section p {
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    /* ── Callouts ── */
+    .callout {
+      border-radius: 8px;
+      padding: 18px 20px;
+      margin: 20px 0;
+      border-left: 3px solid;
+    }
+
+    .callout-title {
+      font-weight: 700;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+
+    .callout-info {
+      background: rgba(6, 182, 212, 0.08);
+      border-color: var(--info);
+    }
+
+    .callout-info .callout-title {
+      color: var(--info);
+    }
+
+    .callout-warn {
+      background: rgba(245, 158, 11, 0.08);
+      border-color: var(--warn);
+    }
+
+    .callout-warn .callout-title {
+      color: var(--warn);
+    }
+
+    .callout-tip {
+      background: rgba(16, 185, 129, 0.08);
+      border-color: var(--success);
+    }
+
+    .callout-tip .callout-title {
+      color: var(--success);
+    }
+
+    .callout-check {
+      background: rgba(167, 139, 250, 0.08);
+      border-color: #a78bfa;
+    }
+
+    .callout-check .callout-title {
+      color: #a78bfa;
+    }
+
+    /* ── Analogy Card ── */
+    .analogy-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .analogy-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+
+    .analogy-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+
+    .analogy-text {
+      font-size: 15px;
+      color: var(--text);
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+
+    .analogy-mapping {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 24px;
+    }
+
+    .analogy-real {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .analogy-tech {
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--accent);
+    }
+
+    /* ── Mermaid ── */
+    .mermaid-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 20px;
+      margin: 24px 0;
+      overflow: auto;
+    }
+
+    .mermaid-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    /* ── Table ── */
+    .table-wrap {
+      overflow-x: auto;
+      margin: 16px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead tr {
+      border-bottom: 2px solid var(--accent-border);
+    }
+
+    thead th {
+      text-align: left;
+      padding: 10px 14px;
+      color: var(--accent);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    tbody tr:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    tbody td {
+      padding: 11px 14px;
+      color: var(--text);
+      vertical-align: top;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .badge-green {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+    }
+
+    .badge-red {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+    }
+
+    .badge-yellow {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+    }
+
+    .badge-blue {
+      background: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+    }
+
+    /* ── Steps ── */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .step {
+      display: flex;
+      gap: 18px;
+      padding: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .step-num {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .step-body {
+      flex: 1;
+    }
+
+    .step-title {
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .step-desc {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    /* ── Code ── */
+    pre {
+      background: #0d1117 !important;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 12px 0;
+      font-size: 13px;
+    }
+
+    pre code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .code-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 10px 16px 0;
+    }
+
+    code:not(.hljs) {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid var(--border);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: #f87171;
+    }
+
+    /* ── Grids ── */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    @media (max-width: 640px) {
+
+      .grid-2,
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card-mini {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      transition: border-color 0.2s;
+    }
+
+    .card-mini:hover {
+      border-color: var(--accent-border);
+    }
+
+    .card-mini h4 {
+      color: #fff;
+      font-size: 14px;
+      margin: 10px 0 6px;
+    }
+
+    .card-mini p {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .pillar-badge {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    /* ── Tag visual (elemento HTML em destaque) ── */
+    .html-tag {
+      display: inline-block;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #f87171;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+    }
+
+    /* ── Compare split ── */
+    .compare-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 16px 0;
+    }
+
+    @media (max-width: 600px) {
+      .compare-split {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .compare-old {
+      background: rgba(239, 68, 68, 0.05);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .compare-new {
+      background: rgba(16, 185, 129, 0.05);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .compare-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .compare-old .compare-label {
+      color: #f87171;
+    }
+
+    .compare-new .compare-label {
+      color: #34d399;
+    }
+
+    /* ── Videos ── */
+    .video-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .video-card {
+      display: flex;
+      gap: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+      transition: border-color 0.2s;
+    }
+
+    .video-card:hover {
+      border-color: var(--accent-border);
+    }
+
+    .video-thumb {
+      flex-shrink: 0;
+      width: 52px;
+      height: 52px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .video-info {
+      flex: 1;
+    }
+
+    .video-title {
+      font-weight: 700;
+      color: #fff;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .video-channel {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .video-why {
+      color: var(--text);
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+
+    .video-info a {
+      font-size: 12px;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+    }
+
+    .video-info a:hover {
+      text-decoration: underline;
+    }
+
+    /* ── Checkpoint ── */
+    .checkpoint {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(248, 113, 113, 0.04));
+      border: 1px solid var(--accent-border);
+      border-radius: 12px;
+      padding: 28px;
+    }
+
+    .checkpoint h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .checkpoint p {
+      margin-bottom: 14px;
+    }
+
+    .checkpoint ul {
+      padding-left: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .checkpoint ul li {
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .checkpoint ul li::before {
+      content: '✦ ';
+      color: var(--accent);
+    }
+
+    .checkpoint-hint {
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: rgba(239, 68, 68, 0.06);
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* ── Pitfall ── */
+    .pitfall {
+      background: rgba(239, 68, 68, 0.06);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      border-radius: 10px;
+      padding: 20px;
+      margin: 16px 0;
+    }
+
+    .pitfall-title {
+      color: #f87171;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    /* ── Glossary ── */
+    .glossary-item {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .glossary-term {
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .glossary-def {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* ── Next card ── */
+    .next-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 24px;
+      background: var(--surface);
+      border: 1px solid var(--accent-border);
+      border-radius: 10px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .next-card:hover {
+      background: var(--accent-dim);
+    }
+
+    .next-card-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .next-card-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .next-arrow {
+      font-size: 1.5rem;
+      color: var(--accent);
+    }
+
+    /* ── DOM tree visual ── */
+    .dom-tree {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 2;
+    }
+
+    .dom-tree .node {
+      color: #f87171;
+    }
+
+    .dom-tree .attr {
+      color: #79c0ff;
+    }
+
+    .dom-tree .text {
+      color: #a5d6ff;
+    }
+
+    .dom-tree .comment {
+      color: #8b949e;
+      font-style: italic;
+    }
+
+    .tree-indent-1 {
+      padding-left: 20px;
+    }
+
+    .tree-indent-2 {
+      padding-left: 40px;
+    }
+
+    .tree-indent-3 {
+      padding-left: 60px;
+    }
+
+    .tree-indent-4 {
+      padding-left: 80px;
+    }
   </style>
-  <link rel="stylesheet" href="../assets/css/lesson.css">
 </head>
 
 <body>
+
   <div class="progress-bar-wrap">
-    <div class="progress-bar-fill"></div>
+    <div class="progress-bar-fill" id="progressBar"></div>
   </div>
 
   <nav class="top-nav">
@@ -58,1027 +997,1058 @@
 
   <div class="page">
 
-    <!-- ══════════════════════════════════════════
-         HERO
-    ══════════════════════════════════════════ -->
+    <!-- ── HERO ── -->
     <div class="hero">
       <div class="hero-eyebrow">
-        <span>🌐 HTML/CSS · 01 · Prioridade 1</span>
-        <span class="hero-badge">Aula 03 — Base Universal</span>
+        <span>🌐 HTML/CSS</span>
+        <span class="hero-badge">Aula 03</span>
       </div>
       <h1>HTML Semântico & Estrutura</h1>
       <div class="hero-meta">
         <span>⏱ ~30 min de leitura</span>
-        <span>🎯 Iniciante</span>
+        <span>🎯 Fundamentos</span>
         <span>🔧 Hands-on incluído</span>
-        <span>♿ Acessibilidade & SEO incluídos</span>
       </div>
       <div class="hero-tags">
-        <span class="tag">&lt;header&gt;</span>
-        <span class="tag">&lt;main&gt;</span>
-        <span class="tag">&lt;article&gt;</span>
-        <span class="tag">&lt;section&gt;</span>
-        <span class="tag">&lt;form&gt;</span>
-        <span class="tag">&lt;input&gt;</span>
-        <span class="tag">&lt;picture&gt;</span>
-        <span class="tag">srcset</span>
-        <span class="tag">ARIA</span>
+        <span class="tag accent">semântica</span>
+        <span class="tag accent">estrutura</span>
+        <span class="tag">tags de seção</span>
+        <span class="tag">formulários</span>
+        <span class="tag">media</span>
+        <span class="tag">acessibilidade</span>
+        <span class="tag">SEO</span>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         1. POR QUE ISSO IMPORTA
-    ══════════════════════════════════════════ -->
+    <!-- ── 1. POR QUE ISSO IMPORTA? ── -->
     <div class="section">
-      <div class="section-label">// 01 — motivação</div>
+      <div class="section-label">// motivação</div>
       <h2>Por que isso importa?</h2>
       <p>
-        Todo mundo consegue fazer uma página web funcionar com <code>&lt;div&gt;</code> para tudo.
-        O problema é que um navegador, um leitor de tela e um crawler do Google não têm a menor ideia
-        do que cada parte da sua página significa — e isso custa caro: em acessibilidade, em SEO,
-        e em manutenibilidade do código.
+        HTML é a espinha dorsal de qualquer página web. Mas há uma diferença enorme entre escrever HTML que
+        <em>funciona</em> e HTML que é <em>semântico</em>. HTML semântico comunica o <strong>significado</strong> do
+        conteúdo, não apenas sua aparência — e isso tem impacto direto em SEO, acessibilidade e manutenção.
       </p>
       <p>
-        HTML semântico é usar o elemento <strong>certo para o significado certo</strong>.
-        É a diferença entre um arquiteto que usa plantas detalhadas e um pedreiro que improvisa.
-        O resultado pode parecer igual visualmente, mas internamente é completamente diferente.
+        Um screen reader (leitor de tela, usado por pessoas com deficiência visual) depende completamente das tags
+        certas para narrar a página corretamente. Mecanismos de busca como o Google usam a estrutura semântica para
+        entender e indexar o conteúdo. E qualquer dev que abrir seu código depois de você vai entender muito mais rápido
+        uma página com <code>&lt;article&gt;</code>, <code>&lt;nav&gt;</code> e <code>&lt;main&gt;</code> do que uma
+        cheia de <code>&lt;div&gt;</code> sem sentido.
       </p>
-
       <div class="callout callout-info">
-        <div class="callout-title">💼 Por que um engenheiro sênior se importa com isso</div>
-        HTML semântico impacta diretamente três áreas que empresas medem: <strong>SEO</strong>
-        (o Google entende melhor a hierarquia do conteúdo), <strong>acessibilidade</strong>
-        (leitores de tela navegam por landmarks semânticos — <code>header</code>, <code>main</code>, <code>nav</code>),
-        e <strong>Core Web Vitals</strong> (estrutura limpa ajuda parsers de renderização).
-        Em auditorias de código, um HTML cheio de divs sem semântica é sinal imediato de código legado com dívida
-        técnica.
+        <div class="callout-title">💼 Por que um engenheiro sênior se preocupa com isso</div>
+        Acessibilidade e SEO não são "extras" — são requisitos em qualquer produto sério. Além disso, HTML semântico
+        reduz drasticamente a necessidade de classes CSS e JavaScript extras para descrever estrutura. Code review em
+        empresas de nível médio-alto rejeitam ativamente "div soup" (páginas com <code>&lt;div&gt;</code> para tudo) e
+        exigem uso correto de elementos semânticos.
       </div>
     </div>
 
+    <!-- ── 2. ANALOGIA ── -->
     <div class="section">
-      <div class="section-label">// 01.1 — fundamentos</div>
-      <h2>O que é HTML e como as tags funcionam?</h2>
-      <p>
-        O HTML (<em>HyperText Markup Language</em>) não é uma linguagem de programação, mas sim uma <strong>linguagem
-          de marcação</strong>.
-        Pense nela como o esqueleto ou a estrutura de uma página. Através de "tags", dizemos ao navegador o que é cada
-        pedaço de conteúdo.
-      </p>
-
-      <h3>Anatomia de uma Tag</h3>
-      <p>A maioria das tags HTML funciona como "containers" que envolvem um conteúdo:</p>
-
-      <div class="code-wrap">
-        <div class="code-header">
-          <span class="code-filename">exemplo-tag.html</span>
-          <span class="code-lang">html</span>
-        </div>
-        <pre><code class="language-html">&lt;tag&gt; Conteúdo aqui &lt;/tag&gt;
-   ↑        ↑          ↑
-Abertura Conteúdo  Fechamento (com /)</code></pre>
-      </div>
-
-      <h3>As Tags Essenciais do Dia a Dia</h3>
-      <p>Antes de organizar o site, você precisa conhecer as ferramentas básicas de escrita:</p>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Tag</th>
-              <th>Nome</th>
-              <th>Uso Principal</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>&lt;h1&gt;</code> a <code>&lt;h6&gt;</code></td>
-              <td>Headings</td>
-              <td>Títulos e subtítulos (H1 é o mais importante).</td>
-            </tr>
-            <tr>
-              <td><code>&lt;p&gt;</code></td>
-              <td>Parágrafo</td>
-              <td>Para blocos de texto comum.</td>
-            </tr>
-            <tr>
-              <td><code>&lt;a href="..."&gt;</code></td>
-              <td>Âncora</td>
-              <td>Cria links para outras páginas ou arquivos.</td>
-            </tr>
-            <tr>
-              <td><code>&lt;ul&gt;</code> / <code>&lt;li&gt;</code></td>
-              <td>Lista</td>
-              <td>Listas com marcadores (bolinhas).</td>
-            </tr>
-            <tr>
-              <td><code>&lt;ol&gt;</code> / <code>&lt;li&gt;</code></td>
-              <td>Lista Ordenada</td>
-              <td>Listas numeradas (1, 2, 3...).</td>
-            </tr>
-            <tr>
-              <td><code>&lt;img&gt;</code></td>
-              <td>Imagem</td>
-              <td>Insere fotos (é uma tag "self-closing", não tem fechamento).</td>
-            </tr>
-            <tr>
-              <td><code>&lt;br&gt;</code></td>
-              <td>Break</td>
-              <td>Apenas pula uma linha.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="section">
-        <div class="section-label">// 01.2 — o container genérico</div>
-        <h2>O que é a <code>&lt;div&gt;</code>?</h2>
-        <p>
-          A <code>&lt;div&gt;</code> (abreviação de <em>division</em>) é um container genérico.
-          Diferente das tags semânticas, ela não diz <strong>nada</strong> sobre o que tem dentro dela para o Google ou
-          para leitores de tela.
-        </p>
-
-        <div class="analogy-card">
-          <div class="analogy-label">📦 Analogia da Caixa de Papelão</div>
-          <div class="analogy-text">
-            Uma <code>&lt;div&gt;</code> é como uma <strong>caixa de papelão sem etiqueta</strong>. Você pode colocar
-            qualquer coisa dentro, mas ninguém sabe o que é até abrir.
-            Já uma tag semântica como <code>&lt;header&gt;</code> é uma caixa com a etiqueta "Documentos Importantes" —
-            todos já sabem a função dela antes mesmo de olhar o conteúdo.
-          </div>
-        </div>
-
-        <h3>Quando usar a Div?</h3>
-        <p>Embora a aula foque em semântica, a <code>&lt;div&gt;</code> ainda é essencial em dois cenários principais:
-        </p>
-
-        <div class="grid-2">
-          <div class="card-mini">
-            <div class="pillar-badge" style="background: var(--info); color: #000;">Layout & Estilo</div>
-            <p>Quando você precisa agrupar elementos apenas para aplicar CSS (ex: centralizar um bloco ou criar uma
-              grade/grid).</p>
-          </div>
-          <div class="card-mini">
-            <div class="pillar-badge" style="background: var(--warn); color: #000;">Último Recurso</div>
-            <p>Quando nenhum outro elemento semântico (como section ou article) descreve bem aquele pedaço de código.
-            </p>
-          </div>
-        </div>
-
-        <div class="callout callout-warn">
-          <div class="callout-title">⚠️ O Perigo da "Div Soup"</div>
-          Muitos desenvolvedores iniciantes usam <code>&lt;div&gt;</code> para tudo. Isso cria um código difícil de ler
-          e ruim para o SEO.
-          Sempre se pergunte: <strong>"Existe uma tag mais específica para isso?"</strong> Se a resposta for sim, use a
-          específica.
-        </div>
-      </div>
-    </div>
-
-    <!-- ══════════════════════════════════════════
-         2. ANALOGIA
-    ══════════════════════════════════════════ -->
-    <div class="section">
-      <div class="section-label">// 02 — analogia</div>
-      <h2>Antes do código: a planta de um edifício</h2>
-
+      <div class="section-label">// analogia</div>
+      <h2>Antes do código: uma analogia</h2>
       <div class="analogy-card">
-        <div class="analogy-label">🏛️ Mundo Real → HTML</div>
+        <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
         <div class="analogy-text">
-          Imagine um edifício. Você consegue entrar numa sala qualquer e perceber: <em>"isso é a recepção"</em>,
-          <em>"aqui é a área de espera"</em>, <em>"lá no fundo é a sala de reuniões"</em>.
-          Como? Pelo <strong>contexto e pelos sinais visuais</strong> — recepcionista, cadeiras enfileiradas, mesa
-          grande.
+          Pense em um <strong>jornal impresso</strong>. Ele não é só um monte de texto e imagens jogados aleatoriamente.
+          Ele tem uma estrutura clara: o <em>cabeçalho</em> com o nome do jornal e data, a <em>navegação</em> com as
+          editorias (Política, Esportes, Cultura), os <em>artigos</em> com título, subtítulo, corpo e autor, a <em>barra
+            lateral</em> com destaques, e o <em>rodapé</em> com informações de contato.
           <br><br>
-          Agora imagine o mesmo edifício sem nenhuma indicação. Todas as salas com as mesmas paredes brancas,
-          sem sinalização, sem móveis identificadores. Para um humano com tempo, dá para descobrir.
-          Para um robô (Google, leitor de tela) — impossível.
-          <br><br>
-          HTML semântico é a sinalização do edifício. Cada elemento diz ao navegador, ao crawler e ao
-          leitor de tela: <em>"esta área é a entrada principal"</em>, <em>"aqui estão os artigos de conteúdo"</em>.
+          HTML semântico faz exatamente isso: dá a cada parte da página um <strong>nome que descreve seu papel</strong>,
+          não só sua posição visual. Assim como qualquer pessoa entende a estrutura de um jornal sem precisar de uma
+          legenda, qualquer ferramenta (browser, screen reader, Google) entende a estrutura de uma página semântica.
         </div>
         <div class="analogy-mapping">
-          <span class="analogy-real">Entrada principal do edifício</span>
-          <span class="analogy-arrow">→</span>
-          <span class="analogy-tech">&lt;header&gt;</span>
-
-          <span class="analogy-real">Placa com menu de navegação</span>
-          <span class="analogy-arrow">→</span>
-          <span class="analogy-tech">&lt;nav&gt;</span>
-
-          <span class="analogy-real">Área principal de trabalho</span>
-          <span class="analogy-arrow">→</span>
-          <span class="analogy-tech">&lt;main&gt;</span>
-
-          <span class="analogy-real">Sala individual de projeto</span>
-          <span class="analogy-arrow">→</span>
-          <span class="analogy-tech">&lt;article&gt;</span>
-
-          <span class="analogy-real">Áreas temáticas dentro da sala</span>
-          <span class="analogy-arrow">→</span>
-          <span class="analogy-tech">&lt;section&gt;</span>
-
-          <span class="analogy-real">Sala de utilidades lateral</span>
-          <span class="analogy-arrow">→</span>
-          <span class="analogy-tech">&lt;aside&gt;</span>
-
-          <span class="analogy-real">Placa de saída / rodapé</span>
-          <span class="analogy-arrow">→</span>
-          <span class="analogy-tech">&lt;footer&gt;</span>
+          <span class="analogy-real">📰 Nome e data do jornal</span>
+          <span class="analogy-tech">→ <code>&lt;header&gt;</code></span>
+          <span class="analogy-real">📑 Editorias (Política, Esportes…)</span>
+          <span class="analogy-tech">→ <code>&lt;nav&gt;</code></span>
+          <span class="analogy-real">📄 Cada notícia independente</span>
+          <span class="analogy-tech">→ <code>&lt;article&gt;</code></span>
+          <span class="analogy-real">📌 Barra de destaques</span>
+          <span class="analogy-tech">→ <code>&lt;aside&gt;</code></span>
+          <span class="analogy-real">📋 Rodapé com contato</span>
+          <span class="analogy-tech">→ <code>&lt;footer&gt;</code></span>
         </div>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         3. ESTRUTURA SEMÂNTICA
-    ══════════════════════════════════════════ -->
+    <!-- ── 3. ESTRUTURA BÁSICA HTML ── -->
     <div class="section">
-      <div class="section-label">// 03 — conceito</div>
-      <h2>A anatomia de uma página semântica</h2>
+      <div class="section-label">// conceito 1</div>
+      <h2>Anatomia de um documento HTML</h2>
+      <p>
+        Todo documento HTML começa com o mesmo esqueleto. Cada parte tem um propósito específico — entendê-las evita
+        erros comuns de iniciantes como colocar scripts no lugar errado ou esquecer o <code>charset</code>.
+      </p>
 
-      <p>Veja como uma página semântica bem estruturada se organiza visualmente — e o que cada elemento comunica:</p>
+      <div class="code-label">// esqueleto completo e comentado</div>
+      <pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;!-- Instrui o browser a usar HTML5 (não é uma tag HTML, é uma declaração) --&gt;
 
-      <div class="html-layout">
-        <div class="hl-header">
-          <span class="hl-tag">&lt;header&gt;</span>
-          <span class="hl-desc">logo, título do site, identidade visual</span>
-        </div>
-        <div class="hl-nav">
-          <span class="hl-tag">&lt;nav&gt;</span>
-          <span class="hl-desc">links de navegação principal — Home · Sobre · Contato</span>
-        </div>
-        <div class="hl-body">
-          <div class="hl-main">
-            <span class="hl-tag">&lt;main&gt;</span>
-            <span class="hl-desc"> — conteúdo único desta página</span>
-            <div class="hl-article">
-              <span class="hl-tag">&lt;article&gt;</span>
-              <span class="hl-desc"> — conteúdo independente (post, produto)</span>
-              <div class="hl-section">
-                <span class="hl-tag">&lt;section&gt;</span>
-                <span class="hl-desc"> — grupo temático dentro do article</span>
-              </div>
-            </div>
-            <div class="hl-article" style="margin-top:10px">
-              <span class="hl-tag">&lt;article&gt;</span>
-              <span class="hl-desc"> — segundo item de conteúdo</span>
-            </div>
-          </div>
-          <div class="hl-aside">
-            <span class="hl-tag">&lt;aside&gt;</span>
-            <span class="hl-desc">sidebar: relacionados, anúncios, bio</span>
-          </div>
-        </div>
-        <div class="hl-footer">
-          <span class="hl-tag">&lt;footer&gt;</span>
-          <span class="hl-desc">copyright, links secundários, redes sociais</span>
+&lt;html lang="pt-BR"&gt;
+&lt;!-- lang: essencial para screen readers e SEO.
+     Use "pt-BR" para português do Brasil, "en" para inglês --&gt;
+
+&lt;head&gt;
+  &lt;!-- Metadados: não aparecem na página, mas são vitais --&gt;
+
+  &lt;meta charset="UTF-8"&gt;
+  &lt;!-- Codificação de caracteres: suporta acentos, emojis, etc.
+       DEVE ser o primeiro elemento do head --&gt;
+
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;!-- Controla o layout em dispositivos móveis.
+       Sem isso, o browser renderiza a página como se fosse desktop --&gt;
+
+  &lt;meta name="description" content="Descrição da página para SEO (até 160 caracteres)"&gt;
+
+  &lt;title&gt;Título da Página | Nome do Site&lt;/title&gt;
+  &lt;!-- Aparece na aba do browser e nos resultados de busca --&gt;
+
+  &lt;link rel="stylesheet" href="styles.css"&gt;
+  &lt;!-- CSS no head: carrega antes da renderização (evita flash sem estilo) --&gt;
+
+  &lt;link rel="icon" type="image/svg+xml" href="/favicon.svg"&gt;
+  &lt;!-- Ícone na aba do browser --&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+  &lt;!-- Todo conteúdo visível fica aqui --&gt;
+
+  &lt;script src="app.js" defer&gt;&lt;/script&gt;
+  &lt;!-- Scripts no final do body (ou com defer/async no head).
+       defer: executa após o HTML ser parseado, mantendo a ordem.
+       async: executa assim que carrega, sem garantia de ordem --&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Pro tip: defer vs async</div>
+        Use <code>defer</code> para scripts que dependem do DOM ou de outros scripts (é o padrão seguro). Use
+        <code>async</code> para scripts independentes como analytics. Nunca coloque scripts pesados no
+        <code>&lt;head&gt;</code> sem um desses atributos — vai bloquear a renderização da página.
+      </div>
+    </div>
+
+    <!-- ── 4. ELEMENTOS SEMÂNTICOS ── -->
+    <div class="section">
+      <div class="section-label">// conceito 2</div>
+      <h2>Elementos semânticos de seção</h2>
+      <p>
+        O HTML5 introduziu elementos que descrevem <strong>papéis e regiões</strong> da página. Eles substituem o uso
+        indiscriminado de <code>&lt;div&gt;</code> e comunicam intenção a browsers, leitores de tela e crawlers de
+        busca.
+      </p>
+
+      <!-- Diagrama estrutural de página -->
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// estrutura semântica de uma página típica</div>
+        <div class="mermaid">
+          graph TD
+          BODY["&lt;body&gt;"]
+          BODY --> HEADER["&lt;header&gt;<br />Logo, nav global, hero"]
+          BODY --> NAV["&lt;nav&gt;<br />Links de navegação principal"]
+          BODY --> MAIN["&lt;main&gt;<br />Conteúdo principal único da página"]
+          BODY --> FOOTER["&lt;footer&gt;<br />Direitos, links secundários"]
+          MAIN --> ARTICLE["&lt;article&gt;<br />Conteúdo autônomo e reutilizável"]
+          MAIN --> SECTION["&lt;section&gt;<br />Agrupamento temático com título"]
+          MAIN --> ASIDE["&lt;aside&gt;<br />Conteúdo relacionado / sidebar"]
+          ARTICLE --> FIGURE["&lt;figure&gt; + &lt;figcaption&gt;<br />Imagem com legenda"]
+          style BODY fill:#ef4444,color:#fff,stroke:none
+          style MAIN fill:#1e1e2e,color:#e8e8f0,stroke:#ef4444
+          style ARTICLE fill:#1e1e2e,color:#e8e8f0,stroke:#ef4444
+          style SECTION fill:#1e1e2e,color:#e8e8f0,stroke:#8585a8
+          style HEADER fill:#1e1e2e,color:#e8e8f0,stroke:#8585a8
+          style NAV fill:#1e1e2e,color:#e8e8f0,stroke:#8585a8
+          style ASIDE fill:#1e1e2e,color:#e8e8f0,stroke:#8585a8
+          style FOOTER fill:#1e1e2e,color:#e8e8f0,stroke:#8585a8
+          style FIGURE fill:#111118,color:#8585a8,stroke:#1e1e2e
         </div>
       </div>
-
-      <h3>Quando usar cada elemento — a regra definitiva</h3>
 
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
               <th>Elemento</th>
-              <th>Significado semântico</th>
-              <th>Pode ser reutilizado?</th>
-              <th>Substitui o quê</th>
+              <th>Papel semântico</th>
+              <th>Pode ter múltiplos?</th>
+              <th>Dica de uso</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><code>&lt;header&gt;</code></td>
-              <td class="td-neu">Cabeçalho — da página ou de uma seção</td>
-              <td class="td-pro">✓ Vários por página</td>
-              <td class="td-neu"><code>&lt;div id="header"&gt;</code></td>
+              <td><span class="html-tag">&lt;header&gt;</span></td>
+              <td>Cabeçalho de página ou seção</td>
+              <td><span class="badge badge-green">Sim</span></td>
+              <td>Logo, título, nav, hero. Pode existir dentro de <code>&lt;article&gt;</code> também</td>
             </tr>
             <tr>
-              <td><code>&lt;nav&gt;</code></td>
-              <td class="td-neu">Bloco de links de navegação <em>principal</em></td>
-              <td class="td-pro">✓ Menu principal + breadcrumb</td>
-              <td class="td-neu"><code>&lt;div class="menu"&gt;</code></td>
+              <td><span class="html-tag">&lt;nav&gt;</span></td>
+              <td>Bloco de navegação</td>
+              <td><span class="badge badge-green">Sim</span></td>
+              <td>Use para navegação principal e secundária; adicione <code>aria-label</code> se houver dois</td>
             </tr>
             <tr>
-              <td><code>&lt;main&gt;</code></td>
-              <td class="td-neu">Conteúdo único e principal da página</td>
-              <td class="td-con">✗ Apenas 1 por página</td>
-              <td class="td-neu"><code>&lt;div id="content"&gt;</code></td>
+              <td><span class="html-tag">&lt;main&gt;</span></td>
+              <td>Conteúdo principal único</td>
+              <td><span class="badge badge-red">Não (1 por página)</span></td>
+              <td>Nunca dentro de <code>&lt;header&gt;</code>, <code>&lt;footer&gt;</code> ou <code>&lt;aside&gt;</code>
+              </td>
             </tr>
             <tr>
-              <td><code>&lt;article&gt;</code></td>
-              <td class="td-neu">Conteúdo independente e redistribuível (post, produto, card)</td>
-              <td class="td-pro">✓ Quantos quiser</td>
-              <td class="td-neu"><code>&lt;div class="card"&gt;</code></td>
+              <td><span class="html-tag">&lt;article&gt;</span></td>
+              <td>Conteúdo autônomo e redistribuível</td>
+              <td><span class="badge badge-green">Sim</span></td>
+              <td>Post de blog, notícia, produto, comentário — faz sentido sozinho fora de contexto</td>
             </tr>
             <tr>
-              <td><code>&lt;section&gt;</code></td>
-              <td class="td-neu">Agrupamento temático com título próprio</td>
-              <td class="td-pro">✓ Quantos quiser</td>
-              <td class="td-neu"><code>&lt;div class="section"&gt;</code></td>
+              <td><span class="html-tag">&lt;section&gt;</span></td>
+              <td>Agrupamento temático com título</td>
+              <td><span class="badge badge-green">Sim</span></td>
+              <td>Sempre deve ter um <code>&lt;h2&gt;</code>-<code>&lt;h6&gt;</code> filho. Não é um container genérico!
+              </td>
             </tr>
             <tr>
-              <td><code>&lt;aside&gt;</code></td>
-              <td class="td-neu">Conteúdo relacionado mas periférico (sidebar, callout)</td>
-              <td class="td-pro">✓ Quantos quiser</td>
-              <td class="td-neu"><code>&lt;div class="sidebar"&gt;</code></td>
+              <td><span class="html-tag">&lt;aside&gt;</span></td>
+              <td>Conteúdo tangencialmente relacionado</td>
+              <td><span class="badge badge-green">Sim</span></td>
+              <td>Sidebar, callouts, anúncios, links relacionados</td>
             </tr>
             <tr>
-              <td><code>&lt;footer&gt;</code></td>
-              <td class="td-neu">Rodapé — da página ou de uma seção</td>
-              <td class="td-pro">✓ Vários por página</td>
-              <td class="td-neu"><code>&lt;div id="footer"&gt;</code></td>
+              <td><span class="html-tag">&lt;footer&gt;</span></td>
+              <td>Rodapé de página ou seção</td>
+              <td><span class="badge badge-green">Sim</span></td>
+              <td>Autor, copyright, links de contato</td>
             </tr>
             <tr>
-              <td><code>&lt;div&gt;</code></td>
-              <td class="td-con">Nenhum significado — container genérico</td>
-              <td class="td-pro">✓ Use como último recurso</td>
-              <td class="td-neu">Nada específico</td>
+              <td><span class="html-tag">&lt;div&gt;</span></td>
+              <td>Container genérico sem semântica</td>
+              <td><span class="badge badge-yellow">Sim (use com moderação)</span></td>
+              <td>Apenas para layout ou quando nenhum elemento semântico se aplica</td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <div class="callout callout-tip">
-        <div class="callout-title">🔥 Regra de ouro para article vs section</div>
-        Pergunte: <em>"esse conteúdo faz sentido sozinho, fora desta página?"</em>
-        Se sim → <code>&lt;article&gt;</code> (um post de blog, uma review de produto faz sentido isolado).
-        Se só faz sentido dentro do contexto da página → <code>&lt;section&gt;</code>.
-        Ainda em dúvida? Use <code>&lt;div&gt;</code> sem culpa — semântica ruim não quebra nada,
-        mas semântica certa agrega valor.
-      </div>
-    </div>
-
-    <!-- ══════════════════════════════════════════
-         4. EXEMPLO DE CÓDIGO: PÁGINA COMPLETA
-    ══════════════════════════════════════════ -->
-    <div class="section">
-      <div class="section-label">// 04 — código</div>
-      <h2>Uma página semântica do zero</h2>
-
-      <div class="code-wrap">
-        <div class="code-header">
-          <span class="code-filename">index.html</span>
-          <span class="code-lang">html</span>
+      <div class="compare-split" style="margin-top:24px;">
+        <div class="compare-old">
+          <div class="compare-label">❌ Div soup — sem semântica</div>
+          <pre><code class="language-html">&lt;div class="header"&gt;
+  &lt;div class="logo"&gt;...&lt;/div&gt;
+  &lt;div class="menu"&gt;...&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="content"&gt;
+  &lt;div class="post"&gt;
+    &lt;div class="title"&gt;...&lt;/div&gt;
+    &lt;div class="body"&gt;...&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="sidebar"&gt;...&lt;/div&gt;
+&lt;div class="footer"&gt;...&lt;/div&gt;
+</code></pre>
         </div>
-        <pre><code class="language-html">&lt;!DOCTYPE html&gt;
-&lt;html lang="pt-BR"&gt;
-&lt;head&gt;
-  &lt;meta charset="UTF-8"&gt;
-  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-
-  &lt;!-- SEO básico --&gt;
-  &lt;title&gt;Blog de Tecnologia — Artigos sobre Dev&lt;/title&gt;
-  &lt;meta name="description" content="Artigos práticos sobre desenvolvimento web, Python e boas práticas de engenharia."&gt;
-
-  &lt;!-- Open Graph (WhatsApp, LinkedIn, Twitter) --&gt;
-  &lt;meta property="og:title"       content="Blog de Tecnologia"&gt;
-  &lt;meta property="og:description" content="Artigos práticos sobre desenvolvimento web"&gt;
-  &lt;meta property="og:image"       content="https://meusite.com/og-image.jpg"&gt;
-  &lt;meta property="og:type"        content="website"&gt;
-
-  &lt;link rel="stylesheet" href="style.css"&gt;
-&lt;/head&gt;
-
-&lt;body&gt;
-
-  &lt;!-- Cabeçalho global do site --&gt;
-  &lt;header&gt;
-    &lt;a href="/" aria-label="Página inicial"&gt;
-      &lt;img src="logo.svg" alt="Logo do Blog" width="120" height="40"&gt;
-    &lt;/a&gt;
-
-    &lt;!-- Navegação principal --&gt;
-    &lt;nav aria-label="Navegação principal"&gt;
-      &lt;ul&gt;
-        &lt;li&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/li&gt;
-        &lt;li&gt;&lt;a href="/artigos"&gt;Artigos&lt;/a&gt;&lt;/li&gt;
-        &lt;li&gt;&lt;a href="/sobre"&gt;Sobre&lt;/a&gt;&lt;/li&gt;
-        &lt;li&gt;&lt;a href="/contato"&gt;Contato&lt;/a&gt;&lt;/li&gt;
-      &lt;/ul&gt;
-    &lt;/nav&gt;
-  &lt;/header&gt;
-
-  &lt;!-- Conteúdo único desta página --&gt;
-  &lt;main&gt;
-
-    &lt;!-- Seção de destaque --&gt;
-    &lt;section aria-labelledby="hero-title"&gt;
-      &lt;h1 id="hero-title"&gt;Os melhores artigos de dev&lt;/h1&gt;
-      &lt;p&gt;Conteúdo prático para quem está aprendendo a programar.&lt;/p&gt;
-    &lt;/section&gt;
-
-    &lt;!-- Lista de artigos --&gt;
-    &lt;section aria-labelledby="artigos-titulo"&gt;
-      &lt;h2 id="artigos-titulo"&gt;Artigos recentes&lt;/h2&gt;
-
-      &lt;!-- Cada post é um article — conteúdo independente --&gt;
-      &lt;article&gt;
-        &lt;header&gt;
-          &lt;h3&gt;&lt;a href="/artigos/git-branches"&gt;Git Branches na Prática&lt;/a&gt;&lt;/h3&gt;
-          &lt;time datetime="2025-02-15"&gt;15 de fevereiro de 2025&lt;/time&gt;
-        &lt;/header&gt;
-        &lt;p&gt;Aprenda a trabalhar com branches, merge e resolução de conflitos...&lt;/p&gt;
-        &lt;footer&gt;
-          &lt;a href="/artigos/git-branches"&gt;Ler artigo →&lt;/a&gt;
-        &lt;/footer&gt;
-      &lt;/article&gt;
-
-      &lt;article&gt;
-        &lt;header&gt;
-          &lt;h3&gt;&lt;a href="/artigos/html-semantico"&gt;HTML Semântico — Por que importa&lt;/a&gt;&lt;/h3&gt;
-          &lt;time datetime="2025-02-10"&gt;10 de fevereiro de 2025&lt;/time&gt;
-        &lt;/header&gt;
-        &lt;p&gt;Entenda a diferença entre div e elementos semânticos...&lt;/p&gt;
-        &lt;footer&gt;
-          &lt;a href="/artigos/html-semantico"&gt;Ler artigo →&lt;/a&gt;
-        &lt;/footer&gt;
-      &lt;/article&gt;
-
-    &lt;/section&gt;
-  &lt;/main&gt;
-
-  &lt;!-- Sidebar --&gt;
-  &lt;aside aria-label="Conteúdo relacionado"&gt;
-    &lt;section&gt;
-      &lt;h2&gt;Artigos populares&lt;/h2&gt;
-      &lt;ul&gt;
-        &lt;li&gt;&lt;a href="/artigos/python-funcoes"&gt;Python — Funções avançadas&lt;/a&gt;&lt;/li&gt;
-        &lt;li&gt;&lt;a href="/artigos/css-grid"&gt;CSS Grid do zero&lt;/a&gt;&lt;/li&gt;
-      &lt;/ul&gt;
-    &lt;/section&gt;
-  &lt;/aside&gt;
-
-  &lt;!-- Rodapé global --&gt;
-  &lt;footer&gt;
-    &lt;nav aria-label="Links do rodapé"&gt;
-      &lt;a href="/privacidade"&gt;Privacidade&lt;/a&gt;
-      &lt;a href="/termos"&gt;Termos&lt;/a&gt;
-    &lt;/nav&gt;
-    &lt;p&gt;&lt;small&gt;&amp;copy; 2025 Blog de Tecnologia. Todos os direitos reservados.&lt;/small&gt;&lt;/p&gt;
-  &lt;/footer&gt;
-
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
+        <div class="compare-new">
+          <div class="compare-label">✅ HTML semântico</div>
+          <pre><code class="language-html">&lt;header&gt;
+  &lt;a href="/"&gt;Logo&lt;/a&gt;
+  &lt;nav aria-label="Principal"&gt;...&lt;/nav&gt;
+&lt;/header&gt;
+&lt;main&gt;
+  &lt;article&gt;
+    &lt;h1&gt;Título&lt;/h1&gt;
+    &lt;p&gt;Conteúdo...&lt;/p&gt;
+  &lt;/article&gt;
+&lt;/main&gt;
+&lt;aside&gt;...&lt;/aside&gt;
+&lt;footer&gt;...&lt;/footer&gt;
+</code></pre>
+        </div>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         5. FORMULÁRIOS
-    ══════════════════════════════════════════ -->
+    <!-- ── 5. HIERARQUIA DE TÍTULOS ── -->
     <div class="section">
-      <div class="section-label">// 05 — formulários</div>
-      <h2>Formulários — todos os inputs que você precisa saber</h2>
-
+      <div class="section-label">// conceito 3</div>
+      <h2>Hierarquia de títulos e texto</h2>
       <p>
-        Formulários são uma das partes mais negligenciadas do HTML. O navegador oferece
-        validação, tipos especializados e acessibilidade gratuitamente — mas só se você usar
-        os elementos e atributos corretos.
+        Os títulos <code>&lt;h1&gt;</code>–<code>&lt;h6&gt;</code> formam o <strong>outline</strong> (esquema) do
+        documento — é como o índice de um livro. Screen readers permitem navegar diretamente entre títulos, e o Google
+        os usa fortemente para entender o tema da página.
       </p>
-
-      <div class="form-demo">
-        <div class="form-demo-title">Preview ao vivo — formulário real com HTML puro</div>
-        <div class="form-grid-2">
-          <div class="form-row">
-            <label class="form-label" for="demo-nome">Nome completo *</label>
-            <input class="form-input" type="text" id="demo-nome" placeholder="João Silva" required autocomplete="name">
-          </div>
-          <div class="form-row">
-            <label class="form-label" for="demo-email">E-mail *</label>
-            <input class="form-input" type="email" id="demo-email" placeholder="joao@email.com" required
-              autocomplete="email">
-          </div>
-        </div>
-        <div class="form-grid-2">
-          <div class="form-row">
-            <label class="form-label" for="demo-senha">Senha (mín. 8 chars)</label>
-            <input class="form-input" type="password" id="demo-senha" minlength="8" autocomplete="new-password">
-          </div>
-          <div class="form-row">
-            <label class="form-label" for="demo-nascimento">Data de nascimento</label>
-            <input class="form-input" type="date" id="demo-nascimento">
-          </div>
-        </div>
-        <div class="form-row">
-          <label class="form-label" for="demo-nivel">Nível de experiência</label>
-          <select class="form-input form-select" id="demo-nivel">
-            <option value="">Selecione...</option>
-            <option value="iniciante">Iniciante</option>
-            <option value="intermediario">Intermediário</option>
-            <option value="senior">Sênior</option>
-          </select>
-        </div>
-        <div class="form-row">
-          <label class="form-label" for="demo-range">Horas de estudo por dia: <span id="range-val">2</span>h</label>
-          <input class="form-input" type="range" id="demo-range" min="0" max="12" value="2"
-            oninput="document.getElementById('range-val').textContent=this.value">
-        </div>
-      </div>
-
-      <div class="code-wrap">
-        <div class="code-header">
-          <span class="code-filename">formulario-completo.html</span>
-          <span class="code-lang">html</span>
-        </div>
-        <pre><code class="language-html">&lt;!-- SEMPRE: label conectado ao input via for/id --&gt;
-&lt;label for="nome"&gt;Nome completo *&lt;/label&gt;
-&lt;input type="text"
-  id="nome"
-  name="nome"
-  required                    &lt;!-- validação nativa --&gt;
-  autocomplete="name"         &lt;!-- hint para autopreenchimento --&gt;
-  placeholder="João Silva"
-  aria-describedby="nome-hint" &gt;
-&lt;span id="nome-hint"&gt;Use seu nome como aparece no documento.&lt;/span&gt;
-
-&lt;!-- TIPOS ESPECIAIS --&gt;
-&lt;input type="email"    &gt;  &lt;!-- valida formato email --&gt;
-&lt;input type="password" &gt;  &lt;!-- oculta texto --&gt;
-&lt;input type="number" min="0" max="100" step="5"&gt;
-&lt;input type="date"     &gt;  &lt;!-- seletor de data nativo --&gt;
-&lt;input type="tel"      &gt;  &lt;!-- teclado numérico no mobile --&gt;
-&lt;input type="url"      &gt;  &lt;!-- valida formato URL --&gt;
-&lt;input type="search"   &gt;  &lt;!-- com botão de limpar --&gt;
-&lt;input type="range" min="0" max="10"&gt;  &lt;!-- slider --&gt;
-&lt;input type="color"    &gt;  &lt;!-- color picker nativo --&gt;
-&lt;input type="file" accept=".pdf,.jpg"&gt;
-&lt;input type="checkbox" &gt;  &lt;!-- caixa de seleção --&gt;
-&lt;input type="radio"    &gt;  &lt;!-- seleção exclusiva --&gt;
-&lt;input type="hidden"   &gt;  &lt;!-- dados invisíveis ao usuário --&gt;
-
-&lt;!-- TEXTAREA --&gt;
-&lt;label for="msg"&gt;Mensagem&lt;/label&gt;
-&lt;textarea id="msg" name="msg" rows="4" maxlength="500"
-  placeholder="Escreva sua mensagem..."&gt;&lt;/textarea&gt;
-
-&lt;!-- SELECT com grupos --&gt;
-&lt;select id="linguagem" name="linguagem"&gt;
-  &lt;option value=""&gt;Escolha uma linguagem&lt;/option&gt;
-  &lt;optgroup label="Web"&gt;
-    &lt;option value="html"&gt;HTML/CSS&lt;/option&gt;
-    &lt;option value="js"&gt;JavaScript&lt;/option&gt;
-  &lt;/optgroup&gt;
-  &lt;optgroup label="Backend"&gt;
-    &lt;option value="python"&gt;Python&lt;/option&gt;
-  &lt;/optgroup&gt;
-&lt;/select&gt;
-
-&lt;!-- FIELDSET para agrupar inputs relacionados --&gt;
-&lt;fieldset&gt;
-  &lt;legend&gt;Preferências de contato&lt;/legend&gt;
-  &lt;label&gt;&lt;input type="radio" name="contato" value="email"&gt; E-mail&lt;/label&gt;
-  &lt;label&gt;&lt;input type="radio" name="contato" value="whatsapp"&gt; WhatsApp&lt;/label&gt;
-&lt;/fieldset&gt;
-
-&lt;!-- BUTTON com tipos --&gt;
-&lt;button type="submit"&gt;Enviar formulário&lt;/button&gt;
-&lt;button type="reset"&gt;Limpar&lt;/button&gt;
-&lt;button type="button"&gt;Ação customizada (JS)&lt;/button&gt;</code></pre>
-      </div>
 
       <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Nunca use &lt;div&gt; ou &lt;span&gt; como botão clicável</div>
-        <code>&lt;div onclick="..."&gt;</code> quebra acessibilidade (não é focável por teclado),
-        não dispara em Enter/Space, e não tem estado <code>disabled</code>.
-        Use sempre <code>&lt;button&gt;</code> ou <code>&lt;a href&gt;</code>.
-        Se precisar de estilo customizado, estilize o button — não invente substitutos.
+        <div class="callout-title">⚠️ Regras críticas para títulos</div>
+        <strong>Um único <code>&lt;h1&gt;</code> por página</strong> — é o título principal, deve descrever o assunto da
+        página inteira. Nunca pule níveis: não vá de <code>&lt;h2&gt;</code> para <code>&lt;h4&gt;</code> sem um
+        <code>&lt;h3&gt;</code> no meio. Escolha o nível pelo significado, não pelo tamanho visual — use CSS para
+        estilizar.
+      </div>
+
+      <div class="code-label">// hierarquia correta de títulos + elementos de texto</div>
+      <pre><code class="language-html">&lt;!-- ── Hierarquia de títulos ───────────────────────── --&gt;
+&lt;h1&gt;Guia Completo de JavaScript&lt;/h1&gt;       &lt;!-- 1 por página --&gt;
+  &lt;h2&gt;Fundamentos da Linguagem&lt;/h2&gt;
+    &lt;h3&gt;Variáveis e Tipos&lt;/h3&gt;
+    &lt;h3&gt;Funções&lt;/h3&gt;
+      &lt;h4&gt;Arrow Functions&lt;/h4&gt;
+  &lt;h2&gt;JavaScript no Browser&lt;/h2&gt;
+    &lt;h3&gt;DOM Manipulation&lt;/h3&gt;
+
+&lt;!-- ── Elementos de texto semânticos ─────────────── --&gt;
+&lt;p&gt;Parágrafo normal de texto corrido.&lt;/p&gt;
+
+&lt;strong&gt;Texto importante (bold semântico)&lt;/strong&gt;   &lt;!-- importância --&gt;
+&lt;em&gt;Ênfase (itálico semântico)&lt;/em&gt;                  &lt;!-- ênfase --&gt;
+&lt;b&gt;Bold visual apenas (sem importância)&lt;/b&gt;           &lt;!-- estético --&gt;
+&lt;i&gt;Itálico visual (termos técnicos, etc.)&lt;/i&gt;         &lt;!-- estético --&gt;
+
+&lt;mark&gt;Texto destacado (highlight)&lt;/mark&gt;
+&lt;small&gt;Texto secundário, notas de rodapé&lt;/small&gt;
+&lt;del&gt;Texto removido / tachado&lt;/del&gt;
+&lt;ins&gt;Texto inserido / sublinhado&lt;/ins&gt;
+&lt;abbr title="HyperText Markup Language"&gt;HTML&lt;/abbr&gt;
+
+&lt;!-- ── Código e preformatado ─────────────────────── --&gt;
+&lt;code&gt;console.log('inline code')&lt;/code&gt;
+
+&lt;pre&gt;&lt;code&gt;
+  // bloco de código preserva espaços e quebras
+  function ola() {
+    return 'mundo';
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;!-- ── Citações ──────────────────────────────────── --&gt;
+&lt;blockquote cite="https://developer.mozilla.org"&gt;
+  &lt;p&gt;Semântica é o estudo do significado.&lt;/p&gt;
+  &lt;footer&gt;— &lt;cite&gt;MDN Web Docs&lt;/cite&gt;&lt;/footer&gt;
+&lt;/blockquote&gt;
+
+&lt;!-- ── Listas ────────────────────────────────────── --&gt;
+&lt;ul&gt;                           &lt;!-- desordenada: itens sem ordem específica --&gt;
+  &lt;li&gt;HTML&lt;/li&gt;
+  &lt;li&gt;CSS&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;ol&gt;                           &lt;!-- ordenada: sequência importa --&gt;
+  &lt;li&gt;Instalar Node.js&lt;/li&gt;
+  &lt;li&gt;npm install&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;dl&gt;                           &lt;!-- lista de definição: termos e descrições --&gt;
+  &lt;dt&gt;HTML&lt;/dt&gt;
+  &lt;dd&gt;HyperText Markup Language&lt;/dd&gt;
+&lt;/dl&gt;
+</code></pre>
+    </div>
+
+    <!-- ── 6. FORMULÁRIOS ── -->
+    <div class="section">
+      <div class="section-label">// conceito 4</div>
+      <h2>Formulários — o coração da interação</h2>
+      <p>
+        Formulários são o principal mecanismo de entrada de dados do usuário. HTML nativo já oferece validação, tipos de
+        input específicos para mobile, acessibilidade embutida e estados semânticos — tudo sem JavaScript. Aproveitá-los
+        bem reduz código e melhora a experiência.
+      </p>
+
+      <div class="code-label">// formulário semântico e acessível completo</div>
+      <pre><code class="language-html">&lt;form action="/cadastro" method="POST" novalidate&gt;
+  &lt;!-- novalidate: desabilita validação nativa do browser (quando usamos JS customizado) --&gt;
+
+  &lt;!-- ── Fieldset agrupa campos relacionados ─────────── --&gt;
+  &lt;fieldset&gt;
+    &lt;legend&gt;Dados Pessoais&lt;/legend&gt;
+
+    &lt;div class="campo"&gt;
+      &lt;!-- label SEMPRE associado ao input (via for + id ou aninhamento) --&gt;
+      &lt;label for="nome"&gt;Nome completo *&lt;/label&gt;
+      &lt;input
+        type="text"
+        id="nome"
+        name="nome"
+        placeholder="Ana Silva"
+        required
+        minlength="3"
+        maxlength="100"
+        autocomplete="name"
+      &gt;
+    &lt;/div&gt;
+
+    &lt;div class="campo"&gt;
+      &lt;label for="email"&gt;E-mail *&lt;/label&gt;
+      &lt;input
+        type="email"           &lt;!-- valida formato email, abre teclado correto no mobile --&gt;
+        id="email"
+        name="email"
+        required
+        autocomplete="email"
+        aria-describedby="email-hint"
+      &gt;
+      &lt;span id="email-hint" class="hint"&gt;Usado para login e comunicações&lt;/span&gt;
+    &lt;/div&gt;
+
+    &lt;div class="campo"&gt;
+      &lt;label for="telefone"&gt;Telefone&lt;/label&gt;
+      &lt;input type="tel" id="telefone" name="telefone"
+             pattern="[\d\s\-\(\)]{10,15}"
+             placeholder="(11) 99999-9999"
+             autocomplete="tel"&gt;
+    &lt;/div&gt;
+
+    &lt;div class="campo"&gt;
+      &lt;label for="nascimento"&gt;Data de nascimento&lt;/label&gt;
+      &lt;input type="date" id="nascimento" name="nascimento"
+             min="1920-01-01" max="2010-12-31"&gt;
+    &lt;/div&gt;
+  &lt;/fieldset&gt;
+
+  &lt;fieldset&gt;
+    &lt;legend&gt;Preferências&lt;/legend&gt;
+
+    &lt;!-- Select / dropdown ──────────────────────────── --&gt;
+    &lt;div class="campo"&gt;
+      &lt;label for="plano"&gt;Plano&lt;/label&gt;
+      &lt;select id="plano" name="plano"&gt;
+        &lt;option value=""&gt;Selecione...&lt;/option&gt;
+        &lt;optgroup label="Pessoal"&gt;
+          &lt;option value="free"&gt;Gratuito&lt;/option&gt;
+          &lt;option value="pro" selected&gt;Pro — R$ 29/mês&lt;/option&gt;
+        &lt;/optgroup&gt;
+        &lt;optgroup label="Empresarial"&gt;
+          &lt;option value="team"&gt;Team — R$ 99/mês&lt;/option&gt;
+        &lt;/optgroup&gt;
+      &lt;/select&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Textarea ──────────────────────────────────── --&gt;
+    &lt;div class="campo"&gt;
+      &lt;label for="bio"&gt;Bio&lt;/label&gt;
+      &lt;textarea id="bio" name="bio" rows="4"
+                maxlength="500" placeholder="Conte um pouco sobre você..."&gt;&lt;/textarea&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Radio buttons (grupo exclusivo) ───────────── --&gt;
+    &lt;fieldset&gt;
+      &lt;legend&gt;Gênero&lt;/legend&gt;
+      &lt;label&gt;&lt;input type="radio" name="genero" value="f"&gt; Feminino&lt;/label&gt;
+      &lt;label&gt;&lt;input type="radio" name="genero" value="m"&gt; Masculino&lt;/label&gt;
+      &lt;label&gt;&lt;input type="radio" name="genero" value="nb"&gt; Não-binário&lt;/label&gt;
+      &lt;label&gt;&lt;input type="radio" name="genero" value="na"&gt; Prefiro não informar&lt;/label&gt;
+    &lt;/fieldset&gt;
+
+    &lt;!-- Checkboxes (múltipla escolha) ─────────────── --&gt;
+    &lt;fieldset&gt;
+      &lt;legend&gt;Interesses&lt;/legend&gt;
+      &lt;label&gt;&lt;input type="checkbox" name="interesses" value="frontend"&gt; Frontend&lt;/label&gt;
+      &lt;label&gt;&lt;input type="checkbox" name="interesses" value="backend"&gt; Backend&lt;/label&gt;
+      &lt;label&gt;&lt;input type="checkbox" name="interesses" value="devops"&gt; DevOps&lt;/label&gt;
+    &lt;/fieldset&gt;
+
+    &lt;!-- Range e number ─────────────────────────────── --&gt;
+    &lt;label for="experiencia"&gt;Anos de experiência: &lt;output id="exp-val"&gt;3&lt;/output&gt;&lt;/label&gt;
+    &lt;input type="range" id="experiencia" name="experiencia"
+           min="0" max="20" value="3" step="1"
+           oninput="document.getElementById('exp-val').value = this.value"&gt;
+  &lt;/fieldset&gt;
+
+  &lt;!-- Botões ─────────────────────────────────────── --&gt;
+  &lt;div class="acoes"&gt;
+    &lt;button type="submit"&gt;Criar conta&lt;/button&gt;
+    &lt;button type="reset"&gt;Limpar&lt;/button&gt;
+    &lt;button type="button" onclick="preview()"&gt;Pré-visualizar&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/form&gt;
+</code></pre>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>type</th>
+              <th>Comportamento</th>
+              <th>Mobile</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>text</code></td>
+              <td>Texto livre</td>
+              <td>Teclado padrão</td>
+            </tr>
+            <tr>
+              <td><code>email</code></td>
+              <td>Valida formato email</td>
+              <td>Teclado com @ e .com</td>
+            </tr>
+            <tr>
+              <td><code>tel</code></td>
+              <td>Número de telefone</td>
+              <td>Teclado numérico</td>
+            </tr>
+            <tr>
+              <td><code>number</code></td>
+              <td>Apenas números + min/max/step</td>
+              <td>Teclado numérico</td>
+            </tr>
+            <tr>
+              <td><code>url</code></td>
+              <td>Valida formato URL</td>
+              <td>Teclado com .com e /</td>
+            </tr>
+            <tr>
+              <td><code>password</code></td>
+              <td>Oculta caracteres</td>
+              <td>Teclado padrão</td>
+            </tr>
+            <tr>
+              <td><code>search</code></td>
+              <td>Campo de busca (botão X)</td>
+              <td>Teclado com "Buscar"</td>
+            </tr>
+            <tr>
+              <td><code>date</code></td>
+              <td>Seletor de data nativo</td>
+              <td>Date picker do SO</td>
+            </tr>
+            <tr>
+              <td><code>range</code></td>
+              <td>Slider numérico</td>
+              <td>Slider touch-friendly</td>
+            </tr>
+            <tr>
+              <td><code>color</code></td>
+              <td>Seletor de cor nativo</td>
+              <td>Color picker</td>
+            </tr>
+            <tr>
+              <td><code>file</code></td>
+              <td>Upload de arquivo</td>
+              <td>Galeria / câmera</td>
+            </tr>
+            <tr>
+              <td><code>hidden</code></td>
+              <td>Campo invisível (ex: CSRF token)</td>
+              <td>—</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         6. MEDIA & EMBEDS
-    ══════════════════════════════════════════ -->
+    <!-- ── 7. MÍDIA ── -->
     <div class="section">
-      <div class="section-label">// 06 — media</div>
-      <h2>Media & Embeds — imagens, vídeo e audio modernos</h2>
-
+      <div class="section-label">// conceito 5</div>
+      <h2>Mídia — imagens, vídeo e áudio</h2>
       <p>
-        Imagens responsivas e vídeo bem implementados são um dos maiores impactos em performance web.
-        O HTML moderno tem elementos e atributos específicos para cada caso — e usar <code>img src</code>
-        simples para tudo é deixar performance na mesa.
+        O HTML moderno tem elementos ricos para mídia, com suporte a múltiplos formatos, lazy loading nativo, imagens
+        responsivas e acessibilidade embutida.
       </p>
 
-      <div class="media-grid">
-        <div class="media-card">
-          <div class="media-thumb">🖼️</div>
-          <div class="media-body">
-            <div class="media-element">&lt;img&gt;</div>
-            <div class="media-desc">Imagem simples. Sempre com <strong>alt</strong> descritivo (ou alt="" se
-              decorativa).</div>
-            <div class="media-attr">loading="lazy" · width · height · decoding="async"</div>
-          </div>
-        </div>
-        <div class="media-card">
-          <div class="media-thumb">📐</div>
-          <div class="media-body">
-            <div class="media-element">&lt;picture&gt;</div>
-            <div class="media-desc">Imagem com múltiplos formatos e breakpoints. Para arte direcionada (mudar o
-              enquadramento em mobile).</div>
-            <div class="media-attr">source · media · srcset · type</div>
-          </div>
-        </div>
-        <div class="media-card">
-          <div class="media-thumb">🎬</div>
-          <div class="media-body">
-            <div class="media-element">&lt;video&gt;</div>
-            <div class="media-desc">Vídeo nativo sem player externo. Múltiplos formatos via
-              <code>&lt;source&gt;</code>.
-            </div>
-            <div class="media-attr">controls · autoplay · muted · loop · poster · preload</div>
-          </div>
-        </div>
-        <div class="media-card">
-          <div class="media-thumb">🎵</div>
-          <div class="media-body">
-            <div class="media-element">&lt;audio&gt;</div>
-            <div class="media-desc">Player de áudio nativo. Para podcasts, efeitos sonoros, músicas.</div>
-            <div class="media-attr">controls · loop · preload · src</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="code-wrap">
-        <div class="code-header">
-          <span class="code-filename">media-modernos.html</span>
-          <span class="code-lang">html</span>
-        </div>
-        <pre><code class="language-html">&lt;!-- ─── IMG BÁSICO — SEMPRE com alt ──────────────── --&gt;
+      <div class="code-label">// imagens responsivas e acessíveis</div>
+      <pre><code class="language-html">&lt;!-- ── Imagem simples — atributos essenciais ─────────────── --&gt;
 &lt;img
-  src="hero.jpg"
-  alt="Desenvolvedor digitando em laptop num café moderno"
+  src="foto.jpg"
+  alt="Foto de Ana Silva sorrindo em frente a um computador"
   width="800"
   height="600"
   loading="lazy"
-  decoding="async"&gt;
+&gt;
+&lt;!--
+  alt: OBRIGATÓRIO para acessibilidade e SEO.
+       Se a imagem for decorativa (sem conteúdo), use alt=""
+  width + height: previne layout shift (CLS) durante o carregamento
+  loading="lazy": adia o carregamento até a imagem entrar na viewport
+--&gt;
 
-&lt;!-- alt="" em imagens decorativas (leitores de tela pulam) --&gt;
-&lt;img src="divider-line.svg" alt="" role="presentation"&gt;
-
-
-&lt;!-- ─── SRCSET — imagens responsivas ──────────────── --&gt;
+&lt;!-- ── Imagens responsivas com srcset ────────────────────── --&gt;
 &lt;img
-  src="hero-800.jpg"
+  src="foto-800.jpg"
   srcset="
-    hero-400.jpg  400w,
-    hero-800.jpg  800w,
-    hero-1200.jpg 1200w"
-  sizes="
-    (max-width: 600px) 100vw,
-    (max-width: 900px) 50vw,
-    800px"
-  alt="Hero banner do produto"
-  loading="eager"&gt;  &lt;!-- acima da dobra: eager, não lazy --&gt;
+    foto-400.jpg  400w,
+    foto-800.jpg  800w,
+    foto-1600.jpg 1600w
+  "
+  sizes="(max-width: 600px) 100vw, (max-width: 1200px) 50vw, 800px"
+  alt="Paisagem da Serra da Mantiqueira ao amanhecer"
+  loading="lazy"
+  decoding="async"
+&gt;
 
-
-&lt;!-- ─── PICTURE — arte direcionada + formatos modernos ── --&gt;
+&lt;!-- ── &lt;picture&gt; para art direction e formatos modernos ───── --&gt;
 &lt;picture&gt;
-  &lt;!-- Formato AVIF (menor, mais moderno) --&gt;
-  &lt;source type="image/avif" srcset="foto.avif"&gt;
-
-  &lt;!-- Formato WebP (fallback) --&gt;
-  &lt;source type="image/webp" srcset="foto.webp"&gt;
-
-  &lt;!-- Mobile: versão vertical --&gt;
-  &lt;source media="(max-width: 600px)" srcset="foto-mobile.jpg"&gt;
-
-  &lt;!-- Fallback universal --&gt;
-  &lt;img src="foto.jpg" alt="Foto do produto em destaque" width="800" height="600"&gt;
+  &lt;source type="image/avif" srcset="hero.avif"&gt;  &lt;!-- melhor compressão --&gt;
+  &lt;source type="image/webp" srcset="hero.webp"&gt;  &lt;!-- amplo suporte --&gt;
+  &lt;img src="hero.jpg" alt="Hero da landing page" width="1200" height="600"&gt;
+  &lt;!-- fallback para browsers antigos --&gt;
 &lt;/picture&gt;
 
+&lt;!-- ── Figure com legenda ────────────────────────────────── --&gt;
+&lt;figure&gt;
+  &lt;img src="grafico-vendas.png" alt="Gráfico de barras: vendas crescem 40% no Q3"&gt;
+  &lt;figcaption&gt;Fig. 1 — Crescimento de vendas Q1–Q3 2024&lt;/figcaption&gt;
+&lt;/figure&gt;
 
-&lt;!-- ─── VIDEO ──────────────────────────────────────── --&gt;
+&lt;!-- ── Vídeo ─────────────────────────────────────────────── --&gt;
 &lt;video
-  width="800"
-  height="450"
-  poster="thumbnail.jpg"   &lt;!-- imagem antes do play --&gt;
   controls
-  preload="metadata"        &lt;!-- carrega só metadados --&gt;
-  muted                     &lt;!-- necessário para autoplay --&gt;&gt;
-  &lt;source src="video.mp4"  type="video/mp4"&gt;
-  &lt;source src="video.webm" type="video/webm"&gt;
-  &lt;p&gt;Seu navegador não suporta vídeo HTML5.
-     &lt;a href="video.mp4"&gt;Baixe aqui&lt;/a&gt;.&lt;/p&gt;
+  width="800"
+  poster="thumbnail.jpg"
+  preload="metadata"
+&gt;
+  &lt;source src="aula.webm" type="video/webm"&gt;
+  &lt;source src="aula.mp4"  type="video/mp4"&gt;
+  &lt;track kind="subtitles" src="aula-pt.vtt" srclang="pt" label="Português" default&gt;
+  &lt;p&gt;Seu browser não suporta vídeo HTML5. &lt;a href="aula.mp4"&gt;Baixar&lt;/a&gt;&lt;/p&gt;
 &lt;/video&gt;
 
-
-&lt;!-- ─── AUDIO ──────────────────────────────────────── --&gt;
+&lt;!-- ── Áudio ─────────────────────────────────────────────── --&gt;
 &lt;audio controls preload="none"&gt;
-  &lt;source src="episodio.mp3" type="audio/mpeg"&gt;
-  &lt;source src="episodio.ogg" type="audio/ogg"&gt;
+  &lt;source src="podcast.ogg" type="audio/ogg"&gt;
+  &lt;source src="podcast.mp3" type="audio/mpeg"&gt;
 &lt;/audio&gt;
 
-
-&lt;!-- ─── IFRAME (embeds externos) ──────────────────── --&gt;
+&lt;!-- ── Embed e iframe ─────────────────────────────────────── --&gt;
 &lt;iframe
-  src="https://www.google.com/maps/embed?..."
-  width="600"
-  height="400"
+  src="https://www.youtube.com/embed/VIDEO_ID"
+  title="Título descritivo do vídeo incorporado"
+  width="560"
+  height="315"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media"
+  allowfullscreen
   loading="lazy"
-  title="Mapa com localização do escritório"  &lt;!-- obrigatório para acessibilidade --&gt;
-  allowfullscreen&gt;
-&lt;/iframe&gt;</code></pre>
-      </div>
-
-      <div class="callout callout-tip">
-        <div class="callout-title">🔥 Pro tip — loading="lazy" em tudo abaixo da dobra</div>
-        Adicionar <code>loading="lazy"</code> em todas as imagens que não aparecem na tela inicial
-        é uma das melhorias de performance mais fáceis que existem — e é 1 atributo a mais no HTML.
-        O navegador só vai baixar a imagem quando o usuário estiver chegando perto dela no scroll.
-        Não use em imagens acima da dobra (hero, logo) — isso piora o LCP.
-      </div>
-    </div>
-
-    <!-- ══════════════════════════════════════════
-         7. MERMAID — HIERARQUIA DE HEADINGS
-    ══════════════════════════════════════════ -->
-    <div class="section">
-      <div class="section-label">// 07 — hierarquia</div>
-      <h2>A hierarquia de headings — H1 a H6</h2>
-
-      <p>
-        Os headings (<code>&lt;h1&gt;</code> a <code>&lt;h6&gt;</code>) não são só "texto grande" —
-        eles formam o <strong>outline do documento</strong>, usado por leitores de tela para navegação
-        e pelo Google para entender a estrutura do conteúdo.
-      </p>
-
-      <div class="mermaid-wrap">
-        <div class="mermaid-label">// outline correto de uma página de blog</div>
-        <pre class="mermaid">
-          graph TD
-          H1["H1 — Título da página (único)"]
-          H2a["H2 — Seção: Artigos Recentes"]
-          H2b["H2 — Seção: Sobre o Autor"]
-          H3a["H3 — Título do Artigo 1"]
-          H3b["H3 — Título do Artigo 2"]
-          H4a["H4 — Subtópico dentro do artigo"]
-          H1 --> H2a
-          H1 --> H2b
-          H2a --> H3a
-          H2a --> H3b
-          H3a --> H4a
-          style H1 fill:#ef4444,color:#fff,stroke:none
-          style H2a fill:#16161f,stroke:#ef4444,color:#e8e8f0
-          style H2b fill:#16161f,stroke:#ef4444,color:#e8e8f0
-          style H3a fill:#16161f,stroke:#8585a8,color:#e8e8f0
-          style H3b fill:#16161f,stroke:#8585a8,color:#e8e8f0
-          style H4a fill:#16161f,stroke:#1e1e2e,color:#8585a8
-        </pre>
-      </div>
+&gt;&lt;/iframe&gt;
+</code></pre>
 
       <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Não pule níveis de heading</div>
-        Ir de <code>&lt;h2&gt;</code> direto para <code>&lt;h4&gt;</code> é como pular capítulos num livro.
-        Quebre a hierarquia e leitores de tela perdem o contexto.
-        Se você quer um texto menor visualmente, use CSS — não mude o nível do heading.
+        <div class="callout-title">⚠️ Alt text — a regra de ouro</div>
+        O atributo <code>alt</code> é a descrição textual da imagem para quem não pode vê-la. Se a imagem
+        <strong>carrega informação</strong> (gráfico, foto de produto, captura de tela), descreva o conteúdo. Se é
+        <strong>puramente decorativa</strong> (ícone de fundo, separador visual), use <code>alt=""</code> — screen
+        readers vão ignorá-la. Nunca omita o atributo.
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         8. HANDS-ON — PÁGINA COMPLETA
-    ══════════════════════════════════════════ -->
+    <!-- ── 8. LINKS E NAVEGAÇÃO ── -->
     <div class="section">
-      <div class="section-label">// 08 — mãos na massa</div>
-      <h2>Construa sua primeira página semântica</h2>
-      <p>Execute estes passos e tenha uma página HTML semântica real rodando no seu browser:</p>
+      <div class="section-label">// conceito 6</div>
+      <h2>Links, âncoras e navegação</h2>
+
+      <div class="code-label">// tudo sobre links</div>
+      <pre><code class="language-html">&lt;!-- ── Link básico ──────────────────────────────────────── --&gt;
+&lt;a href="https://developer.mozilla.org"&gt;MDN Web Docs&lt;/a&gt;
+
+&lt;!-- ── Link externo: abrir em nova aba com segurança ──────── --&gt;
+&lt;a href="https://github.com" target="_blank" rel="noopener noreferrer"&gt;
+  GitHub
+&lt;/a&gt;
+&lt;!--
+  target="_blank" abre nova aba
+  rel="noopener"  impede acesso à página origem (segurança)
+  rel="noreferrer" não envia referrer header (privacidade)
+  SEMPRE use ambos juntos com target="_blank"
+--&gt;
+
+&lt;!-- ── Links internos: âncoras (hash) ─────────────────────── --&gt;
+&lt;a href="#sobre"&gt;Ir para a seção Sobre&lt;/a&gt;
+...
+&lt;section id="sobre"&gt;
+  &lt;h2&gt;Sobre&lt;/h2&gt;
+  ...
+&lt;/section&gt;
+
+&lt;!-- ── Outros protocolos ──────────────────────────────────── --&gt;
+&lt;a href="mailto:contato@exemplo.com?subject=Olá"&gt;Enviar email&lt;/a&gt;
+&lt;a href="tel:+5511999999999"&gt;(11) 99999-9999&lt;/a&gt;
+&lt;a href="https://wa.me/5511999999999"&gt;WhatsApp&lt;/a&gt;
+
+&lt;!-- ── Download ───────────────────────────────────────────── --&gt;
+&lt;a href="/relatorio.pdf" download="Relatorio-Q3-2024.pdf"&gt;
+  Baixar relatório (PDF, 2MB)
+&lt;/a&gt;
+
+&lt;!-- ── Navegação semântica completa ──────────────────────── --&gt;
+&lt;nav aria-label="Navegação principal"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;
+      &lt;a href="/produtos" aria-current="page"&gt;Produtos&lt;/a&gt;
+      &lt;!-- aria-current="page" indica a página ativa ao screen reader --&gt;
+      &lt;ul&gt;
+        &lt;li&gt;&lt;a href="/produtos/tech"&gt;Tecnologia&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="/produtos/casa"&gt;Casa&lt;/a&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/li&gt;
+    &lt;li&gt;&lt;a href="/contato"&gt;Contato&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;
+</code></pre>
+    </div>
+
+    <!-- ── HANDS-ON ── -->
+    <div class="section">
+      <div class="section-label">// prática</div>
+      <h2>Mãos na massa — Página de perfil semântica</h2>
+      <p>Vamos construir uma página de perfil de desenvolvedor do zero, usando apenas HTML semântico — sem CSS
+        customizado por enquanto. O objetivo é ver que a estrutura funciona e é legível mesmo sem estilo.</p>
 
       <div class="steps">
         <div class="step">
           <div class="step-num">1</div>
           <div class="step-body">
-            <div class="step-title">Crie a estrutura de arquivos</div>
-            <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
-              </div>
-              <pre><code class="language-bash">mkdir meu-portfolio
-cd meu-portfolio
-ni index.html
-# Abra no VS Code
-code .</code></pre>
-            </div>
+            <div class="step-title">Crie o arquivo <code>perfil.html</code></div>
+            <div class="step-desc">Copie o esqueleto e comece a construir a estrutura</div>
+            <pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="pt-BR"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;meta name="description" content="Perfil de Ana Silva — Desenvolvedora Full-Stack"&gt;
+  &lt;title&gt;Ana Silva — Desenvolvedora Full-Stack&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+  &lt;header&gt;
+    &lt;nav aria-label="Principal"&gt;
+      &lt;a href="/"&gt;← Voltar ao portfólio&lt;/a&gt;
+      &lt;ul&gt;
+        &lt;li&gt;&lt;a href="#sobre"&gt;Sobre&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#projetos"&gt;Projetos&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#contato"&gt;Contato&lt;/a&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/nav&gt;
+  &lt;/header&gt;
+
+  &lt;main&gt;
+
+    &lt;!-- Seção hero / apresentação --&gt;
+    &lt;section id="sobre" aria-labelledby="titulo-sobre"&gt;
+      &lt;figure&gt;
+        &lt;img
+          src="https://picsum.photos/seed/dev/200/200"
+          alt="Foto de perfil de Ana Silva"
+          width="200" height="200"
+        &gt;
+      &lt;/figure&gt;
+      &lt;h1 id="titulo-sobre"&gt;Ana Silva&lt;/h1&gt;
+      &lt;p&gt;&lt;strong&gt;Desenvolvedora Full-Stack&lt;/strong&gt; apaixonada por interfaces acessíveis e sistemas escaláveis.&lt;/p&gt;
+      &lt;ul&gt;
+        &lt;li&gt;📍 São Paulo, Brasil&lt;/li&gt;
+        &lt;li&gt;🏢 Engenheira Sênior na &lt;strong&gt;DevCorp&lt;/strong&gt;&lt;/li&gt;
+        &lt;li&gt;⚡ 6 anos de experiência&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/section&gt;
+
+    &lt;!-- Habilidades --&gt;
+    &lt;section aria-labelledby="titulo-skills"&gt;
+      &lt;h2 id="titulo-skills"&gt;Habilidades&lt;/h2&gt;
+      &lt;dl&gt;
+        &lt;dt&gt;Frontend&lt;/dt&gt;
+        &lt;dd&gt;HTML, CSS, JavaScript, React, TypeScript&lt;/dd&gt;
+        &lt;dt&gt;Backend&lt;/dt&gt;
+        &lt;dd&gt;Node.js, Python, FastAPI, PostgreSQL&lt;/dd&gt;
+        &lt;dt&gt;Infraestrutura&lt;/dt&gt;
+        &lt;dd&gt;Docker, GitHub Actions, AWS&lt;/dd&gt;
+      &lt;/dl&gt;
+    &lt;/section&gt;
+
+    &lt;!-- Projetos --&gt;
+    &lt;section id="projetos" aria-labelledby="titulo-projetos"&gt;
+      &lt;h2 id="titulo-projetos"&gt;Projetos em Destaque&lt;/h2&gt;
+
+      &lt;article&gt;
+        &lt;h3&gt;DevBoard — Kanban para Times de Engenharia&lt;/h3&gt;
+        &lt;p&gt;Aplicação full-stack com React, Node.js e PostgreSQL. Focado em&lt;/p&gt;
+        &lt;p&gt;performance e acessibilidade (WCAG 2.1 AA).&lt;/p&gt;
+        &lt;p&gt;&lt;small&gt;React · Node.js · PostgreSQL · Docker&lt;/small&gt;&lt;/p&gt;
+        &lt;a href="https://github.com" target="_blank" rel="noopener noreferrer"&gt;Ver no GitHub →&lt;/a&gt;
+      &lt;/article&gt;
+
+      &lt;article&gt;
+        &lt;h3&gt;OpenMetrics — Dashboard de Observabilidade&lt;/h3&gt;
+        &lt;p&gt;Ferramenta open-source para visualização de métricas em tempo real.&lt;/p&gt;
+        &lt;p&gt;&lt;small&gt;Python · FastAPI · React · WebSocket&lt;/small&gt;&lt;/p&gt;
+        &lt;a href="https://github.com" target="_blank" rel="noopener noreferrer"&gt;Ver no GitHub →&lt;/a&gt;
+      &lt;/article&gt;
+    &lt;/section&gt;
+
+    &lt;!-- Formulário de contato --&gt;
+    &lt;section id="contato" aria-labelledby="titulo-contato"&gt;
+      &lt;h2 id="titulo-contato"&gt;Contato&lt;/h2&gt;
+      &lt;form action="/contato" method="POST"&gt;
+        &lt;div&gt;
+          &lt;label for="nome"&gt;Seu nome *&lt;/label&gt;
+          &lt;input type="text" id="nome" name="nome" required autocomplete="name"&gt;
+        &lt;/div&gt;
+        &lt;div&gt;
+          &lt;label for="email"&gt;Seu e-mail *&lt;/label&gt;
+          &lt;input type="email" id="email" name="email" required autocomplete="email"&gt;
+        &lt;/div&gt;
+        &lt;div&gt;
+          &lt;label for="mensagem"&gt;Mensagem *&lt;/label&gt;
+          &lt;textarea id="mensagem" name="mensagem" rows="5" required&gt;&lt;/textarea&gt;
+        &lt;/div&gt;
+        &lt;button type="submit"&gt;Enviar mensagem&lt;/button&gt;
+      &lt;/form&gt;
+    &lt;/section&gt;
+
+  &lt;/main&gt;
+
+  &lt;footer&gt;
+    &lt;p&gt;&lt;small&gt;© 2024 Ana Silva. Feito com ♥ e HTML semântico.&lt;/small&gt;&lt;/p&gt;
+    &lt;nav aria-label="Redes sociais"&gt;
+      &lt;a href="https://github.com/anasilva" target="_blank" rel="noopener noreferrer"&gt;GitHub&lt;/a&gt;
+      &lt;a href="https://linkedin.com/in/anasilva" target="_blank" rel="noopener noreferrer"&gt;LinkedIn&lt;/a&gt;
+    &lt;/nav&gt;
+  &lt;/footer&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
           </div>
         </div>
 
         <div class="step">
           <div class="step-num">2</div>
           <div class="step-body">
-            <div class="step-title">Cole o boilerplate semântico</div>
-            <div class="step-desc">No VS Code, abra o <code>index.html</code> e use o snippet <code>"html:5"</code> +
-              Tab
-              para gerar o DOCTYPE, depois construa a estrutura semântica completa baseada no exemplo desta aula.
-            </div>
-            <div class="callout callout-tip">
-              <div class="callout-title">🔥 Extensões VS Code essenciais para HTML</div>
-              Instale <strong>Live Server</strong> (atualiza o browser automaticamente ao salvar) e
-              <strong>HTML CSS Support</strong>. Com Live Server, clique em "Go Live" no rodapé — seu browser abre e
-              atualiza em tempo real.
-            </div>
+            <div class="step-title">Abra e inspecione no browser</div>
+            <div class="step-desc">Dê duplo clique no arquivo para abrir no browser. Mesmo sem CSS, a estrutura deve ser
+              clara e legível.</div>
           </div>
         </div>
 
         <div class="step">
           <div class="step-num">3</div>
           <div class="step-body">
-            <div class="step-title">Valide com o W3C Validator</div>
-            <div class="step-desc">Cole o HTML em <a href="https://validator.w3.org/#validate_by_input"
-                target="_blank">validator.w3.org</a> e corrija qualquer erro. Zero errors, zero warnings é o objetivo.
-            </div>
+            <div class="step-title">Valide o HTML</div>
+            <div class="step-desc">Acesse <a href="https://validator.w3.org" target="_blank" rel="noopener"
+                style="color:var(--accent)">validator.w3.org</a>, cole o código e corrija qualquer erro apontado. Código
+              válido é mais acessível e previsível.</div>
           </div>
         </div>
 
         <div class="step">
           <div class="step-num">4</div>
           <div class="step-body">
-            <div class="step-title">Audite com o Lighthouse do Chrome</div>
-            <div class="step-desc">Abra o DevTools (F12) → aba Lighthouse → gere um relatório. Mire 90+ em
-              Accessibility
-              e SEO. Os problemas encontrados são lições diretas de HTML semântico.</div>
+            <div class="step-title">Teste com leitor de tela</div>
+            <div class="step-desc">No Mac: ative o VoiceOver com <code>Cmd + F5</code>. No Windows: NVDA (gratuito) ou
+              Narrator (<code>Win + Ctrl + Enter</code>). Navegue com Tab e setas — você vai perceber imediatamente o
+              impacto do HTML semântico.</div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Inspecione no DevTools — aba Accessibility</div>
+            <div class="step-desc">Abra o DevTools (<code>F12</code>), vá em Elements → painel Accessibility. Você pode
+              ver a árvore de acessibilidade (accessibility tree) que o browser constrói a partir do HTML semântico.
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         9. PITFALLS
-    ══════════════════════════════════════════ -->
+    <!-- ── ARMADILHAS ── -->
     <div class="section">
-      <div class="section-label">// 09 — armadilhas</div>
-      <h2>Erros clássicos de HTML</h2>
+      <div class="section-label">// pitfalls</div>
+      <h2>⚠️ Armadilhas Comuns</h2>
 
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Div soup — o pesadelo semântico</div>
-        <p>Páginas com dezenas de
-          <code>&lt;div class="wrapper"&gt;&lt;div class="container"&gt;&lt;div class="inner"&gt;</code> são a norma
-          em
-          código legado. Cada div extra é um elemento sem significado que polui o DOM. Revise: pode ser substituído
-          por
-          um elemento semântico?
-        </p>
+      <div class="pitfall">
+        <div class="pitfall-title">1. Usar &lt;div&gt; e &lt;span&gt; para tudo ("div soup")</div>
+        <p>Antes de adicionar um <code>&lt;div&gt;</code>, pergunte: "existe um elemento semântico para isso?" Na
+          maioria das vezes a resposta é sim. <code>&lt;div&gt;</code> deve ser o último recurso, não o primeiro.</p>
       </div>
 
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Imagens sem alt ou com alt genérico</div>
-        <p><code>alt="imagem"</code> ou <code>alt="foto"</code> é pior do que um alt vazio. Descreva o que a imagem
-          comunica: <code>alt="Gráfico mostrando crescimento de 40% em receita no Q3 2024"</code>. Imagens puramente
-          decorativas? Use <code>alt=""</code> — leitores de tela vão pular.</p>
+      <div class="pitfall">
+        <div class="pitfall-title">2. Múltiplos &lt;h1&gt; na mesma página</div>
+        <p>Existe exatamente um <code>&lt;h1&gt;</code> por página — o título principal. Usar múltiplos confunde screen
+          readers e prejudica SEO. O framework que você usa (React, Next.js) não muda essa regra.</p>
       </div>
 
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ &lt;label&gt; sem conexão com o &lt;input&gt;</div>
-        <p>Um <code>&lt;label&gt;</code> solto sem o atributo <code>for</code> apontando para o <code>id</code> do
-          input
-          não tem efeito nenhum — nem visual (clicar no label não foca o input) nem de acessibilidade. É um dos erros
-          mais comuns em formulários e um dos mais impactantes.</p>
+      <div class="pitfall">
+        <div class="pitfall-title">3. &lt;input&gt; sem &lt;label&gt; associado</div>
+        <p>Todo campo de formulário precisa de um <code>&lt;label&gt;</code> com <code>for</code> igual ao
+          <code>id</code> do input. <code>placeholder</code> não substitui label — desaparece ao digitar e tem contraste
+          ruim. Sem label, screen readers não conseguem descrever o campo.</p>
       </div>
 
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Múltiplos &lt;h1&gt; numa página</div>
-        <p>Antes do HTML5, múltiplos <code>&lt;h1&gt;</code> eram tecnicamente válidos em contextos de sectioning
-          elements. Na prática hoje: use um único <code>&lt;h1&gt;</code> por página. Todos os motores de busca e
-          leitores de tela modernos esperam isso. Segundo título? Use <code>&lt;h2&gt;</code>.</p>
+      <div class="pitfall">
+        <div class="pitfall-title">4. target="_blank" sem rel="noopener noreferrer"</div>
+        <p>Sem esses atributos, a página aberta em nova aba pode acessar <code>window.opener</code> e redirecionar a
+          página original — uma vulnerabilidade de segurança chamada "reverse tabnapping".</p>
       </div>
 
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ &lt;b&gt; e &lt;i&gt; ao invés de &lt;strong&gt; e &lt;em&gt;</div>
-        <p><code>&lt;b&gt;</code> e <code>&lt;i&gt;</code> são elementos de apresentação — apenas mudam a aparência.
-          <code>&lt;strong&gt;</code> e <code>&lt;em&gt;</code> têm significado semântico (importância e ênfase) e são
-          lidos com entonação diferente por leitores de tela. Use sempre os semânticos.
-        </p>
+      <div class="pitfall">
+        <div class="pitfall-title">5. Omitir width e height em imagens</div>
+        <p>Sem dimensões, o browser não reserva espaço para a imagem antes de carregá-la, causando <strong>layout
+            shift</strong> (CLS) — a página "pula" enquanto carrega. Isso prejudica a experiência do usuário e o Core
+          Web Vitals.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">6. Usar &lt;b&gt; e &lt;i&gt; para ênfase semântica</div>
+        <p>Use <code>&lt;strong&gt;</code> para importância real e <code>&lt;em&gt;</code> para ênfase semântica.
+          <code>&lt;b&gt;</code> e <code>&lt;i&gt;</code> são apenas visuais, sem semântica — screen readers podem não
+          os diferenciar.</p>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         10. VÍDEOS
-    ══════════════════════════════════════════ -->
+    <!-- ── VÍDEOS ── -->
     <div class="section">
-      <div class="section-label">// 10 — curadoria</div>
-      <h2>Referências em vídeo</h2>
-
-      <div class="videos-grid">
-        <a class="video-card" href="https://www.youtube.com/watch?v=kGW8Al_cga4" target="_blank">
+      <div class="section-label">// curadoria</div>
+      <h2>Vídeos Recomendados</h2>
+      <div class="video-grid">
+        <div class="video-card">
           <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title"> HTML 5 Semantics</div>
-            <div class="video-channel">Net Ninja · ~14 min</div>
-            <div class="video-why">Por que assistir: explicação direta em português com exemplos práticos da diferença
-              entre div e elementos semânticos. Perfeito como reforço desta aula.</div>
-            <span class="video-watch">Assistir →</span>
+          <div class="video-info">
+            <div class="video-title">HTML Semântico em 10 Minutos</div>
+            <div class="video-channel">Filipe Deschamps · ~10 min</div>
+            <div class="video-why">Por que assistir: O melhor overview em português de por que semântica importa, com
+              exemplos visuais de antes e depois.</div>
+            <a href="https://www.youtube.com/results?search_query=html+semantico+filipe+deschamps" target="_blank"
+              rel="noopener noreferrer">Assistir →</a>
           </div>
-        </a>
-
-        <a class="video-card" href="https://www.youtube.com/watch?v=frAGrGN00OA" target="_blank">
+        </div>
+        <div class="video-card">
           <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title">HTML Forms and Inputs | HTML5 Tutorial for Beginners</div>
-            <div class="video-channel">Dave Gray · ~45 min</div>
-            <div class="video-why">Por que assistir: curso completo sobre formulários HTML, cobrindo todos os tipos de
-              input com exemplos reais e foco em acessibilidade.</div>
-            <span class="video-watch">Assistir →</span>
+          <div class="video-info">
+            <div class="video-title">HTML Full Course — Build a Website Tutorial</div>
+            <div class="video-channel">freeCodeCamp · ~2h</div>
+            <div class="video-why">Por que assistir: Referência completa com todos os elementos HTML organizados em
+              projeto prático do zero ao resultado final.</div>
+            <a href="https://www.youtube.com/watch?v=pQN-pnXPaVg" target="_blank" rel="noopener noreferrer">Assistir
+              →</a>
           </div>
-        </a>
-
-        <a class="video-card" href="https://www.youtube.com/watch?v=ok-plXXHlWw" target="_blank">
+        </div>
+        <div class="video-card">
           <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title">HTML in 100 Seconds</div>
-            <div class="video-channel">Fireship · ~2 min</div>
-            <div class="video-why">Por que assistir: resumo visual relâmpago dos conceitos centrais do HTML. Ideal
-              como
-              revisão rápida antes de praticar.</div>
-            <span class="video-watch">Assistir →</span>
+          <div class="video-info">
+            <div class="video-title">Web Accessibility — Complete Guide</div>
+            <div class="video-channel">Web Dev Simplified · ~20 min</div>
+            <div class="video-why">Por que assistir: Demonstra ao vivo como um screen reader interpreta HTML semântico
+              vs. div soup. Muda a perspectiva para sempre.</div>
+            <a href="https://www.youtube.com/watch?v=1A6SrPwmGpg" target="_blank" rel="noopener noreferrer">Assistir
+              →</a>
           </div>
-        </a>
-
-        <a class="video-card" href="https://www.youtube.com/watch?v=Rik3gHT24AM" target="_blank">
+        </div>
+        <div class="video-card">
           <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title">The HTML picture Element Explained</div>
-            <div class="video-channel">Kevin Powell · ~20 min</div>
-            <div class="video-why">Por que assistir: Kevin Powell é o melhor professor de CSS/HTML do YouTube. Este
-              vídeo desmistifica o elemento picture e srcset de forma definitiva para imagens responsivas.</div>
-            <span class="video-watch">Assistir →</span>
+          <div class="video-info">
+            <div class="video-title">HTML Forms — Complete Tutorial</div>
+            <div class="video-channel">Traversy Media · ~35 min</div>
+            <div class="video-why">Por que assistir: Todos os tipos de input, validação nativa, fieldsets e boas
+              práticas de UX em formulários — com projeto completo.</div>
+            <a href="https://www.youtube.com/watch?v=fNcJuPIZ2WE" target="_blank" rel="noopener noreferrer">Assistir
+              →</a>
           </div>
-        </a>
+        </div>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         11. CHECKPOINT
-    ══════════════════════════════════════════ -->
-    <div class="checkpoint">
-      <div class="checkpoint-label">// 11 — desafio</div>
-      <h3>🏁 Checkpoint — construa uma página de portfólio</h3>
-      <p>Crie um arquivo <code>portfolio.html</code> do zero com a seguinte estrutura — sem usar CSS ainda, só HTML
-        semântico:</p>
-      <ul>
-        <li>Um <code>&lt;header&gt;</code> com seu nome em <code>&lt;h1&gt;</code> e um <code>&lt;nav&gt;</code> com 3
-          links internos (âncoras com <code>#</code>)</li>
-        <li>Um <code>&lt;main&gt;</code> contendo: uma <code>&lt;section&gt;</code> "Sobre mim", uma
-          <code>&lt;section&gt;</code> "Projetos" com pelo menos 2 <code>&lt;article&gt;</code> dentro
-        </li>
-        <li>Cada article com: <code>&lt;h3&gt;</code>, <code>&lt;p&gt;</code>, e uma imagem com <code>alt</code>
-          descritivo e <code>loading="lazy"</code></li>
-        <li>Um formulário de contato com: campo nome (<code>type="text"</code>), email (<code>type="email"</code>),
-          mensagem (<code>&lt;textarea&gt;</code>), e botão submit — todos com <code>&lt;label&gt;</code> conectado
-        </li>
-        <li>Um <code>&lt;aside&gt;</code> com lista de habilidades</li>
-        <li>Um <code>&lt;footer&gt;</code> com copyright e links de redes sociais</li>
-        <li>Valide em <a href="https://validator.w3.org/#validate_by_input" target="_blank">validator.w3.org</a> e
-          corrija todos os erros</li>
-      </ul>
-      <div class="checkpoint-hint">
-        💬 Dica: Comece pelo esqueleto (header, main, aside, footer) antes de preencher o conteúdo.
-        Use a extensão Live Server no VS Code para ver as mudanças em tempo real.
-        O HTML sem CSS vai parecer feio — isso é totalmente normal e esperado.
-        Na próxima aula você vai estilizar tudo isso com CSS.
+    <!-- ── GLOSSÁRIO ── -->
+    <div class="section">
+      <div class="section-label">// glossário</div>
+      <h2>Termos desta Aula</h2>
+      <div class="glossary-item">
+        <div class="glossary-term">HTML Semântico</div>
+        <div class="glossary-def">Uso de elementos HTML que descrevem o significado e papel do conteúdo, não apenas sua
+          aparência visual.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">DOCTYPE</div>
+        <div class="glossary-def">Declaração no topo do HTML que instrui o browser a usar o modo de renderização HTML5,
+          evitando o "quirks mode" legado.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Accessibility Tree</div>
+        <div class="glossary-def">Representação paralela ao DOM que o browser constrói para tecnologias assistivas,
+          baseada na semântica do HTML.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">ARIA (Accessible Rich Internet Applications)</div>
+        <div class="glossary-def">Conjunto de atributos HTML (<code>aria-label</code>, <code>aria-describedby</code>,
+          <code>role</code>…) que complementam a semântica nativa para casos complexos.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">CLS (Cumulative Layout Shift)</div>
+        <div class="glossary-def">Métrica de Core Web Vitals que mede a instabilidade visual da página. Imagens sem
+          width/height são uma causa comum de CLS alto.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Lazy Loading</div>
+        <div class="glossary-def">Técnica de adiar o carregamento de recursos (imagens, iframes) até que entrem na
+          viewport, melhorando o tempo de carregamento inicial.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">srcset</div>
+        <div class="glossary-def">Atributo de <code>&lt;img&gt;</code> que oferece múltiplas versões de uma imagem em
+          diferentes tamanhos para o browser escolher a mais adequada.</div>
       </div>
     </div>
 
-    <!-- ── PRÓXIMA AULA ── -->
-    <a href="html-02-box-flexbox-grid.html" class="next-lesson">
-      <div>
-        <div class="next-label">Próxima aula →</div>
-        <div class="next-title">04 — CSS: Box Model, Flexbox & Grid</div>
+    <!-- ── CHECKPOINT ── -->
+    <div class="section">
+      <div class="checkpoint">
+        <h3>🏁 Checkpoint — Desafio Final</h3>
+        <p>Construa uma <strong>página de artigo de blog</strong> completa e semanticamente correta:</p>
+        <ul>
+          <li>Estrutura com <code>&lt;header&gt;</code> (nav com logo + links), <code>&lt;main&gt;</code>,
+            <code>&lt;aside&gt;</code> e <code>&lt;footer&gt;</code></li>
+          <li>Dentro do <code>&lt;main&gt;</code>, um <code>&lt;article&gt;</code> com: <code>&lt;header&gt;</code>
+            interno (título, autor, data com <code>&lt;time datetime="..."&gt;</code>), pelo menos 3 seções com
+            subtítulos, uma imagem com <code>figure</code>/<code>figcaption</code> e lazy loading, e uma
+            <code>&lt;blockquote&gt;</code> com <code>&lt;cite&gt;</code></li>
+          <li><code>&lt;aside&gt;</code> com uma lista de artigos relacionados (links) e um mini formulário de
+            newsletter (email + botão)</li>
+          <li>Todos os links externos com <code>rel="noopener noreferrer"</code>, todos os inputs com labels associadas
+          </li>
+          <li>Validar no <a href="https://validator.w3.org" target="_blank" rel="noopener noreferrer"
+              style="color:var(--accent)">validator.w3.org</a> e corrigir todos os erros</li>
+        </ul>
+        <div class="checkpoint-hint">💬 Dica: use
+          <code>&lt;time datetime="2024-11-15"&gt;15 de novembro de 2024&lt;/time&gt;</code> para datas legíveis por
+          máquinas. O atributo <code>datetime</code> usa o formato ISO 8601 e é importante para SEO e agregadores de
+          conteúdo.</div>
       </div>
-      <div class="next-arrow">→</div>
-    </a>
+    </div>
 
-    <div class="footer">
-      <span>🌐 HTML/CSS · Aula 03 / 50 · ID: 03-HTML-01</span>
-      <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+    <!-- ── PRÓXIMOS PASSOS ── -->
+    <div class="section">
+      <div class="section-label">// próximos passos</div>
+      <h2>O que vem a seguir?</h2>
+      <p style="margin-bottom:20px;">Com HTML semântico dominado, você tem a estrutura perfeita para estilizar. Na
+        próxima aula vamos mergulhar no CSS — Box Model, Flexbox e Grid — as ferramentas que transformam essa estrutura
+        em layouts visuais profissionais.</p>
+      <a href="html-02-box-flexbox-grid.html" class="next-card">
+        <div>
+          <div class="next-card-label">Próxima aula · 🌐 HTML/CSS</div>
+          <div class="next-card-title">CSS — Box Model, Flexbox & Grid</div>
+        </div>
+        <span class="next-arrow">→</span>
+      </a>
     </div>
 
   </div><!-- /page -->
 
   <script>
-    // Initialize syntax highlighting
-    document.addEventListener('DOMContentLoaded', () => {
-      hljs.highlightAll();
-    });
-
-    // Initialize Mermaid
-    mermaid.initialize({
-      startOnLoad: true,
-      theme: 'dark',
-      themeVariables: {
-        primaryColor: '#ef4444',
-        primaryTextColor: '#e8e8f0',
-        primaryBorderColor: 'rgba(239, 68, 68, 0.3)',
-        lineColor: '#8585a8',
-        background: '#111118',
-        mainBkg: '#16161f',
-        nodeBorder: '#ef4444'
-      }
-    });
-
-    // Scroll progress indicator (update progress bar)
+    const bar = document.getElementById('progressBar');
     window.addEventListener('scroll', () => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = (scrollTop / docHeight) * 100;
-      document.querySelector('.progress-bar-fill').style.width = progress + '%';
+      const doc = document.documentElement;
+      bar.style.width = (doc.scrollTop / (doc.scrollHeight - doc.clientHeight) * 100) + '%';
     });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.hljs) hljs.highlightAll();
+    });
+
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
   </script>
 
 </body>

@@ -1,0 +1,2443 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Python — Orientação a Objetos · Aula 08</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs {
+      display: block;
+      overflow-x: auto;
+      padding: 1em
+    }
+
+    code.hljs {
+      padding: 3px 5px
+    }
+
+    .hljs {
+      color: #c9d1d9;
+      background: #0d1117
+    }
+
+    .hljs-doctag,
+    .hljs-keyword,
+    .hljs-meta .hljs-keyword,
+    .hljs-template-tag,
+    .hljs-template-variable,
+    .hljs-type,
+    .hljs-variable.language_ {
+      color: #ff7b72
+    }
+
+    .hljs-title,
+    .hljs-title.class_,
+    .hljs-title.class_.inherited__,
+    .hljs-title.function_ {
+      color: #d2a8ff
+    }
+
+    .hljs-attr,
+    .hljs-attribute,
+    .hljs-literal,
+    .hljs-meta,
+    .hljs-number,
+    .hljs-operator,
+    .hljs-variable,
+    .hljs-selector-attr,
+    .hljs-selector-class,
+    .hljs-selector-id {
+      color: #79c0ff
+    }
+
+    .hljs-regexp,
+    .hljs-string,
+    .hljs-meta .hljs-string {
+      color: #a5d6ff
+    }
+
+    .hljs-built_in,
+    .hljs-symbol {
+      color: #ffa657
+    }
+
+    .hljs-comment,
+    .hljs-code,
+    .hljs-formula {
+      color: #8b949e
+    }
+
+    .hljs-name,
+    .hljs-quote,
+    .hljs-selector-tag,
+    .hljs-selector-pseudo {
+      color: #7ee787
+    }
+
+    .hljs-subst {
+      color: #c9d1d9
+    }
+
+    .hljs-section {
+      color: #1f6feb;
+      font-weight: 700
+    }
+
+    .hljs-bullet {
+      color: #f2cc60
+    }
+
+    .hljs-emphasis {
+      color: #c9d1d9;
+      font-style: italic
+    }
+
+    .hljs-strong {
+      color: #c9d1d9;
+      font-weight: 700
+    }
+
+    .hljs-addition {
+      color: #aff5b4;
+      background-color: #033a16
+    }
+
+    .hljs-deletion {
+      color: #ffdcd7;
+      background-color: #67060c
+    }
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #3b82f6;
+      --accent-dim: rgba(59, 130, 246, 0.15);
+      --accent-border: rgba(59, 130, 246, 0.35);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    .progress-bar-wrap {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--border);
+      z-index: 1000;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #60a5fa);
+      width: 0%;
+      transition: width 0.1s;
+    }
+
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 32px;
+      background: rgba(10, 10, 15, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-back {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .nav-back:hover {
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-position {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+
+    .nav-position .track {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .nav-prev,
+    .nav-next {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: transparent;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .nav-prev:hover,
+    .nav-next:hover {
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .nav-prev.disabled {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    .nav-next {
+      border-color: var(--accent-border);
+      color: var(--accent);
+    }
+
+    .nav-next:hover {
+      background: var(--accent-dim);
+      color: #60a5fa;
+    }
+
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 48px 24px 96px;
+    }
+
+    .hero {
+      padding: 52px 0 40px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 56px;
+    }
+
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .hero-badge {
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #fff 40%, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    .tag.accent {
+      background: var(--accent-dim);
+      border-color: var(--accent-border);
+      color: var(--accent);
+    }
+
+    .section {
+      margin-bottom: 64px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .section h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+
+    .section h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 32px 0 14px;
+      color: #fff;
+    }
+
+    .section p {
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .callout {
+      border-radius: 8px;
+      padding: 18px 20px;
+      margin: 20px 0;
+      border-left: 3px solid;
+    }
+
+    .callout-title {
+      font-weight: 700;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+
+    .callout-info {
+      background: rgba(6, 182, 212, 0.08);
+      border-color: var(--info);
+    }
+
+    .callout-info .callout-title {
+      color: var(--info);
+    }
+
+    .callout-warn {
+      background: rgba(245, 158, 11, 0.08);
+      border-color: var(--warn);
+    }
+
+    .callout-warn .callout-title {
+      color: var(--warn);
+    }
+
+    .callout-tip {
+      background: rgba(16, 185, 129, 0.08);
+      border-color: var(--success);
+    }
+
+    .callout-tip .callout-title {
+      color: var(--success);
+    }
+
+    .callout-danger {
+      background: rgba(239, 68, 68, 0.08);
+      border-color: var(--danger);
+    }
+
+    .callout-danger .callout-title {
+      color: var(--danger);
+    }
+
+    .analogy-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .analogy-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+
+    .analogy-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+
+    .analogy-text {
+      font-size: 15px;
+      color: var(--text);
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+
+    .analogy-mapping {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 24px;
+    }
+
+    .analogy-real {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .analogy-tech {
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--accent);
+    }
+
+    .mermaid-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 20px;
+      margin: 24px 0;
+      overflow: auto;
+    }
+
+    .mermaid-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin: 16px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead tr {
+      border-bottom: 2px solid var(--accent-border);
+    }
+
+    thead th {
+      text-align: left;
+      padding: 10px 14px;
+      color: var(--accent);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    tbody tr:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    tbody td {
+      padding: 11px 14px;
+      color: var(--text);
+      vertical-align: top;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .badge-green {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+    }
+
+    .badge-red {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+    }
+
+    .badge-yellow {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+    }
+
+    .badge-blue {
+      background: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .step {
+      display: flex;
+      gap: 18px;
+      padding: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .step-num {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .step-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .step-title {
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .step-desc {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    pre {
+      background: #0d1117 !important;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 12px 0;
+      font-size: 13px;
+    }
+
+    pre code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .code-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 10px 16px 0;
+    }
+
+    code:not(.hljs) {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid var(--border);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: #60a5fa;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 640px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card-mini {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      transition: border-color 0.2s;
+    }
+
+    .card-mini:hover {
+      border-color: var(--accent-border);
+    }
+
+    .card-mini h4 {
+      color: #fff;
+      font-size: 14px;
+      margin: 8px 0 6px;
+    }
+
+    .card-mini p {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .compare-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 16px 0;
+    }
+
+    @media (max-width: 600px) {
+      .compare-split {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .compare-old {
+      background: rgba(239, 68, 68, 0.05);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .compare-new {
+      background: rgba(16, 185, 129, 0.05);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .compare-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .compare-old .compare-label {
+      color: #f87171;
+    }
+
+    .compare-new .compare-label {
+      color: #34d399;
+    }
+
+    .video-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .video-card {
+      display: flex;
+      gap: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+      transition: border-color 0.2s;
+    }
+
+    .video-card:hover {
+      border-color: var(--accent-border);
+    }
+
+    .video-thumb {
+      flex-shrink: 0;
+      width: 52px;
+      height: 52px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .video-info {
+      flex: 1;
+    }
+
+    .video-title {
+      font-weight: 700;
+      color: #fff;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .video-channel {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .video-why {
+      color: var(--text);
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+
+    .video-info a {
+      font-size: 12px;
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .video-info a:hover {
+      text-decoration: underline;
+    }
+
+    .checkpoint {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(96, 165, 250, 0.04));
+      border: 1px solid var(--accent-border);
+      border-radius: 12px;
+      padding: 28px;
+    }
+
+    .checkpoint h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .checkpoint p {
+      margin-bottom: 14px;
+    }
+
+    .checkpoint ul {
+      padding-left: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .checkpoint ul li {
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .checkpoint ul li::before {
+      content: '✦ ';
+      color: var(--accent);
+    }
+
+    .checkpoint-hint {
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: rgba(59, 130, 246, 0.06);
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .pitfall {
+      background: rgba(239, 68, 68, 0.06);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      border-radius: 10px;
+      padding: 20px;
+      margin: 16px 0;
+    }
+
+    .pitfall-title {
+      color: #f87171;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .glossary-item {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .glossary-term {
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .glossary-def {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .next-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 24px;
+      background: var(--surface);
+      border: 1px solid var(--accent-border);
+      border-radius: 10px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .next-card:hover {
+      background: var(--accent-dim);
+    }
+
+    .next-card-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .next-card-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .next-arrow {
+      font-size: 1.5rem;
+      color: var(--accent);
+    }
+
+    /* Terminal */
+    .terminal {
+      background: #000;
+      border: 1px solid #333;
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+
+    .terminal-bar {
+      background: #1a1a1a;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot-red {
+      background: #ef4444;
+    }
+
+    .dot-yellow {
+      background: #f59e0b;
+    }
+
+    .dot-green {
+      background: #10b981;
+    }
+
+    .terminal-title {
+      font-size: 11px;
+      color: #555;
+      margin-left: 6px;
+    }
+
+    .terminal-body {
+      padding: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 2;
+    }
+
+    .t-prompt {
+      color: #60a5fa;
+    }
+
+    .t-cmd {
+      color: #e8e8f0;
+    }
+
+    .t-out {
+      color: #8585a8;
+    }
+
+    .t-comment {
+      color: #444;
+      font-style: italic;
+    }
+
+    /* OOP specific: class blueprint visual */
+    .class-blueprint {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+
+    .class-blueprint-header {
+      background: var(--accent-dim);
+      border-bottom: 1px solid var(--accent-border);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .class-blueprint-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      color: var(--accent);
+      font-size: 15px;
+    }
+
+    .class-blueprint-tag {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .class-section {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .class-section:last-child {
+      border-bottom: none;
+    }
+
+    .class-section-label {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .class-attr {
+      display: flex;
+      gap: 12px;
+      align-items: baseline;
+      margin: 4px 0;
+      font-size: 13px;
+    }
+
+    .class-attr-name {
+      color: #79c0ff;
+      min-width: 140px;
+    }
+
+    .class-attr-type {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .class-method {
+      display: flex;
+      gap: 12px;
+      align-items: baseline;
+      margin: 4px 0;
+      font-size: 13px;
+    }
+
+    .class-method-name {
+      color: #d2a8ff;
+      min-width: 160px;
+    }
+
+    .class-method-desc {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    /* Pilars OOP grid */
+    .oop-pillars {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin: 20px 0;
+    }
+
+    @media (max-width: 600px) {
+      .oop-pillars {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .pillar-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pillar-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+    }
+
+    .pillar-card:nth-child(1)::before {
+      background: var(--accent);
+    }
+
+    .pillar-card:nth-child(2)::before {
+      background: var(--warn);
+    }
+
+    .pillar-card:nth-child(3)::before {
+      background: var(--success);
+    }
+
+    .pillar-card:nth-child(4)::before {
+      background: var(--info);
+    }
+
+    .pillar-icon {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .pillar-card h4 {
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .pillar-card p {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar"></div>
+  </div>
+
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="py-03-estruturas-dados.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">🐍 Python</span> · Aula 08 / 50
+      </div>
+      <a href="html-03-responsivo-moderno.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- ── HERO ── -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>🐍 Python</span>
+        <span class="hero-badge">Aula 08</span>
+      </div>
+      <h1>Orientação a Objetos</h1>
+      <div class="hero-meta">
+        <span>⏱ ~55 min de leitura</span>
+        <span>🎯 Intermediário</span>
+        <span>🔧 Hands-on incluído</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">class</span>
+        <span class="tag accent">__init__</span>
+        <span class="tag accent">herança</span>
+        <span class="tag accent">encapsulamento</span>
+        <span class="tag accent">polimorfismo</span>
+        <span class="tag">dunder methods</span>
+        <span class="tag">@property</span>
+        <span class="tag">@classmethod</span>
+        <span class="tag">@staticmethod</span>
+        <span class="tag">dataclasses</span>
+        <span class="tag">ABC</span>
+      </div>
+    </div>
+
+    <!-- ── 1. POR QUE IMPORTA ── -->
+    <div class="section">
+      <div class="section-label">// motivação</div>
+      <h2>Por que isso importa?</h2>
+      <p>
+        Você já viu OOP antes? Provavelmente sim — toda vez que chamou <code>lista.append()</code>,
+        <code>str.upper()</code> ou <code>"hello".split()</code> você estava usando objetos. A diferença agora é que
+        vamos <em>criar</em> nossos próprios tipos com comportamento customizado.
+      </p>
+      <p>
+        Sem OOP, um sistema de e-commerce com produtos, pedidos, clientes e pagamentos rapidamente se torna um
+        emaranhado de funções e dicionários soltos. Com OOP, cada entidade ganha sua própria representação com dados e
+        comportamentos coesos: um <code>Produto</code> sabe calcular seu desconto, um <code>Pedido</code> sabe calcular
+        o total, um <code>Cliente</code> sabe validar seu CPF. O código se torna legível, testável e extensível.
+      </p>
+      <div class="callout callout-info">
+        <div class="callout-title">💼 Por que um engenheiro sênior domina OOP profundamente</div>
+        Sêniors usam OOP com <em>intenção arquitetural</em>: escolhem entre herança e composição (preferindo
+        composição), usam <code>@property</code> para encapsular lógica de acesso, implementam dunder methods para
+        tornar objetos nativos ao Python (comparáveis, iteráveis, representáveis), e usam <code>dataclasses</code> para
+        evitar boilerplate. Conhecem o custo de herança profunda e sabem quando uma simples função é melhor do que uma
+        classe inteira.
+      </div>
+    </div>
+
+    <!-- ── 2. ANALOGIA ── -->
+    <div class="section">
+      <div class="section-label">// analogia</div>
+      <h2>Antes do código: uma analogia</h2>
+      <div class="analogy-card">
+        <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
+        <div class="analogy-text">
+          Pense em uma <strong>fábrica de carros</strong>. A <em>planta/blueprint</em> do carro — os desenhos técnicos —
+          descreve o que todo carro tem: motor, 4 rodas, tanque de combustível, e o que todo carro pode fazer: acelerar,
+          frear, ligar. Essa planta <strong>não é um carro</strong> — é a descrição abstrata de um.
+          <br><br>
+          Quando a fábrica usa essa planta para montar um carro específico — com cor vermelha, motor 2.0, placa ABC-1234
+          — ela criou um <em>objeto</em>. Você pode fabricar milhares de carros com a mesma planta. Cada carro tem seus
+          próprios dados (cor, quilometragem), mas compartilha o mesmo comportamento (acelerar funciona igual em todos).
+          <br><br>
+          Um carro esportivo <em>herda</em> tudo do carro comum, mas adiciona turbo e suspensão baixa. Ele <em>é-um</em>
+          carro, mas com capacidades extras. Isso é herança.
+        </div>
+        <div class="analogy-mapping">
+          <span class="analogy-real">📐 Planta/Blueprint do carro</span>
+          <span class="analogy-tech">→ <code>class Carro</code> — a definição do tipo</span>
+          <span class="analogy-real">🚗 Carro vermelho placa ABC-1234</span>
+          <span class="analogy-tech">→ <code>meu_carro = Carro(...)</code> — instância/objeto</span>
+          <span class="analogy-real">📊 Cor, km, modelo</span>
+          <span class="analogy-tech">→ <code>self.cor, self.km</code> — atributos</span>
+          <span class="analogy-real">🏎️ Carro esportivo é um carro</span>
+          <span class="analogy-tech">→ <code>class Esportivo(Carro)</code> — herança</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 3. CONCEITO CENTRAL — CLASSE E OBJETO ── -->
+    <div class="section">
+      <div class="section-label">// conceito 1</div>
+      <h2>Classe, Objeto e o <code>__init__</code></h2>
+
+      <p>
+        Uma <strong>classe</strong> é um template que define atributos (dados) e métodos (comportamentos). Um
+        <strong>objeto</strong> é uma instância concreta dessa classe criada em memória. O método <code>__init__</code>
+        é o <em>construtor</em> — executado automaticamente ao criar um objeto para inicializar seus atributos.
+      </p>
+
+      <div class="class-blueprint">
+        <div class="class-blueprint-header">
+          <div class="class-blueprint-name">ContaBancaria</div>
+          <div class="class-blueprint-tag">class · blueprint</div>
+        </div>
+        <div class="class-section">
+          <div class="class-section-label">Atributos de instância (por objeto)</div>
+          <div class="class-attr"><span class="class-attr-name">self.titular</span><span class="class-attr-type">str —
+              nome do dono</span></div>
+          <div class="class-attr"><span class="class-attr-name">self.saldo</span><span class="class-attr-type">float —
+              valor atual</span></div>
+          <div class="class-attr"><span class="class-attr-name">self._historico</span><span class="class-attr-type">list
+              — transações (privado)</span></div>
+        </div>
+        <div class="class-section">
+          <div class="class-section-label">Atributos de classe (compartilhados)</div>
+          <div class="class-attr"><span class="class-attr-name">banco</span><span class="class-attr-type">str — "Banco
+              Python S.A."</span></div>
+          <div class="class-attr"><span class="class-attr-name">total_contas</span><span class="class-attr-type">int —
+              contador global</span></div>
+        </div>
+        <div class="class-section">
+          <div class="class-section-label">Métodos</div>
+          <div class="class-method"><span class="class-method-name">__init__(titular, saldo)</span><span
+              class="class-method-desc">construtor — inicializa a conta</span></div>
+          <div class="class-method"><span class="class-method-name">depositar(valor)</span><span
+              class="class-method-desc">adiciona saldo e registra</span></div>
+          <div class="class-method"><span class="class-method-name">sacar(valor)</span><span
+              class="class-method-desc">remove saldo se suficiente</span></div>
+          <div class="class-method"><span class="class-method-name">extrato()</span><span
+              class="class-method-desc">exibe histórico formatado</span></div>
+          <div class="class-method"><span class="class-method-name">__repr__()</span><span
+              class="class-method-desc">representação legível do objeto</span></div>
+        </div>
+      </div>
+
+      <div class="code-label">// conta_bancaria.py — classe completa com atributos e métodos</div>
+      <pre><code class="language-python">class ContaBancaria:
+    # Atributo de CLASSE — compartilhado por TODAS as instâncias
+    banco = "Banco Python S.A."
+    total_contas = 0
+
+    def __init__(self, titular: str, saldo_inicial: float = 0.0):
+        # Atributos de INSTÂNCIA — únicos por objeto
+        self.titular = titular
+        self.saldo = saldo_inicial
+        self._historico = []  # _ indica "privado por convenção"
+
+        ContaBancaria.total_contas += 1  # atualiza atributo de classe
+        self._historico.append(f"Conta criada com R${saldo_inicial:.2f}")
+
+    def depositar(self, valor: float) -> None:
+        if valor <= 0:
+            raise ValueError("Valor de depósito deve ser positivo")
+        self.saldo += valor
+        self._historico.append(f"+ R${valor:.2f} → saldo: R${self.saldo:.2f}")
+
+    def sacar(self, valor: float) -> float:
+        if valor > self.saldo:
+            raise ValueError(f"Saldo insuficiente. Disponível: R${self.saldo:.2f}")
+        self.saldo -= valor
+        self._historico.append(f"- R${valor:.2f} → saldo: R${self.saldo:.2f}")
+        return valor
+
+    def extrato(self) -> None:
+        print(f"\n=== Extrato — {self.titular} ===")
+        for linha in self._historico:
+            print(f"  {linha}")
+        print(f"  SALDO ATUAL: R${self.saldo:.2f}\n")
+
+    def __repr__(self) -> str:
+        return f"ContaBancaria(titular='{self.titular}', saldo={self.saldo:.2f})"
+
+    def __str__(self) -> str:
+        return f"Conta de {self.titular} — R${self.saldo:.2f}"
+
+
+# Criando instâncias (objetos)
+conta_alice = ContaBancaria("Alice", 1000.0)
+conta_bob   = ContaBancaria("Bob")          # saldo_inicial padrão = 0.0
+
+conta_alice.depositar(500)
+conta_alice.sacar(200)
+conta_alice.extrato()
+
+print(repr(conta_alice))                    # → ContaBancaria(titular='Alice', saldo=1300.00)
+print(str(conta_alice))                     # → Conta de Alice — R$1300.00
+print(ContaBancaria.total_contas)           # → 2  (atributo de classe)
+print(conta_alice.banco)                    # → Banco Python S.A.
+</code></pre>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Pro tip — self é uma convenção, não uma palavra reservada</div>
+        <code>self</code> é simplesmente o primeiro parâmetro de qualquer método de instância — poderia se chamar
+        <code>this</code> ou qualquer coisa, mas <strong>nunca mude isso</strong>. O Python passa a própria instância
+        automaticamente como primeiro argumento quando você chama <code>objeto.metodo()</code>.
+      </div>
+    </div>
+
+    <!-- ── 4. OS 4 PILARES ── -->
+    <div class="section">
+      <div class="section-label">// conceito 2</div>
+      <h2>Os 4 Pilares da OOP</h2>
+
+      <div class="oop-pillars">
+        <div class="pillar-card">
+          <div class="pillar-icon">📦</div>
+          <h4>Encapsulamento</h4>
+          <p>Ocultar detalhes internos. Atributos <code>_privados</code> por convenção, <code>__mangling</code> por
+            proteção. Acesso controlado via <code>@property</code>.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-icon">🧬</div>
+          <h4>Herança</h4>
+          <p>Uma classe filha herda atributos e métodos da classe pai. Evita duplicação. Use <code>super()</code> para
+            acessar o pai.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-icon">🎭</div>
+          <h4>Polimorfismo</h4>
+          <p>Mesmo método, comportamentos diferentes. Um <code>Animal.falar()</code> retorna coisas diferentes para
+            <code>Cachorro</code> e <code>Gato</code>.
+          </p>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-icon">🔷</div>
+          <h4>Abstração</h4>
+          <p>Esconder complexidade. Você usa <code>lista.sort()</code> sem saber que internamente é um Timsort. Classes
+            abstratas (ABC) formalizam contratos.</p>
+        </div>
+      </div>
+
+      <h3>Encapsulamento e @property</h3>
+      <p>
+        Python não tem modificadores de acesso como <code>private</code> do Java. A convenção é: um underscore
+        <code>_atributo</code> significa "interno, cuidado" e dois underscores <code>__atributo</code> ativam <em>name
+          mangling</em> (renomeação automática para evitar colisões em herança). O decorador <code>@property</code>
+        permite expor atributos com lógica de validação sem mudar a interface pública.
+      </p>
+
+      <div class="code-label">// property — getter, setter e deleter</div>
+      <pre><code class="language-python">class Temperatura:
+    def __init__(self, celsius: float):
+        self._celsius = celsius  # armazena internamente em Celsius
+
+    @property
+    def celsius(self) -> float:
+        """Getter — acesso como atributo: t.celsius"""
+        return self._celsius
+
+    @celsius.setter
+    def celsius(self, valor: float) -> None:
+        """Setter — valida antes de atribuir: t.celsius = 25"""
+        if valor < -273.15:
+            raise ValueError("Temperatura abaixo do zero absoluto!")
+        self._celsius = valor
+
+    @property
+    def fahrenheit(self) -> float:
+        """Propriedade calculada — não armazena, calcula sempre"""
+        return self._celsius * 9/5 + 32
+
+    @property
+    def kelvin(self) -> float:
+        return self._celsius + 273.15
+
+
+t = Temperatura(100)
+print(t.celsius)      # → 100  (parece atributo, mas é método)
+print(t.fahrenheit)   # → 212.0
+print(t.kelvin)       # → 373.15
+
+t.celsius = 25        # chama o setter
+t.celsius = -300      # → ValueError: Temperatura abaixo do zero absoluto!
+</code></pre>
+
+      <h3>Herança e super()</h3>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// diagrama — hierarquia de herança</div>
+        <div class="mermaid">
+          classDiagram
+          class Animal {
+          +nome: str
+          +idade: int
+          +__init__(nome, idade)
+          +falar() str
+          +__str__() str
+          }
+          class Cachorro {
+          +raca: str
+          +__init__(nome, idade, raca)
+          +falar() str
+          +buscar(objeto) str
+          }
+          class Gato {
+          +indoor: bool
+          +__init__(nome, idade, indoor)
+          +falar() str
+          +ronronar() str
+          }
+          class PastorAlemao {
+          +treinado: bool
+          +falar() str
+          }
+          Animal <|-- Cachorro Animal <|-- Gato Cachorro <|-- PastorAlemao </div>
+        </div>
+
+        <div class="code-label">// herança.py — Animal, Cachorro, Gato com super()</div>
+        <pre><code class="language-python">class Animal:
+    def __init__(self, nome: str, idade: int):
+        self.nome = nome
+        self.idade = idade
+
+    def falar(self) -> str:
+        return f"{self.nome} faz algum som..."
+
+    def __str__(self) -> str:
+        return f"{type(self).__name__}(nome='{self.nome}', idade={self.idade})"
+
+
+class Cachorro(Animal):
+    def __init__(self, nome: str, idade: int, raca: str):
+        super().__init__(nome, idade)   # delega ao pai — nunca pule isso!
+        self.raca = raca
+
+    def falar(self) -> str:            # OVERRIDE — substitui o método do pai
+        return f"{self.nome} diz: Au au!"
+
+    def buscar(self, objeto: str) -> str:
+        return f"{self.nome} buscou o {objeto}! 🐾"
+
+
+class Gato(Animal):
+    def __init__(self, nome: str, idade: int, indoor: bool = True):
+        super().__init__(nome, idade)
+        self.indoor = indoor
+
+    def falar(self) -> str:
+        return f"{self.nome} diz: Miau~"
+
+    def ronronar(self) -> str:
+        return f"{self.nome}: purrrrr..."
+
+
+# Polimorfismo em ação
+animais = [Cachorro("Rex", 3, "Labrador"), Gato("Luna", 2), Cachorro("Bolt", 5, "Husky")]
+
+for animal in animais:
+    print(animal.falar())   # cada um responde diferente ao mesmo método!
+
+# → Rex diz: Au au!
+# → Luna diz: Miau~
+# → Bolt diz: Au au!
+
+print(isinstance(animais[0], Cachorro))  # → True
+print(isinstance(animais[0], Animal))    # → True (herança!)
+print(type(animais[0]) is Animal)        # → False (é Cachorro, não Animal puro)
+</code></pre>
+
+        <h3>Classes Abstratas (ABC)</h3>
+        <p>
+          Uma <strong>classe abstrata</strong> define um contrato: "qualquer subclasse minha DEVE implementar esses
+          métodos". É útil quando você quer garantir uma interface comum sem fornecer implementação. Usar
+          <code>abc.ABC</code> transforma a classe em abstrata; <code>@abstractmethod</code> marca métodos obrigatórios.
+        </p>
+
+        <div class="code-label">// abstract.py — contrato com ABC</div>
+        <pre><code class="language-python">from abc import ABC, abstractmethod
+
+class Forma(ABC):
+    @abstractmethod
+    def area(self) -> float:
+        """Toda forma DEVE implementar area()"""
+        ...
+
+    @abstractmethod
+    def perimetro(self) -> float:
+        """Toda forma DEVE implementar perimetro()"""
+        ...
+
+    def descricao(self) -> str:
+        # Método concreto — pode ser herdado sem override
+        return f"{type(self).__name__}: área={self.area():.2f}, perímetro={self.perimetro():.2f}"
+
+
+class Retangulo(Forma):
+    def __init__(self, largura: float, altura: float):
+        self.largura = largura
+        self.altura = altura
+
+    def area(self) -> float:
+        return self.largura * self.altura
+
+    def perimetro(self) -> float:
+        return 2 * (self.largura + self.altura)
+
+
+class Circulo(Forma):
+    import math
+    def __init__(self, raio: float):
+        self.raio = raio
+
+    def area(self) -> float:
+        import math
+        return math.pi * self.raio ** 2
+
+    def perimetro(self) -> float:
+        import math
+        return 2 * math.pi * self.raio
+
+
+formas = [Retangulo(4, 6), Circulo(5)]
+for f in formas:
+    print(f.descricao())
+
+# Forma()  → TypeError: não pode instanciar classe abstrata!
+</code></pre>
+      </div>
+
+      <!-- ── 5. DUNDER METHODS ── -->
+      <div class="section">
+        <div class="section-label">// conceito 3</div>
+        <h2>Dunder Methods — Fazendo Objetos "Falarem" Python</h2>
+
+        <p>
+          <strong>Dunder</strong> (double underscore) methods são os "ganchos" que o Python usa para operações
+          especiais. Implementá-los faz seus objetos se comportar como tipos nativos: comparáveis com <code>==</code>,
+          somáveis com <code>+</code>, iteráveis com <code>for</code>, e imprimíveis.
+        </p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Dunder</th>
+                <th>Quando é chamado</th>
+                <th>Exemplo de uso</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>__init__</code></td>
+                <td>Ao criar objeto: <code>Obj()</code></td>
+                <td>Construtor</td>
+              </tr>
+              <tr>
+                <td><code>__repr__</code></td>
+                <td><code>repr(obj)</code>, no REPL</td>
+                <td>Representação técnica para dev</td>
+              </tr>
+              <tr>
+                <td><code>__str__</code></td>
+                <td><code>str(obj)</code>, <code>print(obj)</code></td>
+                <td>Representação amigável</td>
+              </tr>
+              <tr>
+                <td><code>__len__</code></td>
+                <td><code>len(obj)</code></td>
+                <td>Tamanho do objeto</td>
+              </tr>
+              <tr>
+                <td><code>__eq__</code></td>
+                <td><code>obj1 == obj2</code></td>
+                <td>Comparação de igualdade</td>
+              </tr>
+              <tr>
+                <td><code>__lt__</code></td>
+                <td><code>obj1 &lt; obj2</code></td>
+                <td>Comparação menor que</td>
+              </tr>
+              <tr>
+                <td><code>__add__</code></td>
+                <td><code>obj1 + obj2</code></td>
+                <td>Adição / concatenação</td>
+              </tr>
+              <tr>
+                <td><code>__contains__</code></td>
+                <td><code>x in obj</code></td>
+                <td>Teste de pertencimento</td>
+              </tr>
+              <tr>
+                <td><code>__iter__</code></td>
+                <td><code>for x in obj</code></td>
+                <td>Tornar iterável</td>
+              </tr>
+              <tr>
+                <td><code>__getitem__</code></td>
+                <td><code>obj[chave]</code></td>
+                <td>Acesso por índice/chave</td>
+              </tr>
+              <tr>
+                <td><code>__enter__ / __exit__</code></td>
+                <td><code>with obj as x</code></td>
+                <td>Context manager</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="code-label">// vetor2d.py — dunder methods em ação</div>
+        <pre><code class="language-python">import math
+
+class Vetor2D:
+    def __init__(self, x: float, y: float):
+        self.x = x
+        self.y = y
+
+    def __repr__(self) -> str:
+        return f"Vetor2D({self.x}, {self.y})"
+
+    def __str__(self) -> str:
+        return f"({self.x}, {self.y})"
+
+    def __add__(self, outro: 'Vetor2D') -> 'Vetor2D':
+        return Vetor2D(self.x + outro.x, self.y + outro.y)
+
+    def __sub__(self, outro: 'Vetor2D') -> 'Vetor2D':
+        return Vetor2D(self.x - outro.x, self.y - outro.y)
+
+    def __mul__(self, escalar: float) -> 'Vetor2D':
+        return Vetor2D(self.x * escalar, self.y * escalar)
+
+    def __rmul__(self, escalar: float) -> 'Vetor2D':
+        return self.__mul__(escalar)   # 3 * vetor = vetor * 3
+
+    def __eq__(self, outro: object) -> bool:
+        if not isinstance(outro, Vetor2D):
+            return NotImplemented
+        return self.x == outro.x and self.y == outro.y
+
+    def __abs__(self) -> float:
+        """abs(vetor) retorna magnitude"""
+        return math.sqrt(self.x**2 + self.y**2)
+
+    def __bool__(self) -> bool:
+        """Falso apenas se vetor nulo"""
+        return self.x != 0 or self.y != 0
+
+
+v1 = Vetor2D(3, 4)
+v2 = Vetor2D(1, 2)
+
+print(v1 + v2)      # → (4, 6)
+print(v1 - v2)      # → (2, 2)
+print(v1 * 2)       # → (6, 8)
+print(3 * v1)       # → (9, 12)  — via __rmul__
+print(abs(v1))      # → 5.0      — via __abs__  (3-4-5 triângulo!)
+print(v1 == v2)     # → False
+</code></pre>
+      </div>
+
+      <!-- ── 6. @classmethod e @staticmethod ── -->
+      <div class="section">
+        <div class="section-label">// conceito 4</div>
+        <h2>@classmethod, @staticmethod e Fábricas</h2>
+
+        <p>
+          Além dos métodos de instância (que recebem <code>self</code>), existem dois outros tipos:
+          <code>@classmethod</code> recebe a classe (<code>cls</code>) como primeiro argumento e é muito usado para
+          criar <em>construtores alternativos</em> (factory methods). <code>@staticmethod</code> não recebe nem
+          <code>self</code> nem <code>cls</code> — é essencialmente uma função normal que mora dentro da classe por
+          questão de organização.
+        </p>
+
+        <div class="code-label">// data.py — @classmethod como factory e @staticmethod utilitário</div>
+        <pre><code class="language-python">class Data:
+    def __init__(self, dia: int, mes: int, ano: int):
+        self.dia = dia
+        self.mes = mes
+        self.ano = ano
+
+    # ── @classmethod — factory method (construtor alternativo) ──
+    @classmethod
+    def de_string(cls, texto: str) -> 'Data':
+        """Cria Data a partir de '25/12/2024'"""
+        dia, mes, ano = map(int, texto.split('/'))
+        return cls(dia, mes, ano)   # cls é a própria classe — funciona em herança!
+
+    @classmethod
+    def hoje(cls) -> 'Data':
+        """Cria Data com a data atual"""
+        from datetime import date
+        d = date.today()
+        return cls(d.day, d.month, d.year)
+
+    # ── @staticmethod — utilitário sem acesso a self ou cls ──
+    @staticmethod
+    def e_bissexto(ano: int) -> bool:
+        """Verifica se um ano é bissexto — não precisa de instância"""
+        return (ano % 4 == 0 and ano % 100 != 0) or (ano % 400 == 0)
+
+    def __repr__(self) -> str:
+        return f"Data({self.dia:02d}/{self.mes:02d}/{self.ano})"
+
+    def __str__(self) -> str:
+        meses = ["Jan","Fev","Mar","Abr","Mai","Jun",
+                 "Jul","Ago","Set","Out","Nov","Dez"]
+        return f"{self.dia} de {meses[self.mes-1]} de {self.ano}"
+
+
+# Usando os factory methods
+natal  = Data.de_string("25/12/2024")
+hoje   = Data.hoje()
+
+print(natal)                        # → 25 de Dez de 2024
+print(Data.e_bissexto(2024))        # → True  (sem criar instância!)
+print(Data.e_bissexto(2023))        # → False
+</code></pre>
+
+        <div class="callout callout-info">
+          <div class="callout-title">💡 Quando usar cada tipo de método</div>
+          Use <strong>método de instância</strong> quando precisa acessar/modificar atributos do objeto
+          (<code>self</code>). Use <strong>@classmethod</strong> quando quer criar construtores alternativos ou métodos
+          que precisam da classe em si (para herança funcionar corretamente). Use <strong>@staticmethod</strong> quando
+          a função pertence conceitualmente à classe mas não precisa de nenhum dado dela — é essencialmente uma função
+          utilitária com namespace.
+        </div>
+      </div>
+
+      <!-- ── 7. DATACLASSES ── -->
+      <div class="section">
+        <div class="section-label">// conceito 5</div>
+        <h2>dataclasses — Python Moderno sem Boilerplate</h2>
+
+        <p>
+          O módulo <code>dataclasses</code> (Python 3.7+) elimina o código repetitivo de classes que são essencialmente
+          containers de dados. Com um único decorador <code>@dataclass</code>, você ganha <code>__init__</code>,
+          <code>__repr__</code> e <code>__eq__</code> gerados automaticamente.
+        </p>
+
+        <div class="compare-split">
+          <div class="compare-old">
+            <div class="compare-label">❌ Classe tradicional (verbosa)</div>
+            <pre><code class="language-python">class Produto:
+    def __init__(self, nome, preco, estoque):
+        self.nome = nome
+        self.preco = preco
+        self.estoque = estoque
+
+    def __repr__(self):
+        return (f"Produto(nome={self.nome!r}, "
+                f"preco={self.preco!r}, "
+                f"estoque={self.estoque!r})")
+
+    def __eq__(self, outro):
+        if not isinstance(outro, Produto):
+            return NotImplemented
+        return (self.nome == outro.nome and
+                self.preco == outro.preco)</code></pre>
+          </div>
+          <div class="compare-new">
+            <div class="compare-label">✅ Com @dataclass (conciso)</div>
+            <pre><code class="language-python">from dataclasses import dataclass, field
+
+@dataclass
+class Produto:
+    nome: str
+    preco: float
+    estoque: int = 0
+    tags: list = field(default_factory=list)
+
+# __init__, __repr__, __eq__
+# gerados automaticamente!
+
+# Para imutabilidade:
+@dataclass(frozen=True)
+class Ponto:
+    x: float
+    y: float</code></pre>
+          </div>
+        </div>
+
+        <div class="code-label">// dataclass_avancado.py — order, frozen, post_init</div>
+        <pre><code class="language-python">from dataclasses import dataclass, field
+from typing import ClassVar
+
+@dataclass(order=True)   # gera __lt__, __le__, __gt__, __ge__ automaticamente
+class Funcionario:
+    # ClassVar — atributo de classe, não de instância
+    empresa: ClassVar[str] = "Acme Corp"
+
+    # sort_field define qual atributo usar para ordenação
+    sort_index: float = field(init=False, repr=False)
+
+    nome: str
+    cargo: str
+    salario: float
+
+    def __post_init__(self):
+        """Executado após __init__ — validações e campos derivados"""
+        if self.salario < 0:
+            raise ValueError("Salário não pode ser negativo")
+        self.sort_index = self.salario   # ordena por salário
+
+
+equipe = [
+    Funcionario("Alice",   "Engenheira Sênior", 12000),
+    Funcionario("Bob",     "Designer",           8500),
+    Funcionario("Charlie", "Engenheiro Pleno",   9500),
+]
+
+equipe_ordenada = sorted(equipe)  # usa __lt__ gerado por order=True
+for f in equipe_ordenada:
+    print(f"{f.nome}: R${f.salario:,.2f}")
+
+# → Bob: R$8.500,00
+# → Charlie: R$9.500,00
+# → Alice: R$12.000,00
+</code></pre>
+      </div>
+
+      <!-- ── 8. DIAGRAMA DE ARQUITETURA ── -->
+      <div class="section">
+        <div class="section-label">// arquitetura</div>
+        <h2>Diagrama: Sistema de Pedidos com OOP</h2>
+
+        <p>
+          Veja como OOP organiza um sistema real. As entidades se relacionam através de composição (um
+          <code>Pedido</code> <em>tem</em> itens e um cliente) e herança (diferentes tipos de pagamento).
+        </p>
+
+        <div class="mermaid-wrap">
+          <div class="mermaid-label">// diagrama de classes — e-commerce simplificado</div>
+          <div class="mermaid">
+            classDiagram
+            class Cliente {
+            +nome: str
+            +email: str
+            +cpf: str
+            +enderecos: list
+            +adicionar_endereco(end)
+            }
+            class Produto {
+            +nome: str
+            +preco: float
+            +estoque: int
+            +disponivel() bool
+            }
+            class ItemPedido {
+            +produto: Produto
+            +quantidade: int
+            +subtotal() float
+            }
+            class Pedido {
+            +cliente: Cliente
+            +itens: list~ItemPedido~
+            +status: str
+            +adicionar_item(produto, qtd)
+            +total() float
+            +finalizar()
+            }
+            class Pagamento {
+            &lt;&lt;abstract&gt;&gt;
+            +valor: float
+            +processar() bool
+            }
+            class PagamentoCartao {
+            +numero_cartao: str
+            +processar() bool
+            }
+            class PagamentoPix {
+            +chave_pix: str
+            +processar() bool
+            }
+            Cliente "1" --> "0..*" Pedido
+            Pedido "1" --> "1..*" ItemPedido
+            ItemPedido "1" --> "1" Produto
+            Pedido "1" --> "1" Pagamento
+            Pagamento <|-- PagamentoCartao Pagamento <|-- PagamentoPix </div>
+          </div>
+        </div>
+
+        <!-- ── 9. HANDS-ON ── -->
+        <div class="section">
+          <div class="section-label">// hands-on</div>
+          <h2>Passo a Passo: Rodando na sua Máquina</h2>
+
+          <div class="steps">
+            <div class="step">
+              <div class="step-num">1</div>
+              <div class="step-body">
+                <div class="step-title">Crie o arquivo do projeto</div>
+                <div class="step-desc">Crie a pasta e o arquivo principal:</div>
+                <div class="terminal">
+                  <div class="terminal-bar">
+                    <div class="dot dot-red"></div>
+                    <div class="dot dot-yellow"></div>
+                    <div class="dot dot-green"></div>
+                    <span class="terminal-title">terminal</span>
+                  </div>
+                  <div class="terminal-body">
+                    <span class="t-prompt">$ </span><span class="t-cmd">mkdir oop_projeto && cd oop_projeto</span><br>
+                    <span class="t-prompt">$ </span><span class="t-cmd">touch biblioteca.py</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="step">
+              <div class="step-num">2</div>
+              <div class="step-body">
+                <div class="step-title">Implemente o sistema de biblioteca</div>
+                <div class="step-desc">Cole o código completo abaixo em <code>biblioteca.py</code>:</div>
+                <div class="code-label">// biblioteca.py — sistema completo com herança e dunder methods</div>
+                <pre><code class="language-python">from dataclasses import dataclass, field
+from datetime import date, timedelta
+from abc import ABC, abstractmethod
+
+
+@dataclass
+class Livro:
+    titulo: str
+    autor: str
+    isbn: str
+    paginas: int
+    disponivel: bool = True
+
+    def __str__(self) -> str:
+        status = "✓ disponível" if self.disponivel else "✗ emprestado"
+        return f"'{self.titulo}' — {self.autor} ({status})"
+
+
+class Usuario(ABC):
+    """Classe base abstrata para todos os tipos de usuário"""
+    def __init__(self, nome: str, email: str):
+        self.nome = nome
+        self.email = email
+        self._emprestimos: list[Emprestimo] = []
+
+    @property
+    def emprestimos_ativos(self) -> list:
+        return [e for e in self._emprestimos if not e.devolvido]
+
+    @abstractmethod
+    def limite_emprestimos(self) -> int:
+        """Cada tipo de usuário tem seu próprio limite"""
+        ...
+
+    def pode_emprestar(self) -> bool:
+        return len(self.emprestimos_ativos) < self.limite_emprestimos()
+
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}(nome='{self.nome}')"
+
+
+class UsuarioComum(Usuario):
+    def limite_emprestimos(self) -> int:
+        return 3
+
+
+class UsuarioVIP(Usuario):
+    def __init__(self, nome: str, email: str, premium_ate: date):
+        super().__init__(nome, email)
+        self.premium_ate = premium_ate
+
+    def limite_emprestimos(self) -> int:
+        if date.today() <= self.premium_ate:
+            return 10
+        return 3   # expirou — volta ao limite comum
+
+
+@dataclass
+class Emprestimo:
+    livro: Livro
+    usuario: Usuario
+    data_emprestimo: date = field(default_factory=date.today)
+    prazo_dias: int = 14
+    devolvido: bool = False
+
+    @property
+    def data_devolucao(self) -> date:
+        return self.data_emprestimo + timedelta(days=self.prazo_dias)
+
+    @property
+    def em_atraso(self) -> bool:
+        return not self.devolvido and date.today() > self.data_devolucao
+
+    def devolver(self) -> None:
+        self.devolvido = True
+        self.livro.disponivel = True
+        print(f"  ✓ '{self.livro.titulo}' devolvido por {self.usuario.nome}")
+
+
+class Biblioteca:
+    def __init__(self, nome: str):
+        self.nome = nome
+        self._acervo: list[Livro] = []
+        self._emprestimos: list[Emprestimo] = []
+
+    def adicionar_livro(self, livro: Livro) -> None:
+        self._acervo.append(livro)
+
+    def emprestar(self, isbn: str, usuario: Usuario) -> Emprestimo | None:
+        if not usuario.pode_emprestar():
+            print(f"  ✗ {usuario.nome} atingiu o limite de empréstimos")
+            return None
+
+        livro = next((l for l in self._acervo if l.isbn == isbn and l.disponivel), None)
+        if not livro:
+            print(f"  ✗ Livro ISBN {isbn} não disponível")
+            return None
+
+        emprestimo = Emprestimo(livro, usuario)
+        livro.disponivel = False
+        usuario._emprestimos.append(emprestimo)
+        self._emprestimos.append(emprestimo)
+        print(f"  ✓ '{livro.titulo}' emprestado para {usuario.nome} até {emprestimo.data_devolucao}")
+        return emprestimo
+
+    def listar_disponiveis(self) -> None:
+        print(f"\n=== Acervo disponível — {self.nome} ===")
+        disponiveis = [l for l in self._acervo if l.disponivel]
+        for livro in disponiveis:
+            print(f"  {livro}")
+
+    def __len__(self) -> int:
+        return len(self._acervo)
+
+    def __contains__(self, isbn: str) -> bool:
+        return any(l.isbn == isbn for l in self._acervo)
+
+    def __repr__(self) -> str:
+        return f"Biblioteca(nome='{self.nome}', acervo={len(self)} livros)"
+
+
+# ── Testando o sistema ──
+if __name__ == "__main__":
+    bib = Biblioteca("Biblioteca Municipal")
+
+    # Adicionando livros
+    livros = [
+        Livro("Python Fluente",         "Luciano Ramalho",  "9788575227923", 840),
+        Livro("Clean Code",             "Robert C. Martin", "9788576082675", 464),
+        Livro("The Pragmatic Programmer","Dave Thomas",     "9780135957059", 352),
+    ]
+    for livro in livros:
+        bib.adicionar_livro(livro)
+
+    # Usuários
+    alice = UsuarioComum("Alice", "alice@email.com")
+    bob   = UsuarioVIP("Bob", "bob@email.com", date(2025, 12, 31))
+
+    print(f"\nBiblioteca criada: {bib}")
+    print(f"'9788575227923' no acervo? {'9788575227923' in bib}")   # __contains__
+
+    bib.listar_disponiveis()
+
+    print("\n📚 Realizando empréstimos:")
+    bib.emprestar("9788575227923", alice)
+    bib.emprestar("9788576082675", alice)
+
+    bib.listar_disponiveis()
+</code></pre>
+              </div>
+            </div>
+
+            <div class="step">
+              <div class="step-num">3</div>
+              <div class="step-body">
+                <div class="step-title">Execute e observe o resultado</div>
+                <div class="terminal">
+                  <div class="terminal-bar">
+                    <div class="dot dot-red"></div>
+                    <div class="dot dot-yellow"></div>
+                    <div class="dot dot-green"></div>
+                    <span class="terminal-title">terminal</span>
+                  </div>
+                  <div class="terminal-body">
+                    <span class="t-prompt">$ </span><span class="t-cmd">python biblioteca.py</span><br>
+                    <span class="t-out">Biblioteca criada: Biblioteca(nome='Biblioteca Municipal', acervo=3
+                      livros)</span><br>
+                    <span class="t-out">'9788575227923' no acervo? True</span><br>
+                    <span class="t-out"></span><br>
+                    <span class="t-out">=== Acervo disponível — Biblioteca Municipal ===</span><br>
+                    <span class="t-out"> 'Python Fluente' — Luciano Ramalho (✓ disponível)</span><br>
+                    <span class="t-out"> 'Clean Code' — Robert C. Martin (✓ disponível)</span><br>
+                    <span class="t-out"> 'The Pragmatic Programmer' — Dave Thomas (✓ disponível)</span><br>
+                    <span class="t-out"></span><br>
+                    <span class="t-out">📚 Realizando empréstimos:</span><br>
+                    <span class="t-out"> ✓ 'Python Fluente' emprestado para Alice até 2025-xx-xx</span><br>
+                    <span class="t-out"> ✓ 'Clean Code' emprestado para Alice até 2025-xx-xx</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 10. TABELA COMPARATIVA ── -->
+        <div class="section">
+          <div class="section-label">// comparação</div>
+          <h2>Herança vs. Composição vs. Duck Typing</h2>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Abordagem</th>
+                  <th>Quando usar</th>
+                  <th>Vantagens</th>
+                  <th>Cuidados</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Herança</strong></td>
+                  <td>Relação "é-um" clara e estável. <code>Cachorro</code> É UM <code>Animal</code>.</td>
+                  <td><span class="badge badge-green">Reutilização direta</span> <span
+                      class="badge badge-green">Polimorfismo</span></td>
+                  <td>Hierarquias profundas criam acoplamento forte. Máximo 2-3 níveis.</td>
+                </tr>
+                <tr>
+                  <td><strong>Composição</strong></td>
+                  <td>Relação "tem-um". <code>Pedido</code> TEM itens. Prefira sempre que possível.</td>
+                  <td><span class="badge badge-green">Flexível</span> <span class="badge badge-green">Testável</span>
+                  </td>
+                  <td>Mais código inicial, mas mais fácil de mudar.</td>
+                </tr>
+                <tr>
+                  <td><strong>Duck Typing</strong></td>
+                  <td>Qualquer objeto com o método certo serve — sem herança necessária.</td>
+                  <td><span class="badge badge-green">Desacoplado</span> <span
+                      class="badge badge-green">Pythônico</span></td>
+                  <td>Menos explícito; use type hints para documentar a interface esperada.</td>
+                </tr>
+                <tr>
+                  <td><strong>ABC / Protocol</strong></td>
+                  <td>Quando precisa garantir interface explícita em sistemas maiores.</td>
+                  <td><span class="badge badge-green">Contrato formal</span></td>
+                  <td>Overhead. Use <code>typing.Protocol</code> para duck typing estrutural moderno.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout-tip">
+            <div class="callout-title">🔥 Regra de ouro: Composição sobre Herança</div>
+            A frase clássica do GoF (Gang of Four) se prova no dia a dia: prefira <em>compor</em> objetos a criar
+            hierarquias profundas. Um <code>Funcionario</code> que <em>tem</em> um <code>Cargo</code> e um
+            <code>Departamento</code> é mais flexível do que uma hierarquia
+            <code>Funcionario → FuncionarioSenior → GerenteDepto → Diretor</code>.
+          </div>
+        </div>
+
+        <!-- ── 11. ARMADILHAS ── -->
+        <div class="section">
+          <div class="section-label">// pitfalls</div>
+          <h2>⚠️ Armadilhas Comuns</h2>
+
+          <div class="pitfall">
+            <div class="pitfall-title">🪤 Atributo mutável como default na definição da classe</div>
+            <p>Este é o bug mais clássico de OOP em Python. Se você definir um atributo mutável (lista, dict) no corpo
+              da classe, ele é <strong>compartilhado entre todas as instâncias</strong>.</p>
+            <pre><code class="language-python"># ❌ ERRADO — _itens é compartilhado entre TODOS os objetos!
+class Carrinho:
+    _itens = []   # atributo de CLASSE, não de instância!
+
+    def adicionar(self, item):
+        self._itens.append(item)
+
+c1 = Carrinho()
+c2 = Carrinho()
+c1.adicionar("arroz")
+print(c2._itens)   # → ['arroz']  HORROR!
+
+# ✅ CORRETO — cada instância tem sua própria lista
+class Carrinho:
+    def __init__(self):
+        self._itens = []   # atributo de INSTÂNCIA
+</code></pre>
+          </div>
+
+          <div class="pitfall">
+            <div class="pitfall-title">🪤 Esquecer super().__init__() na herança</div>
+            <p>Se a classe filha sobrescreve <code>__init__</code> sem chamar <code>super().__init__()</code>, os
+              atributos do pai não são inicializados — levando a <code>AttributeError</code> misterioso.</p>
+            <pre><code class="language-python"># ❌ ERRADO
+class Animal:
+    def __init__(self, nome):
+        self.nome = nome
+
+class Cachorro(Animal):
+    def __init__(self, nome, raca):
+        self.raca = raca   # self.nome nunca foi inicializado!
+
+# ✅ CORRETO
+class Cachorro(Animal):
+    def __init__(self, nome, raca):
+        super().__init__(nome)   # inicializa self.nome
+        self.raca = raca
+</code></pre>
+          </div>
+
+          <div class="pitfall">
+            <div class="pitfall-title">🪤 Classe desnecessária — nem tudo precisa ser OOP</div>
+            <p>Python não é Java. Se você tem uma função utilitária isolada, uma simples função é melhor que uma classe
+              com um único método estático. Crie classes quando há <em>estado</em> que precisa ser mantido e
+              <em>comportamentos</em> que operam sobre esse estado.
+            </p>
+            <pre><code class="language-python"># ❌ DESNECESSÁRIO — classe como namespace glorificado
+class MathUtils:
+    @staticmethod
+    def somar(a, b):
+        return a + b
+
+# ✅ SIMPLES e correto — apenas uma função
+def somar(a, b):
+    return a + b
+</code></pre>
+          </div>
+        </div>
+
+        <!-- ── 12. CURADORIA DE VÍDEOS ── -->
+        <div class="section">
+          <div class="section-label">// curadoria</div>
+          <h2>Vídeos Recomendados</h2>
+
+          <div class="video-grid">
+            <div class="video-card">
+              <div class="video-thumb">▶</div>
+              <div class="video-info">
+                <div class="video-title">Object Oriented Programming with Python — Full Course for Beginners</div>
+                <div class="video-channel">freeCodeCamp · ~2h12min</div>
+                <div class="video-why">Por que assistir: Cobre classes, herança, encapsulamento e polimorfismo de forma
+                  progressiva com projetos reais. Ótimo para consolidar toda a base de OOP em Python.</div>
+                <a href="https://www.youtube.com/watch?v=Ej_02ICOIgs" target="_blank">Assistir →</a>
+              </div>
+            </div>
+
+            <div class="video-card">
+              <div class="video-thumb">▶</div>
+              <div class="video-info">
+                <div class="video-title">Python OOP Tutorial — Corey Schafer (Playlist 6 partes)</div>
+                <div class="video-channel">Corey Schafer · ~15-20 min por episódio</div>
+                <div class="video-why">Por que assistir: A melhor série de OOP em Python. Cada episódio é um conceito:
+                  class variables, classmethods, staticmethods, inheritance, property, dunder methods. Assista em ordem.
+                </div>
+                <a href="https://www.youtube.com/playlist?list=PL-osiE80TeTsqhIuOqKhwlXsIBIdSeYtc"
+                  target="_blank">Assistir →</a>
+              </div>
+            </div>
+
+            <div class="video-card">
+              <div class="video-thumb">▶</div>
+              <div class="video-info">
+                <div class="video-title">Python dataclasses — Everything you need to know</div>
+                <div class="video-channel">ArjanCodes · ~20 min</div>
+                <div class="video-why">Por que assistir: ArjanCodes explica dataclasses do básico ao avançado (field,
+                  frozen, ClassVar, post_init). Essencial para escrever Python moderno sem boilerplate de __init__.
+                </div>
+                <a href="https://www.youtube.com/watch?v=CvQ7e6yUtnw" target="_blank">Assistir →</a>
+              </div>
+            </div>
+
+            <div class="video-card">
+              <div class="video-thumb">▶</div>
+              <div class="video-info">
+                <div class="video-title">Composition Over Inheritance — Stop Using Classes in Python</div>
+                <div class="video-channel">ArjanCodes · ~15 min</div>
+                <div class="video-why">Por que assistir: Demonstra na prática por que composição supera herança em
+                  sistemas reais, com refatoração ao vivo. Muda como você vai modelar sistemas a partir de agora.</div>
+                <a href="https://www.youtube.com/watch?v=0mcP8ZpUR38" target="_blank">Assistir →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 13. GLOSSÁRIO ── -->
+        <div class="section">
+          <div class="section-label">// glossário</div>
+          <h2>Glossário</h2>
+
+          <div class="glossary-item">
+            <div class="glossary-term">Classe</div>
+            <div class="glossary-def">Template/blueprint que define atributos (dados) e métodos (comportamentos) de um
+              tipo. É como o molde; os objetos são as peças fundidas com esse molde.</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">Instância / Objeto</div>
+            <div class="glossary-def">Materialização concreta de uma classe em memória.
+              <code>meu_cachorro = Cachorro("Rex")</code> cria uma instância. Cada instância tem seus próprios
+              atributos.
+            </div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">self</div>
+            <div class="glossary-def">Referência à instância atual dentro de um método. Passado automaticamente pelo
+              Python; permite que métodos acessem e modifiquem os atributos do próprio objeto.</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">Encapsulamento</div>
+            <div class="glossary-def">Princípio de ocultar detalhes internos e expor apenas o necessário. Em Python,
+              convencionado com <code>_</code> (interno) e <code>__</code> (name mangling). Implementado com
+              <code>@property</code>.
+            </div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">Herança</div>
+            <div class="glossary-def">Mecanismo pelo qual uma classe filha herda atributos e métodos da classe pai.
+              Permite reutilização e especialização. Use <code>super()</code> para acessar o pai.</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">Polimorfismo</div>
+            <div class="glossary-def">Capacidade de objetos de diferentes classes responderem ao mesmo método de formas
+              diferentes. Em Python, implementado via override de métodos e duck typing.</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">Dunder Methods (Magic Methods)</div>
+            <div class="glossary-def">Métodos com duplo underscore (<code>__init__</code>, <code>__str__</code>,
+              <code>__add__</code>). São os "ganchos" que o Python usa para operações especiais como comparação, adição,
+              iteração e impressão.
+            </div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">@property</div>
+            <div class="glossary-def">Decorador que transforma um método em um atributo acessível sem parênteses.
+              Permite adicionar lógica de validação ao getter/setter sem mudar a interface pública.</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">@classmethod</div>
+            <div class="glossary-def">Decorador para métodos que recebem a classe (<code>cls</code>) como primeiro
+              argumento. Usado para factory methods (construtores alternativos) e operações que envolvem a classe, não
+              instâncias.</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">Composição</div>
+            <div class="glossary-def">Padrão onde um objeto contém outros objetos como atributos, em vez de herdar
+              deles. "Tem-um" em vez de "é-um". Preferida sobre herança por ser mais flexível e desacoplada.</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">Duck Typing</div>
+            <div class="glossary-def">"Se anda como um pato e grasna como um pato, é um pato." Em Python, o tipo de um
+              objeto é determinado por seus métodos e atributos, não por sua classe. Qualquer objeto com o método
+              esperado pode ser usado.</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">ABC (Abstract Base Class)</div>
+            <div class="glossary-def">Classe abstrata que define um contrato. Não pode ser instanciada diretamente.
+              Subclasses são obrigadas a implementar os métodos marcados com <code>@abstractmethod</code>.</div>
+          </div>
+          <div class="glossary-item">
+            <div class="glossary-term">@dataclass</div>
+            <div class="glossary-def">Decorador do módulo <code>dataclasses</code> que gera automaticamente
+              <code>__init__</code>, <code>__repr__</code> e <code>__eq__</code> a partir de anotações de tipo. Reduz
+              boilerplate em classes de dados.
+            </div>
+          </div>
+        </div>
+
+        <!-- ── CHECKPOINT ── -->
+        <div class="section">
+          <div class="checkpoint">
+            <h3>🏁 Checkpoint — Desafio Final</h3>
+            <p>Crie um arquivo <code>rpg.py</code> implementando um <strong>sistema de combate RPG</strong> usando OOP
+              com todos os conceitos desta aula:</p>
+            <ul>
+              <li>Uma classe abstrata <code>Personagem</code> com <code>@abstractmethod atacar(alvo)</code> e atributos
+                <code>nome</code>, <code>hp</code>, <code>hp_max</code>, <code>nivel</code>
+              </li>
+              <li>Implemente <code>@property</code> para <code>hp</code> com setter que limita entre 0 e
+                <code>hp_max</code> e <code>@property vivo</code> que retorna True se hp > 0
+              </li>
+              <li>Crie subclasses <code>Guerreiro</code> e <code>Mago</code> que implementam <code>atacar()</code> com
+                lógicas diferentes (Guerreiro usa força física, Mago usa mana)</li>
+              <li>Use <code>@dataclass</code> para criar uma classe <code>Item</code> com campos <code>nome</code>,
+                <code>tipo</code>, <code>bonus</code>
+              </li>
+              <li>Implemente <code>__str__</code> e <code>__repr__</code> em <code>Personagem</code> e
+                <code>__len__</code> em um <code>GrupoAventureiros</code> que conta quantos estão vivos
+              </li>
+              <li>Implemente <code>__contains__</code> em <code>GrupoAventureiros</code> para verificar se um personagem
+                está no grupo com <code>personagem in grupo</code></li>
+              <li>Crie um loop de combate onde dois personagens se atacam alternadamente até um ser derrotado</li>
+            </ul>
+            <div class="checkpoint-hint">💬 Dica: use <code>import random; random.randint(min, max)</code> para variação
+              nos ataques. No setter de hp, lembre de: <code>self._hp = max(0, min(valor, self.hp_max))</code>. O
+              <code>__contains__</code> em GrupoAventureiros deve checar <code>personagem in self._membros</code> — que
+              usa o <code>__eq__</code> do personagem.
+            </div>
+          </div>
+        </div>
+
+        <!-- ── PRÓXIMOS PASSOS ── -->
+        <div class="section">
+          <div class="section-label">// próximos passos</div>
+          <h2>O que vem a seguir?</h2>
+          <p style="margin-bottom: 20px;">Após dominar Orientação a Objetos em Python, faremos uma pausa no backend para
+            aprofundar no front-end. Na próxima aula, você aprenderá a criar layouts fluidos e profissionais usando
+            <strong>Responsividade</strong>, <strong>Custom Properties</strong> (variáveis CSS) e o poder avançado da
+            cascata.
+          </p>
+          <a href="html-03-responsivo-moderno.html" class="next-card">
+            <div>
+              <div class="next-card-label">Próxima aula · 🌐 HTML/CSS</div>
+              <div class="next-card-title">CSS — Responsivo &amp; Moderno</div>
+            </div>
+            <span class="next-arrow">→</span>
+          </a>
+        </div>
+
+      </div>
+
+      <script>
+        // Progress bar
+        window.addEventListener('scroll', () => {
+          const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          const scrolled = window.scrollY / docHeight * 100;
+          document.getElementById('progressBar').style.width = scrolled + '%';
+        });
+
+        // Highlight.js
+        document.addEventListener('DOMContentLoaded', () => {
+          document.querySelectorAll('pre code').forEach(block => {
+            hljs.highlightElement(block);
+          });
+        });
+
+        // Mermaid
+        mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+      </script>
+</body>
+
+</html>

@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Python — Estruturas de Dados · Aula 07</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #3b82f6;
+      --accent-dim: rgba(59,130,246,0.15);
+      --accent-border: rgba(59,130,246,0.35);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #60a5fa); width: 0%; transition: width 0.1s; }
+
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; display: inline-flex; align-items: center; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #60a5fa; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.08); border-color: var(--success); }
+    .callout-tip .callout-title { color: var(--success); }
+    .callout-danger { background: rgba(239,68,68,0.08); border-color: var(--danger); }
+    .callout-danger .callout-title { color: var(--danger); }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(59,130,246,0.2); color: #60a5fa; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #60a5fa; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 8px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+
+    .compare-split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+    @media (max-width: 600px) { .compare-split { grid-template-columns: 1fr; } }
+    .compare-old { background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.2); border-radius: 8px; padding: 16px; }
+    .compare-new { background: rgba(16,185,129,0.05); border: 1px solid rgba(16,185,129,0.2); border-radius: 8px; padding: 16px; }
+    .compare-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; font-weight: 600; }
+    .compare-old .compare-label { color: #f87171; }
+    .compare-new .compare-label { color: #34d399; }
+
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-info a { font-size: 12px; color: var(--accent); text-decoration: none; }
+    .video-info a:hover { text-decoration: underline; }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(96,165,250,0.04)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(59,130,246,0.06); border-radius: 6px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; }
+
+    .glossary-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .glossary-term { color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+    .glossary-def { color: var(--muted); font-size: 13px; }
+
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+
+    /* Terminal */
+    .terminal { background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .terminal-bar { background: #1a1a1a; padding: 8px 14px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ef4444; } .dot-yellow { background: #f59e0b; } .dot-green { background: #10b981; }
+    .terminal-title { font-size: 11px; color: #555; margin-left: 6px; }
+    .terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; }
+    .t-prompt { color: #60a5fa; } .t-cmd { color: #e8e8f0; } .t-out { color: #8585a8; } .t-comment { color: #444; font-style: italic; }
+
+    /* Structure visual cards */
+    .struct-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin: 20px 0; }
+    @media (max-width: 600px) { .struct-grid { grid-template-columns: 1fr; } }
+    .struct-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; position: relative; overflow: hidden; }
+    .struct-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+    .struct-card.list-card::before { background: var(--accent); }
+    .struct-card.dict-card::before { background: var(--warn); }
+    .struct-card.set-card::before { background: var(--success); }
+    .struct-card.tuple-card::before { background: var(--info); }
+    .struct-card-icon { font-size: 24px; margin-bottom: 10px; }
+    .struct-card h4 { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .struct-card p { font-size: 12px; color: var(--muted); margin: 0 0 10px; }
+    .struct-props { display: flex; flex-wrap: wrap; gap: 6px; }
+    .struct-prop { font-size: 10px; padding: 2px 8px; border-radius: 4px; }
+    .struct-card.list-card .struct-prop { background: rgba(59,130,246,0.15); color: #60a5fa; }
+    .struct-card.dict-card .struct-prop { background: rgba(245,158,11,0.15); color: #fbbf24; }
+    .struct-card.set-card .struct-prop { background: rgba(16,185,129,0.15); color: #34d399; }
+    .struct-card.tuple-card .struct-prop { background: rgba(6,182,212,0.15); color: #22d3ee; }
+
+    /* Memory diagram */
+    .mem-diagram { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin: 16px 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+    .mem-row { display: flex; align-items: center; gap: 12px; margin: 6px 0; }
+    .mem-label { color: var(--muted); width: 80px; text-align: right; flex-shrink: 0; }
+    .mem-box { background: var(--bg); border: 1px solid; border-radius: 4px; padding: 6px 12px; }
+    .mem-box.list { border-color: rgba(59,130,246,0.5); color: #60a5fa; }
+    .mem-box.dict { border-color: rgba(245,158,11,0.5); color: #fbbf24; }
+    .mem-box.set { border-color: rgba(16,185,129,0.5); color: #34d399; }
+    .mem-box.tuple { border-color: rgba(6,182,212,0.5); color: #22d3ee; }
+    .mem-arrow { color: var(--muted); }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar"></div>
+  </div>
+
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="py-02-logica-funcoes.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">🐍 Python</span> · Aula 07 / 50
+      </div>
+      <a href="py-04-orientacao-objetos.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- ── HERO ── -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>🐍 Python</span>
+        <span class="hero-badge">Aula 07</span>
+      </div>
+      <h1>Estruturas de Dados</h1>
+      <div class="hero-meta">
+        <span>⏱ ~45 min de leitura</span>
+        <span>🎯 Fundamentos → Intermediário</span>
+        <span>🔧 Hands-on incluído</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">list</span>
+        <span class="tag accent">dict</span>
+        <span class="tag accent">set</span>
+        <span class="tag accent">tuple</span>
+        <span class="tag">slicing</span>
+        <span class="tag">métodos nativos</span>
+        <span class="tag">namedtuple</span>
+        <span class="tag">collections</span>
+        <span class="tag">deque</span>
+        <span class="tag">Counter</span>
+      </div>
+    </div>
+
+    <!-- ── 1. POR QUE IMPORTA ── -->
+    <div class="section">
+      <div class="section-label">// motivação</div>
+      <h2>Por que isso importa?</h2>
+      <p>
+        Se funções são os verbos do Python — os <em>fazeres</em> — as estruturas de dados são os substantivos: os <em>recipientes</em> que guardam, organizam e relacionam informações. Escolher a estrutura errada é um dos erros mais comuns e mais caros em termos de performance em código Python real.
+      </p>
+      <p>
+        Um loop que verifica <code>if item in lista</code> em uma lista de 1 milhão de elementos é O(n). O mesmo teste em um <code>set</code> é O(1). Em análise de dados com pandas, DataFrames são construídos sobre dicionários. Em APIs REST, quase toda resposta JSON se converte diretamente em <code>dict</code> e <code>list</code>. Dominar essas quatro estruturas é dominar 80% do código Python do dia a dia.
+      </p>
+      <div class="callout callout-info">
+        <div class="callout-title">💼 Por que um engenheiro sênior domina isso profundamente</div>
+        Sêniors escolhem estruturas com intenção: usam <code>tuple</code> para deixar explícito que dados são imutáveis, <code>set</code> para deduplicação e testes de pertencimento eficientes, <code>collections.Counter</code> para frequências, e <code>collections.defaultdict</code> para evitar o clássico <code>KeyError</code> ao agrupar dados. A escolha certa comunica intenção — e é o que separa código bom de código que "apenas funciona".
+      </div>
+    </div>
+
+    <!-- ── 2. ANALOGIA ── -->
+    <div class="section">
+      <div class="section-label">// analogia</div>
+      <h2>Antes do código: uma analogia</h2>
+      <div class="analogy-card">
+        <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
+        <div class="analogy-text">
+          Pense em uma <strong>cozinha profissional bem organizada</strong>. Cada tipo de recipiente existe por uma razão: a <em>prateleira numerada</em> guarda itens em ordem de chegada e você pode inserir ou remover qualquer um (lista). O <em>armário rotulado</em> com etiquetas e conteúdos associados é acessado pelo rótulo, não pela posição (dicionário). A <em>cesta de ingredientes únicos</em> elimina duplicatas automaticamente — se você jogar dois alhos, tem um (conjunto). E a <em>receita impressa em papel</em> é imutável: você pode lê-la, mas não pode alterar o original (tupla).
+          <br><br>
+          Usar a lista quando precisa de acesso por rótulo é como tentar encontrar "manjericão" contando posições na prateleira. Usar um dict torna isso instantâneo.
+        </div>
+        <div class="analogy-mapping">
+          <span class="analogy-real">📦 Prateleira numerada e ordenada</span>
+          <span class="analogy-tech">→ <code>list</code> — mutável, ordenada, indexada</span>
+          <span class="analogy-real">🏷️ Armário com etiquetas</span>
+          <span class="analogy-tech">→ <code>dict</code> — chave → valor</span>
+          <span class="analogy-real">🧺 Cesta de itens únicos</span>
+          <span class="analogy-tech">→ <code>set</code> — sem duplicatas, não ordenado</span>
+          <span class="analogy-real">📋 Receita impressa e selada</span>
+          <span class="analogy-tech">→ <code>tuple</code> — imutável, ordenada</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 3. VISÃO GERAL DAS ESTRUTURAS ── -->
+    <div class="section">
+      <div class="section-label">// conceito 1</div>
+      <h2>As Quatro Estruturas Nativas</h2>
+
+      <div class="struct-grid">
+        <div class="struct-card list-card">
+          <div class="struct-card-icon">📋</div>
+          <h4>list</h4>
+          <p>Coleção ordenada e mutável de itens heterogêneos</p>
+          <div class="struct-props">
+            <span class="struct-prop">mutável</span>
+            <span class="struct-prop">ordenada</span>
+            <span class="struct-prop">indexada</span>
+            <span class="struct-prop">duplicatas OK</span>
+          </div>
+        </div>
+        <div class="struct-card dict-card">
+          <div class="struct-card-icon">🗂️</div>
+          <h4>dict</h4>
+          <p>Mapeamento chave → valor com acesso O(1)</p>
+          <div class="struct-props">
+            <span class="struct-prop">mutável</span>
+            <span class="struct-prop">ordenada (3.7+)</span>
+            <span class="struct-prop">chaves únicas</span>
+            <span class="struct-prop">hash map</span>
+          </div>
+        </div>
+        <div class="struct-card set-card">
+          <div class="struct-card-icon">🔵</div>
+          <h4>set</h4>
+          <p>Coleção não-ordenada de elementos únicos (hash table)</p>
+          <div class="struct-props">
+            <span class="struct-prop">mutável</span>
+            <span class="struct-prop">não-ordenado</span>
+            <span class="struct-prop">sem duplicatas</span>
+            <span class="struct-prop">O(1) lookup</span>
+          </div>
+        </div>
+        <div class="struct-card tuple-card">
+          <div class="struct-card-icon">📌</div>
+          <h4>tuple</h4>
+          <p>Sequência imutável — use para dados que não devem mudar</p>
+          <div class="struct-props">
+            <span class="struct-prop">imutável</span>
+            <span class="struct-prop">ordenada</span>
+            <span class="struct-prop">indexada</span>
+            <span class="struct-prop">hashável</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// mapa de escolha — quando usar qual estrutura</div>
+        <div class="mermaid">
+flowchart TD
+    A["Preciso armazenar múltiplos valores"] --> B{Os dados têm rótulos / chaves?}
+    B -- Sim --> C["dict 🗂️\nchave → valor"]
+    B -- Não --> D{Os dados devem ser imutáveis?}
+    D -- Sim --> E["tuple 📌\ncoord, config, retorno múltiplo"]
+    D -- Não --> F{Preciso de unicidade ou operações de conjunto?}
+    F -- Sim --> G["set 🔵\ndeduplicação, intersecção, diferença"]
+    F -- Não --> H["list 📋\nordем importa, mutável, indexável"]
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 4. LIST ── -->
+    <div class="section">
+      <div class="section-label">// conceito 2</div>
+      <h2>list — A Estrutura mais Versátil</h2>
+      <p>
+        <code>list</code> é um array dinâmico: pode crescer e encolher, aceita qualquer tipo de dado em qualquer posição, e suporta slicing poderoso. É a estrutura que você vai usar mais frequentemente.
+      </p>
+
+      <h3>Criação e Slicing</h3>
+      <div class="code-label">// criação, indexação e slicing</div>
+      <pre><code class="language-python">
+# Criação
+frutas = ["maçã", "banana", "cereja", "damasco", "figo"]
+numeros = list(range(1, 11))  # [1, 2, 3, ..., 10]
+misto   = [1, "dois", 3.0, True, None]  # tipos heterogêneos ✓
+
+# Indexação — começa em 0, negativo conta do fim
+frutas[0]    # "maçã"
+frutas[-1]   # "figo"  ← último elemento
+frutas[-2]   # "damasco"
+
+# Slicing: lista[inicio:fim:passo]  — fim é EXCLUSIVO
+frutas[1:3]   # ["banana", "cereja"]
+frutas[:3]    # ["maçã", "banana", "cereja"]   ← do início até índice 2
+frutas[2:]    # ["cereja", "damasco", "figo"]  ← do índice 2 até o fim
+frutas[::2]   # ["maçã", "cereja", "figo"]     ← passo 2 (elementos pares)
+frutas[::-1]  # ["figo", "damasco", "cereja", "banana", "maçã"]  ← invertida!
+
+# Modificação
+frutas[0] = "abacaxi"      # substitui primeiro elemento
+frutas[1:3] = ["blueberry"] # substitui fatia por uma lista diferente
+      </code></pre>
+
+      <h3>Métodos Essenciais da list</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Método</th><th>O que faz</th><th>Retorna</th><th>Exemplo</th></tr></thead>
+          <tbody>
+            <tr><td><code>append(x)</code></td><td>Adiciona x ao final</td><td><span class="badge badge-blue">None</span></td><td><code>lista.append(5)</code></td></tr>
+            <tr><td><code>extend(iter)</code></td><td>Adiciona todos os itens de iter ao final</td><td><span class="badge badge-blue">None</span></td><td><code>lista.extend([6,7,8])</code></td></tr>
+            <tr><td><code>insert(i, x)</code></td><td>Insere x na posição i</td><td><span class="badge badge-blue">None</span></td><td><code>lista.insert(0, "início")</code></td></tr>
+            <tr><td><code>pop(i=-1)</code></td><td>Remove e retorna elemento na posição i</td><td><span class="badge badge-green">elemento</span></td><td><code>ultimo = lista.pop()</code></td></tr>
+            <tr><td><code>remove(x)</code></td><td>Remove primeira ocorrência de x</td><td><span class="badge badge-blue">None</span></td><td><code>lista.remove("banana")</code></td></tr>
+            <tr><td><code>sort(key, reverse)</code></td><td>Ordena in-place</td><td><span class="badge badge-blue">None</span></td><td><code>lista.sort(key=len)</code></td></tr>
+            <tr><td><code>sorted(iter)</code></td><td>Retorna nova lista ordenada (built-in)</td><td><span class="badge badge-green">nova list</span></td><td><code>nova = sorted(lista)</code></td></tr>
+            <tr><td><code>index(x)</code></td><td>Retorna índice da primeira ocorrência</td><td><span class="badge badge-green">int</span></td><td><code>lista.index("maçã")</code></td></tr>
+            <tr><td><code>count(x)</code></td><td>Conta ocorrências de x</td><td><span class="badge badge-green">int</span></td><td><code>lista.count(3)</code></td></tr>
+            <tr><td><code>copy()</code></td><td>Cópia rasa (shallow copy)</td><td><span class="badge badge-green">nova list</span></td><td><code>b = lista.copy()</code></td></tr>
+            <tr><td><code>clear()</code></td><td>Remove todos os elementos</td><td><span class="badge badge-blue">None</span></td><td><code>lista.clear()</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ sort() vs sorted() — diferença crítica</div>
+        <code>lista.sort()</code> modifica a lista original e retorna <code>None</code>. <code>sorted(lista)</code> retorna uma nova lista ordenada sem modificar a original. Um erro comum é fazer <code>lista = lista.sort()</code>, o que define <code>lista</code> como <code>None</code>.
+      </div>
+    </div>
+
+    <!-- ── 5. DICT ── -->
+    <div class="section">
+      <div class="section-label">// conceito 3</div>
+      <h2>dict — O Coração do Python</h2>
+      <p>
+        Dicionários são hash maps — acesso por chave em O(1) independente do tamanho. Desde Python 3.7, a ordem de inserção é garantida. São a base de kwargs, objetos JSON, configs, caches e muito mais.
+      </p>
+
+      <div class="code-label">// criação, acesso e métodos essenciais</div>
+      <pre><code class="language-python">
+# Formas de criar
+usuario = {"nome": "Ana", "idade": 29, "ativo": True}
+vazio   = {}
+do_zip  = dict(zip(["a", "b", "c"], [1, 2, 3]))  # {"a":1, "b":2, "c":3}
+do_comp = {k: k**2 for k in range(1, 6)}          # {1:1, 2:4, 3:9, 4:16, 5:25}
+
+# Acesso — dois jeitos
+usuario["nome"]            # "Ana" — levanta KeyError se a chave não existir
+usuario.get("email")       # None  — seguro, sem KeyError
+usuario.get("email", "")  # ""    — com valor default
+
+# Modificação
+usuario["email"] = "ana@email.com"  # adiciona ou atualiza
+usuario.update({"cidade": "SP", "idade": 30})  # merge de múltiplos campos
+del usuario["ativo"]                # remove chave
+
+# Iteração — três visões
+for chave in usuario:             # itera sobre chaves
+for chave in usuario.keys():      # equivalente, mais explícito
+for valor in usuario.values():    # itera sobre valores
+for chave, valor in usuario.items():  # tuplas (chave, valor) — mais comum
+
+# Verificação de existência
+"nome" in usuario    # True  — O(1)
+"cpf"  in usuario   # False
+
+# Remoção segura
+removido = usuario.pop("cidade", None)  # remove e retorna, sem KeyError se ausente
+usuario.setdefault("score", 0)          # define valor só se chave não existe
+      </code></pre>
+
+      <h3>Merge de Dicionários (Python 3.9+)</h3>
+      <div class="compare-split">
+        <div class="compare-old">
+          <div class="compare-label">❌ Antes do Python 3.9</div>
+          <pre><code class="language-python">
+merged = {**dict1, **dict2}
+# ou
+merged = dict1.copy()
+merged.update(dict2)
+          </code></pre>
+        </div>
+        <div class="compare-new">
+          <div class="compare-label">✅ Python 3.9+ (operadores | e |=)</div>
+          <pre><code class="language-python">
+merged = dict1 | dict2   # novo dict
+dict1 |= dict2            # atualiza dict1 in-place
+          </code></pre>
+        </div>
+      </div>
+
+      <h3>defaultdict e Counter — quando o dict nativo não basta</h3>
+      <div class="code-label">// collections — ferramentas de nível sênior</div>
+      <pre><code class="language-python">
+from collections import defaultdict, Counter
+
+# defaultdict: nunca levanta KeyError — define valor padrão para chaves novas
+grupos = defaultdict(list)
+dados  = [("A", 1), ("B", 2), ("A", 3), ("B", 4)]
+for chave, valor in dados:
+    grupos[chave].append(valor)  # sem precisar verificar "chave in grupos"
+# grupos == {"A": [1, 3], "B": [2, 4]}
+
+# Counter: conta frequências automaticamente
+texto  = "abracadabra"
+contagem = Counter(texto)   # Counter({"a": 5, "b": 2, "r": 2, "c": 1, "d": 1})
+contagem.most_common(2)     # [("a", 5), ("b", 2)]
+
+palavras = "o gato comeu o rato".split()
+freq = Counter(palavras)    # Counter({"o": 2, "gato": 1, "comeu": 1, "rato": 1})
+      </code></pre>
+    </div>
+
+    <!-- ── 6. SET ── -->
+    <div class="section">
+      <div class="section-label">// conceito 4</div>
+      <h2>set — Unicidade e Operações Matemáticas</h2>
+      <p>
+        <code>set</code> é uma hash table sem valores — apenas chaves. Isso garante unicidade automática e torna testes de pertencimento O(1). Ele também suporta operações de teoria dos conjuntos: união, interseção, diferença.
+      </p>
+
+      <div class="code-label">// operações fundamentais com set</div>
+      <pre><code class="language-python">
+# Criação — atenção: {} vazio cria dict, não set!
+frutas_a = {"maçã", "banana", "cereja"}
+frutas_b = {"banana", "damasco", "cereja"}
+vazio    = set()  # ← correto para set vazio
+
+# Pertencimento — O(1), mais rápido que lista
+"maçã" in frutas_a   # True
+"kiwi" in frutas_a   # False
+
+# Deduplicação instantânea
+duplicados = [1, 2, 2, 3, 3, 3, 4]
+unicos     = list(set(duplicados))  # [1, 2, 3, 4] — ordem não garantida
+
+# Operações de conjunto
+frutas_a | frutas_b   # União:      {"maçã", "banana", "cereja", "damasco"}
+frutas_a & frutas_b   # Interseção: {"banana", "cereja"}
+frutas_a - frutas_b   # Diferença:  {"maçã"}  (em A mas não em B)
+frutas_a ^ frutas_b   # Diferença simétrica: {"maçã", "damasco"} (só em um)
+
+# Modificação
+frutas_a.add("kiwi")         # adiciona elemento
+frutas_a.discard("melão")    # remove se existir, sem erro se não existir
+frutas_a.remove("banana")    # remove — KeyError se não existir
+
+# Frozenset — set imutável (pode ser chave de dict ou elemento de outro set)
+imutavel = frozenset({"a", "b", "c"})
+      </code></pre>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Pro tip — use set para encontrar diferenças entre listas</div>
+        <code>set(lista_nova) - set(lista_antiga)</code> retorna os elementos que estão na nova mas não na antiga. Muito útil para detectar o que mudou entre duas versões de dados — operação que seria O(n²) com loops ingênuos e fica O(n) com sets.
+      </div>
+    </div>
+
+    <!-- ── 7. TUPLE ── -->
+    <div class="section">
+      <div class="section-label">// conceito 5</div>
+      <h2>tuple — Imutabilidade como Comunicação</h2>
+      <p>
+        <code>tuple</code> é como uma lista, mas imutável. Isso não é apenas uma restrição — é uma <strong>intenção comunicada ao leitor do código</strong>: "estes dados não devem mudar". Tuplas são mais eficientes em memória que listas e podem ser usadas como chaves de dicionários.
+      </p>
+
+      <div class="code-label">// quando usar tuple</div>
+      <pre><code class="language-python">
+# Uso 1 — retorno múltiplo de funções (o mais comum)
+def min_max(numeros):
+    return min(numeros), max(numeros)  # retorna uma tuple implicitamente
+
+menor, maior = min_max([4, 1, 7, 2])  # unpacking
+print(menor, maior)  # 1 7
+
+# Uso 2 — coordenadas e dados estruturados imutáveis
+ponto = (3.5, -2.1)
+rgb   = (255, 128, 0)
+
+# Uso 3 — chave composta de dicionário
+cache = {}
+cache[("São Paulo", "Rio de Janeiro")] = 429  # km
+cache[("SP", "BSB")] = 1015
+
+# Uso 4 — namedtuple — tuple com acesso por nome
+from collections import namedtuple
+
+Ponto = namedtuple("Ponto", ["x", "y"])
+p = Ponto(x=3.5, y=-2.1)
+print(p.x, p.y)   # 3.5 -2.1
+print(p[0])        # 3.5  ← acesso por índice ainda funciona
+print(p._asdict()) # {"x": 3.5, "y": -2.1}
+
+# namedtuple é excelente para dados sem comportamento (substituindo dicts simples)
+Produto = namedtuple("Produto", ["nome", "preco", "estoque"])
+item = Produto("Notebook", 7000.0, 5)
+print(f"{item.nome}: R$ {item.preco:.2f} ({item.estoque} em estoque)")
+      </code></pre>
+
+      <div class="callout callout-info">
+        <div class="callout-title">💡 dataclass vs namedtuple</div>
+        Para dados simples sem comportamento, <code>namedtuple</code> é mais eficiente. Para dados que precisam de valores default, métodos ou mutabilidade controlada, prefira <code>@dataclass</code> (Python 3.7+). Veremos dataclasses na aula de Orientação a Objetos.
+      </div>
+    </div>
+
+    <!-- ── 8. TABELA COMPARATIVA ── -->
+    <div class="section">
+      <div class="section-label">// comparação</div>
+      <h2>Comparativo Completo</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Característica</th>
+              <th>list []</th>
+              <th>dict {}</th>
+              <th>set {}</th>
+              <th>tuple ()</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Mutável?</td>
+              <td><span class="badge badge-green">Sim</span></td>
+              <td><span class="badge badge-green">Sim</span></td>
+              <td><span class="badge badge-green">Sim</span></td>
+              <td><span class="badge badge-red">Não</span></td>
+            </tr>
+            <tr>
+              <td>Ordenada?</td>
+              <td><span class="badge badge-green">Sim</span></td>
+              <td><span class="badge badge-green">Sim (3.7+)</span></td>
+              <td><span class="badge badge-red">Não</span></td>
+              <td><span class="badge badge-green">Sim</span></td>
+            </tr>
+            <tr>
+              <td>Acesso por</td>
+              <td>índice (int)</td>
+              <td>chave (qualquer hashável)</td>
+              <td>não há acesso direto</td>
+              <td>índice (int)</td>
+            </tr>
+            <tr>
+              <td>Duplicatas?</td>
+              <td><span class="badge badge-green">Sim</span></td>
+              <td>chaves únicas</td>
+              <td><span class="badge badge-red">Não</span></td>
+              <td><span class="badge badge-green">Sim</span></td>
+            </tr>
+            <tr>
+              <td>Lookup O(?)</td>
+              <td>O(n)</td>
+              <td><span class="badge badge-green">O(1)</span></td>
+              <td><span class="badge badge-green">O(1)</span></td>
+              <td>O(n)</td>
+            </tr>
+            <tr>
+              <td>Pode ser chave de dict?</td>
+              <td><span class="badge badge-red">Não</span></td>
+              <td><span class="badge badge-red">Não</span></td>
+              <td><span class="badge badge-red">Não</span></td>
+              <td><span class="badge badge-green">Sim</span></td>
+            </tr>
+            <tr>
+              <td>Caso de uso típico</td>
+              <td>sequências ordenadas</td>
+              <td>mapeamentos, configs, JSON</td>
+              <td>unicidade, pertencimento rápido</td>
+              <td>dados imutáveis, retorno múltiplo</td>
+            </tr>
+            <tr>
+              <td>Sintaxe literal</td>
+              <td><code>[1, 2, 3]</code></td>
+              <td><code>{"a": 1}</code></td>
+              <td><code>{1, 2, 3}</code></td>
+              <td><code>(1, 2, 3)</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── 9. DEEP DIVE: deque ── -->
+    <div class="section">
+      <div class="section-label">// deep dive</div>
+      <h2>collections.deque — Quando list Não Basta</h2>
+      <p>
+        <code>list.insert(0, x)</code> e <code>list.pop(0)</code> são O(n) — todos os elementos são reindexados. Para filas e pilhas que adicionam/removem nas duas extremidades, <code>collections.deque</code> faz essas operações em O(1).
+      </p>
+
+      <div class="code-label">// deque — double-ended queue</div>
+      <pre><code class="language-python">
+from collections import deque
+
+fila = deque()
+
+# Adicionar
+fila.append("João")      # lado direito — O(1)
+fila.appendleft("Maria") # lado esquerdo — O(1)  ← list faria isso em O(n)!
+
+# Remover
+fila.pop()               # remove da direita — O(1)
+fila.popleft()           # remove da esquerda — O(1)
+
+# Deque com tamanho máximo — buffer circular
+historico = deque(maxlen=3)
+for i in range(6):
+    historico.append(i)
+    print(list(historico))
+# [0]
+# [0, 1]
+# [0, 1, 2]
+# [1, 2, 3]  ← 0 foi descartado
+# [2, 3, 4]
+# [3, 4, 5]  ← mantém sempre os últimos 3
+      </code></pre>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Pro tip — deque para histórico de undo/redo</div>
+        <code>deque(maxlen=50)</code> é a estrutura perfeita para histórico de ações de usuário — mantém apenas os últimos N estados sem gerenciar limpeza manual.
+      </div>
+    </div>
+
+    <!-- ── 10. HANDS-ON ── -->
+    <div class="section">
+      <div class="section-label">// hands-on</div>
+      <h2>Passo a Passo: Trabalhando com Estruturas</h2>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Crie o arquivo estruturas.py</div>
+            <div class="step-desc">Abra seu terminal e crie o arquivo</div>
+            <div class="terminal">
+              <div class="terminal-bar"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span><span class="terminal-title">terminal</span></div>
+              <div class="terminal-body">
+                <span class="t-prompt">$ </span><span class="t-cmd">mkdir -p ~/py-aulas && cd ~/py-aulas</span><br>
+                <span class="t-prompt">$ </span><span class="t-cmd">touch estruturas.py</span><br>
+                <span class="t-prompt">$ </span><span class="t-cmd">code estruturas.py</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Explore list e slicing</div>
+            <div class="step-desc">Cole e execute bloco a bloco no terminal interativo</div>
+            <pre><code class="language-python">
+# python3 -i estruturas.py  ← flag -i mantém o REPL aberto após execução
+numeros = list(range(1, 11))
+print(numeros[::3])     # [1, 4, 7, 10]
+print(numeros[::-1])    # [10, 9, ..., 1]
+numeros.sort(reverse=True)
+print(numeros[:3])      # [10, 9, 8]
+            </code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Agrupando dados com defaultdict</div>
+            <div class="step-desc">Simule uma query GROUP BY em Python puro</div>
+            <pre><code class="language-python">
+from collections import defaultdict
+
+vendas = [
+    {"produto": "Notebook", "regiao": "SP", "valor": 7000},
+    {"produto": "Mouse",    "regiao": "RJ", "valor": 150},
+    {"produto": "Teclado",  "regiao": "SP", "valor": 350},
+    {"produto": "Monitor",  "regiao": "RJ", "valor": 1200},
+    {"produto": "Webcam",   "regiao": "SP", "valor": 400},
+]
+
+por_regiao = defaultdict(list)
+for venda in vendas:
+    por_regiao[venda["regiao"]].append(venda["valor"])
+
+for regiao, valores in por_regiao.items():
+    total = sum(valores)
+    print(f"{regiao}: R$ {total:,.2f} ({len(valores)} vendas)")
+            </code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Deduplicação e operações de conjuntos</div>
+            <div class="step-desc">Encontre usuários que compraram em ambos os meses</div>
+            <pre><code class="language-python">
+compradores_jan = {"ana", "bruno", "carla", "diego", "eva"}
+compradores_fev = {"bruno", "eva", "flávia", "gustavo", "ana"}
+
+# Compraram nos dois meses (clientes fiéis)
+fieis = compradores_jan & compradores_fev
+print(f"Clientes fiéis: {fieis}")    # {ana, bruno, eva}
+
+# Compraram apenas em janeiro (risco de churn)
+so_jan = compradores_jan - compradores_fev
+print(f"Risco de churn: {so_jan}")  # {carla, diego}
+
+# Novos clientes em fevereiro
+novos_fev = compradores_fev - compradores_jan
+print(f"Novos em fev: {novos_fev}") # {flávia, gustavo}
+            </code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 11. CÓDIGO COMENTADO COMPLETO ── -->
+    <div class="section">
+      <div class="section-label">// código comentado</div>
+      <h2>Exemplo Completo — Analisador de Logs</h2>
+      <p>Um script que lê uma lista de eventos de log e usa todas as estruturas para gerar um relatório:</p>
+
+      <div class="code-label">// analisador_logs.py — usa list, dict, set, Counter e namedtuple</div>
+      <pre><code class="language-python">
+from collections import Counter, namedtuple, defaultdict
+
+# ── Definição de estrutura de dado ──────────────────────────────────────
+Evento = namedtuple("Evento", ["timestamp", "nivel", "usuario", "mensagem"])
+
+# ── Dados de entrada (simulando parse de arquivo de log) ─────────────────
+logs_raw = [
+    ("2024-01-15 08:00", "INFO",  "ana",    "login"),
+    ("2024-01-15 08:01", "INFO",  "bruno",  "login"),
+    ("2024-01-15 08:05", "ERROR", "ana",    "falha ao acessar /admin"),
+    ("2024-01-15 08:10", "INFO",  "carla",  "login"),
+    ("2024-01-15 08:15", "WARN",  "bruno",  "tentativa suspeita"),
+    ("2024-01-15 08:20", "ERROR", "carla",  "senha incorreta"),
+    ("2024-01-15 08:21", "ERROR", "carla",  "senha incorreta"),
+    ("2024-01-15 08:25", "INFO",  "ana",    "logout"),
+    ("2024-01-15 08:30", "WARN",  "carla",  "conta bloqueada"),
+]
+
+# ── Processamento: list comprehension para converter raw → namedtuple ────
+eventos = [Evento(*linha) for linha in logs_raw]
+
+# ── Filtragem com list comprehension ────────────────────────────────────
+erros  = [e for e in eventos if e.nivel == "ERROR"]
+avisos = [e for e in eventos if e.nivel == "WARN"]
+
+print(f"Total eventos: {len(eventos)}")
+print(f"Erros:  {len(erros)} | Avisos: {len(avisos)}")
+
+# ── Usuários únicos com set ───────────────────────────────────────────────
+usuarios_ativos = {e.usuario for e in eventos}  # set comprehension
+print(f"Usuários únicos: {sorted(usuarios_ativos)}")
+
+# ── Contagem por nível com Counter ───────────────────────────────────────
+por_nivel = Counter(e.nivel for e in eventos)
+print("\nDistribuição por nível:")
+for nivel, contagem in por_nivel.most_common():
+    print(f"  {nivel:5s}: {'█' * contagem} ({contagem})")
+
+# ── Agrupamento por usuário com defaultdict ──────────────────────────────
+por_usuario = defaultdict(list)
+for evento in eventos:
+    por_usuario[evento.usuario].append(evento)
+
+print("\nRelatório por usuário:")
+for usuario in sorted(por_usuario):
+    eventos_u = por_usuario[usuario]
+    niveis_u  = Counter(e.nivel for e in eventos_u)
+    erros_u   = niveis_u.get("ERROR", 0)
+    status    = "🔴 CRÍTICO" if erros_u >= 2 else ("🟡 ATENÇÃO" if erros_u == 1 else "🟢 OK")
+    print(f"  {usuario:8s} — {len(eventos_u)} eventos | {status}")
+
+# ── Usuários sem erros (diferença de sets) ───────────────────────────────
+com_erros  = {e.usuario for e in erros}
+sem_erros  = usuarios_ativos - com_erros
+print(f"\nUsuários sem erros: {sem_erros}")
+      </code></pre>
+
+      <div class="terminal">
+        <div class="terminal-bar"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span><span class="terminal-title">saída esperada</span></div>
+        <div class="terminal-body">
+          <span class="t-out">Total eventos: 9</span><br>
+          <span class="t-out">Erros:  3 | Avisos: 2</span><br>
+          <span class="t-out">Usuários únicos: ['ana', 'bruno', 'carla']</span><br>
+          <br>
+          <span class="t-out">Distribuição por nível:</span><br>
+          <span class="t-out">  INFO : █████ (5)</span><br>
+          <span class="t-out">  ERROR: ███ (3)</span><br>
+          <span class="t-out">  WARN : ██ (2)</span><br>
+          <br>
+          <span class="t-out">Relatório por usuário:</span><br>
+          <span class="t-out">  ana      — 3 eventos | 🟡 ATENÇÃO</span><br>
+          <span class="t-out">  bruno    — 2 eventos | 🟢 OK</span><br>
+          <span class="t-out">  carla    — 4 eventos | 🔴 CRÍTICO</span><br>
+          <br>
+          <span class="t-out">Usuários sem erros: {'bruno'}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 12. PITFALLS ── -->
+    <div class="section">
+      <div class="section-label">// armadilhas</div>
+      <h2>⚠️ Pitfalls — Erros Frequentes</h2>
+
+      <div class="pitfall">
+        <div class="pitfall-title">❌ Pitfall 1 — Cópia rasa vs cópia profunda</div>
+        <p>Em Python, <code>b = a</code> para listas cria uma referência, não uma cópia. <code>b = a.copy()</code> cria uma cópia rasa — listas aninhadas ainda são compartilhadas. Use <code>copy.deepcopy(a)</code> quando tiver estruturas aninhadas.</p>
+        <pre><code class="language-python">
+import copy
+
+# Problema
+a = [[1, 2], [3, 4]]
+b = a.copy()          # cópia rasa
+b[0].append(99)       # modifica a lista interna
+print(a)              # [[1, 2, 99], [3, 4]] ← a também foi modificada!
+
+# Solução
+c = copy.deepcopy(a)
+c[0].append(88)
+print(a)              # não modificada ✓
+        </code></pre>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">❌ Pitfall 2 — Modificar lista durante iteração</div>
+        <pre><code class="language-python">
+# ERRADO — comportamento imprevisível
+numeros = [1, 2, 3, 4, 5]
+for n in numeros:
+    if n % 2 == 0:
+        numeros.remove(n)   # modifica a lista enquanto itera
+
+# CORRETO — list comprehension ou itere sobre cópia
+numeros = [n for n in numeros if n % 2 != 0]  # filtra em nova lista
+# ou: for n in numeros[:]:  ← itera sobre slice (cópia)
+        </code></pre>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">❌ Pitfall 3 — Usar list como argumento default de função</div>
+        <pre><code class="language-python">
+# ERRADO — a lista default é criada UMA VEZ e compartilhada entre chamadas!
+def adicionar(item, lista=[]):
+    lista.append(item)
+    return lista
+
+print(adicionar("a"))   # ["a"]
+print(adicionar("b"))   # ["a", "b"]  ← não era o esperado!
+
+# CORRETO — usar None como default e criar dentro da função
+def adicionar(item, lista=None):
+    if lista is None:
+        lista = []
+    lista.append(item)
+    return lista
+        </code></pre>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">❌ Pitfall 4 — Criar set vazio com {}</div>
+        <pre><code class="language-python">
+# ERRADO — isso cria um dict vazio, não um set!
+meu_conjunto = {}
+type(meu_conjunto)  # &lt;class 'dict'&gt;
+
+# CORRETO
+meu_conjunto = set()
+type(meu_conjunto)  # &lt;class 'set'&gt;
+        </code></pre>
+      </div>
+    </div>
+
+    <!-- ── 13. VÍDEOS ── -->
+    <div class="section">
+      <div class="section-label">// curadoria</div>
+      <h2>Vídeos Recomendados</h2>
+      <div class="video-grid">
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Python Lists, Tuples, Sets & Dictionaries</div>
+            <div class="video-channel">Corey Schafer · ~45 min</div>
+            <div class="video-why">Por que assistir: Corey é o melhor professor de Python no YouTube para fundamentos. Cobre cada estrutura com exemplos do mundo real e explica as diferenças de performance.</div>
+            <a href="https://www.youtube.com/watch?v=W8KRzm-HUcc" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Python Collections Module — deque, Counter, defaultdict</div>
+            <div class="video-channel">Corey Schafer · ~35 min</div>
+            <div class="video-why">Por que assistir: Aprofunda exatamente as estruturas do módulo collections que sêniors usam diariamente — Counter, defaultdict, deque e namedtuple.</div>
+            <a href="https://www.youtube.com/watch?v=UdcPhnNjSEw" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Python Dictionaries in 5 Minutes</div>
+            <div class="video-channel">Fireship · ~5 min</div>
+            <div class="video-why">Por que assistir: Visão rápida e moderna dos dicionários Python incluindo o operador | de merge e truques avançados — ótimo para revisão rápida.</div>
+            <a href="https://www.youtube.com/watch?v=daefaLgNkw0" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Big-O Notation — Python Data Structures Performance</div>
+            <div class="video-channel">CS Dojo · ~20 min</div>
+            <div class="video-why">Por que assistir: Explica a complexidade de tempo (Big-O) de cada operação nas estruturas Python — essencial para entender POR QUE set/dict são O(1) e list é O(n) para lookups.</div>
+            <a href="https://www.youtube.com/watch?v=D6xkbGLQesk" target="_blank">Assistir →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 14. GLOSSÁRIO ── -->
+    <div class="section">
+      <div class="section-label">// glossário</div>
+      <h2>Glossário</h2>
+
+      <div class="glossary-item">
+        <div class="glossary-term">Hash Table</div>
+        <div class="glossary-def">Estrutura de dados interna usada por <code>dict</code> e <code>set</code>. Transforma a chave em um índice numérico via função hash, permitindo acesso O(1) médio.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Slicing</div>
+        <div class="glossary-def">Sintaxe <code>seq[inicio:fim:passo]</code> para extrair sub-sequências de listas, tuplas e strings. Retorna sempre uma nova cópia da fatia.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Shallow Copy (Cópia Rasa)</div>
+        <div class="glossary-def">Cópia que duplica o container externo, mas as referências internas ainda apontam para os mesmos objetos. <code>lista.copy()</code> e <code>lista[:]</code> fazem cópia rasa.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Deep Copy (Cópia Profunda)</div>
+        <div class="glossary-def">Cópia recursiva que duplica o container e todos os objetos internos. Feita com <code>copy.deepcopy()</code>. Necessária quando se trabalha com estruturas aninhadas mutáveis.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Hashável (Hashable)</div>
+        <div class="glossary-def">Objeto que possui um valor de hash fixo durante sua vida útil — condição para ser chave de dict ou elemento de set. Tipos imutáveis (int, str, tuple) são hashável; mutáveis (list, dict, set) não são.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">defaultdict</div>
+        <div class="glossary-def">Subclasse de dict do módulo <code>collections</code> que aceita uma função "factory" para criar valores default automaticamente quando uma chave inexistente é acessada.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Counter</div>
+        <div class="glossary-def">Subclasse de dict especializada em contar frequências de elementos. Possui métodos como <code>most_common(n)</code> e suporta operações aritméticas entre contadores.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">namedtuple</div>
+        <div class="glossary-def">Fábrica de subclasses de tuple com campos nomeados. Combina eficiência de tupla com acesso por nome (<code>ponto.x</code> em vez de <code>ponto[0]</code>).</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">deque</div>
+        <div class="glossary-def">Double-ended queue do módulo <code>collections</code>. Operações de inserção/remoção nas duas extremidades são O(1), diferente de <code>list</code> que é O(n) na extremidade esquerda.</div>
+      </div>
+    </div>
+
+    <!-- ── CHECKPOINT ── -->
+    <div class="section">
+      <div class="checkpoint">
+        <h3>🏁 Checkpoint — Desafio Final</h3>
+        <p>Crie um script <code>inventario.py</code> que implemente um <strong>sistema de inventário de loja</strong> usando todas as estruturas desta aula:</p>
+        <ul>
+          <li>Um <code>namedtuple Produto</code> com campos <code>nome</code>, <code>categoria</code>, <code>preco</code> e <code>estoque</code></li>
+          <li>Uma <code>list</code> de pelo menos 8 produtos de 3 categorias diferentes</li>
+          <li>Um <code>dict</code> agrupando produtos por categoria usando <code>defaultdict(list)</code></li>
+          <li>Um <code>set</code> com as categorias disponíveis, e outro <code>set</code> com categorias com estoque &gt; 0 — imprima as categorias com estoque esgotado usando diferença de sets</li>
+          <li>Um <code>Counter</code> que conte quantos produtos existem em cada categoria</li>
+          <li>Uma list comprehension que retorne apenas produtos com estoque &lt; 3, ordenados por preço decrescente com <code>sorted()</code> e <code>key=</code></li>
+          <li>Um dict comprehension <code>{nome: preco}</code> de todos os produtos com desconto de 10% aplicado</li>
+        </ul>
+        <div class="checkpoint-hint">💬 Dica: use <code>sorted(produtos, key=lambda p: p.preco, reverse=True)</code> para ordenar namedtuples. Para o Counter, use generator expression: <code>Counter(p.categoria for p in produtos)</code>. O script todo pode ser escrito em menos de 60 linhas usando as estruturas certas.</div>
+      </div>
+    </div>
+
+    <!-- ── PRÓXIMOS PASSOS ── -->
+    <div class="section">
+      <div class="section-label">// próximos passos</div>
+      <h2>O que vem a seguir?</h2>
+      <p style="margin-bottom: 20px;">Com estruturas de dados dominadas, chegamos ao grande salto: <strong>Orientação a Objetos</strong>. Vamos criar nossas próprias estruturas de dados com comportamento — classes, objetos, herança e métodos especiais (dunder methods). É o que transforma scripts soltos em sistemas coesos e extensíveis.</p>
+      <a href="py-04-orientacao-objetos.html" class="next-card">
+        <div>
+          <div class="next-card-label">Próxima aula · 🐍 Python</div>
+          <div class="next-card-title">Python — Orientação a Objetos</div>
+        </div>
+        <span class="next-arrow">→</span>
+      </a>
+    </div>
+
+  </div>
+
+  <script>
+    // Progress bar
+    window.addEventListener('scroll', () => {
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrolled  = window.scrollY / docHeight * 100;
+      document.getElementById('progressBar').style.width = scrolled + '%';
+    });
+
+    // Highlight.js
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof hljs !== 'undefined') hljs.highlightAll();
+    });
+
+    // Mermaid
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+  </script>
+</body>
+</html>

@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS — Animações, Tipografia & Efeitos · Aula 09</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+    :root { --bg:#0a0a0f;--surface:#111118;--surface2:#16161f;--border:#1e1e2e;--text:#e8e8f0;--muted:#8585a8;--accent:#ef4444;--accent-dim:rgba(239,68,68,0.15);--accent-border:rgba(239,68,68,0.3);--success:#10b981;--warn:#f59e0b;--danger:#ef4444;--info:#06b6d4; }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:15px;line-height:1.7}
+    .progress-bar-wrap{position:fixed;top:0;left:0;right:0;height:3px;background:var(--border);z-index:100}
+    .progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),#f87171);width:0%;transition:width 0.1s}
+    .top-nav{position:sticky;top:3px;background:rgba(10,10,15,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;z-index:99}
+    .nav-back{color:var(--muted);text-decoration:none;font-size:12px;letter-spacing:0.05em;padding:6px 14px;border:1px solid var(--border);border-radius:6px;transition:all 0.2s}
+    .nav-back:hover{color:var(--text);border-color:rgba(255,255,255,0.15);background:rgba(255,255,255,0.04)}
+    .nav-center{display:flex;align-items:center;gap:10px}
+    .nav-prev,.nav-next{display:flex;align-items:center;gap:6px;text-decoration:none;color:var(--muted);font-size:12px;letter-spacing:0.05em;padding:6px 14px;border:1px solid var(--border);border-radius:6px;background:transparent;transition:all 0.2s}
+    .nav-prev:hover,.nav-next:hover{color:var(--text);border-color:rgba(239,68,68,0.4);background:rgba(239,68,68,0.08)}
+    .nav-position{font-size:11px;color:var(--muted);letter-spacing:0.08em}
+    .nav-position .track{color:var(--accent)}
+    .page{max-width:860px;margin:0 auto;padding:60px 32px 120px}
+    .hero{padding:60px 0 40px;border-bottom:1px solid var(--border);margin-bottom:60px}
+    .hero-eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:20px;font-size:12px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase}
+    .hero-badge{background:var(--accent-dim);border:1px solid var(--accent-border);color:var(--accent);padding:3px 10px;border-radius:4px;font-size:10px}
+    h1{font-family:'Syne',sans-serif;font-size:clamp(28px,5vw,44px);font-weight:800;line-height:1.15;margin-bottom:20px}
+    h1 span{color:var(--accent)}
+    .hero-meta{display:flex;gap:20px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:20px}
+    .hero-tags{display:flex;gap:8px;flex-wrap:wrap}
+    .tag{background:var(--surface2);border:1px solid var(--border);color:var(--muted);padding:4px 10px;border-radius:4px;font-size:11px;letter-spacing:0.04em}
+    .section{margin-bottom:64px}
+    .section-label{font-size:10px;color:var(--accent);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:12px;opacity:0.8}
+    h2{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;margin-bottom:20px;color:var(--text)}
+    h3{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:14px}
+    h4{font-family:'Syne',sans-serif;font-size:15px;font-weight:600;margin-bottom:8px}
+    p{color:#c8c8d8;margin-bottom:16px}
+    strong{color:var(--text)}
+    code{background:var(--surface2);border:1px solid var(--border);padding:2px 6px;border-radius:4px;font-size:13px;color:#f87171}
+    .callout{border-radius:8px;padding:18px 22px;margin:24px 0;border-left:3px solid}
+    .callout-title{font-size:12px;font-weight:600;letter-spacing:0.06em;margin-bottom:8px;text-transform:uppercase}
+    .callout-info{background:rgba(6,182,212,0.08);border-color:var(--info)}
+    .callout-info .callout-title{color:var(--info)}
+    .callout-warn{background:rgba(245,158,11,0.08);border-color:var(--warn)}
+    .callout-warn .callout-title{color:var(--warn)}
+    .callout-tip{background:rgba(239,68,68,0.08);border-color:var(--accent)}
+    .callout-tip .callout-title{color:var(--accent)}
+    .callout-check{background:rgba(16,185,129,0.08);border-color:var(--success)}
+    .callout-check .callout-title{color:var(--success)}
+    .analogy-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;position:relative;overflow:hidden}
+    .analogy-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),transparent)}
+    .analogy-label{font-size:10px;color:var(--accent);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:16px}
+    .analogy-text{color:#c8c8d8;margin-bottom:20px;font-size:15px}
+    .analogy-mapping{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .analogy-real,.analogy-tech{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:13px}
+    .analogy-real{color:var(--warn)}
+    .analogy-tech{color:var(--accent)}
+    .mermaid-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;margin:24px 0}
+    .mermaid-label{font-size:10px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:16px}
+    .table-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border)}
+    table{width:100%;border-collapse:collapse}
+    th{background:var(--surface2);color:var(--accent);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;padding:12px 16px;text-align:left;border-bottom:1px solid var(--border)}
+    td{padding:12px 16px;border-bottom:1px solid var(--border);color:#c8c8d8;font-size:13px;vertical-align:top}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:rgba(255,255,255,0.02)}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .card-mini{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px}
+    .card-mini:hover{border-color:var(--accent-border)}
+    .pillar-badge{display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;margin-bottom:10px;letter-spacing:0.06em}
+    .steps{display:flex;flex-direction:column;gap:16px}
+    .step{display:flex;gap:20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px}
+    .step-num{width:32px;height:32px;min-width:32px;background:var(--accent-dim);border:1px solid var(--accent-border);color:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+    .step-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:6px}
+    .step-desc{font-size:13px;color:var(--muted);margin-bottom:12px}
+    .code-wrap{background:#0d1117;border:1px solid #30363d;border-radius:10px;overflow:hidden;margin:16px 0}
+    .code-header{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:#161b22;border-bottom:1px solid #30363d}
+    .code-filename{font-size:12px;color:#8b949e}
+    .code-lang{font-size:10px;color:#ef4444;letter-spacing:0.1em;text-transform:uppercase;background:rgba(239,68,68,0.1);padding:2px 8px;border-radius:4px}
+    pre{margin:0}
+    pre code{font-family:'JetBrains Mono',monospace!important;font-size:13px;line-height:1.6}
+    .videos-grid{display:flex;flex-direction:column;gap:14px}
+    .video-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;display:flex;gap:20px;text-decoration:none;color:inherit;transition:all 0.2s}
+    .video-card:hover{border-color:var(--accent-border);background:var(--surface2)}
+    .video-thumb{width:52px;height:52px;min-width:52px;background:var(--accent-dim);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--accent)}
+    .video-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px}
+    .video-channel{font-size:12px;color:var(--muted);margin-bottom:6px}
+    .video-why{font-size:12px;color:#c8c8d8;margin-bottom:8px}
+    .video-watch{font-size:11px;color:var(--accent);letter-spacing:0.06em}
+    .checkpoint{background:linear-gradient(135deg,rgba(239,68,68,0.1),rgba(16,185,129,0.08));border:1px solid var(--accent-border);border-radius:12px;padding:32px;margin:60px 0}
+    .checkpoint-label{font-size:10px;color:var(--accent);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:12px}
+    .checkpoint h3{font-family:'Syne',sans-serif;font-size:20px;margin-bottom:14px}
+    .checkpoint ul{list-style:none;display:flex;flex-direction:column;gap:8px;margin:16px 0}
+    .checkpoint li{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:#c8c8d8}
+    .checkpoint li::before{content:'✦';color:var(--accent);margin-top:1px}
+    .checkpoint-hint{margin-top:20px;padding:14px 18px;background:rgba(255,255,255,0.04);border-radius:8px;font-size:13px;color:var(--muted)}
+    .next-lesson{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px 28px;text-decoration:none;color:inherit;transition:all 0.2s;margin-bottom:60px}
+    .next-lesson:hover{border-color:var(--accent-border);background:var(--surface2)}
+    .next-label{font-size:11px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px}
+    .next-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--text)}
+    .next-arrow{font-size:28px;color:var(--accent)}
+    .footer{border-top:1px solid var(--border);padding-top:32px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted)}
+    .footer a{color:var(--muted);text-decoration:none}
+    .footer a:hover{color:var(--accent)}
+    ul li{color:#c8c8d8;margin-bottom:6px}
+
+    /* ── DEMOS INTERATIVOS ────────────────────────── */
+    .demo-area { background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:32px;margin:24px 0;display:flex;flex-direction:column;gap:20px;align-items:flex-start; }
+    .demo-label { font-size:10px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px; }
+
+    /* Botão com transition */
+    .btn-demo {
+      padding: 12px 24px; background: var(--accent); color: #fff; border: none; border-radius: 8px; font-size: 14px; cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s;
+    }
+    .btn-demo:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(239,68,68,0.4); background: #dc2626; }
+    .btn-demo:active { transform: translateY(0); }
+
+    /* Spinner */
+    .spinner { width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Pulse */
+    .pulse-dot { width:14px;height:14px;background:var(--success);border-radius:50%;animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.4);opacity:0.7} }
+
+    /* Skeleton */
+    .skeleton { background:linear-gradient(90deg, var(--border) 25%, #2a2a40 50%, var(--border) 75%);background-size:400% 100%;animation:shimmer 1.5s infinite;border-radius:6px; }
+    @keyframes shimmer { to { background-position: -400% 0; } }
+
+    /* Text gradient */
+    .gradient-text { font-family:'Syne',sans-serif;font-size:28px;font-weight:800;background:linear-gradient(135deg,#ef4444,#f97316,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
+
+    /* Glassmorphism */
+    .glass-card { background:rgba(255,255,255,0.05);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:20px;max-width:300px; }
+
+    /* Transform 3D */
+    .card-3d-wrap { perspective: 600px; }
+    .card-3d { background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:20px;width:200px;transition:transform 0.4s ease;transform-style:preserve-3d; }
+    .card-3d:hover { transform:rotateY(15deg) rotateX(-5deg); }
+
+    @media(max-width:600px){.page{padding:40px 18px 80px}.grid-2,.grid-3{grid-template-columns:1fr}.top-nav{padding:12px 18px}.analogy-mapping{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<div class="progress-bar-wrap"><div class="progress-bar-fill"></div></div>
+
+<nav class="top-nav">
+  <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+  <div class="nav-center">
+    <a href="html-03-responsivo-moderno.html" class="nav-prev">← Anterior</a>
+    <div class="nav-position"><span class="track">🌐 HTML/CSS</span> · Aula 09 / 50</div>
+    <a href="gh-03-colaboracao-prs.html" class="nav-next">Próxima →</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <span>🌐 HTML/CSS</span>
+      <span class="hero-badge">Aula 09</span>
+    </div>
+    <h1>Animações, <span>Tipografia</span> & Efeitos</h1>
+    <div class="hero-meta">
+      <span>⏱ 35–45 min de leitura</span>
+      <span>🎯 Intermediário → Avançado</span>
+      <span>🔧 Demos interativas incluídas</span>
+    </div>
+    <div class="hero-tags">
+      <span class="tag">transition</span>
+      <span class="tag">@keyframes</span>
+      <span class="tag">animation</span>
+      <span class="tag">transform 3D</span>
+      <span class="tag">glassmorphism</span>
+      <span class="tag">gradient text</span>
+      <span class="tag">filter</span>
+      <span class="tag">will-change</span>
+    </div>
+  </div>
+
+  <!-- 1. POR QUE IMPORTA -->
+  <div class="section">
+    <div class="section-label">// motivação</div>
+    <h2>Por que isso importa?</h2>
+    <p>
+      Interfaces modernas não são estáticas. Micro-interações — o hover de um botão, o loading spinner, o card que levanta — comunicam estado, guiam a atenção e criam <strong>sensação de qualidade</strong>. A diferença entre um produto que parece profissional e um que parece amador é frequentemente feita em CSS.
+    </p>
+    <p>
+      CSS moderno — com <code>transition</code>, <code>@keyframes</code> e <code>transform</code> — faz animações performáticas sem JavaScript. A chave: animar apenas <code>opacity</code> e <code>transform</code> (GPU), nunca <code>width</code>, <code>height</code> ou <code>margin</code> (CPU).
+    </p>
+    <div class="callout callout-info">
+      <div class="callout-title">💼 Por que um engenheiro sênior usa isso hoje</div>
+      <p style="margin:0">Skeleton loaders substituem spinners em aplicações modernas (Meta, Spotify, LinkedIn). Glassmorphism e gradient text são o padrão visual de 2024-25 em produtos como Arc, Linear e Vercel. <code>@starting-style</code> e <code>transition-behavior</code> agora permitem animar <code>display: none → block</code> nativamente. Entender o <em>compositor</em> do browser — GPU vs CPU — é o que separa animações fluidas de animações que "travam".</p>
+    </div>
+  </div>
+
+  <!-- 2. ANALOGIA -->
+  <div class="section">
+    <div class="section-label">// analogia</div>
+    <h2>Antes do código: uma analogia</h2>
+    <div class="analogy-card">
+      <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
+      <div class="analogy-text">
+        Pense em um <strong>teatro de marionetes</strong>. <em>Transitions</em> são movimentos suaves de um estado para outro (a marionete levanta o braço gradualmente). <em>Keyframes</em> são coreografias — o roteirista define exatamente o que acontece em cada momento do espetáculo (0%, 50%, 100%). O <em>easing</em> é o ritmo — movimentos acelerados no início e desacelerados no fim parecem mais naturais. E o <em>compositor do browser</em> é o palco — operações que acontecem nele (transform, opacity) são fluidas; operações que exigem recálculo do cenário inteiro (width, layout) são lentas.
+      </div>
+      <div class="analogy-mapping">
+        <span class="analogy-real">Movimento suave de A→B</span>
+        <span class="analogy-tech">→ transition</span>
+        <span class="analogy-real">Coreografia com roteiro</span>
+        <span class="analogy-tech">→ @keyframes + animation</span>
+        <span class="analogy-real">Ritmo do movimento</span>
+        <span class="analogy-tech">→ timing-function / easing</span>
+        <span class="analogy-real">Palco (GPU) vs bastidores (CPU)</span>
+        <span class="analogy-tech">→ compositor vs layout</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEMOS INTERATIVAS -->
+  <div class="section">
+    <div class="section-label">// demos ao vivo</div>
+    <h2>Interaja com os efeitos aqui mesmo</h2>
+    <p>Estes elementos estão rodando no CSS desta própria página:</p>
+
+    <div class="demo-area">
+      <div>
+        <div class="demo-label">Transition — hover no botão</div>
+        <button class="btn-demo">Hover em mim ↑</button>
+      </div>
+
+      <div>
+        <div class="demo-label">@keyframes — spinner de loading</div>
+        <div class="spinner"></div>
+      </div>
+
+      <div>
+        <div class="demo-label">@keyframes — pulse (indicador "online")</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="pulse-dot"></div>
+          <span style="font-size:13px;color:var(--muted)">Online</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="demo-label">Skeleton loader — shimmer effect</div>
+        <div style="display:flex;flex-direction:column;gap:8px;width:240px">
+          <div class="skeleton" style="height:14px;width:80%"></div>
+          <div class="skeleton" style="height:14px;width:100%"></div>
+          <div class="skeleton" style="height:14px;width:60%"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="demo-label">Gradient text</div>
+        <div class="gradient-text">Texto de Impacto</div>
+      </div>
+
+      <div>
+        <div class="demo-label">Glassmorphism card</div>
+        <div style="background:linear-gradient(135deg,#ef4444,#6366f1);padding:24px;border-radius:16px">
+          <div class="glass-card">
+            <div style="font-size:13px;font-family:'Syne',sans-serif;font-weight:600">Glassmorphism</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:4px">backdrop-filter: blur(12px)</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="demo-label">Transform 3D — hover no card</div>
+        <div class="card-3d-wrap">
+          <div class="card-3d">
+            <div style="font-size:12px;font-family:'Syne',sans-serif">Hover para 3D ↗</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. CONCEITO CENTRAL -->
+  <div class="section">
+    <div class="section-label">// conceito</div>
+    <h2>Transition vs Animation</h2>
+    <p>Dois mecanismos distintos com casos de uso diferentes:</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label">// quando usar cada um</div>
+      <div class="mermaid">
+flowchart TD
+    Q{Precisa de animação?} --> A{Disparada por\nevent/state?}
+    A -->|Sim hover focus class| T[transition\nSimples A→B\nCSS puro]
+    A -->|Não — roda sozinha| K[@keyframes + animation\nCoreografia complexa\nloop possível]
+    
+    T --> T1[hover, focus, :checked\nclass toggle, checked state]
+    K --> K1[spinner, shimmer, pulse\nentrada de elementos\nseq complexa]
+
+    style Q fill:#1e1e2e,stroke:#ef4444,color:#e8e8f0
+    style T fill:#16161f,stroke:#10b981,color:#34d399
+    style K fill:#16161f,stroke:#ef4444,color:#f87171
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:24px">
+      <div class="card-mini">
+        <span class="pillar-badge" style="background:rgba(16,185,129,0.2);color:#34d399;">transition</span>
+        <h4>Transição de estado</h4>
+        <p>Define como uma propriedade muda de um valor a outro. Requer um gatilho: hover, focus, ou adição de classe via JS. <code>transition: property duration easing delay</code></p>
+      </div>
+      <div class="card-mini">
+        <span class="pillar-badge" style="background:rgba(239,68,68,0.2);color:#f87171;">@keyframes</span>
+        <h4>Animação autônoma</h4>
+        <p>Define uma coreografia completa com múltiplos estágios. Pode loopar, pausar, reverter. Independente de estado do usuário.</p>
+      </div>
+      <div class="card-mini">
+        <span class="pillar-badge" style="background:rgba(245,158,11,0.2);color:#fbbf24;">GPU-safe</span>
+        <h4>Animar apenas opacity e transform</h4>
+        <p>Essas propriedades rodam no compositor (GPU) — 60fps garantidos. Evite animar: width, height, top, left, margin, padding.</p>
+      </div>
+      <div class="card-mini">
+        <span class="pillar-badge" style="background:rgba(6,182,212,0.2);color:#22d3ee;">will-change</span>
+        <h4>Dica de performance ao browser</h4>
+        <p>Diz ao browser para preparar a GPU antecipadamente. Use com moderação: <code>will-change: transform</code> em elementos que animam frequentemente.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. TABELA COMPARATIVA -->
+  <div class="section">
+    <div class="section-label">// comparação</div>
+    <h2>Propriedades de animation e timing functions</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Propriedade</th><th>Valores comuns</th><th>O que faz</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>animation-duration</code></td><td><code>0.3s</code>, <code>1s</code>, <code>2000ms</code></td><td>Duração de um ciclo completo</td></tr>
+          <tr><td><code>animation-timing-function</code></td><td><code>ease</code>, <code>linear</code>, <code>ease-in-out</code>, <code>cubic-bezier()</code></td><td>Curva de velocidade (easing)</td></tr>
+          <tr><td><code>animation-iteration-count</code></td><td><code>1</code>, <code>3</code>, <code>infinite</code></td><td>Número de repetições</td></tr>
+          <tr><td><code>animation-direction</code></td><td><code>normal</code>, <code>reverse</code>, <code>alternate</code></td><td>Direção da animação / ping-pong</td></tr>
+          <tr><td><code>animation-fill-mode</code></td><td><code>forwards</code>, <code>backwards</code>, <code>both</code></td><td>Estado antes/após a animação</td></tr>
+          <tr><td><code>animation-play-state</code></td><td><code>running</code>, <code>paused</code></td><td>Pausar/retomar via JS</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:24px">
+      <h3>Easing — a curva que define o "feel"</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Easing</th><th>Curva</th><th>Usar em</th></tr></thead>
+          <tbody>
+            <tr><td><code>ease</code></td><td>Lento → rápido → lento</td><td>A maioria das transições</td></tr>
+            <tr><td><code>ease-out</code></td><td>Rápido → lento</td><td>Elementos que entram na tela</td></tr>
+            <tr><td><code>ease-in</code></td><td>Lento → rápido</td><td>Elementos que saem da tela</td></tr>
+            <tr><td><code>ease-in-out</code></td><td>Lento → rápido → lento</td><td>Slides, modais, expansões</td></tr>
+            <tr><td><code>linear</code></td><td>Velocidade constante</td><td>Spinners, rotações contínuas</td></tr>
+            <tr><td><code>cubic-bezier()</code></td><td>Customizável</td><td>Personalidade única da marca</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. HANDS-ON -->
+  <div class="section">
+    <div class="section-label">// prática</div>
+    <h2>Mãos na massa</h2>
+    <p>Crie <code>animacoes.html</code> e implemente cada efeito do zero:</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Botão com microinteração completa</div>
+          <div class="code-wrap">
+            <div class="code-header"><span class="code-filename">style.css</span><span class="code-lang">css</span></div>
+            <pre><code class="language-css">/* ── Botão com transition multi-propriedade ─────── */
+.btn {
+  padding: 12px 28px;
+  background: #6366f1;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+
+  /* Transição em múltiplas propriedades */
+  transition:
+    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), /* spring */
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.btn:hover {
+  background: #4f46e5;
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(99, 102, 241, 0.5);
+}
+
+.btn:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: none;
+}
+
+/* Ripple effect com ::after */
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.btn:active::after { opacity: 1; }</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Animações essenciais de UI</div>
+          <div class="code-wrap">
+            <div class="code-header"><span class="code-filename">style.css</span><span class="code-lang">css</span></div>
+            <pre><code class="language-css">/* ── Spinner ─────────────────────────────────── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.spinner {
+  width: 32px; height: 32px;
+  border: 3px solid #e2e8f0;
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+/* ── Pulse / ping ────────────────────────────── */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.7; }
+}
+.pulse { animation: pulse 2s ease-in-out infinite; }
+
+/* ── Skeleton shimmer ────────────────────────── */
+@keyframes shimmer {
+  to { background-position: -400% 0; }
+}
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #e2e8f0 25%,
+    #f1f5f9 50%,
+    #e2e8f0 75%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+/* ── Fade + slide in ─────────────────────────── */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.appear {
+  animation: fadeSlideIn 0.4s ease-out both;
+}
+
+/* Delay progressivo em listas */
+.item:nth-child(1) { animation-delay: 0ms; }
+.item:nth-child(2) { animation-delay: 100ms; }
+.item:nth-child(3) { animation-delay: 200ms; }
+.item:nth-child(4) { animation-delay: 300ms; }</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Glassmorphism card</div>
+          <div class="code-wrap">
+            <div class="code-header"><span class="code-filename">style.css</span><span class="code-lang">css</span></div>
+            <pre><code class="language-css">/* ── Glassmorphism ────────────────────────────── */
+.glass {
+  /* Fundo semi-transparente */
+  background: rgba(255, 255, 255, 0.08);
+
+  /* O segredo — blur no que está atrás */
+  backdrop-filter: blur(16px) saturate(1.5);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 24px;
+
+  /* Sombra suave */
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.glass:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Tipografia avançada: gradient text e variable fonts</div>
+          <div class="code-wrap">
+            <div class="code-header"><span class="code-filename">style.css</span><span class="code-lang">css</span></div>
+            <pre><code class="language-css">/* ── Gradient text ────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #6366f1, #ef4444, #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  /* IMPORTANTE: não funciona com text-shadow */
+}
+
+/* Gradient animado */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.gradient-animated {
+  background: linear-gradient(270deg, #6366f1, #ef4444, #f59e0b, #10b981);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 4s ease infinite;
+}
+
+/* ── Variable fonts ────────────────────────────── */
+/* Google Fonts com eixo de peso variável */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+/* Animar o peso da fonte! */
+@keyframes weightPulse {
+  0%, 100% { font-variation-settings: 'wght' 300; }
+  50% { font-variation-settings: 'wght' 900; }
+}
+.variable-text {
+  font-family: 'Inter', sans-serif;
+  animation: weightPulse 2s ease-in-out infinite;
+}
+
+/* ── Text truncation ─────────────────────────── */
+.truncate { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.line-clamp-2 { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <div class="step-title">Transforms 3D e filter</div>
+          <div class="code-wrap">
+            <div class="code-header"><span class="code-filename">style.css</span><span class="code-lang">css</span></div>
+            <pre><code class="language-css">/* ── Transforms 3D ────────────────────────────── */
+.scene {
+  perspective: 800px; /* distância do observador */
+}
+
+.card-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.card-3d:hover {
+  transform: rotateY(20deg) rotateX(-10deg) scale(1.02);
+}
+
+/* Flip card */
+.flip-card { perspective: 1000px; }
+.flip-inner {
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+}
+.flip-card:hover .flip-inner { transform: rotateY(180deg); }
+.flip-front, .flip-back { backface-visibility: hidden; }
+.flip-back { transform: rotateY(180deg); }
+
+/* ── CSS Filters ─────────────────────────────── */
+.img-hover {
+  filter: grayscale(100%) brightness(0.8);
+  transition: filter 0.4s ease;
+}
+.img-hover:hover { filter: grayscale(0%) brightness(1); }
+
+/* Efeito neon */
+.neon {
+  color: #6366f1;
+  text-shadow:
+    0 0 8px rgba(99, 102, 241, 0.8),
+    0 0 24px rgba(99, 102, 241, 0.5),
+    0 0 48px rgba(99, 102, 241, 0.3);
+}</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. CÓDIGO COMPLETO -->
+  <div class="section">
+    <div class="section-label">// código</div>
+    <h2>Exemplo completo: Sistema de animações com prefers-reduced-motion</h2>
+    <p>Nunca force animações em usuários com sensibilidade a movimento:</p>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-filename">acessibilidade.css</span><span class="code-lang">css</span></div>
+      <pre><code class="language-css">/* ── Sistema de animações acessível ─────────────── */
+
+/* Define as animações normalmente */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.animated { animation: slideIn 0.4s ease-out both; }
+
+/* OBRIGATÓRIO — respeita a preferência do usuário */
+@media (prefers-reduced-motion: reduce) {
+  /* Remove animações para usuários com epilepsia ou tontura */
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Scroll-driven animations (Chrome 115+) ─────── */
+/* Anima baseado na posição do scroll — sem JS! */
+@keyframes revealOnScroll {
+  from { opacity: 0; transform: translateY(40px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.scroll-reveal {
+  animation: revealOnScroll linear both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 30%;
+}
+
+/* ── Loading state completo ─────────────────────── */
+.btn-loading {
+  position: relative;
+  pointer-events: none;
+  color: transparent !important;
+}
+.btn-loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 18px; height: 18px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+/* Toggle via JS: btn.classList.toggle('btn-loading') */</code></pre>
+    </div>
+  </div>
+
+  <!-- 7. PITFALLS -->
+  <div class="section">
+    <div class="section-label">// armadilhas</div>
+    <h2>Erros que arruínam a performance</h2>
+    <div class="callout callout-warn">
+      <div class="callout-title">⚠️ Animar propriedades que causam layout reflow</div>
+      <p>Animar <code>width</code>, <code>height</code>, <code>top</code>, <code>left</code>, <code>margin</code> ou <code>padding</code> força o browser a recalcular o layout de toda a página a cada frame — o que causa jank (frames perdidos). <strong>Regra de ouro:</strong> anime apenas <code>transform</code> e <code>opacity</code>. Use <code>transform: translateX()</code> em vez de <code>left</code>.</p>
+    </div>
+    <div class="callout callout-warn">
+      <div class="callout-title">⚠️ will-change em tudo</div>
+      <p><code>will-change: transform</code> cria uma nova camada na GPU para o elemento — excelente para animações frequentes, mas se usado em excesso, consome memória VRAM. Use apenas em elementos que realmente animam, e remova após a animação via JS se necessário.</p>
+    </div>
+    <div class="callout callout-warn">
+      <div class="callout-title">⚠️ Esquecer prefers-reduced-motion</div>
+      <p>Para usuários com epilepsia fotossensível, doenças vestibulares ou enjoo de movimento, animações podem ser debilitantes. É obrigação de acessibilidade incluir <code>@media (prefers-reduced-motion: reduce)</code>.</p>
+    </div>
+    <div class="callout callout-warn">
+      <div class="callout-title">⚠️ backdrop-filter sem fallback</div>
+      <p><code>backdrop-filter</code> não funciona se o elemento pai tiver <code>overflow: hidden</code>. Sempre forneça um fallback de fundo sólido semi-transparente para browsers que não suportam.</p>
+    </div>
+  </div>
+
+  <!-- 8. VÍDEOS -->
+  <div class="section">
+    <div class="section-label">// curadoria</div>
+    <h2>Referências em vídeo</h2>
+    <div class="videos-grid">
+      <a class="video-card" href="https://www.youtube.com/watch?v=YszONjKpgg4" target="_blank">
+        <div class="video-thumb">▶</div>
+        <div>
+          <div class="video-title">CSS Animations & Transitions — Kevin Powell</div>
+          <div class="video-channel">Kevin Powell · ~40 min</div>
+          <div class="video-why">Por que assistir: Kevin cobre transition, @keyframes, animation-fill-mode e os erros mais comuns — essencial para entender o modelo mental.</div>
+          <span class="video-watch">Assistir →</span>
+        </div>
+      </a>
+      <a class="video-card" href="https://www.youtube.com/watch?v=9-6CKCz58A8" target="_blank">
+        <div class="video-thumb">▶</div>
+        <div>
+          <div class="video-title">Glassmorphism UI Design in CSS</div>
+          <div class="video-channel">DesignCourse · ~15 min</div>
+          <div class="video-why">Por que assistir: Tutorial definitivo de glassmorphism com backdrop-filter, gradientes e sombras — implementação real do efeito.</div>
+          <span class="video-watch">Assistir →</span>
+        </div>
+      </a>
+      <a class="video-card" href="https://www.youtube.com/watch?v=gWai7fYp9PY" target="_blank">
+        <div class="video-thumb">▶</div>
+        <div>
+          <div class="video-title">CSS Transforms & 3D Effects Explained</div>
+          <div class="video-channel">Kevin Powell · ~26 min</div>
+          <div class="video-why">Por que assistir: Explica perspective, transform-style: preserve-3d e flip cards com clareza visual excepcional.</div>
+          <span class="video-watch">Assistir →</span>
+        </div>
+      </a>
+      <a class="video-card" href="https://www.youtube.com/watch?v=5b4YcLB4DVI" target="_blank">
+        <div class="video-thumb">▶</div>
+        <div>
+          <div class="video-title">Scroll-driven animations in CSS — Chrome for Developers</div>
+          <div class="video-channel">Chrome Developers · ~12 min</div>
+          <div class="video-why">Por que assistir: Animações acionadas pelo scroll 100% em CSS (sem JS) — uma das features mais empolgantes do CSS 2024.</div>
+          <span class="video-watch">Assistir →</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- CHECKPOINT -->
+  <div class="checkpoint">
+    <div class="checkpoint-label">// desafio</div>
+    <h3>🏁 Checkpoint — valide seu aprendizado</h3>
+    <p>Construa uma <strong>galeria de cards com todas as técnicas da aula</strong>:</p>
+    <ul>
+      <li>Cada card tem um efeito de hover com <code>transition</code> (elevação + sombra colorida)</li>
+      <li>Um skeleton loader aparece antes dos cards com animação shimmer</li>
+      <li>Um dos cards usa glassmorphism sobre um fundo gradiente</li>
+      <li>Títulos dos cards usam gradient text</li>
+      <li>Adicione um botão com estado de loading (spinner inline via CSS)</li>
+      <li>Inclua <code>@media (prefers-reduced-motion: reduce)</code> desabilitando todas as animações</li>
+    </ul>
+    <div class="checkpoint-hint">💬 Dica: use a extensão "Accessibility Insights" do Chrome para simular prefers-reduced-motion e testar seu código. Para o skeleton loader, use JavaScript com <code>setTimeout()</code> para remover a classe <code>skeleton</code> após 2 segundos, simulando um carregamento real.</div>
+  </div>
+
+  <!-- PRÓXIMA AULA -->
+  <a href="gh-03-colaboracao-prs.html" class="next-lesson">
+    <div>
+      <div class="next-label">Próxima aula →</div>
+      <div class="next-title">GitHub — Colaboração & Pull Requests</div>
+    </div>
+    <div class="next-arrow">→</div>
+  </a>
+
+  <div class="footer">
+    <span>🌐 HTML/CSS · Aula 09 / 50</span>
+    <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+  </div>
+
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+  mermaid.initialize({ startOnLoad: true, theme: 'dark', themeVariables: { primaryColor: '#ef4444', primaryTextColor: '#e8e8f0', primaryBorderColor: 'rgba(239,68,68,0.3)', lineColor: '#8585a8', background: '#111118', mainBkg: '#16161f' } });
+  window.addEventListener('scroll', () => {
+    const progress = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+    document.querySelector('.progress-bar-fill').style.width = progress + '%';
+  });
+</script>
+
+</body>
+</html>

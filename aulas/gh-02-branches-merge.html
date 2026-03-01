@@ -1,48 +1,198 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Branches, Merge & Conflitos · GitHub</title>
+  <title>Git — Branches, Merge & Conflitos · Aula 02</title>
 
-  <!-- Syntax highlighting — github-dark inlined (funciona offline) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
   <style>
-    /* ─── TOKENS ────────────────────────────────────────────── */
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
     :root {
       --bg: #0a0a0f;
       --surface: #111118;
-      --surface2: #16161f;
       --border: #1e1e2e;
       --text: #e8e8f0;
       --muted: #8585a8;
-
       --accent: #58a6ff;
-      /* ex: #3b82f6 para Python */
-      --accent-dim: rgba(88, 166, 255, 0.1);
-      /* ex: rgba(59,130,246,0.15) */
-      --accent-border: rgba(88, 166, 255, 0.3);
-      /* ex: rgba(59,130,246,0.3) */
-
-      /* Semantic colors */
+      --accent-dim: rgba(88,166,255,0.15);
+      --accent-border: rgba(88,166,255,0.35);
       --success: #10b981;
       --warn: #f59e0b;
       --danger: #ef4444;
       --info: #06b6d4;
+      --purple: #a78bfa;
     }
-  </style>
-  <link rel="stylesheet" href="../assets/css/lesson.css">
-</head>
 
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #79c0ff); width: 0%; transition: width 0.1s; }
+
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #79c0ff; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.08); border-color: var(--success); }
+    .callout-tip .callout-title { color: var(--success); }
+    .callout-danger { background: rgba(239,68,68,0.08); border-color: var(--danger); }
+    .callout-danger .callout-title { color: var(--danger); }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-blue { background: rgba(88,166,255,0.2); color: #79c0ff; }
+    .badge-purple { background: rgba(167,139,250,0.2); color: #c4b5fd; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-info a { font-size: 12px; color: var(--accent); text-decoration: none; }
+    .video-info a:hover { text-decoration: underline; }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(88,166,255,0.08), rgba(121,192,255,0.04)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(88,166,255,0.06); border-radius: 6px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; }
+
+    .glossary-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .glossary-term { color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+    .glossary-def { color: var(--muted); font-size: 13px; }
+
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #79c0ff; }
+
+    /* Terminal */
+    .terminal { background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .terminal-bar { background: #1a1a1a; padding: 8px 14px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ef4444; } .dot-yellow { background: #f59e0b; } .dot-green { background: #10b981; }
+    .terminal-title { font-size: 11px; color: #555; margin-left: 6px; }
+    .terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; }
+    .t-prompt { color: #10b981; } .t-cmd { color: #e8e8f0; } .t-out { color: #8585a8; }
+    .t-comment { color: #444; font-style: italic; }
+    .t-conflict { color: #f87171; }
+    .t-merge { color: #34d399; }
+    .t-branch { color: #ffa657; }
+
+    /* Branch visual */
+    .branch-visual { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 24px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2.2; }
+    .bv-line { display: flex; align-items: center; gap: 8px; }
+    .bv-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+    .bv-conn { width: 2px; height: 20px; margin-left: 5px; }
+    .bv-hash { color: #ffa657; min-width: 65px; }
+    .bv-msg { color: var(--text); }
+    .ref { display: inline-block; padding: 1px 7px; border-radius: 3px; font-size: 10px; font-weight: 700; margin-right: 4px; }
+    .ref-head { background: rgba(88,166,255,0.2); color: #79c0ff; border: 1px solid rgba(88,166,255,0.4); }
+    .ref-main { background: rgba(16,185,129,0.2); color: #34d399; border: 1px solid rgba(16,185,129,0.4); }
+    .ref-feature { background: rgba(245,158,11,0.2); color: #fbbf24; border: 1px solid rgba(245,158,11,0.4); }
+    .ref-fix { background: rgba(239,68,68,0.2); color: #f87171; border: 1px solid rgba(239,68,68,0.4); }
+
+    /* Conflict block */
+    .conflict-block { border-radius: 8px; overflow: hidden; margin: 16px 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+    .conflict-head { background: rgba(88,166,255,0.15); border: 1px solid rgba(88,166,255,0.3); padding: 10px 14px; }
+    .conflict-head .marker { color: #79c0ff; font-weight: 700; }
+    .conflict-sep { background: rgba(255,255,255,0.05); border-left: 1px solid rgba(88,166,255,0.3); border-right: 1px solid rgba(88,166,255,0.3); padding: 4px 14px; text-align: center; color: var(--muted); font-size: 11px; }
+    .conflict-theirs { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); padding: 10px 14px; }
+    .conflict-theirs .marker { color: #f87171; font-weight: 700; }
+    .conflict-line { color: var(--text); }
+  </style>
+</head>
 <body>
+
   <div class="progress-bar-wrap">
-    <div class="progress-bar-fill"></div>
+    <div class="progress-bar-fill" id="progressBar"></div>
   </div>
 
   <nav class="top-nav">
@@ -58,869 +208,776 @@
 
   <div class="page">
 
-    <!-- ══════════════════════════════════════════
-         HERO
-    ══════════════════════════════════════════ -->
+    <!-- HERO -->
     <div class="hero">
       <div class="hero-eyebrow">
-        <span>🐙 GitHub · 02 · Prioridade 1</span>
-        <span class="hero-badge">Aula 02 — Base Universal</span>
+        <span>🐙 GitHub</span>
+        <span class="hero-badge">Aula 02</span>
       </div>
       <h1>Git — Branches, Merge & Conflitos</h1>
       <div class="hero-meta">
-        <span>⏱ ~30 min de leitura</span>
-        <span>🎯 Requer Aula 01</span>
+        <span>⏱ ~40 min de leitura</span>
+        <span>🎯 Fundamentos → Intermediário</span>
         <span>🔧 Hands-on incluído</span>
-        <span>💥 Inclui resolução de conflitos</span>
       </div>
       <div class="hero-tags">
-        <span class="tag">git branch</span>
-        <span class="tag">git merge</span>
-        <span class="tag">git switch</span>
-        <span class="tag">git stash</span>
-        <span class="tag">git restore</span>
-        <span class="tag">git reset</span>
-        <span class="tag">git revert</span>
-        <span class="tag">conflitos</span>
+        <span class="tag accent">branch</span>
+        <span class="tag accent">merge</span>
+        <span class="tag accent">conflitos</span>
+        <span class="tag">checkout</span>
+        <span class="tag">rebase</span>
+        <span class="tag">stash</span>
+        <span class="tag">reset</span>
+        <span class="tag">desfazer mudanças</span>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         1. POR QUE ISSO IMPORTA
-    ══════════════════════════════════════════ -->
+    <!-- 1. POR QUE IMPORTA -->
     <div class="section">
-      <div class="section-label">// 01 — motivação</div>
+      <div class="section-label">// motivação</div>
       <h2>Por que isso importa?</h2>
       <p>
-        A aula anterior te deu o básico de commits. Mas trabalhar em projeto real tem um problema sério:
-        você precisa desenvolver uma nova feature sem quebrar o que já funciona, enquanto corrige um bug urgente,
-        enquanto um colega trabalha no mesmo arquivo. Sem branches, isso é impossível.
+        Branches são o coração do desenvolvimento colaborativo. Elas permitem que você (e seu time) trabalhem em múltiplas funcionalidades ao mesmo tempo — sem nunca tocar no código estável em produção. É o que possibilita que 50 engenheiros trabalhem no mesmo repositório simultaneamente, cada um em sua própria linha do tempo de código.
       </p>
       <p>
-        Branches são o que transformam o Git de uma ferramenta de backup em uma <strong>plataforma de
-          colaboração</strong>.
-        Toda empresa de tecnologia opera com branches — entender merge e resolução de conflitos é
-        o que separa quem usa Git de quem <em>domina</em> Git.
+        Saber resolver conflitos de merge é uma habilidade que distingue devs júnior de pleno. Conflitos são inevitáveis em qualquer time real — e abordá-los com calma e método, em vez de entrar em pânico, é sinal de maturidade técnica.
       </p>
-
       <div class="callout callout-info">
-        <div class="callout-title">💼 Por que um engenheiro sênior usa isso hoje</div>
-        Em qualquer time profissional, <code>main</code> é protegida — ninguém commita direto nela.
-        Todo trabalho acontece em branches: <code>feat/user-auth</code>, <code>fix/login-crash</code>,
-        <code>chore/update-deps</code>. Quando a feature está pronta, abre-se um Pull Request,
-        outro engenheiro revisa, e o merge acontece de forma controlada. Saber resolver conflitos
-        rápido e sem estresse é uma das habilidades mais valorizadas em code reviews.
+        <div class="callout-title">💼 Por que um engenheiro sênior domina branches profundamente</div>
+        Times sêniors têm estratégias de branching bem definidas (GitHub Flow, GitFlow, trunk-based development). Cada pull request é uma branch. Saber criar, navegar, mergear e resolver conflitos com fluidez é pré-requisito para contribuir em qualquer codebase profissional. E <code>git rebase</code>, <code>git stash</code> e <code>git reset</code> são ferramentas que sêniors usam diariamente para manter o histórico limpo.
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         2. ANALOGIA
-    ══════════════════════════════════════════ -->
+    <!-- 2. ANALOGIA -->
     <div class="section">
-      <div class="section-label">// 02 — analogia</div>
-      <h2>Antes do código: a linha do tempo paralela</h2>
-
+      <div class="section-label">// analogia</div>
+      <h2>Antes do código: uma analogia</h2>
       <div class="analogy-card">
-        <div class="analogy-label">🎬 Mundo Real → Git</div>
+        <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
         <div class="analogy-text">
-          Imagine que você está escrevendo um roteiro de filme. Você tem a versão principal já aprovada —
-          o <strong>rascunho final</strong>. Agora o diretor pede para você testar um final alternativo,
-          mas sem apagar o original. Você <strong>tira uma fotocópia</strong> e trabalha nela.
+          Imagine um <strong>estúdio de música</strong> gravando um álbum. A faixa principal (<code>main</code>) já está gravada e aprovada. Mas o produtor quer testar uma versão com guitarra elétrica, o vocalista quer experimentar uma linha de voz diferente, e o baterista quer adicionar um solo novo — tudo ao mesmo tempo, sem destruir a versão oficial.
           <br><br>
-          Se o final alternativo for aprovado, você <strong>mescla</strong> as mudanças de volta ao original.
-          Se não funcionar, simplesmente descarta a cópia. O original nunca foi tocado.
-          <br><br>
-          Quando dois roteiristas editam a mesma cena ao mesmo tempo e as versões são incompatíveis,
-          alguém precisa sentar e decidir qual versão prevalece — isso é resolver um <strong>conflito de merge</strong>.
+          Cada músico trabalha em sua <strong>própria trilha isolada</strong> (branch). Se o experimento funcionar, a trilha é <strong>mixada de volta</strong> na faixa principal (merge). Se não funcionar, a trilha é simplesmente descartada, sem nenhum dano ao álbum original. E quando duas trilhas têm notas que batem exatamente no mesmo lugar, o produtor precisa <strong>decidir qual versão usar</strong> — isso é um conflito de merge.
         </div>
         <div class="analogy-mapping">
-          <span class="analogy-real">Rascunho principal aprovado</span>
-          <span class="analogy-arrow">→</span>
-          <span class="analogy-tech">branch main</span>
-
-          <span class="analogy-real">Tirar uma fotocópia para editar</span>
-          <span class="analogy-arrow">→</span>
-          <span class="analogy-tech">git checkout -b minha-feature</span>
-
-          <span class="analogy-real">Mesclar de volta ao original</span>
-          <span class="analogy-arrow">→</span>
-          <span class="analogy-tech">git merge</span>
-
-          <span class="analogy-real">Dois roteiristas editando a mesma cena</span>
-          <span class="analogy-arrow">→</span>
-          <span class="analogy-tech">conflito de merge</span>
-
-          <span class="analogy-real">Guardar rascunho inacabado na gaveta</span>
-          <span class="analogy-arrow">→</span>
-          <span class="analogy-tech">git stash</span>
+          <span class="analogy-real">🎵 Faixa principal aprovada</span>
+          <span class="analogy-tech">→ branch <code>main</code></span>
+          <span class="analogy-real">🎸 Trilha experimental isolada</span>
+          <span class="analogy-tech">→ feature branch</span>
+          <span class="analogy-real">🎚️ Mixar trilha na faixa principal</span>
+          <span class="analogy-tech">→ <code>git merge</code></span>
+          <span class="analogy-real">🎯 Duas notas batem no mesmo lugar</span>
+          <span class="analogy-tech">→ Conflito de merge</span>
         </div>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         3. CONCEITO: BRANCHES
-    ══════════════════════════════════════════ -->
+    <!-- 3. O QUE É UMA BRANCH -->
     <div class="section">
-      <div class="section-label">// 03 — conceito</div>
-      <h2>O que é uma branch — de verdade</h2>
-
+      <div class="section-label">// conceito 1</div>
+      <h2>O que é uma branch — internamente</h2>
       <p>
-        Uma branch no Git não é uma cópia de arquivos. É simplesmente um <strong>ponteiro leve para um commit</strong>.
-        Quando você cria uma branch, o Git cria apenas um arquivo de ~41 bytes com o hash do commit atual.
-        É por isso que criar branches no Git é instantâneo, ao contrário de outros sistemas de versão.
+        Uma branch no Git é simplesmente um <strong>ponteiro leve para um commit</strong>. Nada mais. Não é uma cópia dos arquivos — é apenas um arquivo de texto com o hash de um commit. Isso torna branches em Git incrivelmente baratas e rápidas de criar.
       </p>
       <p>
-        O <strong>HEAD</strong> é um ponteiro especial que diz ao Git em qual branch (e commit) você está trabalhando
-        agora.
+        <code>HEAD</code> é o ponteiro especial que indica em qual branch (ou commit) você está trabalhando agora. Quando você faz um commit em uma branch, o ponteiro dessa branch avança automaticamente para o novo commit.
       </p>
 
-      <div class="diagram-wrap">
-        <div class="diagram-label">// branches são ponteiros para commits</div>
-        <svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg" font-family="JetBrains Mono, monospace">
-          <defs>
-            <marker id="a1" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
-              <path d="M0,0 L0,6 L7,3 z" fill="#58a6ff" />
-            </marker>
-            <marker id="a2" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
-              <path d="M0,0 L0,6 L7,3 z" fill="#10b981" />
-            </marker>
-            <marker id="a3" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
-              <path d="M0,0 L0,6 L7,3 z" fill="#f59e0b" />
-            </marker>
-          </defs>
-
-          <!-- Commits na linha do tempo -->
-          <circle cx="60" cy="100" r="22" fill="rgba(88,166,255,0.12)" stroke="rgba(88,166,255,0.5)"
-            stroke-width="1.5" />
-          <text x="60" y="105" text-anchor="middle" fill="#79c0ff" font-size="10">C1</text>
-          <circle cx="160" cy="100" r="22" fill="rgba(88,166,255,0.12)" stroke="rgba(88,166,255,0.5)"
-            stroke-width="1.5" />
-          <text x="160" y="105" text-anchor="middle" fill="#79c0ff" font-size="10">C2</text>
-          <circle cx="260" cy="100" r="22" fill="rgba(88,166,255,0.12)" stroke="rgba(88,166,255,0.5)"
-            stroke-width="1.5" />
-          <text x="260" y="105" text-anchor="middle" fill="#79c0ff" font-size="10">C3</text>
-
-          <!-- Branch feature saindo de C2 -->
-          <circle cx="360" cy="40" r="22" fill="rgba(16,185,129,0.12)" stroke="rgba(16,185,129,0.5)"
-            stroke-width="1.5" />
-          <text x="360" y="45" text-anchor="middle" fill="#6ee7b7" font-size="10">F1</text>
-          <circle cx="460" cy="40" r="22" fill="rgba(16,185,129,0.12)" stroke="rgba(16,185,129,0.5)"
-            stroke-width="1.5" />
-          <text x="460" y="45" text-anchor="middle" fill="#6ee7b7" font-size="10">F2</text>
-
-          <!-- Commit main avançando -->
-          <circle cx="360" cy="100" r="22" fill="rgba(88,166,255,0.12)" stroke="rgba(88,166,255,0.5)"
-            stroke-width="1.5" />
-          <text x="360" y="105" text-anchor="middle" fill="#79c0ff" font-size="10">C4</text>
-
-          <!-- Merge commit -->
-          <circle cx="560" cy="100" r="24" fill="rgba(168,85,247,0.18)" stroke="rgba(168,85,247,0.7)"
-            stroke-width="2" />
-          <text x="560" y="105" text-anchor="middle" fill="#d8b4fe" font-size="10">M</text>
-
-          <!-- Arrows linha main -->
-          <path d="M83 100 L137 100" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#a1)" />
-          <path d="M183 100 L237 100" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#a1)" />
-          <path d="M283 100 L337 100" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#a1)" />
-          <path d="M383 100 L535 100" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#a1)" />
-
-          <!-- Arrow C2 → branch feature (diagonal) -->
-          <path d="M275 82 L337 55" stroke="#10b981" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#a2)" />
-          <path d="M383 40  L437 40" stroke="#10b981" stroke-width="1.5" marker-end="url(#a2)" />
-          <!-- Arrow feature → merge -->
-          <path d="M482 50  L542 85" stroke="#10b981" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#a2)" />
-
-          <!-- Labels de branch -->
-          <rect x="220" y="130" width="56" height="20" rx="4" fill="rgba(88,166,255,0.1)" stroke="rgba(88,166,255,0.3)"
-            stroke-width="1" />
-          <text x="248" y="144" text-anchor="middle" fill="#79c0ff" font-size="9" font-weight="700">main</text>
-
-          <rect x="418" y="12" width="84" height="20" rx="4" fill="rgba(16,185,129,0.1)" stroke="rgba(16,185,129,0.3)"
-            stroke-width="1" />
-          <text x="460" y="26" text-anchor="middle" fill="#6ee7b7" font-size="9" font-weight="700">feat/login</text>
-
-          <!-- HEAD pointer -->
-          <rect x="530" y="132" width="60" height="20" rx="4" fill="rgba(245,158,11,0.15)" stroke="rgba(245,158,11,0.4)"
-            stroke-width="1" />
-          <text x="560" y="146" text-anchor="middle" fill="#fcd34d" font-size="9" font-weight="700">HEAD</text>
-          <path d="M560 132 L560 125" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#a3)" />
-
-          <!-- Labels merge commit -->
-          <text x="560" y="148" text-anchor="middle" fill="#d8b4fe" font-size="9"></text>
-          <text x="620" y="100" fill="#8585a8" font-size="10">Merge</text>
-          <text x="620" y="113" fill="#8585a8" font-size="10">commit</text>
-        </svg>
-      </div>
-
-      <h3>Os tipos de merge</h3>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Tipo</th>
-              <th>Quando ocorre</th>
-              <th>Histórico</th>
-              <th>Quando usar</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Fast-forward</strong></td>
-              <td class="td-neu">main não avançou desde o branch</td>
-              <td class="td-pro">Linear, sem commit extra</td>
-              <td class="td-neu">Features simples, commits recentes</td>
-            </tr>
-            <tr>
-              <td><strong>Merge commit</strong></td>
-              <td class="td-neu">main e branch divergiram</td>
-              <td class="td-neu">Preserva contexto de quando as coisas foram mergeadas</td>
-              <td class="td-neu">Padrão do GitHub ao fechar PRs</td>
-            </tr>
-            <tr>
-              <td><strong>Squash merge</strong></td>
-              <td class="td-neu">Branch com muitos commits bagunçados</td>
-              <td class="td-pro">Comprime tudo num único commit limpo</td>
-              <td class="td-neu">Features com histórico de WIP descartável</td>
-            </tr>
-            <tr>
-              <td><strong>Rebase + merge</strong></td>
-              <td class="td-neu">Quer histórico totalmente linear</td>
-              <td class="td-pro">Sem merge commits, árvore limpa</td>
-              <td class="td-warn">Times que valorizam histórico linear</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ══════════════════════════════════════════
-         4. HANDS-ON: BRANCHES
-    ══════════════════════════════════════════ -->
-    <div class="section">
-      <div class="section-label">// 04 — mãos na massa: branches</div>
-      <h2>Criando e navegando entre branches</h2>
-
-      <div class="steps">
-
-        <div class="step">
-          <div class="step-num">1</div>
-          <div class="step-body">
-            <div class="step-title">Crie uma branch para sua feature</div>
-            <div class="step-desc">
-              Sempre crie branches a partir da <code>main</code> atualizada.
-              O padrão de nomenclatura <code>tipo/descricao-curta</code> é usado em 90% dos times profissionais.
-            </div>
-            <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
-              </div>
-              <pre><code class="language-bash"># Ver branches existentes (o * indica onde você está)
-git branch
-
-# Criar branch e já entrar nela — forma moderna
-git switch -c feat/adicionar-contato
-
-# Forma antiga (ainda muito usada, funciona igual)
-git checkout -b feat/adicionar-contato
-
-# Confirmar que você está na nova branch
-git branch
-# Saída:
-#   main
-# * feat/adicionar-contato</code></pre>
-            </div>
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="step-num">2</div>
-          <div class="step-body">
-            <div class="step-title">Trabalhe na branch e faça commits</div>
-            <div class="step-desc">
-              Tudo que você commitar aqui fica isolado — a <code>main</code> não é afetada.
-            </div>
-            <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
-              </div>
-              <pre><code class="language-bash"># Crie ou edite arquivos normalmente
-echo "Nome: João · Email: joao&#64;exemplo.com" > contato.txt
-
-git add contato.txt
-git commit -m "feat: add contact page with basic info"
-
-# Faça mais um commit
-echo "Tel: (11) 99999-9999" >> contato.txt
-git add contato.txt
-git commit -m "feat: add phone number to contact"
-
-# Ver o log da branch atual
-git log --oneline</code></pre>
-            </div>
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="step-num">3</div>
-          <div class="step-body">
-            <div class="step-title">Volte para main e faça o merge</div>
-            <div class="step-desc">
-              Primeiro você vai para a branch de destino, depois faz o merge da branch de origem.
-              A direção é importante: você "puxa" a branch para dentro da atual.
-            </div>
-            <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
-              </div>
-              <pre><code class="language-bash"># Voltar para a main
-git switch main
-
-# Verificar que contato.txt NÃO existe aqui ainda
-ls
-
-# Fazer o merge
-git merge feat/adicionar-contato
-
-# Se for fast-forward, saída será:
-# Updating a3f9c21..d8e4f12
-# Fast-forward
-#  contato.txt | 2 +++
-
-# Depois do merge, contato.txt agora existe na main
-ls
-
-# Deletar a branch (trabalho concluído)
-git branch -d feat/adicionar-contato</code></pre>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ══════════════════════════════════════════
-         5. CONFLITOS DE MERGE
-    ══════════════════════════════════════════ -->
-    <div class="section">
-      <div class="section-label">// 05 — conflitos</div>
-      <h2>Resolvendo conflitos — sem pânico</h2>
-
-      <p>
-        Um conflito acontece quando duas branches modificaram a <strong>mesma linha do mesmo arquivo</strong>
-        de formas diferentes. O Git não sabe qual versão você quer — então ele para e pede que você decida.
-        Não é erro, é uma feature.
-      </p>
-
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Conflito não é catástrofe</div>
-        Engenheiros iniciantes ficam com medo de conflitos. Seniores encaram como parte normal do trabalho.
-        Um conflito significa que duas pessoas estavam trabalhando produtivamente no mesmo código —
-        é um sinal de colaboração, não de falha.
-      </div>
-
-      <p>Quando um conflito ocorre, o Git insere marcadores no arquivo para mostrar as duas versões:</p>
-
-      <div class="conflict-block">
-        <div class="conflict-header">⚠️ contato.txt — CONFLITO DE MERGE</div>
-        <div class="conflict-line conflict-mine">
-          &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD (sua versão — branch atual)<br>
-          Nome: João · Email: joao&#64;exemplo.com<br>
-          Tel: (11) 99999-9999
-        </div>
-        <div class="conflict-line conflict-sep">
-          ======= (separador)
-        </div>
-        <div class="conflict-line conflict-theirs">
-          Nome: João Silva · Email: joao.silva&#64;empresa.com<br>
-          Tel: (11) 88888-8888<br>
-          LinkedIn: linkedin.com/in/joaosilva
-          <br><br>
-          &gt;&gt;&gt;&gt;&gt;&gt;&gt; feat/atualizar-contato (versão deles — branch que está sendo mergeada)
-        </div>
-      </div>
-
-      <div class="steps">
-
-        <div class="step">
-          <div class="step-num">1</div>
-          <div class="step-body">
-            <div class="step-title">Identifique todos os arquivos em conflito</div>
-            <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
-              </div>
-              <pre><code class="language-bash"># Git mostra o status com os conflitos
-git status
-
-# Saída:
-# both modified:   contato.txt
-# Unmerged paths:
-#   (use "git add ..." to mark resolution)
-#     both modified:   contato.txt</code></pre>
-            </div>
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="step-num">2</div>
-          <div class="step-body">
-            <div class="step-title">Abra o arquivo e escolha o que manter</div>
-            <div class="step-desc">
-              Edite o arquivo manualmente: remova os marcadores <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>,
-              <code>=======</code> e <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code> e deixe apenas o conteúdo final desejado.
-              Você pode manter uma versão, a outra, ou combinar as duas.
-            </div>
-            <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">contato.txt — após resolução</span><span
-                  class="code-lang">texto</span></div>
-              <pre><code class="language-bash"># Versão final que você decidiu manter (sem marcadores):
-Nome: João Silva · Email: joao.silva&#64;empresa.com
-Tel: (11) 99999-9999
-LinkedIn: linkedin.com/in/joaosilva</code></pre>
-            </div>
-            <div class="callout callout-tip">
-              <div class="callout-title">🔥 Pro tip — VS Code resolve conflitos com cliques</div>
-              O VS Code destaca os conflitos com botões visuais:
-              <strong>Accept Current Change</strong> (HEAD),
-              <strong>Accept Incoming Change</strong> (branch mergeada),
-              <strong>Accept Both Changes</strong>, ou <strong>Compare Changes</strong>.
-              Você raramente precisa editar os marcadores manualmente.
-            </div>
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="step-num">3</div>
-          <div class="step-body">
-            <div class="step-title">Marque como resolvido e finalize o merge</div>
-            <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
-              </div>
-              <pre><code class="language-bash"># Após editar o arquivo, marque como resolvido
-git add contato.txt
-
-# Confirme que não há mais conflitos
-git status
-
-# Finalize o merge com um commit
-git commit -m "merge: resolve contact info conflict, keep linkedin field"
-
-# Ver o resultado no histórico
-git log --oneline --graph --all</code></pre>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ══════════════════════════════════════════
-         6. DESFAZENDO MUDANÇAS
-    ══════════════════════════════════════════ -->
-    <div class="section">
-      <div class="section-label">// 06 — desfazendo mudanças</div>
-      <h2>Desfazendo mudanças — a ferramenta certa para cada situação</h2>
-
-      <p>
-        Git tem três comandos diferentes para desfazer coisas. Usar o errado pode causar dor de cabeça.
-        A regra de ouro: <strong>nunca reescreva história que já foi pushed para o remote</strong>.
-      </p>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Comando</th>
-              <th>O que faz</th>
-              <th>Seguro em remote?</th>
-              <th>Quando usar</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>git restore</code></td>
-              <td class="td-neu">Descarta mudanças no working directory (não commitadas)</td>
-              <td class="td-pro">✓ Não mexe em commits</td>
-              <td class="td-neu">Jogou fora edições indesejadas antes de commitar</td>
-            </tr>
-            <tr>
-              <td><code>git reset --soft</code></td>
-              <td class="td-neu">Move HEAD para commit anterior, mantém mudanças na staging</td>
-              <td class="td-warn">⚠️ Só em branches locais</td>
-              <td class="td-neu">Quer refazer o commit com mensagem melhor</td>
-            </tr>
-            <tr>
-              <td><code>git reset --hard</code></td>
-              <td class="td-neu">Move HEAD E descarta todas as mudanças</td>
-              <td class="td-con">✗ Nunca em commits pushados</td>
-              <td class="td-neu">Quer apagar completamente os últimos commits locais</td>
-            </tr>
-            <tr>
-              <td><code>git revert</code></td>
-              <td class="td-neu">Cria um <em>novo</em> commit que desfaz um commit anterior</td>
-              <td class="td-pro">✓ Sempre seguro</td>
-              <td class="td-neu">Desfazer mudança que já foi para o remote/main</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="code-wrap">
-        <div class="code-header"><span class="code-filename">desfazendo-mudancas.sh</span><span
-            class="code-lang">bash</span></div>
-        <pre><code class="language-bash">### ─── ANTES DE COMMITAR ──────────────────────────────
-# Descartar mudanças em um arquivo específico
-git restore contato.txt
-
-# Descartar TUDO no working directory (cuidado!)
-git restore .
-
-# Remover um arquivo da staging (sem perder as edições)
-git restore --staged contato.txt
-
-
-### ─── APÓS COMMITAR (local, não pushed) ──────────────
-# Desfazer o último commit MAS manter as mudanças na staging
-git reset --soft HEAD~1
-
-# Desfazer o último commit MAS manter as mudanças no working dir
-git reset HEAD~1
-
-# Desfazer os últimos 2 commits E apagar as mudanças (PERIGOSO)
-git reset --hard HEAD~2
-
-
-### ─── APÓS PUSHED (seguro, não reescreve história) ───
-# Criar um commit que desfaz o commit abc1234
-git revert abc1234
-
-# Revert sem abrir o editor de mensagem
-git revert abc1234 --no-edit</code></pre>
-      </div>
-    </div>
-
-    <!-- ══════════════════════════════════════════
-         7. STASH — GAVETA DE RASCUNHOS
-    ══════════════════════════════════════════ -->
-    <div class="section">
-      <div class="section-label">// 07 — stash</div>
-      <h2>git stash — a gaveta de rascunhos</h2>
-
-      <p>
-        Você está no meio de uma feature, working directory cheio de mudanças, quando chega um bug urgente
-        para corrigir em outra branch. Você não pode commitar um trabalho incompleto, e não quer perder tudo.
-        É exatamente para isso que existe o <code>git stash</code>.
-      </p>
-
+      <!-- Branch visual antes do merge -->
       <div class="mermaid-wrap">
-        <div class="mermaid-label">// fluxo típico de uso do stash</div>
-        <pre class="mermaid">
-          sequenceDiagram
-          participant WD as Working Dir
-          participant ST as Stash
-          participant BR as Branch fix/bug
-
-          Note over WD: Trabalhando em feat/nova-feature
-          WD->>ST: git stash (guarda rascunho)
-          Note over WD: Working dir limpo
-          WD->>BR: git switch fix/bug
-          Note over BR: Corrige bug urgente, commita
-          BR->>WD: git switch feat/nova-feature
-          ST->>WD: git stash pop (recupera rascunho)
-          Note over WD: Continua de onde parou
-        </pre>
-      </div>
-
-      <div class="code-wrap">
-        <div class="code-header"><span class="code-filename">git-stash-guia.sh</span><span class="code-lang">bash</span>
+        <div class="mermaid-label">// branches como ponteiros para commits</div>
+        <div class="mermaid">
+gitGraph
+   commit id: "chore: init"
+   commit id: "feat: auth base"
+   branch feature/login
+   checkout feature/login
+   commit id: "feat: login form"
+   commit id: "feat: validação"
+   checkout main
+   commit id: "fix: typo README"
+   branch hotfix/crash
+   checkout hotfix/crash
+   commit id: "fix: null pointer"
+   checkout main
+   merge hotfix/crash id: "merge hotfix"
         </div>
-        <pre><code class="language-bash"># Guardar mudanças no stash (com descrição — sempre use!)
-git stash push -m "feat: metade da página de contato implementada"
-
-# Ver o que está na gaveta
-git stash list
-# stash@{0}: On feat/contato: feat: metade da página de contato implementada
-# stash@{1}: On main: wip: testando nova config
-
-# Recuperar o stash mais recente (e remove da lista)
-git stash pop
-
-# Recuperar um stash específico (sem remover da lista)
-git stash apply stash@{1}
-
-# Ver o que está num stash sem aplicar
-git stash show stash@{0} -p
-
-# Deletar um stash específico
-git stash drop stash@{1}
-
-# Limpar todos os stashes
-git stash clear</code></pre>
       </div>
 
       <div class="callout callout-tip">
-        <div class="callout-title">🔥 Pro tip — stash também salva arquivos novos</div>
-        Por padrão, <code>git stash</code> não guarda arquivos untracked (novos).
-        Use <code>git stash push -u</code> para incluir arquivos novos também.
-        Use <code>git stash push -a</code> para incluir até arquivos no <code>.gitignore</code>.
+        <div class="callout-title">🔥 Branches são baratas — crie sem medo</div>
+        Em Git, criar uma branch é criar um arquivo de 41 bytes. Custa praticamente zero. A filosofia do Git é: crie uma branch para cada tarefa, por menor que seja. Isso mantém o <code>main</code> sempre estável e o histórico organizado.
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         8. ESTRATÉGIAS DE BRANCH
-    ══════════════════════════════════════════ -->
+    <!-- 4. COMANDOS DE BRANCH -->
     <div class="section">
-      <div class="section-label">// 08 — estratégias</div>
-      <h2>Estratégias de branch — como os times se organizam</h2>
+      <div class="section-label">// conceito 2</div>
+      <h2>Criando e navegando em branches</h2>
 
-      <div class="strategies">
-        <div class="strategy-card">
-          <div class="strategy-icon">🌊</div>
-          <div class="strategy-name">GitHub Flow</div>
-          <div class="strategy-desc">
-            Só <code>main</code> + branches de feature. Simples e direto.
-            Feature pronta → PR → merge → deploy imediato.
-          </div>
-          <div class="strategy-best">Ideal para: SaaS, deploy contínuo, times ágeis</div>
-        </div>
-        <div class="strategy-card">
-          <div class="strategy-icon">🌲</div>
-          <div class="strategy-name">Git Flow</div>
-          <div class="strategy-desc">
-            <code>main</code>, <code>develop</code>, <code>feature/*</code>, <code>release/*</code>,
-            <code>hotfix/*</code>.
-            Mais controle, mais cerimônia.
-          </div>
-          <div class="strategy-best">Ideal para: produtos com releases versionadas</div>
-        </div>
-        <div class="strategy-card">
-          <div class="strategy-icon">🛤️</div>
-          <div class="strategy-name">Trunk-Based</div>
-          <div class="strategy-desc">
-            Todo mundo commita direto na <code>main</code> (ou branches curtíssimas de 1-2 dias).
-            Feature flags controlam o que está ativo.
-          </div>
-          <div class="strategy-best">Ideal para: grandes times com CI/CD maduro</div>
-        </div>
-      </div>
+      <div class="code-label">// tudo sobre branches — do básico ao avançado</div>
+      <pre><code class="language-bash"># ── Listar branches ────────────────────────────────────────────
+git branch              # branches locais (* = branch atual)
+git branch -r           # branches remotas
+git branch -a           # todas (locais + remotas)
+git branch -v           # mostra último commit de cada branch
 
-      <div class="callout callout-check">
-        <div class="callout-title">✅ Qual usar agora?</div>
-        Para 90% dos projetos pessoais e profissionais: <strong>GitHub Flow</strong>.
-        É o que o próprio GitHub usa. Simples de entender, fácil de executar, funciona muito bem.
+# ── Criar branch ───────────────────────────────────────────────
+git branch feature/login           # cria mas NÃO muda para ela
+git checkout -b feature/login      # cria E muda — forma clássica
+git switch -c feature/login        # cria E muda — forma moderna (Git 2.23+)
+
+# ── Navegar entre branches ────────────────────────────────────
+git checkout main                  # muda para a branch main (clássico)
+git switch main                    # muda para main (moderno)
+git switch -                       # volta para a branch anterior (útil!)
+
+# ── Renomear branch ───────────────────────────────────────────
+git branch -m nome-antigo nome-novo   # renomeia branch local
+git branch -m novo-nome               # renomeia a branch atual
+
+# ── Deletar branch ────────────────────────────────────────────
+git branch -d feature/login        # deleta (só se já foi merged — seguro)
+git branch -D feature/login        # força deleção (mesmo sem merge — cuidado!)
+
+# ── Ver relação entre branches ────────────────────────────────
+git log --oneline --graph --all    # visualiza todas as branches no terminal
+git branch --merged                # branches já mergeadas em main (podem ser deletadas)
+git branch --no-merged             # branches ainda não mergeadas
+</code></pre>
+
+      <h3>Convenções de nomenclatura</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Padrão</th><th>Uso</th><th>Exemplos</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>feature/</code></td><td>Novas funcionalidades</td><td><code>feature/login-google</code>, <code>feature/carrinho</code></td></tr>
+            <tr><td><code>fix/</code></td><td>Correção de bugs não urgentes</td><td><code>fix/validacao-email</code>, <code>fix/cache-header</code></td></tr>
+            <tr><td><code>hotfix/</code></td><td>Correções urgentes em produção</td><td><code>hotfix/null-pointer</code>, <code>hotfix/sql-injection</code></td></tr>
+            <tr><td><code>chore/</code></td><td>Tarefas de manutenção</td><td><code>chore/atualiza-deps</code>, <code>chore/ci-setup</code></td></tr>
+            <tr><td><code>docs/</code></td><td>Documentação</td><td><code>docs/api-reference</code>, <code>docs/readme</code></td></tr>
+            <tr><td><code>refactor/</code></td><td>Refatoração sem nova feature</td><td><code>refactor/extrai-servico-auth</code></td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         9. CÓDIGO COMPLETO — REFERÊNCIA DIÁRIA
-    ══════════════════════════════════════════ -->
+    <!-- 5. MERGE -->
     <div class="section">
-      <div class="section-label">// 09 — referência</div>
-      <h2>Referência rápida — o que você vai usar todo dia</h2>
-
-      <div class="code-wrap">
-        <div class="code-header"><span class="code-filename">git-branches-cheatsheet.sh</span><span
-            class="code-lang">bash</span></div>
-        <pre><code class="language-bash">### ─── BRANCHES ──────────────────────────────────────
-git branch                       # listar branches locais
-git branch -a                    # listar locais + remotas
-git switch main                  # trocar de branch
-git switch -c feat/minha-feature # criar e entrar
-git branch -d feat/concluida     # deletar (seguro — falha se não mergeado)
-git branch -D feat/abandonada    # deletar à força
-
-### ─── MERGE ──────────────────────────────────────────
-git merge feat/minha-feature     # merge normal
-git merge --no-ff feat/feature   # força merge commit (sem fast-forward)
-git merge --squash feat/feature  # comprime todos os commits em um
-git merge --abort                # cancela merge com conflito
-
-### ─── DESFAZENDO ────────────────────────────────────
-git restore arquivo.txt          # descarta edição (working dir)
-git restore --staged arquivo.txt # remove da staging
-git reset --soft HEAD~1          # desfaz commit, mantém na staging
-git reset HEAD~1                 # desfaz commit, mantém no working dir
-git reset --hard HEAD~1          # desfaz commit E apaga mudanças
-git revert abc1234               # cria commit que desfaz (seguro no remote)
-
-### ─── STASH ──────────────────────────────────────────
-git stash push -m "descrição"    # guardar rascunho
-git stash list                   # ver gaveta
-git stash pop                    # recuperar + remover
-git stash apply stash@{0}        # recuperar sem remover
-git stash drop stash@{0}         # deletar item da gaveta
-
-### ─── DIAGNÓSTICO ───────────────────────────────────
-git log --oneline --graph --all  # histórico visual completo
-git diff main..feat/feature      # diferença entre duas branches
-git branch --merged              # branches já mergeadas (podem ser deletadas)
-git branch --no-merged           # branches ainda não mergeadas</code></pre>
-      </div>
-    </div>
-
-    <!-- ══════════════════════════════════════════
-         10. PITFALLS
-    ══════════════════════════════════════════ -->
-    <div class="section">
-      <div class="section-label">// 10 — armadilhas</div>
-      <h2>Erros clássicos com branches</h2>
-
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ git reset --hard em commits já pushed</div>
-        <p>Se você fez <code>reset --hard</code> em commits que já foram para o GitHub, a sua branch local e a remota
-          divergiram. Forçar um <code>git push --force</code> pode apagar trabalho de colegas. Use sempre
-          <code>git revert</code> para desfazer coisas públicas.
-        </p>
-      </div>
-
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Branches de longa duração acumulam conflitos</div>
-        <p>Quanto mais tempo uma branch fica sem sincronizar com a <code>main</code>, mais conflitos você vai ter no
-          merge. A solução: faça <code>git merge main</code> (ou <code>git rebase main</code>) periodicamente na sua
-          feature branch para trazer as mudanças mais recentes.</p>
-      </div>
-
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Criar branches a partir de outra branch (que não é main)</div>
-        <p>Se você criar <code>feat/b</code> a partir de <code>feat/a</code>, você vai incluir todos os commits de
-          <code>feat/a</code> quando fizer o merge de <code>feat/b</code>. Sempre crie branches a partir da
-          <code>main</code> atualizada, a não ser que haja dependência explícita.
-        </p>
-      </div>
-
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Esquecer que stash é global, não por branch</div>
-        <p>O <code>git stash</code> não pertence a uma branch — ele fica numa pilha global. Se você fizer stash na
-          <code>feat/a</code> e aplicar na <code>main</code>, vai funcionar (e pode causar confusão). Sempre adicione
-          uma mensagem descritiva ao stash.
-        </p>
-      </div>
-    </div>
-
-    <!-- ══════════════════════════════════════════
-         11. VÍDEOS
-    ══════════════════════════════════════════ -->
-    <div class="section">
-      <div class="section-label">// 11 — curadoria</div>
-      <h2>Referências em vídeo</h2>
-
-      <div class="videos-grid">
-        <a class="video-card" href="https://www.youtube.com/watch?v=Q1kHG842HoI" target="_blank">
-          <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title">Git Branching and Merging</div>
-            <div class="video-channel">SuperSimpleDev · ~54 min</div>
-            <div class="video-why">Por que assistir: Explicação visual completa de branches, merge e resolução de
-              conflitos com exemplos reais no terminal.</div>
-            <span class="video-watch">Assistir →</span>
-          </div>
-        </a>
-
-        <a class="video-card" href="https://www.youtube.com/watch?v=-xxhkAPJZPY" target="_blank">
-          <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title">Merge conflicts | Como resolver os conflitos do jeito mais simples</div>
-            <div class="video-channel">Refúgio Code · ~24 min</div>
-            <div class="video-why">Por que assistir: Desmistifica conflitos de forma prática e mostra como usar o VS
-              Code para resolvê-los sem stress.</div>
-            <span class="video-watch">Assistir →</span>
-          </div>
-        </a>
-
-        <a class="video-card" href="https://www.youtube.com/watch?v=0chZFIZLR_0" target="_blank">
-          <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title">Git MERGE vs REBASE: Everything You Need to Know</div>
-            <div class="video-channel">ByteByteGo · ~4 min</div>
-            <div class="video-why">Por que assistir: Explica visualmente a diferença entre merge e rebase — quando usar
-              cada estratégia e qual preserva ou reescreve o histórico.</div>
-            <span class="video-watch">Assistir →</span>
-          </div>
-        </a>
-
-        <a class="video-card" href="https://www.youtube.com/watch?v=Uszj_k0DGsg" target="_blank">
-          <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title">Tutorial Git Para Profissionais</div>
-            <div class="video-channel">freeCodeCamp · ~40 min</div>
-            <div class="video-why">Por que assistir: Comparação clara das estratégias de branch com exemplos de times
-              reais. Essencial para trabalhar em equipe.</div>
-            <span class="video-watch">Assistir →</span>
-          </div>
-        </a>
-      </div>
-    </div>
-
-    <!-- ══════════════════════════════════════════
-         12. CHECKPOINT
-    ══════════════════════════════════════════ -->
-    <div class="checkpoint">
-      <div class="checkpoint-label">// 12 — desafio</div>
-      <h3>🏁 Checkpoint — simule um fluxo de trabalho real</h3>
-      <p>Use o repositório criado na Aula 01 (<code>checkpoint-git</code>) ou crie um novo. Execute este fluxo completo:
+      <div class="section-label">// conceito 3</div>
+      <h2>Merge — unindo históricos</h2>
+      <p>
+        Merge integra o histórico de uma branch em outra. Existem dois tipos principais, e o Git escolhe automaticamente o mais adequado — mas é importante entender a diferença.
       </p>
-      <ul>
-        <li>Crie uma branch <code>feat/nova-secao</code> a partir da main e adicione um arquivo novo com 2 commits</li>
-        <li>Volte para a main, edite o mesmo arquivo de uma forma diferente e faça 1 commit</li>
-        <li>Faça o merge da <code>feat/nova-secao</code> na main — <strong>vai gerar conflito</strong></li>
-        <li>Resolva o conflito manualmente (edite o arquivo, remova os marcadores, decida o conteúdo final)</li>
-        <li>Finalize o merge e confirme o histórico com <code>git log --oneline --graph</code></li>
-        <li>Crie outra branch <code>feat/experimento</code>, faça mudanças, use <code>git stash</code> para guardar
-          rascunho, mude para a main, volte e recupere o stash</li>
-        <li>Use <code>git reset --soft HEAD~1</code> para desfazer o último commit (sem perder as mudanças) e recomitar
-          com mensagem melhor</li>
-      </ul>
-      <div class="checkpoint-hint">
-        💬 Dica: Para provocar o conflito intencionalmente, edite a linha 1 do mesmo arquivo nas duas branches antes de
-        mergear.
-        O git log --oneline --graph --all vai mostrar visualmente a bifurcação e o merge — é muito satisfatório ver isso
-        funcionando.
+
+      <div class="grid-2" style="margin-bottom:20px;">
+        <div class="card-mini" style="border-top: 2px solid var(--success);">
+          <h4 style="color:var(--success);">Fast-Forward Merge</h4>
+          <p>Quando a branch de destino não teve commits novos desde a criação da feature branch. Git simplesmente move o ponteiro para frente — sem criar commit de merge. Histórico linear e limpo.</p>
+          <div style="font-size:12px;color:var(--muted);margin-top:8px;font-family:'JetBrains Mono',monospace;">main ──→ A → B → C<br>feature ────→ A → B → C → D → E<br>após merge: main ────→ ... → D → E</div>
+        </div>
+        <div class="card-mini" style="border-top: 2px solid var(--accent);">
+          <h4 style="color:var(--accent);">3-Way Merge</h4>
+          <p>Quando ambas as branches tiveram commits. Git encontra o ancestral comum e cria um <strong>merge commit</strong> que une os dois históricos. Preserva o contexto de quando a feature foi desenvolvida.</p>
+          <div style="font-size:12px;color:var(--muted);margin-top:8px;font-family:'JetBrains Mono',monospace;">main ──→ A → B → C → F (merge)<br>feature ──→ A → D → E ─────→ F</div>
+        </div>
+      </div>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// fast-forward vs 3-way merge</div>
+        <div class="mermaid">
+gitGraph
+   commit id: "A: init"
+   commit id: "B: auth base"
+   branch feature/perfil
+   checkout feature/perfil
+   commit id: "C: página perfil"
+   commit id: "D: upload avatar"
+   checkout main
+   commit id: "E: fix hotfix"
+   merge feature/perfil id: "F: merge perfil" type: HIGHLIGHT
+   commit id: "G: continua..."
+        </div>
+      </div>
+
+      <div class="code-label">// fluxo completo de merge</div>
+      <pre><code class="language-bash"># ── Fluxo padrão de merge ────────────────────────────────────
+# 1. Garanta que main está atualizado
+git switch main
+git pull origin main          # puxa mudanças remotas (veremos na aula 03)
+
+# 2. Crie e trabalhe na feature branch
+git switch -c feature/pagamento
+# ... faz commits ...
+
+# 3. Volte para main e faça o merge
+git switch main
+git merge feature/pagamento
+
+# ── Opções importantes de merge ──────────────────────────────
+git merge feature/x --no-ff        # FORÇA criação de merge commit
+                                   # (mesmo se fosse fast-forward)
+                                   # Preserva a história da feature
+
+git merge feature/x --squash       # Combina todos os commits da feature
+                                   # em um único commit no main
+                                   # (não faz o commit automaticamente)
+
+git merge feature/x --abort        # Aborta um merge em andamento
+                                   # (útil quando conflitos são complexos)
+
+# ── Ver diferenças antes de mergear ─────────────────────────
+git diff main..feature/x          # o que a feature tem que main não tem
+git log main..feature/x --oneline # commits que serão mergeados
+</code></pre>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Pro tip: --no-ff para preservar contexto</div>
+        Em times profissionais, é comum usar <code>--no-ff</code> (no fast-forward) ao mergear feature branches para sempre criar um merge commit. Isso deixa claro no histórico quais commits fazem parte de uma feature, permitindo reverter uma feature inteira com um único <code>git revert</code>.
       </div>
     </div>
 
-    <!-- ── PRÓXIMA AULA ── -->
-    <a href="html-01-semantico-estrutura.html" class="next-lesson">
-      <div>
-        <div class="next-label">Próxima aula →</div>
-        <div class="next-title">03 — HTML Semântico & Estrutura</div>
-      </div>
-      <div class="next-arrow">→</div>
-    </a>
+    <!-- 6. CONFLITOS -->
+    <div class="section">
+      <div class="section-label">// conceito 4</div>
+      <h2>Conflitos de Merge — entendendo e resolvendo</h2>
+      <p>
+        Um conflito acontece quando duas branches modificam <strong>exatamente as mesmas linhas</strong> de um arquivo, e o Git não consegue decidir automaticamente qual versão é a correta. Ele para e pede que <em>você</em> decida.
+      </p>
+      <p>
+        Conflitos não são erros — são situações normais que o Git sinaliza para intervenção humana. Com calma e método, qualquer conflito é resolvível.
+      </p>
 
-    <!-- ── FOOTER ── -->
-    <div class="footer">
-      <span>🐙 GitHub · Aula 02 / 50 · ID: 02-GH-02</span>
-      <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+      <h3>Como um conflito aparece no arquivo</h3>
+      <div class="conflict-block">
+        <div class="conflict-head">
+          <div class="marker">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</div>
+          <div class="conflict-line">def calcular_desconto(preco, percentual):</div>
+          <div class="conflict-line">    return preco - (preco * percentual / 100)</div>
+        </div>
+        <div class="conflict-sep">======= (separador entre as duas versões)</div>
+        <div class="conflict-theirs">
+          <div class="conflict-line">def calcular_desconto(preco, percentual, maximo=None):</div>
+          <div class="conflict-line">    desconto = preco * percentual / 100</div>
+          <div class="conflict-line">    if maximo: desconto = min(desconto, maximo)</div>
+          <div class="conflict-line">    return preco - desconto</div>
+          <div class="marker">&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/desconto-maximo</div>
+        </div>
+      </div>
+
+      <p style="margin-top:16px;">Os marcadores significam:</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Marcador</th><th>Significado</th></tr></thead>
+          <tbody>
+            <tr><td><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code></td><td>Início da versão da branch atual (onde você está)</td></tr>
+            <tr><td><code>=======</code></td><td>Separador entre as duas versões</td></tr>
+            <tr><td><code>&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/x</code></td><td>Início da versão que veio via merge</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="code-label">// passo a passo para resolver conflitos</div>
+      <pre><code class="language-bash"># ── 1. O merge gera conflito ──────────────────────────────────
+git switch main
+git merge feature/desconto-maximo
+# Auto-merging calculadora.py
+# CONFLICT (content): Merge conflict in calculadora.py
+# Automatic merge failed; fix conflicts and then commit the result.
+
+# ── 2. Ver quais arquivos têm conflito ────────────────────────
+git status
+# Unmerged paths:
+#   both modified:   calculadora.py
+
+# ── 3. Abrir o arquivo e decidir o que manter ─────────────────
+# Opções:
+#   a) Manter só a versão do HEAD (sua branch)
+#   b) Manter só a versão que veio (theirs)
+#   c) Combinar as duas versões manualmente — mais comum!
+
+# Após editar, o arquivo deve ficar SEM os marcadores:
+# def calcular_desconto(preco, percentual, maximo=None):
+#     desconto = preco * percentual / 100
+#     if maximo: desconto = min(desconto, maximo)
+#     return preco - desconto
+
+# ── 4. Marcar como resolvido e commitar ───────────────────────
+git add calculadora.py         # marca como resolvido
+git status                     # confirma que não há mais conflitos
+git commit                     # cria o merge commit (mensagem pré-preenchida)
+
+# ── 5. Se decidir abortar o merge ────────────────────────────
+git merge --abort              # volta ao estado antes do merge
+</code></pre>
+
+      <h3>Resolvendo conflitos no VS Code</h3>
+      <p>
+        VS Code tem uma interface visual excelente para resolver conflitos. Ao abrir um arquivo com conflito, ele mostra botões contextuais sobre cada bloco:
+      </p>
+      <div class="card-mini" style="margin:16px 0;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;font-size:12px;text-align:center;">
+          <div style="padding:10px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:6px;color:#34d399;">Accept Current Change<br><span style="color:var(--muted);">Mantém HEAD</span></div>
+          <div style="padding:10px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:6px;color:#f87171;">Accept Incoming Change<br><span style="color:var(--muted);">Mantém theirs</span></div>
+          <div style="padding:10px;background:rgba(88,166,255,0.1);border:1px solid rgba(88,166,255,0.3);border-radius:6px;color:#79c0ff;">Accept Both Changes<br><span style="color:var(--muted);">Mantém os dois</span></div>
+          <div style="padding:10px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:6px;color:#fbbf24;">Compare Changes<br><span style="color:var(--muted);">Diff lado a lado</span></div>
+        </div>
+      </div>
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Pro tip: use o editor de merge do VS Code</div>
+        <kbd>Ctrl/Cmd + Shift + P</kbd> → "Git: Open Merge Editor" abre uma view de 3 painéis: Current (HEAD), Incoming (theirs) e Result (o que você decide). Muito mais confortável para conflitos complexos do que editar o arquivo diretamente.
+      </div>
     </div>
 
-  </div><!-- /page -->
+    <!-- 7. REBASE -->
+    <div class="section">
+      <div class="section-label">// conceito 5</div>
+      <h2>Rebase — histórico linear e limpo</h2>
+      <p>
+        <code>git rebase</code> é uma alternativa ao merge que <strong>reescreve o histórico</strong> para manter uma linha do tempo linear. Em vez de criar um merge commit, ele "replanta" os commits da feature branch no topo da branch de destino — como se você tivesse começado a trabalhar na feature a partir do estado mais recente do <code>main</code>.
+      </p>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// merge vs rebase — diferença visual</div>
+        <div class="mermaid">
+gitGraph
+   commit id: "A"
+   commit id: "B"
+   branch feature
+   checkout feature
+   commit id: "C: minha feat"
+   commit id: "D: ajustes"
+   checkout main
+   commit id: "E: outro fix"
+   merge feature id: "F: MERGE commit" type: HIGHLIGHT tag: "com merge"
+        </div>
+      </div>
+
+      <div class="code-label">// rebase — quando e como usar</div>
+      <pre><code class="language-bash"># ── Rebase básico ────────────────────────────────────────────
+# Cenário: você está em feature/login e main teve novos commits
+git switch feature/login
+git rebase main
+# Git "transplanta" seus commits no topo do main atualizado
+# Resultado: histórico linear, sem merge commit
+
+# ── Rebase interativo — o mais poderoso ──────────────────────
+git rebase -i HEAD~3    # edita os últimos 3 commits interativamente
+git rebase -i main      # edita commits desde que divergiu do main
+
+# No editor, cada commit pode receber uma ação:
+# pick   = manter como está
+# reword = manter, mas editar a mensagem
+# edit   = pausar para editar o commit
+# squash = fundir com o commit anterior (combina)
+# fixup  = como squash, mas descarta a mensagem
+# drop   = REMOVE o commit do histórico
+
+# Exemplo prático: squash de 3 commits "WIP" em um commit limpo
+# pick abc123 feat: estrutura inicial
+# squash def456 WIP: mais stuff
+# squash ghi789 WIP: continuando
+# → resulta em um único commit com mensagem editada
+
+# ── Resolução de conflitos durante rebase ────────────────────
+# Se houver conflito durante rebase:
+git status                # ver conflitos
+# ... resolve conflitos manualmente ...
+git add arquivo-resolvido
+git rebase --continue     # continua o rebase
+# ou
+git rebase --abort        # cancela e volta ao estado original
+</code></pre>
+
+      <div class="callout callout-danger">
+        <div class="callout-title">🚨 A regra de ouro do rebase</div>
+        <strong>NUNCA faça rebase de commits que já foram pushed para uma branch compartilhada.</strong> Rebase reescreve o histórico (gera novos hashes). Se outros devs têm esses commits, seus históricos ficarão incompatíveis e você vai criar um caos no repositório remoto. Rebase é seguro apenas em branches <em>locais</em> que ainda não foram compartilhadas.
+      </div>
+    </div>
+
+    <!-- 8. STASH E RESET -->
+    <div class="section">
+      <div class="section-label">// conceito 6</div>
+      <h2>Stash & Reset — ferramentas de salvamento</h2>
+
+      <h3>git stash — guardar trabalho temporariamente</h3>
+      <p>
+        <code>git stash</code> salva suas mudanças não commitadas em uma "pilha" temporária e restaura o working directory para o estado do último commit. Perfeito quando você precisa trocar de branch urgentemente sem commitar trabalho incompleto.
+      </p>
+
+      <div class="code-label">// git stash completo</div>
+      <pre><code class="language-bash"># ── Guardar mudanças ─────────────────────────────────────────
+git stash                          # guarda tracked files modificados
+git stash push -m "WIP: login form" # com mensagem descritiva
+git stash push --include-untracked  # inclui arquivos não rastreados (novos)
+git stash push -u                   # atalho para --include-untracked
+
+# ── Ver o que está guardado ───────────────────────────────────
+git stash list
+# stash@{0}: WIP on feature/login: abc1234 feat: form base
+# stash@{1}: On main: fix temporário
+
+# ── Recuperar mudanças ────────────────────────────────────────
+git stash pop                      # aplica o mais recente E remove da pilha
+git stash apply                    # aplica mas MANTÉM na pilha (útil para aplicar em várias branches)
+git stash apply stash@{1}          # aplica um stash específico
+
+# ── Gerenciar stashes ─────────────────────────────────────────
+git stash drop stash@{0}           # deleta um stash específico
+git stash clear                    # limpa TODOS os stashes
+git stash show -p stash@{0}        # mostra o diff de um stash
+</code></pre>
+
+      <h3>git reset — desfazendo commits</h3>
+      <p>
+        <code>git reset</code> move o ponteiro HEAD (e da branch) para um commit anterior. Tem três modos com comportamentos muito diferentes:
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Modo</th><th>Histórico</th><th>Staging</th><th>Working Dir</th><th>Quando usar</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>--soft</code></td>
+              <td><span class="badge badge-red">Move HEAD</span></td>
+              <td><span class="badge badge-green">Mantém</span></td>
+              <td><span class="badge badge-green">Mantém</span></td>
+              <td>Desfazer commits mantendo mudanças no staging (para reformular)</td>
+            </tr>
+            <tr>
+              <td><code>--mixed</code> (padrão)</td>
+              <td><span class="badge badge-red">Move HEAD</span></td>
+              <td><span class="badge badge-yellow">Limpa</span></td>
+              <td><span class="badge badge-green">Mantém</span></td>
+              <td>Desfazer commits + unstage, mas mantém as edições nos arquivos</td>
+            </tr>
+            <tr>
+              <td><code>--hard</code></td>
+              <td><span class="badge badge-red">Move HEAD</span></td>
+              <td><span class="badge badge-red">Limpa</span></td>
+              <td><span class="badge badge-red">Limpa ⚠️</span></td>
+              <td>Descarta completamente os commits e todas as mudanças</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="code-label">// git reset na prática</div>
+      <pre><code class="language-bash"># ── --soft: desfaz commit, mantém tudo staged ────────────────
+git reset --soft HEAD~1    # desfaz o último commit
+git reset --soft HEAD~3    # desfaz os últimos 3 commits
+# Os arquivos ainda estão no staging → você pode reformular e recomitar
+
+# ── --mixed (padrão): desfaz commit e o staging ──────────────
+git reset HEAD~1           # equivale a --mixed
+git reset --mixed HEAD~2   # desfaz 2 commits, arquivos voltam a "modified"
+
+# ── --hard: desfaz tudo — CUIDADO ────────────────────────────
+git reset --hard HEAD~1    # ⚠️ PERDE as mudanças dos commits desfeitos
+git reset --hard abc1234   # vai para um commit específico, descarta tudo depois
+git reset --hard origin/main  # reseta para igual ao remoto (usado para sincronizar)
+
+# ── git revert: alternativa segura para histórico público ─────
+# reset reescreve histórico — problemático em branches compartilhadas
+# revert cria um NOVO commit que desfaz as mudanças — seguro em produção
+git revert HEAD            # cria commit que desfaz o último
+git revert abc1234         # cria commit que desfaz um commit específico
+git revert HEAD~3..HEAD    # reverte os últimos 3 commits (um por um)
+git revert HEAD~3..HEAD --no-commit  # reverte tudo de uma vez, sem commitar ainda
+</code></pre>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ reset vs revert — qual usar?</div>
+        Use <code>reset</code> apenas em commits <em>locais</em> (que não foram pushed). Use <code>revert</code> para desfazer commits em branches compartilhadas ou em <code>main</code> — ele adiciona ao histórico em vez de apagar, mantendo o histórico íntegro para todos.
+      </div>
+    </div>
+
+    <!-- HANDS-ON -->
+    <div class="section">
+      <div class="section-label">// prática</div>
+      <h2>Mãos na massa — Simulando um fluxo real de time</h2>
+      <p>Vamos simular o desenvolvimento de duas features em paralelo, com merge e resolução de conflito deliberada.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Setup — repositório com histórico base</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal</span></div>
+              <div class="terminal-body">
+                <div><span class="t-prompt">$</span> <span class="t-cmd">mkdir git-branches-lab && cd git-branches-lab</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git init && git config init.defaultBranch main</span></div>
+                <br>
+                <div><span class="t-comment"># Cria o arquivo base</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">cat > config.py << 'EOF'</span></div>
+                <div class="t-out">APP_NAME = "MeuApp"</div>
+                <div class="t-out">VERSION = "1.0.0"</div>
+                <div class="t-out">DEBUG = False</div>
+                <div class="t-out">MAX_USERS = 100</div>
+                <div class="t-out">EOF</div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git add . && git commit -m "chore: configuração inicial"</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Crie duas features em paralelo</div>
+            <pre><code class="language-bash"># ── Branch 1: feature de cache ──────────────────────────────
+git switch -c feature/cache
+# Edite config.py — adicione ao final:
+echo 'CACHE_TTL = 300' >> config.py
+echo 'CACHE_BACKEND = "redis"' >> config.py
+git add config.py
+git commit -m "feat(config): adiciona configuração de cache Redis"
+
+# ── Volte ao main e crie Branch 2 ────────────────────────────
+git switch main
+git switch -c feature/usuarios
+# Edite config.py — modifique MAX_USERS (MESMO arquivo, mesma linha!)
+# Abra o arquivo e mude: MAX_USERS = 500
+# Adicione também: ALLOW_REGISTRATION = True
+git add config.py
+git commit -m "feat(config): aumenta limite de usuários e permite registro"
+
+# ── Veja o estado atual das branches ─────────────────────────
+git log --oneline --graph --all
+</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Merge sem conflito — feature/cache</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal</span></div>
+              <div class="terminal-body">
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git switch main</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git merge feature/cache --no-ff -m "merge: integra configuração de cache"</span></div>
+                <div class="t-merge">Merge made by the 'ort' strategy.</div>
+                <div class="t-merge"> config.py | 2 ++</div>
+                <div class="t-merge"> 1 file changed, 2 insertions(+)</div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git branch -d feature/cache</span>  <span class="t-comment"># limpa branch mergeada</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Merge COM conflito — feature/usuarios</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal</span></div>
+              <div class="terminal-body">
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git merge feature/usuarios</span></div>
+                <div class="t-conflict">CONFLICT (content): Merge conflict in config.py</div>
+                <div class="t-conflict">Automatic merge failed; fix conflicts and then commit the result.</div>
+                <br>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git status</span></div>
+                <div class="t-out">Unmerged paths:</div>
+                <div class="t-out">  both modified:   config.py</div>
+                <br>
+                <div><span class="t-comment"># Abra config.py no editor, resolva o conflito,</span></div>
+                <div><span class="t-comment"># remova os marcadores e salve a versão final</span></div>
+                <br>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git add config.py</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git commit -m "merge: integra configuração de usuários (resolve conflito MAX_USERS)"</span></div>
+                <div class="t-merge">[main a8f9c2e] merge: integra configuração de usuários</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Pratique stash e reset</div>
+            <pre><code class="language-bash"># Stash: simule interrupção de trabalho
+git switch -c feature/nova-config
+echo 'TIMEOUT = 30' >> config.py   # mudança incompleta
+git stash push -m "WIP: timeout config"
+git switch main                     # urgência: precisa checar main
+git stash list                      # confirma que está guardado
+git switch feature/nova-config
+git stash pop                       # recupera o trabalho
+
+# Reset --soft: refaça a mensagem de um commit ruim
+git add config.py
+git commit -m "coisas"              # mensagem ruim!
+git reset --soft HEAD~1             # desfaz commit, mantém no staging
+git commit -m "feat(config): adiciona timeout de 30 segundos"  # mensagem boa
+
+# Ver o histórico final bonito
+git log --oneline --graph --all
+</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ARMADILHAS -->
+    <div class="section">
+      <div class="section-label">// pitfalls</div>
+      <h2>⚠️ Armadilhas Comuns</h2>
+
+      <div class="pitfall">
+        <div class="pitfall-title">1. Fazer rebase em branch compartilhada (pushed)</div>
+        <p>Rebase reescreve hashes de commits. Se alguém já fez pull da sua branch, os históricos ficam incompatíveis e você vai forçar um <code>git push --force</code> que pode apagar o trabalho de outras pessoas. Use rebase apenas em branches locais.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">2. git reset --hard sem backup</div>
+        <p><code>--hard</code> descarta mudanças permanentemente do working directory. Se você não tinha commitado nem feito stash, as mudanças se perdem. Sempre verifique <code>git status</code> antes e, se precisar de segurança extra, crie uma branch temporária antes do reset.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">3. Deixar marcadores de conflito no código</div>
+        <p>Após resolver conflitos, é fácil esquecer algum bloco <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> ou <code>=======</code> no arquivo. Esses marcadores quebram o código. Após resolver, sempre rode o projeto e faça uma busca por <code>&lt;&lt;&lt;&lt;&lt;</code> no codebase antes de commitar.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">4. Trabalhar direto no main por tempo demais</div>
+        <p>O <code>main</code> deve sempre refletir código estável e funcional. Nunca desenvolva features diretamente nele. Crie uma branch para cada tarefa, por menor que seja. Isso também facilita code review via pull requests.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">5. Acumular branches velhas no repositório</div>
+        <p>Branches mergeadas devem ser deletadas. Um repo com dezenas de branches abandonadas é difícil de navegar. Use <code>git branch --merged | grep -v main | xargs git branch -d</code> para limpar branches locais já mergeadas de uma vez.</p>
+      </div>
+    </div>
+
+    <!-- VÍDEOS -->
+    <div class="section">
+      <div class="section-label">// curadoria</div>
+      <h2>Vídeos Recomendados</h2>
+      <div class="video-grid">
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Git Branches Tutorial</div>
+            <div class="video-channel">freeCodeCamp · ~30 min</div>
+            <div class="video-why">Por que assistir: Tutorial visual e didático que cobre criação de branches, merge e resolução de conflitos com o VS Code. Excelente para iniciantes.</div>
+            <a href="https://www.youtube.com/watch?v=e2IbNHi4uCI" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Git Rebase — Quando usar e quando não usar</div>
+            <div class="video-channel">Atlassian (BitBucket) · ~8 min</div>
+            <div class="video-why">Por que assistir: Animação perfeita que mostra visualmente o que acontece no histórico durante merge vs rebase. Assista depois de entender merge.</div>
+            <a href="https://www.youtube.com/watch?v=f1wnYdLEpgI" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Git Stash Tutorial — Como guardar trabalho temporariamente</div>
+            <div class="video-channel">Corey Schafer · ~12 min</div>
+            <div class="video-why">Por que assistir: O melhor tutorial de git stash — mostra todos os casos de uso com exemplos do dia a dia de um desenvolvedor.</div>
+            <a href="https://www.youtube.com/watch?v=KLEDKgMmbBI" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Git Reset, Revert e Restore explicados</div>
+            <div class="video-channel">The Modern Coder · ~15 min</div>
+            <div class="video-why">Por que assistir: Clarifica de vez a diferença entre reset --soft/--mixed/--hard e quando usar revert. Muitos devs confundem esses três para sempre.</div>
+            <a href="https://www.youtube.com/watch?v=RIYrfkZjWmA" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GLOSSÁRIO -->
+    <div class="section">
+      <div class="section-label">// glossário</div>
+      <h2>Termos desta Aula</h2>
+      <div class="glossary-item">
+        <div class="glossary-term">Branch</div>
+        <div class="glossary-def">Ponteiro leve para um commit. Permite linhas de desenvolvimento paralelas e independentes no mesmo repositório.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">HEAD</div>
+        <div class="glossary-def">Ponteiro especial que indica o commit atual. Normalmente aponta para o topo de uma branch; em "detached HEAD" aponta diretamente para um commit.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Fast-Forward Merge</div>
+        <div class="glossary-def">Merge sem commit extra, quando a branch de destino não divergiu. Git apenas move o ponteiro para frente.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">3-Way Merge</div>
+        <div class="glossary-def">Merge que cria um commit extra unindo dois históricos divergentes, usando o ancestral comum como base de comparação.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Merge Conflict</div>
+        <div class="glossary-def">Situação onde duas branches modificaram as mesmas linhas de um arquivo e o Git precisa de intervenção humana para decidir a versão final.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Rebase</div>
+        <div class="glossary-def">Reescreve o histórico "transplantando" commits de uma branch no topo de outra. Cria histórico linear mas altera hashes dos commits.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Stash</div>
+        <div class="glossary-def">Pilha temporária para guardar mudanças não commitadas sem criar um commit. Permite trocar de branch com trabalho em andamento.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">git revert</div>
+        <div class="glossary-def">Cria um novo commit que desfaz as mudanças de um commit anterior. Seguro para branches compartilhadas — não reescreve histórico.</div>
+      </div>
+    </div>
+
+    <!-- CHECKPOINT -->
+    <div class="section">
+      <div class="checkpoint">
+        <h3>🏁 Checkpoint — Desafio Final</h3>
+        <p>Simule um fluxo de desenvolvimento real com <strong>múltiplas branches, merge com conflito e limpeza de histórico</strong>:</p>
+        <ul>
+          <li>Crie um repo com pelo menos 3 commits na <code>main</code> (arquivo Python com funções)</li>
+          <li>Crie <code>feature/funcionalidade-a</code> e <code>feature/funcionalidade-b</code> — ambas modificando a <strong>mesma função</strong> no arquivo principal de formas diferentes</li>
+          <li>Mergee a feature A em main sem conflito (ela foi criada antes de qualquer divergência)</li>
+          <li>Tente mergear a feature B — resolva o conflito deliberadamente combinando as duas versões de forma inteligente</li>
+          <li>Use <code>git rebase -i</code> para squash dos commits da feature B em 1 único commit limpo antes do merge</li>
+          <li>Ao final: rode <code>git log --oneline --graph --all</code>, delete branches mergeadas e capture o histórico organizado</li>
+        </ul>
+        <div class="checkpoint-hint">💬 Dica: antes de fazer qualquer reset ou rebase, crie uma branch de backup com <code>git branch backup/antes-do-rebase</code>. Se algo der errado, você pode recuperar com <code>git reset --hard backup/antes-do-rebase</code>. Esta é uma prática de sênior.</div>
+      </div>
+    </div>
+
+    <!-- PRÓXIMOS PASSOS -->
+    <div class="section">
+      <div class="section-label">// próximos passos</div>
+      <h2>O que vem a seguir?</h2>
+      <p style="margin-bottom:20px;">Com branches e merge dominados, estamos prontos para conectar tudo ao GitHub — repositórios remotos, push, pull, fork e o fluxo de Pull Request que é o coração do desenvolvimento colaborativo moderno.</p>
+      <a href="html-01-semantico-estrutura.html" class="next-card">
+        <div>
+          <div class="next-card-label">Próxima aula · 🌐 HTML/CSS</div>
+          <div class="next-card-title">HTML Semântico & Estrutura</div>
+        </div>
+        <span class="next-arrow">→</span>
+      </a>
+    </div>
+
+  </div>
 
   <script>
-    // Initialize syntax highlighting
-    document.addEventListener('DOMContentLoaded', () => {
-      hljs.highlightAll();
-    });
-
-    // Initialize Mermaid
-    mermaid.initialize({
-      startOnLoad: true,
-      theme: 'dark',
-      themeVariables: {
-        primaryColor: '#58a6ff',
-        primaryTextColor: '#e8e8f0',
-        primaryBorderColor: 'rgba(88, 166, 255, 0.3)',
-        lineColor: '#8585a8',
-        background: '#111118',
-        mainBkg: '#16161f',
-        nodeBorder: '#58a6ff'
-      }
-    });
-
-    // Scroll progress indicator (update progress bar)
+    const bar = document.getElementById('progressBar');
     window.addEventListener('scroll', () => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = (scrollTop / docHeight) * 100;
-      document.querySelector('.progress-bar-fill').style.width = progress + '%';
+      const doc = document.documentElement;
+      bar.style.width = (doc.scrollTop / (doc.scrollHeight - doc.clientHeight) * 100) + '%';
     });
+    document.addEventListener('DOMContentLoaded', () => { if (window.hljs) hljs.highlightAll(); });
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
   </script>
-
 </body>
-
 </html>

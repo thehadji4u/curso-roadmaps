@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Box Model, Flexbox & Grid · HTML/CSS</title>
+  <title>CSS — Box Model, Flexbox & Grid · Aula 04</title>
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
   <style>
-    /* ─── TOKENS ────────────────────────────────────────────── */
+    /* ── Highlight.js github-dark inlined ── */
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
     :root {
       --bg: #0a0a0f;
       --surface: #111118;
@@ -19,28 +23,275 @@
       --border: #1e1e2e;
       --text: #e8e8f0;
       --muted: #8585a8;
-
       --accent: #ef4444;
-      /* ex: #3b82f6 para Python */
-      --accent-dim: rgba(239, 68, 68, 0.12);
-      /* ex: rgba(59,130,246,0.15) */
-      --accent-border: rgba(239, 68, 68, 0.35);
-      /* ex: rgba(59,130,246,0.3) */
-
-      /* Semantic colors */
+      --accent-dim: rgba(239,68,68,0.15);
+      --accent-border: rgba(239,68,68,0.35);
       --success: #10b981;
       --warn: #f59e0b;
       --danger: #ef4444;
       --info: #06b6d4;
     }
-  </style>
-  <link rel="stylesheet" href="../assets/css/lesson.css">
-</head>
 
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #f87171); width: 0%; transition: width 0.1s; }
+
+    .top-nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 32px;
+      background: rgba(10,10,15,0.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #f87171; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin: 32px 0 12px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.08); border-color: var(--success); }
+    .callout-tip .callout-title { color: var(--success); }
+    .callout-check { background: rgba(167,139,250,0.08); border-color: #a78bfa; }
+    .callout-check .callout-title { color: #a78bfa; }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(59,130,246,0.2); color: #60a5fa; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    @media (max-width: 640px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; }
+    .pillar-badge { font-size: 11px; padding: 3px 10px; border-radius: 4px; font-weight: 600; }
+
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-info a { font-size: 12px; color: var(--accent); text-decoration: none; }
+    .video-info a:hover { text-decoration: underline; }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(239,68,68,0.08), rgba(248,113,113,0.04)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(239,68,68,0.06); border-radius: 6px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; }
+
+    .glossary-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .glossary-term { color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+    .glossary-def { color: var(--muted); font-size: 13px; }
+
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #f87171; }
+
+    /* ── Box Model Visual ── */
+    .box-model-demo {
+      display: flex;
+      justify-content: center;
+      padding: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin: 24px 0;
+    }
+    .bm-margin {
+      background: rgba(245,158,11,0.15);
+      border: 2px dashed rgba(245,158,11,0.5);
+      padding: 20px;
+      border-radius: 6px;
+      position: relative;
+    }
+    .bm-margin-label { position: absolute; top: 4px; left: 8px; font-size: 10px; color: #fbbf24; letter-spacing: 0.08em; text-transform: uppercase; }
+    .bm-border {
+      background: rgba(239,68,68,0.15);
+      border: 3px solid rgba(239,68,68,0.6);
+      padding: 20px;
+      border-radius: 4px;
+      position: relative;
+    }
+    .bm-border-label { position: absolute; top: 4px; left: 8px; font-size: 10px; color: #f87171; letter-spacing: 0.08em; text-transform: uppercase; }
+    .bm-padding {
+      background: rgba(16,185,129,0.12);
+      border: 2px dashed rgba(16,185,129,0.4);
+      padding: 20px;
+      border-radius: 2px;
+      position: relative;
+    }
+    .bm-padding-label { position: absolute; top: 4px; left: 8px; font-size: 10px; color: #34d399; letter-spacing: 0.08em; text-transform: uppercase; }
+    .bm-content {
+      background: rgba(59,130,246,0.25);
+      border: 1px solid rgba(59,130,246,0.5);
+      padding: 16px 32px;
+      border-radius: 2px;
+      text-align: center;
+      font-size: 13px;
+      color: #60a5fa;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    /* ── Flex demo ── */
+    .demo-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      margin: 16px 0;
+    }
+    .demo-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+    .flex-container {
+      display: flex;
+      gap: 8px;
+      background: rgba(239,68,68,0.05);
+      border: 1px dashed rgba(239,68,68,0.3);
+      padding: 12px;
+      border-radius: 6px;
+      min-height: 60px;
+      flex-wrap: wrap;
+    }
+    .flex-item {
+      background: rgba(239,68,68,0.2);
+      border: 1px solid rgba(239,68,68,0.4);
+      color: #f87171;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .flex-item.grow { flex: 1; text-align: center; }
+
+    /* ── Grid demo ── */
+    .grid-demo {
+      display: grid;
+      gap: 8px;
+      background: rgba(239,68,68,0.05);
+      border: 1px dashed rgba(239,68,68,0.3);
+      padding: 12px;
+      border-radius: 6px;
+    }
+    .grid-cell {
+      background: rgba(239,68,68,0.2);
+      border: 1px solid rgba(239,68,68,0.4);
+      color: #f87171;
+      padding: 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    /* ── Specificity visual ── */
+    .specificity-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin: 8px 0;
+    }
+    .spec-score {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      font-weight: 700;
+      min-width: 70px;
+    }
+    .spec-bar { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+    .spec-fill { height: 100%; border-radius: 4px; }
+    .spec-label { font-size: 13px; color: var(--text); min-width: 160px; }
+    .spec-example { font-size: 12px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
 <body>
 
   <div class="progress-bar-wrap">
-    <div class="progress-bar-fill"></div>
+    <div class="progress-bar-fill" id="progressBar"></div>
   </div>
 
   <nav class="top-nav">
@@ -56,1164 +307,1202 @@
 
   <div class="page">
 
-    <!-- ══════════════════════════════════════════
-         HERO
-    ══════════════════════════════════════════ -->
+    <!-- ── HERO ── -->
     <div class="hero">
       <div class="hero-eyebrow">
-        <span>🌐 HTML/CSS · 02 · Prioridade 1</span>
+        <span>🌐 HTML/CSS</span>
         <span class="hero-badge">Aula 04</span>
       </div>
-      <h1>CSS — Box Model, Flexbox &amp; Grid</h1>
+      <h1>CSS — Box Model, Flexbox & Grid</h1>
       <div class="hero-meta">
-        <span>⏱ ~35 min de leitura</span>
-        <span>🎯 Fundamentos</span>
+        <span>⏱ ~45 min de leitura</span>
+        <span>🎯 Fundamentos → Layout</span>
         <span>🔧 Hands-on incluído</span>
       </div>
       <div class="hero-tags">
-        <span class="tag">box-model</span>
-        <span class="tag">flexbox</span>
-        <span class="tag">css-grid</span>
+        <span class="tag accent">box model</span>
+        <span class="tag accent">flexbox</span>
+        <span class="tag accent">css grid</span>
         <span class="tag">cascade</span>
         <span class="tag">specificity</span>
-        <span class="tag">border-box</span>
-        <span class="tag">:is()</span>
-        <span class="tag">:has()</span>
+        <span class="tag">display</span>
+        <span class="tag">position</span>
+        <span class="tag">unidades</span>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         1. POR QUE ISSO IMPORTA?
-    ══════════════════════════════════════════ -->
+    <!-- ── 1. POR QUE IMPORTA ── -->
     <div class="section">
-      <div class="section-label">// 01 — motivação</div>
+      <div class="section-label">// motivação</div>
       <h2>Por que isso importa?</h2>
       <p>
-        Todo elemento HTML é uma <strong>caixa retangular</strong>. Não importa se é um parágrafo, um botão ou um card
-        de produto — o browser enxerga tudo como caixas empilhadas ou enfileiradas. Se você não entende como essas
-        caixas se comportam, o CSS vai parecer mágica negra.
+        CSS é a linguagem que transforma HTML estruturado em interfaces visuais. E os três pilares desta aula — Box Model, Flexbox e Grid — são a base de <em>qualquer</em> layout que você vai construir. Não importa se usa React, Vue ou HTML puro: todo componente é uma caixa com dimensões, e toda interface é um conjunto de caixas organizadas em linhas e colunas.
       </p>
       <p>
-        Box Model, Flexbox e Grid são os três pilares do layout CSS. Box Model define o <em>espaçamento interno e
-          externo</em> de cada elemento. Flexbox organiza itens em <em>uma dimensão</em> (linha ou coluna). Grid
-        organiza em <em>duas dimensões</em> simultaneamente. Cascade & Specificity explicam <em>por que</em> um estilo
-        prevalece sobre outro — o debugger mais importante do CSS.
+        Entender o Box Model elimina 80% dos bugs de espaçamento. Dominar Flexbox e Grid elimina 90% das gambiarras de layout. Juntos, eles permitem construir layouts complexos e responsivos com código limpo e previsível.
       </p>
-
       <div class="callout callout-info">
-        <div class="callout-title">💼 Por que um engenheiro sênior usa isso hoje</div>
-        Todo time de produto tem debates sobre layout. Sêniors escolhem <code>grid</code> para layouts de página e
-        <code>flexbox</code> para componentes internos — e justificam essa escolha. Eles também debugam conflitos de
-        especificidade sem chutar: calculam o score e sabem exatamente qual regra vai ganhar. Nunca usam
-        <code>!important</code> como solução.
+        <div class="callout-title">💼 Por que um engenheiro sênior domina isso profundamente</div>
+        Sêniors não adivinham valores de CSS — eles sabem exatamente <em>por que</em> um elemento tem determinado tamanho e posição. Isso torna o debug de layout 10x mais rápido. Além disso, o conhecimento profundo de Flexbox e Grid permite criar sistemas de design escaláveis e substituir dependências externas (como Bootstrap) por CSS nativo mais leve e controlado.
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         2. ANALOGIA
-    ══════════════════════════════════════════ -->
+    <!-- ── 2. ANALOGIA ── -->
     <div class="section">
-      <div class="section-label">// 02 — analogia</div>
+      <div class="section-label">// analogia</div>
       <h2>Antes do código: uma analogia</h2>
-
       <div class="analogy-card">
         <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
         <div class="analogy-text">
-          Imagine uma <strong>exposição de arte</strong>. Cada quadro tem seu próprio suporte embutido
-          (<em>padding</em>), uma moldura que o circunda (<em>border</em>), e a distância que o separa do quadro ao lado
-          (<em>margin</em>). A tela pintada em si é o <em>content</em>.<br><br>
-          Os quadros numa parede lado a lado são <strong>Flexbox</strong> — o curador decide se ficam numa linha ou numa
-          coluna, como se alinham, se o espaço entre eles é igual ou se algum ocupa mais área.<br><br>
-          A planta baixa do museu é o <strong>Grid</strong> — salas definidas em linhas e colunas, onde cada peça pode
-          ocupar uma ou mais salas ao mesmo tempo.<br><br>
-          E a <strong>Cascade</strong> é a hierarquia de decisões do curador: as regras do museu nacional prevalecem
-          sobre as do museu local, que prevalecem sobre a preferência do artista individual.
+          Imagine montar uma <strong>exposição de arte em uma galeria</strong>. Cada obra tem seu espaço físico (content), uma moldura ao redor (border) e uma distância de proteção dos visitantes que a cercam (padding). A distância entre uma obra e a próxima parede ou obra adjacente é a margem (margin). Isso é o <strong>Box Model</strong>.
+          <br><br>
+          Agora, para organizar as obras: se você quer pendurar várias fotos <em>em fila</em>, horizontalmente ou verticalmente, com alinhamento flexível — você usa <strong>Flexbox</strong>, como um assistente que distribui as obras em uma única direção. Se você quer um layout em <em>grade</em> com linhas e colunas definidas precisamente — como as salas numeradas de um museu — você usa <strong>Grid</strong>.
         </div>
         <div class="analogy-mapping">
-          <span class="analogy-real">Tela do quadro</span>
-
-          <span class="analogy-arrow">→</span>
-
-          <span class="analogy-tech"><code>content</code></span>
-          <span class="analogy-real">Suporte embutido</span>
-
-          <span class="analogy-arrow">→</span>
-
-          <span class="analogy-tech"><code>padding</code></span>
-          <span class="analogy-real">Moldura</span>
-
-          <span class="analogy-arrow">→</span>
-
-          <span class="analogy-tech"><code>border</code></span>
-          <span class="analogy-real">Espaço entre quadros</span>
-
-          <span class="analogy-arrow">→</span>
-
-          <span class="analogy-tech"><code>margin</code></span>
-          <span class="analogy-real">Curador alinhando obras</span>
-
-          <span class="analogy-arrow">→</span>
-
-          <span class="analogy-tech">Flexbox</span>
-          <span class="analogy-real">Planta baixa do museu</span>
-
-          <span class="analogy-arrow">→</span>
-
-          <span class="analogy-tech">CSS Grid</span>
-          <span class="analogy-real">Hierarquia de regras</span>
-
-          <span class="analogy-arrow">→</span>
-
-          <span class="analogy-tech">Cascade &amp; Specificity</span>
+          <span class="analogy-real">🖼️ Espaço físico da obra</span>
+          <span class="analogy-tech">→ <code>content</code> (width/height)</span>
+          <span class="analogy-real">🪟 Moldura da obra</span>
+          <span class="analogy-tech">→ <code>border</code></span>
+          <span class="analogy-real">📏 Distância de proteção interna</span>
+          <span class="analogy-tech">→ <code>padding</code></span>
+          <span class="analogy-real">↔️ Espaço entre obras adjacentes</span>
+          <span class="analogy-tech">→ <code>margin</code></span>
+          <span class="analogy-real">🪑 Cadeiras enfileiradas em 1 direção</span>
+          <span class="analogy-tech">→ Flexbox (1D)</span>
+          <span class="analogy-real">🏛️ Salas numeradas em grade</span>
+          <span class="analogy-tech">→ CSS Grid (2D)</span>
         </div>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         3. BOX MODEL
-    ══════════════════════════════════════════ -->
+    <!-- ── 3. CASCADE E SPECIFICITY ── -->
     <div class="section">
-      <div class="section-label">// 03 — box model</div>
-      <h2>Box Model — a anatomia de todo elemento</h2>
+      <div class="section-label">// conceito 1</div>
+      <h2>Cascade, Especificidade & Herança</h2>
       <p>
-        Todo elemento CSS é composto de quatro camadas concêntricas. De dentro para fora:
-        <strong>content → padding → border → margin</strong>.
+        CSS significa <em>Cascading Style Sheets</em> — e a cascata é o algoritmo que decide qual regra vence quando múltiplas regras se aplicam ao mesmo elemento. Entender isso elimina a necessidade de <code>!important</code> desesperado.
       </p>
 
-      <!-- Visual Box Model -->
+      <h3>A ordem de prioridade da cascata</h3>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// algoritmo da cascata — quem vence?</div>
+        <div class="mermaid">
+graph TD
+    A["🔴 !important do autor"] --> B["🟠 Especificidade do seletor"]
+    B --> C["🟡 Ordem de aparição no código"]
+    C --> D["🟢 Herança do elemento pai"]
+    D --> E["⚪ Valor inicial (default do browser)"]
+    style A fill:#ef4444,color:#fff,stroke:none
+    style B fill:#f59e0b,color:#000,stroke:none
+    style C fill:#eab308,color:#000,stroke:none
+    style D fill:#10b981,color:#fff,stroke:none
+    style E fill:#1e1e2e,color:#8585a8,stroke:#1e1e2e
+        </div>
+      </div>
+
+      <h3>Especificidade — o sistema de pontuação</h3>
+      <p>Cada tipo de seletor tem um peso. O browser soma os pontos e a regra com maior especificidade vence, independente da ordem no arquivo.</p>
+
+      <div class="specificity-bar">
+        <span class="spec-score" style="color:#ef4444;">1-0-0-0</span>
+        <div class="spec-bar"><div class="spec-fill" style="width:100%;background:#ef4444;"></div></div>
+        <span class="spec-label">Estilos inline</span>
+        <span class="spec-example">style="color:red"</span>
+      </div>
+      <div class="specificity-bar">
+        <span class="spec-score" style="color:#f59e0b;">0-1-0-0</span>
+        <div class="spec-bar"><div class="spec-fill" style="width:75%;background:#f59e0b;"></div></div>
+        <span class="spec-label">ID</span>
+        <span class="spec-example">#header { }</span>
+      </div>
+      <div class="specificity-bar">
+        <span class="spec-score" style="color:#60a5fa;">0-0-1-0</span>
+        <div class="spec-bar"><div class="spec-fill" style="width:45%;background:#60a5fa;"></div></div>
+        <span class="spec-label">Classe, atributo, pseudo-classe</span>
+        <span class="spec-example">.card { } [type="text"] { } :hover { }</span>
+      </div>
+      <div class="specificity-bar">
+        <span class="spec-score" style="color:#34d399;">0-0-0-1</span>
+        <div class="spec-bar"><div class="spec-fill" style="width:20%;background:#34d399;"></div></div>
+        <span class="spec-label">Elemento, pseudo-elemento</span>
+        <span class="spec-example">p { } h1 { } ::before { }</span>
+      </div>
+      <div class="specificity-bar">
+        <span class="spec-score" style="color:#8585a8;">0-0-0-0</span>
+        <div class="spec-bar"><div class="spec-fill" style="width:5%;background:#8585a8;"></div></div>
+        <span class="spec-label">Seletor universal</span>
+        <span class="spec-example">* { }</span>
+      </div>
+
+      <div class="code-label">// especificidade na prática</div>
+      <pre><code class="language-css">/* Especificidade: 0-0-0-1 */
+p { color: black; }
+
+/* Especificidade: 0-0-1-0 — vence sobre p */
+.destaque { color: blue; }
+
+/* Especificidade: 0-0-1-1 — vence sobre .destaque */
+p.destaque { color: green; }
+
+/* Especificidade: 0-1-0-0 — vence sobre tudo acima */
+#titulo { color: purple; }
+
+/* !important — vence sobre TUDO (exceto outro !important mais específico) */
+/* Use apenas como último recurso — sinal de problema arquitetural */
+p { color: red !important; }
+
+/* ── Seletores compostos e seus pesos ── */
+/* 0-0-2-1 */
+nav.menu a { }
+
+/* 0-0-1-2 */
+ul li a { }
+
+/* 0-1-1-1 */
+#header .nav a { }
+
+/* ── Herança: propriedades que se propagam aos filhos ── */
+body {
+  font-family: 'JetBrains Mono', monospace; /* herdado por todos os filhos */
+  color: #e8e8f0;                           /* herdado */
+  font-size: 16px;                          /* herdado */
+  /* background, border, margin, padding NÃO são herdados */
+}
+
+/* Forçar herança ou resetar */
+.reset { all: unset; }      /* remove TODOS os estilos */
+p { color: inherit; }       /* força herança explícita */
+p { color: initial; }       /* valor padrão do browser */
+</code></pre>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Pro tip: :where() e :is() para controlar especificidade</div>
+        <code>:where()</code> tem especificidade zero — perfeito para estilos base que devem ser facilmente sobrescritos. <code>:is()</code> assume a especificidade do seletor mais específico dentro dele. Use-os para escrever CSS mais flexível e manutenível.
+      </div>
+    </div>
+
+    <!-- ── 4. BOX MODEL ── -->
+    <div class="section">
+      <div class="section-label">// conceito 2</div>
+      <h2>O Box Model — todo elemento é uma caixa</h2>
+      <p>
+        Todo elemento HTML é representado como uma caixa retangular composta por quatro camadas: content, padding, border e margin. Entender exatamente como essas camadas interagem é fundamental para controlar tamanhos e espaçamentos.
+      </p>
+
+      <!-- Box Model visual interativo -->
       <div class="box-model-demo">
-        <div class="bm-label">margin</div>
         <div class="bm-margin">
-          <div class="bm-label">border</div>
+          <div class="bm-margin-label">margin</div>
           <div class="bm-border">
-            <div class="bm-label">padding</div>
+            <div class="bm-border-label">border</div>
             <div class="bm-padding">
-              <div class="bm-content">content (width × height)</div>
+              <div class="bm-padding-label">padding</div>
+              <div class="bm-content">content<br/><span style="font-size:11px;font-weight:400;opacity:0.7;">width × height</span></div>
             </div>
           </div>
         </div>
       </div>
 
-      <h3>content-box vs border-box</h3>
+      <div class="code-label">// box model completo e box-sizing</div>
+      <pre><code class="language-css">/* ── A propriedade mais importante: box-sizing ─────────────── */
+
+/* Comportamento PADRÃO — content-box (confuso!) */
+.elemento {
+  box-sizing: content-box; /* padrão */
+  width: 300px;
+  padding: 20px;
+  border: 2px solid red;
+  /* Largura REAL = 300 + 20+20 + 2+2 = 344px ← surpresa! */
+}
+
+/* Comportamento CORRETO — border-box */
+.elemento {
+  box-sizing: border-box;
+  width: 300px;
+  padding: 20px;
+  border: 2px solid red;
+  /* Largura REAL = 300px — padding e border ficam DENTRO */
+}
+
+/* Reset global padrão da indústria — coloque no topo do seu CSS */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* ── Margin, Padding, Border ─────────────────────────────────── */
+
+/* Shorthand — sentido horário: top, right, bottom, left */
+margin: 10px 20px 10px 20px;   /* 4 valores */
+margin: 10px 20px;              /* vertical | horizontal */
+margin: 10px;                   /* todos os lados */
+
+/* Valores individuais */
+margin-top: 10px;
+margin-right: 20px;
+margin-bottom: 10px;
+margin-left: 20px;
+
+/* margin auto: centraliza elementos block horizontalmente */
+.container {
+  max-width: 1200px;
+  margin: 0 auto; /* 0 vertical, auto horizontal = centralizado */
+}
+
+/* Margin collapse: margens verticais se fundem entre elementos block */
+/* Se p tem margin-bottom: 20px e o próximo p tem margin-top: 30px,
+   o espaço entre eles é 30px (o maior), não 50px! */
+
+/* Padding — igual ao margin, mas NUNCA colapsa */
+padding: 16px 24px;
+
+/* Border — shorthand: largura estilo cor */
+border: 2px solid #ef4444;
+border-radius: 8px;              /* bordas arredondadas */
+border-radius: 50%;              /* círculo perfeito */
+border-top: 1px dashed #ccc;    /* lado específico */
+outline: 2px solid blue;        /* fora do border, não afeta layout */
+
+/* ── Display: como o elemento se comporta no fluxo ─────────── */
+display: block;         /* ocupa linha inteira, aceita width/height */
+display: inline;        /* flui com texto, ignora width/height, margin V */
+display: inline-block;  /* flui com texto MAS aceita width/height */
+display: none;          /* remove do fluxo e da acessibilidade */
+display: flex;          /* ativa Flexbox (próximo conceito!) */
+display: grid;          /* ativa Grid */
+
+/* ── Position: sai ou não do fluxo normal ─────────────────── */
+position: static;       /* padrão — no fluxo normal */
+position: relative;     /* no fluxo, mas top/right/bottom/left funcionam */
+position: absolute;     /* sai do fluxo, posicionado relativo ao pai com position */
+position: fixed;        /* sai do fluxo, fixo na viewport (nav sticky) */
+position: sticky;       /* combina relative + fixed (nav que gruda no scroll) */
+
+/* ── Width e Height ─────────────────────────────────────────── */
+width: 300px;           /* fixo */
+width: 50%;             /* relativo ao pai */
+width: 100vw;           /* 100% da viewport */
+width: min-content;     /* mínimo para caber o conteúdo */
+width: max-content;     /* máximo sem quebrar */
+width: fit-content;     /* ideal: usa max-content até caber no pai */
+
+min-width: 200px;       /* nunca menor que isso */
+max-width: 800px;       /* nunca maior que isso (essencial para responsividade) */
+</code></pre>
+    </div>
+
+    <!-- ── 5. FLEXBOX ── -->
+    <div class="section">
+      <div class="section-label">// conceito 3</div>
+      <h2>Flexbox — layout em uma dimensão</h2>
       <p>
-        O CSS tem dois modelos de cálculo de largura, definidos pela propriedade <code>box-sizing</code>. Este é um dos
-        maiores causadores de bugs em iniciantes:
+        Flexbox é o sistema de layout ideal para distribuir e alinhar itens em <strong>uma direção</strong> — linha ou coluna. É perfeito para: barras de navegação, listas de cards, formulários, toolbars e qualquer agrupamento de elementos que precisa de alinhamento flexível.
+      </p>
+      <p>
+        O modelo tem duas categorias de propriedades: as do <strong>container</strong> (elemento pai com <code>display: flex</code>) e as dos <strong>itens</strong> (elementos filhos diretos).
       </p>
 
-      <div class="table-wrap">
+      <!-- Demo visual Flexbox -->
+      <div class="demo-box">
+        <div class="demo-label">// flex container com gap e justify-content: space-between</div>
+        <div class="flex-container" style="justify-content:space-between;">
+          <div class="flex-item">Item 1</div>
+          <div class="flex-item">Item 2</div>
+          <div class="flex-item">Item 3</div>
+          <div class="flex-item">Item 4</div>
+        </div>
+      </div>
+
+      <div class="code-label">// propriedades do CONTAINER flex</div>
+      <pre><code class="language-css">.container {
+  display: flex;
+
+  /* ── Direção dos itens ── */
+  flex-direction: row;            /* padrão: esquerda → direita */
+  flex-direction: row-reverse;    /* direita → esquerda */
+  flex-direction: column;         /* cima → baixo */
+  flex-direction: column-reverse;
+
+  /* ── Quebra de linha ── */
+  flex-wrap: nowrap;    /* padrão: todos em uma linha, podem vazar */
+  flex-wrap: wrap;      /* quebra para próxima linha se necessário */
+  flex-wrap: wrap-reverse;
+
+  /* ── Shorthand: direction + wrap ── */
+  flex-flow: row wrap;
+
+  /* ── Alinhamento no eixo PRINCIPAL (flex-direction) ── */
+  justify-content: flex-start;    /* padrão: itens no início */
+  justify-content: flex-end;      /* itens no final */
+  justify-content: center;        /* itens centralizados */
+  justify-content: space-between; /* espaço igual ENTRE os itens */
+  justify-content: space-around;  /* espaço igual ao redor de cada item */
+  justify-content: space-evenly;  /* espaço exatamente igual entre tudo */
+
+  /* ── Alinhamento no eixo CRUZADO (perpendicular) ── */
+  align-items: stretch;      /* padrão: itens se esticam para preencher */
+  align-items: flex-start;   /* itens no topo do container */
+  align-items: flex-end;     /* itens no fundo */
+  align-items: center;       /* itens verticalmente centralizados ← muito usado */
+  align-items: baseline;     /* alinha pela linha de base do texto */
+
+  /* ── Alinhamento de múltiplas linhas (quando wrap ativo) ── */
+  align-content: flex-start;
+  align-content: center;
+  align-content: space-between;
+
+  /* ── Gap entre itens (substitui margin hacks) ── */
+  gap: 16px;            /* igual em todas as direções */
+  gap: 8px 16px;        /* row-gap | column-gap */
+  row-gap: 8px;
+  column-gap: 16px;
+}
+</code></pre>
+
+      <div class="code-label">// propriedades dos ITENS flex</div>
+      <pre><code class="language-css">.item {
+  /* ── Ordem visual (sem alterar o HTML) ── */
+  order: 0;       /* padrão: ordem do HTML */
+  order: -1;      /* move para antes de todos com order:0 */
+  order: 999;     /* move para depois */
+
+  /* ── Crescimento: quanto o item cresce se houver espaço extra ── */
+  flex-grow: 0;   /* padrão: não cresce */
+  flex-grow: 1;   /* cresce proporcionalmente */
+  flex-grow: 2;   /* cresce 2x mais que itens com flex-grow:1 */
+
+  /* ── Encolhimento: quanto o item encolhe se não houver espaço ── */
+  flex-shrink: 1; /* padrão: pode encolher */
+  flex-shrink: 0; /* nunca encolhe (mantém tamanho base) */
+
+  /* ── Tamanho base antes de crescer/encolher ── */
+  flex-basis: auto;   /* padrão: usa width ou conteúdo */
+  flex-basis: 200px;  /* tamanho inicial fixo */
+  flex-basis: 0;      /* ignora tamanho do conteúdo, cresce do zero */
+
+  /* ── Shorthand flex: grow shrink basis ── */
+  flex: 1;          /* equivale a: flex: 1 1 0% — cresce e encolhe igualmente */
+  flex: 1 0 200px;  /* cresce, não encolhe, base 200px */
+  flex: none;       /* equivale a: 0 0 auto — tamanho fixo */
+  flex: auto;       /* equivale a: 1 1 auto */
+
+  /* ── Alinhamento individual (sobrescreve align-items do container) ── */
+  align-self: auto;
+  align-self: flex-start;
+  align-self: center;
+  align-self: flex-end;
+  align-self: stretch;
+}
+</code></pre>
+
+      <!-- Receitas Flexbox -->
+      <h3>Receitas Flexbox — os padrões mais usados</h3>
+
+      <div class="code-label">// receitas prontas para copiar</div>
+      <pre><code class="language-css">/* ── 1. Centralizar qualquer coisa (horizontal + vertical) ── */
+.centralize {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ── 2. Navbar: logo à esquerda, links à direita ── */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  height: 64px;
+}
+
+/* ── 3. Cards de largura igual, linha quebra quando necessário ── */
+.card-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+.card {
+  flex: 1 1 280px; /* cresce, encolhe, mínimo 280px */
+  max-width: 360px;
+}
+
+/* ── 4. Sidebar + conteúdo principal ── */
+.layout {
+  display: flex;
+  gap: 24px;
+  min-height: 100vh;
+}
+.sidebar { flex: 0 0 260px; }  /* largura fixa, não cresce */
+.main    { flex: 1; }          /* ocupa o espaço restante */
+
+/* ── 5. Botões com ícone e texto alinhados ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── 6. Footer grudado no fundo (sticky footer) ── */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+main { flex: 1; } /* empurra o footer para o fundo */
+</code></pre>
+    </div>
+
+    <!-- ── 6. CSS GRID ── -->
+    <div class="section">
+      <div class="section-label">// conceito 4</div>
+      <h2>CSS Grid — layout em duas dimensões</h2>
+      <p>
+        CSS Grid é o sistema de layout mais poderoso do CSS. Enquanto Flexbox trabalha em <em>uma dimensão</em> (linha OU coluna), Grid trabalha em <em>duas dimensões simultaneamente</em> — linhas E colunas. É ideal para layouts de página inteira, dashboards, galerias e qualquer estrutura com alinhamento em ambos os eixos.
+      </p>
+
+      <!-- Demo Grid -->
+      <div class="demo-box">
+        <div class="demo-label">// grid-template-columns: repeat(3, 1fr) — 3 colunas iguais</div>
+        <div class="grid-demo" style="grid-template-columns: repeat(3, 1fr);">
+          <div class="grid-cell">1</div>
+          <div class="grid-cell">2</div>
+          <div class="grid-cell">3</div>
+          <div class="grid-cell">4</div>
+          <div class="grid-cell">5</div>
+          <div class="grid-cell" style="grid-column: span 1;">6</div>
+        </div>
+      </div>
+
+      <div class="code-label">// propriedades do CONTAINER grid</div>
+      <pre><code class="language-css">.grid {
+  display: grid;
+
+  /* ── Definir colunas ── */
+  grid-template-columns: 200px 1fr 1fr;       /* fixo + frações */
+  grid-template-columns: repeat(3, 1fr);       /* 3 colunas iguais */
+  grid-template-columns: repeat(4, minmax(200px, 1fr)); /* mín 200px, máx igual */
+  grid-template-columns: auto 1fr auto;        /* conteúdo | flexível | conteúdo */
+
+  /* ── Definir linhas ── */
+  grid-template-rows: 64px 1fr 80px;          /* header | main | footer */
+  grid-template-rows: auto;                    /* altura pelo conteúdo */
+
+  /* ── Gap entre células ── */
+  gap: 24px;
+  gap: 16px 24px;   /* row-gap | column-gap */
+
+  /* ── Alinhamento de todas as células ── */
+  justify-items: stretch; /* padrão: células preenchem a coluna */
+  justify-items: start | end | center;
+  align-items: stretch;
+  align-items: start | end | center;
+
+  /* ── Alinhamento da grade dentro do container ── */
+  justify-content: start | end | center | space-between;
+  align-content: start | end | center | space-between;
+
+  /* ── Linhas implícitas (quando itens excedem as definidas) ── */
+  grid-auto-rows: 200px;         /* todas as linhas implícitas têm 200px */
+  grid-auto-rows: minmax(100px, auto);
+  grid-auto-flow: row;           /* padrão: preenche linha a linha */
+  grid-auto-flow: column;        /* preenche coluna a coluna */
+  grid-auto-flow: row dense;     /* preenche buracos (para galerias) */
+}
+</code></pre>
+
+      <div class="code-label">// posicionamento de itens no grid</div>
+      <pre><code class="language-css">/* ── Posicionar itens por linha de grade ── */
+.item {
+  /* Grid lines: 1-indexed. Uma grade de 3 colunas tem 4 linhas verticais */
+
+  grid-column: 1 / 3;           /* da linha 1 até a 3 (ocupa 2 colunas) */
+  grid-column: 1 / -1;          /* da primeira até a última linha (largura total) */
+  grid-column: span 2;          /* ocupa 2 colunas a partir da posição atual */
+  grid-row: 1 / 3;              /* da linha 1 até a 3 (ocupa 2 linhas) */
+  grid-row: span 1;
+
+  /* Shorthand: row-start / column-start / row-end / column-end */
+  grid-area: 1 / 1 / 3 / 3;    /* linhas 1-3, colunas 1-3 */
+
+  /* Alinhamento individual */
+  justify-self: start | end | center | stretch;
+  align-self: start | end | center | stretch;
+}
+
+/* ── Template areas — a abordagem mais legível ── */
+.page {
+  display: grid;
+  grid-template-columns: 260px 1fr 300px;
+  grid-template-rows: 64px 1fr 80px;
+  grid-template-areas:
+    "header  header  header"
+    "sidebar main    aside"
+    "footer  footer  footer";
+  min-height: 100vh;
+  gap: 0;
+}
+
+.page-header  { grid-area: header; }
+.page-sidebar { grid-area: sidebar; }
+.page-main    { grid-area: main; }
+.page-aside   { grid-area: aside; }
+.page-footer  { grid-area: footer; }
+</code></pre>
+
+      <h3>Grid Responsivo — o padrão mais poderoso</h3>
+      <div class="code-label">// grade que se adapta sem media queries</div>
+      <pre><code class="language-css">/* ── auto-fill vs auto-fit + minmax ─────────────────────────── */
+
+/* auto-fill: cria o máximo de colunas que cabem, mesmo que vazias */
+.galeria {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+/* Em tela larga → 4 colunas; tablet → 2 colunas; mobile → 1 coluna */
+/* Tudo sem media query! */
+
+/* auto-fit: como auto-fill, mas colunas vazias colapsam a 0 */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+/* Use auto-fit quando quer que os itens se expandam para preencher */
+
+/* ── minmax() — controla mínimo e máximo de uma trilha ── */
+/* minmax(min, max):
+   min = tamanho mínimo da trilha
+   max = tamanho máximo (pode ser fr, %, auto, max-content...) */
+
+grid-template-rows: minmax(100px, auto); /* pelo menos 100px, cresce com conteúdo */
+grid-template-columns: minmax(200px, 1fr); /* entre 200px e 1 fração */
+</code></pre>
+
+      <!-- Flexbox vs Grid -->
+      <div class="table-wrap" style="margin-top:28px;">
         <table>
           <thead>
-            <tr>
-              <th>box-sizing</th>
-              <th>Como width é calculado</th>
-              <th>Comportamento</th>
-              <th>Recomendação</th>
-            </tr>
+            <tr><th>Critério</th><th>Flexbox</th><th>CSS Grid</th></tr>
           </thead>
           <tbody>
-            <tr>
-              <td><code>content-box</code></td>
-              <td>width = apenas o conteúdo. padding e border são <strong>adicionados por fora</strong></td>
-              <td>Um div com <code>width:200px; padding:20px</code> ocupa 240px no total</td>
-              <td>❌ Padrão do browser — evite usar sozinho</td>
-            </tr>
-            <tr>
-              <td><code>border-box</code></td>
-              <td>width = content + padding + border juntos. Tudo <strong>fica dentro</strong> do valor declarado</td>
-              <td>Um div com <code>width:200px; padding:20px</code> ocupa exatamente 200px</td>
-              <td>✅ Use sempre — ative globalmente com <code>*</code></td>
-            </tr>
+            <tr><td>Dimensões</td><td>1D — linha OU coluna</td><td>2D — linhas E colunas</td></tr>
+            <tr><td>Ideal para</td><td>Componentes: nav, cards, botões</td><td>Layouts de página inteira</td></tr>
+            <tr><td>Controle</td><td>Itens controlam seu próprio tamanho</td><td>Container controla tudo</td></tr>
+            <tr><td>Alinhamento cruzado</td><td>Limitado a uma linha por vez</td><td>Perfeito alinhamento em 2D</td></tr>
+            <tr><td>Responsividade sem media query</td><td>Com flex-wrap + flex-basis</td><td>Com auto-fill/fit + minmax</td></tr>
+            <tr><td>Sobreposição de elementos</td><td><span class="badge badge-red">Difícil</span></td><td><span class="badge badge-green">Nativo (grid-area)</span></td></tr>
+            <tr><td>Suporte a browsers</td><td><span class="badge badge-green">Excelente</span></td><td><span class="badge badge-green">Excelente (IE11 parcial)</span></td></tr>
           </tbody>
         </table>
       </div>
 
       <div class="callout callout-tip">
-        <div class="callout-title">🔥 Pro tip — ative border-box globalmente</div>
-        Todo projeto CSS profissional começa com este reset. Coloque-o no topo do seu CSS principal e esqueça os bugs de
-        tamanho para sempre:
-        <br><br>
-        <code>*, *::before, *::after { box-sizing: border-box; }</code>
+        <div class="callout-title">🔥 Pro tip: use os dois juntos</div>
+        Flexbox e Grid não são concorrentes — são complementares. A regra de ouro: use <strong>Grid para o macro-layout</strong> (estrutura da página, posições das seções) e <strong>Flexbox para o micro-layout</strong> (alinhamento dentro de um componente). A maioria dos projetos profissionais usa os dois extensivamente.
+      </div>
+    </div>
+
+    <!-- ── 7. UNIDADES CSS ── -->
+    <div class="section">
+      <div class="section-label">// conceito 5</div>
+      <h2>Unidades CSS — quando usar cada uma</h2>
+      <p>
+        Escolher a unidade correta é parte fundamental de um CSS manutenível e responsivo. Cada unidade tem seu contexto ideal.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Unidade</th><th>Relativa a</th><th>Ideal para</th><th>Evitar em</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>px</code></td>
+              <td>Pixel fixo</td>
+              <td>Borders, box-shadow, outline, detalhes precisos</td>
+              <td>Font-size, larguras de layout</td>
+            </tr>
+            <tr>
+              <td><code>rem</code></td>
+              <td>Font-size do <code>html</code> (padrão 16px)</td>
+              <td><span class="badge badge-green">Font-size, padding, margin, gap</span> — respeita preferências do usuário</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td><code>em</code></td>
+              <td>Font-size do elemento pai</td>
+              <td>Espaçamento proporcional ao texto local (ex: padding de botão)</td>
+              <td>Contextos aninhados — se acumula e fica imprevisível</td>
+            </tr>
+            <tr>
+              <td><code>%</code></td>
+              <td>Dimensão do pai</td>
+              <td>Larguras de layout fluidas, padding vertical em aspect-ratio</td>
+              <td>Font-size (use rem)</td>
+            </tr>
+            <tr>
+              <td><code>vw</code></td>
+              <td>Largura da viewport</td>
+              <td>Layouts full-width, font-size fluido com <code>clamp()</code></td>
+              <td>Heights em mobile (usa vh em vez de dvh)</td>
+            </tr>
+            <tr>
+              <td><code>vh</code></td>
+              <td>Altura da viewport</td>
+              <td>Layouts full-height em desktop</td>
+              <td>Mobile — a barra do browser muda a altura</td>
+            </tr>
+            <tr>
+              <td><code>dvh</code></td>
+              <td>Altura dinâmica da viewport</td>
+              <td><span class="badge badge-green">Substituto moderno de vh no mobile</span></td>
+              <td>Browsers muito antigos</td>
+            </tr>
+            <tr>
+              <td><code>ch</code></td>
+              <td>Largura do caractere "0"</td>
+              <td>Largura de campos de texto (<code>width: 40ch</code>)</td>
+              <td>Layouts gerais</td>
+            </tr>
+            <tr>
+              <td><code>fr</code></td>
+              <td>Fração do espaço disponível</td>
+              <td><span class="badge badge-green">Grid — distribui espaço restante</span></td>
+              <td>Fora de contexto grid/flex</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
-      <div class="mermaid-wrap">
-        <div class="mermaid-label">// fluxo do Box Model</div>
-        <pre class="mermaid">
-          graph LR
-          A[content<br />width × height] --> B[+ padding<br />espaço interno]
-          B --> C[+ border<br />borda visível]
-          C --> D[+ margin<br />espaço externo]
-          D --> E[espaço total<br />ocupado]
-          style A fill:#3d0f0f,stroke:#ef4444,color:#fca5a5
-          style B fill:#3d1f0f,stroke:#f97316,color:#fdba74
-          style C fill:#3d2f0f,stroke:#eab308,color:#fde047
-          style D fill:#1f3d0f,stroke:#22c55e,color:#86efac
-          style E fill:#0f1f3d,stroke:#60a5fa,color:#93c5fd
-        </pre>
-      </div>
+      <div class="code-label">// funções CSS modernas essenciais</div>
+      <pre><code class="language-css">/* ── clamp(min, ideal, max) — valor fluido com limites ── */
+/* Font-size que cresce com a tela, mas tem limites */
+h1 { font-size: clamp(1.5rem, 4vw + 1rem, 3rem); }
+/*                     ↑ mín   ↑ fluido         ↑ máx */
 
-      <div class="code-wrap">
-        <div class="code-header">
-          <span class="code-filename">📄 box-model.css</span>
-          <span class="code-lang">CSS</span>
-        </div>
-        <pre><code class="language-css">/* ─── Reset universal: SEMPRE coloque isso primeiro ─── */
-*, *::before, *::after {
-  box-sizing: border-box;
-}
-
-/* ─── Exemplo prático ─── */
-.card {
-  width: 300px;            /* com border-box: card ocupa exatamente 300px */
-  padding: 24px;           /* espaço interno — não aumenta a largura total  */
-  border: 2px solid #ef4444; /* borda — incluída nos 300px                 */
-  margin: 16px auto;       /* espaço externo + centralizado horizontalmente */
-}
-
-/* ─── Colapso de margin: margem entre dois elementos ─── */
-/* Quando dois elementos com margin se tocam verticalmente,
-   a margem NÃO soma: vence o maior valor (colapso de margin) */
-.titulo  { margin-bottom: 32px; }
-.subtitulo { margin-top: 16px; }
-/* Espaço real entre eles: 32px (não 48px!) */
-
-/* ─── Margin auto: centralizar horizontalmente ─── */
+/* Container width responsivo */
 .container {
-  width: 860px;
-  max-width: 100%;
-  margin: 0 auto;   /* left e right auto = centralizado */
-}</code></pre>
-      </div>
-    </div>
-
-    <!-- ══════════════════════════════════════════
-         4. FLEXBOX
-    ══════════════════════════════════════════ -->
-    <div class="section">
-      <div class="section-label">// 04 — flexbox</div>
-      <h2>Flexbox — layout em uma dimensão</h2>
-      <p>
-        Flexbox (<em>Flexible Box Layout</em>) resolve o problema de distribuir e alinhar itens em <strong>uma única
-          direção</strong> — linha ou coluna. É ideal para componentes: navbars, cards, botões agrupados, listas de
-        itens.
-      </p>
-      <p>
-        O modelo tem dois atores: o <strong>flex container</strong> (pai que recebe <code>display: flex</code>) e os
-        <strong>flex items</strong> (filhos diretos). Propriedades do container controlam o layout coletivo;
-        propriedades do item controlam o comportamento individual.
-      </p>
-
-      <!-- Demo visual -->
-      <div class="flex-demo-wrap">
-        <div class="flex-demo-header">// flex-direction: row (padrão) — justify-content: space-between</div>
-        <div class="flex-demo-body">
-          <div class="flex-label">container</div>
-          <div class="flex-row" style="justify-content:space-between;">
-            <div class="flex-item">item 1</div>
-            <div class="flex-item">item 2</div>
-            <div class="flex-item">item 3</div>
-          </div>
-          <div class="flex-label" style="margin-top:16px;">flex-direction: column — align-items: center</div>
-          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
-            <div class="flex-item">item A</div>
-            <div class="flex-item">item B</div>
-            <div class="flex-item">item C</div>
-          </div>
-        </div>
-      </div>
-
-      <h3>Propriedades do container</h3>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Propriedade</th>
-              <th>Valores principais</th>
-              <th>O que faz</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>flex-direction</code></td>
-              <td><code>row</code> · <code>column</code> · <code>row-reverse</code></td>
-              <td>Define o eixo principal (horizontal ou vertical)</td>
-            </tr>
-            <tr>
-              <td><code>justify-content</code></td>
-              <td><code>flex-start</code> · <code>center</code> · <code>space-between</code> · <code>space-around</code>
-              </td>
-              <td>Alinha no eixo principal</td>
-            </tr>
-            <tr>
-              <td><code>align-items</code></td>
-              <td><code>stretch</code> · <code>center</code> · <code>flex-start</code> · <code>flex-end</code></td>
-              <td>Alinha no eixo cruzado (perpendicular)</td>
-            </tr>
-            <tr>
-              <td><code>flex-wrap</code></td>
-              <td><code>nowrap</code> · <code>wrap</code> · <code>wrap-reverse</code></td>
-              <td>Quebra ou não os itens em múltiplas linhas</td>
-            </tr>
-            <tr>
-              <td><code>gap</code></td>
-              <td><code>8px</code> · <code>16px 8px</code></td>
-              <td>Espaçamento entre itens (substituiu margin hacks)</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <h3>Propriedades do item</h3>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Propriedade</th>
-              <th>Valores</th>
-              <th>O que faz</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>flex-grow</code></td>
-              <td><code>0</code> (padrão) · <code>1</code> · <code>2</code></td>
-              <td>Quanto o item cresce para preencher espaço livre. <code>1</code> = ocupa todo o espaço disponível</td>
-            </tr>
-            <tr>
-              <td><code>flex-shrink</code></td>
-              <td><code>1</code> (padrão) · <code>0</code></td>
-              <td>Se o item pode encolher quando falta espaço. <code>0</code> = nunca encolhe</td>
-            </tr>
-            <tr>
-              <td><code>flex-basis</code></td>
-              <td><code>auto</code> · <code>200px</code> · <code>30%</code></td>
-              <td>Tamanho inicial antes de grow/shrink serem aplicados</td>
-            </tr>
-            <tr>
-              <td><code>flex</code></td>
-              <td><code>1</code> = <code>1 1 0%</code></td>
-              <td>Shorthand de grow + shrink + basis. Use sempre o shorthand</td>
-            </tr>
-            <tr>
-              <td><code>order</code></td>
-              <td><code>0</code> (padrão) · valores negativos e positivos</td>
-              <td>Reordena itens visualmente sem alterar o HTML</td>
-            </tr>
-            <tr>
-              <td><code>align-self</code></td>
-              <td>mesmos valores de <code>align-items</code></td>
-              <td>Sobrescreve o <code>align-items</code> do container só para este item</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="code-wrap">
-        <div class="code-header">
-          <span class="code-filename">📄 flexbox.css</span>
-          <span class="code-lang">CSS</span>
-        </div>
-        <pre><code class="language-css">/* ─── Navbar clássica com flexbox ─── */
-.navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;  /* logo à esquerda, links à direita */
-  padding: 0 24px;
-  height: 64px;
-  gap: 16px;
+  width: clamp(320px, 90%, 1200px);
+  margin: 0 auto;
 }
 
-/* ─── Card grid responsivo com flex-wrap ─── */
-.cards {
-  display: flex;
-  flex-wrap: wrap;        /* quebra em nova linha quando necessário */
-  gap: 20px;
+/* ── min() e max() ── */
+width: min(500px, 100%);   /* o menor dos dois — nunca passa de 500px */
+width: max(300px, 50%);    /* o maior dos dois — nunca menor que 300px */
+
+/* ── calc() — cálculos mistos ── */
+width: calc(100% - 2 * 24px);     /* 100% menos as margens */
+padding: calc(1rem + 2px);
+height: calc(100vh - 64px);       /* viewport menos navbar */
+
+/* ── Variáveis CSS (Custom Properties) ── */
+:root {
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --color-primary: #ef4444;
+  --font-size-base: 1rem;
+  --radius: 8px;
 }
 
 .card {
-  flex: 1 1 280px;        /* grow=1, shrink=1, base=280px */
-  /* cada card cresce, encolhe, mas nunca fica menor que 280px */
+  padding: var(--spacing-md);
+  border-radius: var(--radius);
+  border: 1px solid var(--color-primary);
+  /* Variáveis com fallback: */
+  color: var(--color-text, #e8e8f0); /* usa #e8e8f0 se --color-text não existir */
 }
-
-/* ─── Centralizar qualquer coisa com flex ─── */
-.center-tudo {
-  display: flex;
-  align-items: center;      /* eixo cruzado: vertical */
-  justify-content: center;  /* eixo principal: horizontal */
-  min-height: 100vh;        /* ocupa toda a altura da viewport */
-}
-
-/* ─── Barra lateral que não encolhe ─── */
-.layout {
-  display: flex;
-  gap: 24px;
-}
-.sidebar { flex: 0 0 240px; }  /* não cresce (0), não encolhe (0), sempre 240px */
-.main    { flex: 1; }           /* ocupa todo o restante */</code></pre>
-      </div>
+</code></pre>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         5. CSS GRID
-    ══════════════════════════════════════════ -->
+    <!-- ── HANDS-ON ── -->
     <div class="section">
-      <div class="section-label">// 05 — css grid</div>
-      <h2>CSS Grid — layout em duas dimensões</h2>
-      <p>
-        Enquanto Flexbox trabalha em uma direção por vez, CSS Grid define <strong>linhas e colunas
-          simultaneamente</strong>. É o sistema de layout mais poderoso do CSS e ideal para estruturas de página:
-        header, sidebar, main, footer.
-      </p>
-
-      <!-- Grid demo visual -->
-      <div class="flex-demo-wrap">
-        <div class="flex-demo-header">// grid-template-columns: repeat(3, 1fr)</div>
-        <div class="flex-demo-body">
-          <div class="grid-demo">
-            <div class="grid-item span-3" style="background:rgba(239,68,68,0.2);">header (span 3)</div>
-            <div class="grid-item">item 1</div>
-            <div class="grid-item">item 2</div>
-            <div class="grid-item">item 3</div>
-            <div class="grid-item span-2">item 4 (span 2)</div>
-            <div class="grid-item">item 5</div>
-            <div class="grid-item span-3" style="background:rgba(239,68,68,0.2);">footer (span 3)</div>
-          </div>
-        </div>
-      </div>
-
-      <h3>Propriedades essenciais do Grid</h3>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Propriedade</th>
-              <th>Exemplo</th>
-              <th>O que faz</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>grid-template-columns</code></td>
-              <td><code>1fr 2fr 1fr</code></td>
-              <td>Define as colunas. <code>fr</code> = fração do espaço disponível</td>
-            </tr>
-            <tr>
-              <td><code>grid-template-rows</code></td>
-              <td><code>auto 1fr auto</code></td>
-              <td>Define as linhas. <code>auto</code> = tamanho pelo conteúdo</td>
-            </tr>
-            <tr>
-              <td><code>grid-template-areas</code></td>
-              <td><code>"header header" "sidebar main"</code></td>
-              <td>Nomeia áreas para posicionar itens por nome (muito legível)</td>
-            </tr>
-            <tr>
-              <td><code>gap</code></td>
-              <td><code>20px</code> · <code>16px 24px</code></td>
-              <td>Espaçamento entre linhas e colunas</td>
-            </tr>
-            <tr>
-              <td><code>repeat()</code></td>
-              <td><code>repeat(4, 1fr)</code></td>
-              <td>Repete padrões — evita repetição manual</td>
-            </tr>
-            <tr>
-              <td><code>auto-fit</code> + <code>minmax()</code></td>
-              <td><code>repeat(auto-fit, minmax(200px, 1fr))</code></td>
-              <td>Grid responsivo automático: cria quantas colunas couberem no espaço disponível</td>
-            </tr>
-            <tr>
-              <td><code>grid-column</code></td>
-              <td><code>1 / 3</code> ou <code>span 2</code></td>
-              <td>Item ocupa da coluna 1 até a 3 (ou se expande 2 colunas)</td>
-            </tr>
-            <tr>
-              <td><code>subgrid</code></td>
-              <td><code>grid-template-columns: subgrid</code></td>
-              <td>Item filho herda as trilhas do grid pai — alinha conteúdo interno ao grid externo</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="code-wrap">
-        <div class="code-header">
-          <span class="code-filename">📄 grid-layout.css</span>
-          <span class="code-lang">CSS</span>
-        </div>
-        <pre><code class="language-css">/* ─── Layout de página clássico com grid-areas ─── */
-.app {
-  display: grid;
-  grid-template-areas:
-    "header  header"
-    "sidebar main"
-    "footer  footer";
-  grid-template-columns: 240px 1fr;
-  grid-template-rows: 64px 1fr 48px;
-  min-height: 100vh;
-  gap: 0;
-}
-
-.header  { grid-area: header; }
-.sidebar { grid-area: sidebar; }
-.main    { grid-area: main; }
-.footer  { grid-area: footer; }
-
-/* ─── Grid de cards totalmente responsivo (sem media queries!) ─── */
-.cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
-  /* cria automaticamente 1, 2, 3 ou mais colunas
-     conforme o espaço disponível — cada coluna min 280px */
-}
-
-/* ─── Subgrid: alinhar conteúdo interno ao grid pai ─── */
-.card-grid-pai {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-}
-
-.card {
-  display: grid;
-  grid-template-rows: subgrid;  /* herda linhas do pai */
-  grid-row: span 3;             /* ocupa 3 linhas do pai */
-  /* resultado: imagem, título e texto de todos os cards
-     ficam alinhados horizontalmente, mesmo com alturas diferentes */
-}</code></pre>
-      </div>
-
-      <div class="callout callout-info">
-        <div class="callout-title">💡 Flexbox vs Grid — quando usar cada um?</div>
-        <strong>Flexbox:</strong> quando o conteúdo dita o layout. "Quero que esses itens fiquem em linha e se
-        distribuam bem." → navbars, grupos de botões, listas de chips, layouts de componente interno.<br><br>
-        <strong>Grid:</strong> quando o layout dita o conteúdo. "Preciso de 3 colunas e o segundo item deve sempre
-        ocupar 2 delas." → página inteira, dashboard, galeria de fotos, card com campos alinhados.
-      </div>
-    </div>
-
-    <!-- ══════════════════════════════════════════
-         6. CASCADE & SPECIFICITY
-    ══════════════════════════════════════════ -->
-    <div class="section">
-      <div class="section-label">// 06 — cascade &amp; specificity</div>
-      <h2>Cascade &amp; Specificity — quem ganha o conflito?</h2>
-      <p>
-        Quando duas regras CSS tentam estilizar o mesmo elemento, o browser precisa decidir qual vence. Essa decisão
-        segue três critérios em ordem de importância: <strong>origem</strong>, <strong>especificidade</strong> e
-        <strong>ordem de aparecimento</strong>.
-      </p>
-
-      <h3>Especificidade — o score</h3>
-      <p>
-        Cada seletor tem um score de especificidade representado como três números: <code>(A, B, C)</code>.
-      </p>
-
-      <div class="specificity-bar">
-        <span class="spec-score">(1,0,0)</span>
-        <span class="spec-desc">Seletor de <strong>ID</strong></span>
-        <span class="spec-example">#header, #main-nav</span>
-      </div>
-      <div class="specificity-bar">
-        <span class="spec-score">(0,1,0)</span>
-        <span class="spec-desc">Seletor de <strong>classe</strong>, pseudo-classe, atributo</span>
-        <span class="spec-example">.card, :hover, [type="text"]</span>
-      </div>
-      <div class="specificity-bar">
-        <span class="spec-score">(0,0,1)</span>
-        <span class="spec-desc">Seletor de <strong>tag</strong>, pseudo-elemento</span>
-        <span class="spec-example">div, p, ::before</span>
-      </div>
-      <div class="specificity-bar">
-        <span class="spec-score">(0,0,0)</span>
-        <span class="spec-desc">Seletor universal</span>
-        <span class="spec-example">* { ... }</span>
-      </div>
-
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Especificidade se soma — cuidado com seletores longos</div>
-        <code>nav ul li a.active</code> tem score <code>(0,1,4)</code> — uma classe + quatro tags. Isso é muito
-        específico e dificulta sobrescrever depois. Prefira seletores curtos com classes bem nomeadas:
-        <code>.nav-link--active</code> tem score <code>(0,1,0)</code> e é muito mais fácil de manter.
-      </div>
-
-      <h3>:is(), :where() e :has() — seletores modernos</h3>
-      <p>
-        CSS moderno oferece pseudo-classes que simplificam seletores complexos e controlam a especificidade de forma
-        precisa:
-      </p>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Pseudo-classe</th>
-              <th>Especificidade</th>
-              <th>Uso</th>
-              <th>Exemplo</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>:is()</code></td>
-              <td>Herda do seletor mais específico dentro dela</td>
-              <td>Agrupa seletores — reduz repetição de código</td>
-              <td><code>:is(h1, h2, h3) { margin: 0; }</code></td>
-            </tr>
-            <tr>
-              <td><code>:where()</code></td>
-              <td>Sempre <strong>zero</strong> — não contribui para especificidade</td>
-              <td>Agrupa sem aumentar especificidade. Ideal para resets e utilitários</td>
-              <td><code>:where(article, section) p { ... }</code></td>
-            </tr>
-            <tr>
-              <td><code>:has()</code></td>
-              <td>Herda do seletor interno (como <code>:is()</code>)</td>
-              <td>"Seletor pai" — estiliza um elemento baseado no que ele contém</td>
-              <td><code>figure:has(figcaption) { ... }</code></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="code-wrap">
-        <div class="code-header">
-          <span class="code-filename">📄 cascade-modern.css</span>
-          <span class="code-lang">CSS</span>
-        </div>
-        <pre><code class="language-css">/* ─── :is() — agrupar seletores sem repetição ─── */
-/* antes (repetitivo e sujeito a erro) */
-h1, h2, h3, h4, h5, h6 { font-family: 'Syne', sans-serif; }
-
-/* depois (mais limpo) */
-:is(h1, h2, h3, h4, h5, h6) { font-family: 'Syne', sans-serif; }
-
-/* ─── :where() — reset de zero especificidade ─── */
-/* perfeito para CSS de biblioteca: fácil de sobrescrever */
-:where(button, input, select, textarea) {
-  font-family: inherit;
-  font-size: inherit;
-}
-
-/* ─── :has() — o "seletor pai" que o CSS nunca teve ─── */
-
-/* card com imagem: layout diferente de card sem imagem */
-.card:has(img) {
-  display: grid;
-  grid-template-columns: 120px 1fr;
-}
-
-/* label de campo inválido muda de cor */
-label:has(+ input:invalid) {
-  color: #ef4444;
-}
-
-/* formulário com campos obrigatórios não preenchidos: botão desabilitado */
-form:has(input:required:placeholder-shown) .btn-submit {
-  opacity: 0.4;
-  pointer-events: none;
-}
-
-/* ─── Cascade layers — controle explícito da ordem ─── */
-@layer reset, base, components, utilities;
-
-@layer reset {
-  *, *::before, *::after { box-sizing: border-box; }
-}
-
-@layer base {
-  body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Syne', sans-serif;
-      line-height: 1.7;
-      overflow-x: hidden; }
-}
-
-@layer utilities {
-  .mt-auto { margin-top: auto; }
-}
-/* Regras em "utilities" sempre ganham de regras em "base",
-   independente da especificidade — é a ordem da layer que decide */</code></pre>
-      </div>
-
-      <div class="mermaid-wrap">
-        <div class="mermaid-label">// como o browser decide qual CSS aplicar</div>
-        <pre class="mermaid">
-          flowchart TD
-          A[Conflito de regras CSS] --> B{Qual tem maior<br />origem?}
-          B -->|!important user-agent| C[Vence — fim]
-          B -->|!important author| D[Vence — fim]
-          B -->|empate| E{Qual tem maior<br />especificidade?}
-          E -->|A tem mais| F[A vence — fim]
-          E -->|B tem mais| G[B vence — fim]
-          E -->|empate| H{Qual aparece<br />por último no CSS?}
-          H -->|A aparece depois| I[A vence — fim]
-          H -->|B aparece depois| J[B vence — fim]
-          style A fill:#1e1e2e,stroke:#ef4444,color:#e8e8f0
-          style C fill:#033a16,stroke:#22c55e,color:#86efac
-          style D fill:#033a16,stroke:#22c55e,color:#86efac
-          style F fill:#033a16,stroke:#22c55e,color:#86efac
-          style G fill:#033a16,stroke:#22c55e,color:#86efac
-          style I fill:#033a16,stroke:#22c55e,color:#86efac
-          style J fill:#033a16,stroke:#22c55e,color:#86efac
-        </pre>
-      </div>
-    </div>
-
-    <!-- ══════════════════════════════════════════
-         7. HANDS-ON PASSO A PASSO
-    ══════════════════════════════════════════ -->
-    <div class="section">
-      <div class="section-label">// 07 — hands-on</div>
-      <h2>Mãos na massa — construa um layout completo</h2>
-      <p>Vamos criar uma página com layout real: header, sidebar, conteúdo principal e grid de cards responsivo.</p>
+      <div class="section-label">// prática</div>
+      <h2>Mãos na massa — Layout de Dashboard</h2>
+      <p>Vamos construir o layout de um dashboard completo usando Grid para a macro-estrutura e Flexbox para os componentes internos.</p>
 
       <div class="steps">
         <div class="step">
           <div class="step-num">1</div>
           <div class="step-body">
-            <div class="step-title">Crie os arquivos</div>
-            <div class="step-desc">Crie uma pasta <code>css-layout/</code> com um HTML e um CSS.</div>
-            <div class="code-wrap">
-              <div class="code-header">
-                <span class="code-filename">📁 estrutura</span>
-                <span class="code-lang">bash</span>
-              </div>
-              <pre><code class="language-bash">mkdir css-layout && cd css-layout
-touch index.html styles.css</code></pre>
-            </div>
+            <div class="step-title">Crie <code>dashboard.html</code></div>
+            <pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="pt-BR"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Dashboard&lt;/title&gt;
+  &lt;link rel="stylesheet" href="dashboard.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="app"&gt;
+
+    &lt;header class="header"&gt;
+      &lt;a href="/" class="logo"&gt;⚡ DevBoard&lt;/a&gt;
+      &lt;nav class="nav"&gt;
+        &lt;a href="#"&gt;Dashboard&lt;/a&gt;
+        &lt;a href="#"&gt;Projetos&lt;/a&gt;
+        &lt;a href="#"&gt;Time&lt;/a&gt;
+      &lt;/nav&gt;
+      &lt;div class="user"&gt;
+        &lt;span&gt;Ana Silva&lt;/span&gt;
+        &lt;div class="avatar"&gt;AS&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/header&gt;
+
+    &lt;aside class="sidebar"&gt;
+      &lt;nav&gt;
+        &lt;a href="#" class="sidebar-link active"&gt;📊 Visão Geral&lt;/a&gt;
+        &lt;a href="#" class="sidebar-link"&gt;📋 Tarefas&lt;/a&gt;
+        &lt;a href="#" class="sidebar-link"&gt;👥 Time&lt;/a&gt;
+        &lt;a href="#" class="sidebar-link"&gt;📈 Relatórios&lt;/a&gt;
+        &lt;a href="#" class="sidebar-link"&gt;⚙️ Config&lt;/a&gt;
+      &lt;/nav&gt;
+    &lt;/aside&gt;
+
+    &lt;main class="main"&gt;
+      &lt;h1&gt;Visão Geral&lt;/h1&gt;
+
+      &lt;!-- Métricas --&gt;
+      &lt;div class="metrics"&gt;
+        &lt;div class="metric-card"&gt;
+          &lt;span class="metric-label"&gt;Tarefas Abertas&lt;/span&gt;
+          &lt;span class="metric-value"&gt;24&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class="metric-card"&gt;
+          &lt;span class="metric-label"&gt;Concluídas Hoje&lt;/span&gt;
+          &lt;span class="metric-value"&gt;7&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class="metric-card"&gt;
+          &lt;span class="metric-label"&gt;Em Progresso&lt;/span&gt;
+          &lt;span class="metric-value"&gt;12&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class="metric-card"&gt;
+          &lt;span class="metric-label"&gt;Membros Ativos&lt;/span&gt;
+          &lt;span class="metric-value"&gt;5&lt;/span&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;!-- Projetos --&gt;
+      &lt;section&gt;
+        &lt;h2&gt;Projetos Recentes&lt;/h2&gt;
+        &lt;div class="projects"&gt;
+          &lt;article class="project-card"&gt;
+            &lt;h3&gt;DevBoard v2&lt;/h3&gt;
+            &lt;p&gt;Refatoração completa da interface&lt;/p&gt;
+            &lt;div class="progress-bar"&gt;&lt;div class="progress-fill" style="width:75%"&gt;&lt;/div&gt;&lt;/div&gt;
+            &lt;div class="project-meta"&gt;&lt;span&gt;75%&lt;/span&gt;&lt;span&gt;3 dias&lt;/span&gt;&lt;/div&gt;
+          &lt;/article&gt;
+          &lt;article class="project-card"&gt;
+            &lt;h3&gt;API Gateway&lt;/h3&gt;
+            &lt;p&gt;Centralização de endpoints&lt;/p&gt;
+            &lt;div class="progress-bar"&gt;&lt;div class="progress-fill" style="width:40%"&gt;&lt;/div&gt;&lt;/div&gt;
+            &lt;div class="project-meta"&gt;&lt;span&gt;40%&lt;/span&gt;&lt;span&gt;10 dias&lt;/span&gt;&lt;/div&gt;
+          &lt;/article&gt;
+          &lt;article class="project-card"&gt;
+            &lt;h3&gt;Design System&lt;/h3&gt;
+            &lt;p&gt;Componentes reutilizáveis&lt;/p&gt;
+            &lt;div class="progress-bar"&gt;&lt;div class="progress-fill" style="width:90%"&gt;&lt;/div&gt;&lt;/div&gt;
+            &lt;div class="project-meta"&gt;&lt;span&gt;90%&lt;/span&gt;&lt;span&gt;1 dia&lt;/span&gt;&lt;/div&gt;
+          &lt;/article&gt;
+        &lt;/div&gt;
+      &lt;/section&gt;
+    &lt;/main&gt;
+
+    &lt;footer class="footer"&gt;
+      &lt;p&gt;© 2024 DevBoard — Feito com HTML + CSS puro&lt;/p&gt;
+    &lt;/footer&gt;
+
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
           </div>
         </div>
 
         <div class="step">
           <div class="step-num">2</div>
           <div class="step-body">
-            <div class="step-title">Estrutura HTML com Grid</div>
-            <div class="step-desc">Cole este HTML no <code>index.html</code>:</div>
-            <div class="code-wrap">
-              <div class="code-header">
-                <span class="code-filename">📄 index.html</span>
-                <span class="code-lang">HTML</span>
-              </div>
-              <pre><code class="language-html">&lt;!DOCTYPE html&gt;
-&lt;html lang="pt-BR"&gt;
-&lt;head&gt;
-  &lt;meta charset="UTF-8"&gt;
-  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-  &lt;title&gt;CSS Layout Demo&lt;/title&gt;
-  &lt;link rel="stylesheet" href="styles.css"&gt;
-&lt;/head&gt;
-&lt;body&gt;
-  &lt;div class="app"&gt;
-    &lt;header class="header"&gt;
-      &lt;nav class="navbar"&gt;
-        &lt;span class="logo"&gt;MeuSite&lt;/span&gt;
-        &lt;ul class="nav-links"&gt;
-          &lt;li&gt;&lt;a href="#"&gt;Home&lt;/a&gt;&lt;/li&gt;
-          &lt;li&gt;&lt;a href="#"&gt;Sobre&lt;/a&gt;&lt;/li&gt;
-          &lt;li&gt;&lt;a href="#"&gt;Contato&lt;/a&gt;&lt;/li&gt;
-        &lt;/ul&gt;
-      &lt;/nav&gt;
-    &lt;/header&gt;
+            <div class="step-title">Crie <code>dashboard.css</code></div>
+            <pre><code class="language-css">/* ── Reset e tokens ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    &lt;aside class="sidebar"&gt;
-      &lt;h3&gt;Categorias&lt;/h3&gt;
-      &lt;ul&gt;
-        &lt;li&gt;&lt;a href="#"&gt;Design&lt;/a&gt;&lt;/li&gt;
-        &lt;li&gt;&lt;a href="#"&gt;CSS&lt;/a&gt;&lt;/li&gt;
-        &lt;li&gt;&lt;a href="#"&gt;JavaScript&lt;/a&gt;&lt;/li&gt;
-      &lt;/ul&gt;
-    &lt;/aside&gt;
+:root {
+  --bg: #0f0f16;
+  --surface: #1a1a26;
+  --border: #2a2a3e;
+  --text: #e8e8f0;
+  --muted: #8585a8;
+  --accent: #ef4444;
+  --accent-dim: rgba(239,68,68,0.15);
+  --radius: 10px;
+  --header-h: 64px;
+  --sidebar-w: 240px;
+  --footer-h: 56px;
+}
 
-    &lt;main class="main"&gt;
-      &lt;h1&gt;Últimos Posts&lt;/h1&gt;
-      &lt;div class="cards-grid"&gt;
-        &lt;article class="card"&gt;
-          &lt;h2&gt;Box Model Explicado&lt;/h2&gt;
-          &lt;p&gt;Entenda margin, padding e border de uma vez por todas.&lt;/p&gt;
-          &lt;a class="btn" href="#"&gt;Ler mais&lt;/a&gt;
-        &lt;/article&gt;
-        &lt;article class="card"&gt;
-          &lt;h2&gt;Flexbox na Prática&lt;/h2&gt;
-          &lt;p&gt;Construa navbars e cards com Flexbox sem stress.&lt;/p&gt;
-          &lt;a class="btn" href="#"&gt;Ler mais&lt;/a&gt;
-        &lt;/article&gt;
-        &lt;article class="card"&gt;
-          &lt;h2&gt;CSS Grid Completo&lt;/h2&gt;
-          &lt;p&gt;Layouts complexos com elegância usando Grid.&lt;/p&gt;
-          &lt;a class="btn" href="#"&gt;Ler mais&lt;/a&gt;
-        &lt;/article&gt;
-        &lt;article class="card"&gt;
-          &lt;h2&gt;Cascade &amp; Specificity&lt;/h2&gt;
-          &lt;p&gt;Debugging de CSS sem adivinhar — calcule o score.&lt;/p&gt;
-          &lt;a class="btn" href="#"&gt;Ler mais&lt;/a&gt;
-        &lt;/article&gt;
-      &lt;/div&gt;
-    &lt;/main&gt;
+body {
+  font-family: system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+}
 
-    &lt;footer class="footer"&gt;
-      &lt;p&gt;&amp;copy; 2025 MeuSite — feito com CSS Grid e Flexbox&lt;/p&gt;
-    &lt;/footer&gt;
-  &lt;/div&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
-            </div>
+/* ── MACRO LAYOUT: Grid 2D ── */
+.app {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  grid-template-rows: var(--header-h) 1fr var(--footer-h);
+  grid-template-areas:
+    "header  header"
+    "sidebar main"
+    "footer  footer";
+  min-height: 100dvh;
+}
+
+/* ── Header: Flexbox 1D ── */
+.header {
+  grid-area: header;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 18px;
+  text-decoration: none;
+  color: var(--accent);
+}
+
+.nav { display: flex; gap: 24px; }
+.nav a {
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 14px;
+  transition: color 0.2s;
+}
+.nav a:hover { color: var(--text); }
+
+.user { display: flex; align-items: center; gap: 12px; font-size: 14px; }
+.avatar {
+  width: 36px; height: 36px;
+  background: var(--accent-dim);
+  border: 1px solid rgba(239,68,68,0.4);
+  color: var(--accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  grid-area: sidebar;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 24px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--muted);
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  transition: all 0.2s;
+}
+.sidebar-link:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+.sidebar-link.active { background: var(--accent-dim); color: var(--accent); }
+
+/* ── Main ── */
+.main {
+  grid-area: main;
+  padding: 32px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.main h1 { font-size: 1.8rem; font-weight: 700; }
+.main h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 16px; }
+
+/* ── Metrics: Grid responsivo ── */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+.metric-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: border-color 0.2s;
+}
+.metric-card:hover { border-color: rgba(239,68,68,0.4); }
+.metric-label { font-size: 13px; color: var(--muted); }
+.metric-value { font-size: 2rem; font-weight: 800; color: var(--accent); }
+
+/* ── Projects ── */
+.projects {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+.project-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.project-card h3 { font-size: 15px; font-weight: 700; }
+.project-card p { font-size: 13px; color: var(--muted); }
+
+.progress-bar {
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #f97316);
+  border-radius: 3px;
+}
+.project-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ── Footer ── */
+.footer {
+  grid-area: footer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--muted);
+}
+</code></pre>
           </div>
         </div>
 
         <div class="step">
           <div class="step-num">3</div>
           <div class="step-body">
-            <div class="step-title">CSS completo</div>
-            <div class="step-desc">Cole em <code>styles.css</code>:</div>
-            <div class="code-wrap">
-              <div class="code-header">
-                <span class="code-filename">📄 styles.css</span>
-                <span class="code-lang">CSS</span>
-              </div>
-              <pre><code class="language-css">/* ─── 1. Reset ─── */
-*, *::before, *::after { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  font-family: system-ui, sans-serif;
-  background: #f5f5f5;
-  color: #1a1a2e;
-}
-
-/* ─── 2. Grid de página principal ─── */
-.app {
-  display: grid;
-  grid-template-areas:
-    "header  header"
-    "sidebar main"
-    "footer  footer";
-  grid-template-columns: 220px 1fr;
-  grid-template-rows: 64px 1fr 48px;
-  min-height: 100vh;
-}
-
-.header  { grid-area: header;  }
-.sidebar { grid-area: sidebar; }
-.main    { grid-area: main;    }
-.footer  { grid-area: footer;  }
-
-/* ─── 3. Navbar com Flexbox ─── */
-.header {
-  background: #1a1a2e;
-  border-bottom: 1px solid #2d2d4e;
-}
-
-.navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 100%;
-  padding: 0 24px;
-}
-
-.logo {
-  font-size: 18px;
-  font-weight: 700;
-  color: #fff;
-}
-
-.nav-links {
-  display: flex;
-  list-style: none;
-  gap: 24px;
-  margin: 0;
-  padding: 0;
-}
-
-.nav-links a {
-  color: #a0a0c0;
-  text-decoration: none;
-  font-size: 14px;
-  transition: color 0.2s;
-}
-
-.nav-links a:hover { color: #fff; }
-
-/* ─── 4. Sidebar ─── */
-.sidebar {
-  background: #fff;
-  border-right: 1px solid #e0e0e8;
-  padding: 24px;
-}
-
-.sidebar h3 {
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #888;
-  margin-bottom: 12px;
-}
-
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.sidebar a {
-  color: #444;
-  text-decoration: none;
-  font-size: 14px;
-  transition: color 0.2s;
-}
-
-.sidebar a:hover { color: #1a1a2e; }
-
-/* ─── 5. Main content ─── */
-.main { padding: 32px; }
-
-.main h1 {
-  font-size: 24px;
-  margin-bottom: 24px;
-  color: #1a1a2e;
-}
-
-/* ─── 6. Cards grid — auto-fit responsivo ─── */
-.cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px;
-}
-
-.card {
-  background: #fff;
-  border: 1px solid #e0e0e8;
-  border-radius: 10px;
-  padding: 20px;
-  display: flex;           /* card interno com flexbox */
-  flex-direction: column;
-  gap: 12px;
-  transition: box-shadow 0.2s;
-}
-
-.card:hover {
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-}
-
-.card h2 { font-size: 16px; margin: 0; }
-.card p  { font-size: 14px; color: #666; margin: 0; flex: 1; }
-
-.btn {
-  display: inline-block;
-  padding: 8px 16px;
-  background: #1a1a2e;
-  color: #fff;
-  border-radius: 6px;
-  text-decoration: none;
-  font-size: 13px;
-  text-align: center;
-  margin-top: auto;        /* empurra o botão para o fundo do card */
-  transition: background 0.2s;
-}
-
-.btn:hover { background: #2d2d4e; }
-
-/* ─── 7. Footer ─── */
-.footer {
-  background: #1a1a2e;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 24px;
-}
-
-.footer p {
-  font-size: 12px;
-  color: #888;
-  margin: 0;
-}</code></pre>
-            </div>
+            <div class="step-title">Abra no browser e explore o DevTools</div>
+            <div class="step-desc">Clique em qualquer elemento com Grid ou Flex e habilite a sobreposição visual no DevTools (aba Elements → badge "grid" ou "flex" ao lado do elemento). Você vai ver as linhas de grade e os espaços.</div>
           </div>
         </div>
 
         <div class="step">
           <div class="step-num">4</div>
           <div class="step-body">
-            <div class="step-title">Abra no browser e experimente</div>
-            <div class="step-desc">Abra o <code>index.html</code> no browser. Experimente redimensionar a janela — os
-              cards se reorganizam automaticamente. Inspecione o layout com DevTools (F12 → Elements) para visualizar o
-              Box Model de cada elemento.</div>
-            <div class="callout callout-tip">
-              <div class="callout-title">🔥 DevTools pro tip</div>
-              No Chrome/Edge DevTools, selecione qualquer elemento → aba Computed → role até "Box Model". Você vê o
-              diagrama interativo de margin, border, padding e content. Clique nos valores para editá-los ao vivo.
-            </div>
+            <div class="step-title">Desafio: torne responsivo para mobile</div>
+            <div class="step-desc">Adicione uma <code>@media (max-width: 768px)</code> que: oculta a sidebar, transforma o layout em uma coluna, e adapta as métricas para 2 colunas.</div>
+            <pre><code class="language-css">@media (max-width: 768px) {
+  .app {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "header"
+      "main"
+      "footer";
+  }
+
+  .sidebar { display: none; }
+
+  .metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+</code></pre>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         8. PITFALLS COMUNS
-    ══════════════════════════════════════════ -->
+    <!-- ── ARMADILHAS ── -->
     <div class="section">
-      <div class="section-label">// 08 — armadilhas</div>
-      <h2>Erros que todo mundo comete</h2>
+      <div class="section-label">// pitfalls</div>
+      <h2>⚠️ Armadilhas Comuns</h2>
 
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Esquecer box-sizing: border-box</div>
-        Sem esse reset, padding e border aumentam a largura total do elemento de forma inesperada. Qualquer cálculo de
-        layout quebra. <strong>Sempre comece com
-          <code>*, *::before, *::after { box-sizing: border-box; }</code>.</strong>
+      <div class="pitfall">
+        <div class="pitfall-title">1. Esquecer box-sizing: border-box</div>
+        <p>O comportamento padrão <code>content-box</code> adiciona padding e border à largura, causando overflow inesperado. Sempre coloque o reset global <code>*, *::before, *::after { box-sizing: border-box; }</code> no topo do seu CSS.</p>
       </div>
 
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Usar margin em vez de gap no Flexbox/Grid</div>
-        <code>margin</code> em flex items causa problemas: o último item não tem margem e o primeiro também não, então
-        você usa <code>margin: 0 8px</code> e tenta compensar. Com <code>gap: 16px</code> no container, o espaçamento é
-        uniforme e sem efeitos colaterais. Sempre prefira <code>gap</code>.
+      <div class="pitfall">
+        <div class="pitfall-title">2. Margin collapse — o susto mais comum</div>
+        <p>Margens verticais entre elementos block se fundem — a maior vence. Isso não acontece com padding, nem entre flex/grid items. Se precisar de espaço consistente, use <code>gap</code> no container flex/grid ou <code>padding</code> no pai em vez de <code>margin</code> nos filhos.</p>
       </div>
 
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Usar !important para resolver conflito de especificidade</div>
-        <code>!important</code> não resolve o problema — apenas mascara. Quando dois seletores têm
-        <code>!important</code>, o de maior especificidade vence. E agora você tem dois bugs em vez de um. <strong>A
-          solução real é entender o score e reescever o seletor.</strong>
+      <div class="pitfall">
+        <div class="pitfall-title">3. Usar height: 100% sem altura definida no pai</div>
+        <p><code>height: 100%</code> em um filho só funciona se o pai tiver uma altura definida. Para layouts full-height, use <code>min-height: 100dvh</code> no <code>body</code> ou no container raiz, e <code>flex: 1</code> / <code>align-self: stretch</code> nos filhos.</p>
       </div>
 
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Usar Grid para tudo ou Flexbox para tudo</div>
-        Grid e Flexbox não são concorrentes — são ferramentas complementares. Navbars e componentes internos → Flexbox.
-        Layout de página e alinhamento multi-eixo → Grid. Projetos reais usam os dois juntos.
+      <div class="pitfall">
+        <div class="pitfall-title">4. !important como solução padrão</div>
+        <p><code>!important</code> quebra a cascata e cria CSS impossível de manter. Quando você sente vontade de usar, é sinal de que a especificidade está errada. Refatore o seletor para ser mais específico, ou reestruture o CSS.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">5. Usar vh em mobile para alturas críticas</div>
+        <p>Em dispositivos móveis, <code>100vh</code> inclui a barra de endereço do browser, causando conteúdo cortado. Use <code>100dvh</code> (dynamic viewport height) para alturas críticas em mobile, com fallback para browsers antigos.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">6. Confundir justify e align em Flexbox</div>
+        <p><code>justify-content</code> alinha no eixo <em>principal</em> (direção do <code>flex-direction</code>). <code>align-items</code> alinha no eixo <em>cruzado</em>. Quando você muda <code>flex-direction: column</code>, os eixos invertem — o que alinhava horizontalmente agora alinha verticalmente.</p>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         9. VÍDEOS
-    ══════════════════════════════════════════ -->
+    <!-- ── VÍDEOS ── -->
     <div class="section">
-      <div class="section-label">// 09 — curadoria</div>
-      <h2>Referências em vídeo</h2>
-
-      <div class="videos-grid">
-        <a class="video-card" href="https://www.youtube.com/watch?v=JJSoEo8JSnc" target="_blank">
+      <div class="section-label">// curadoria</div>
+      <h2>Vídeos Recomendados</h2>
+      <div class="video-grid">
+        <div class="video-card">
           <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title">Flexbox CSS In 20 Minutes</div>
-            <div class="video-channel">Traversy Media · ~20 min</div>
-            <div class="video-why">Por que assistir: Tutorial prático e direto ao ponto — cobre flex-direction,
-              justify-content, align-items e flex shorthand com exemplos reais no browser.</div>
-            <span class="video-watch">Assistir →</span>
-          </div>
-        </a>
-
-        <a class="video-card" href="https://www.youtube.com/watch?v=jV8B24rSN5o" target="_blank">
-          <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title">CSS Grid Crash Course</div>
-            <div class="video-channel">Traversy Media · ~28 min</div>
-            <div class="video-why">Por que assistir: Cobre grid-template, areas, auto-fit, minmax e posicionamento de
-              itens — com exemplos de layouts reais construídos do zero.</div>
-            <span class="video-watch">Assistir →</span>
-          </div>
-        </a>
-
-        <a class="video-card" href="https://www.youtube.com/watch?v=OEV8gMkCHXQ" target="_blank">
-          <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title">CSS in 100 Seconds</div>
+          <div class="video-info">
+            <div class="video-title">Flexbox in 100 Seconds</div>
             <div class="video-channel">Fireship · ~2 min</div>
-            <div class="video-why">Por que assistir: Recapitulação visual e acelerada de como a Cascade, Box Model e os
-              conceitos de layout se conectam — ideal como revisão rápida.</div>
-            <span class="video-watch">Assistir →</span>
+            <div class="video-why">Por que assistir: O overview mais rápido e visual de Flexbox que existe — excelente para fixar os conceitos antes de praticar.</div>
+            <a href="https://www.youtube.com/watch?v=K74l26pE4YA" target="_blank" rel="noopener noreferrer">Assistir →</a>
           </div>
-        </a>
-
-        <a class="video-card" href="https://www.youtube.com/watch?v=Qhaz36TZG5Y" target="_blank">
+        </div>
+        <div class="video-card">
           <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title">10 CSS Pro Tips - Code this, NOT that!</div>
-            <div class="video-channel">Fireship · ~9 min</div>
-            <div class="video-why">Por que assistir: Responde definitivamente quando usar Flexbox e quando usar Grid,
-              com comparações lado a lado. Essencial para desenvolver bom julgamento de layout.</div>
-            <span class="video-watch">Assistir →</span>
+          <div class="video-info">
+            <div class="video-title">CSS Grid in 100 Seconds</div>
+            <div class="video-channel">Fireship · ~2 min</div>
+            <div class="video-why">Por que assistir: Mesma qualidade visual do anterior, mas para Grid. Assista os dois em sequência para ter uma visão completa.</div>
+            <a href="https://www.youtube.com/watch?v=uuOXPWCh-6o" target="_blank" rel="noopener noreferrer">Assistir →</a>
           </div>
-        </a>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Learn CSS Box Model In 8 Minutes</div>
+            <div class="video-channel">Web Dev Simplified · ~8 min</div>
+            <div class="video-why">Por que assistir: Desmistifica box-sizing de uma vez por todas, com visualizações do DevTools que deixam tudo muito concreto.</div>
+            <a href="https://www.youtube.com/watch?v=rIO5326FgPE" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">CSS Grid — Full Tutorial com Projeto</div>
+            <div class="video-channel">Traversy Media · ~45 min</div>
+            <div class="video-why">Por que assistir: Projeto completo de layout usando Grid puro — cobre template areas, responsividade e integração com Flexbox nos componentes.</div>
+            <a href="https://www.youtube.com/watch?v=jV8B24rSN5o" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         10. CHECKPOINT
-    ══════════════════════════════════════════ -->
-    <div class="checkpoint">
-      <div class="checkpoint-label">// desafio</div>
-      <h3>🏁 Checkpoint — valide seu aprendizado</h3>
-      <p>Construa um layout de perfil de usuário com as seguintes características:</p>
-      <ul>
-        <li>Ative <code>box-sizing: border-box</code> globalmente e use margin/padding de forma consciente em cada
-          elemento</li>
-        <li>Use <strong>CSS Grid</strong> para o layout geral da página: header, sidebar com info do perfil e área de
-          posts</li>
-        <li>Use <strong>Flexbox</strong> dentro da sidebar para alinhar avatar + nome + bio verticalmente e
-          centralizados</li>
-        <li>Crie um grid de posts (<code>auto-fit, minmax()</code>) que seja responsivo sem media queries</li>
-        <li>Aplique pelo menos um seletor <code>:has()</code> — por exemplo: card que tem imagem recebe layout diferente
-        </li>
-        <li>Use <code>:is()</code> para estilizar todos os headings da página de uma só vez</li>
-      </ul>
-      <div class="checkpoint-hint">💬 Dica: use o DevTools com o modo "Grid overlay" e "Flexbox overlay" ativados para
-        visualizar as trilhas enquanto constrói. No Chrome, no painel Elements, há um badge colorido "grid" ou "flex" ao
-        lado de cada container — clique para ver a sobreposição no browser.</div>
-    </div>
-
-    <!-- ══════════════════════════════════════════
-         PRÓXIMA AULA
-    ══════════════════════════════════════════ -->
-    <a href="py-01-ambiente-primeiros-passos.html" class="next-lesson">
-      <div>
-        <div class="next-label">Próxima aula →</div>
-        <div class="next-title">Python — Ambiente &amp; Primeiros Passos</div>
+    <!-- ── GLOSSÁRIO ── -->
+    <div class="section">
+      <div class="section-label">// glossário</div>
+      <h2>Termos desta Aula</h2>
+      <div class="glossary-item">
+        <div class="glossary-term">Box Model</div>
+        <div class="glossary-def">Modelo que representa todo elemento HTML como uma caixa com quatro camadas: content, padding, border e margin.</div>
       </div>
-      <div class="next-arrow">→</div>
-    </a>
-
-    <div class="footer">
-      <span>🌐 HTML/CSS · Aula 04 / 50</span>
-      <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+      <div class="glossary-item">
+        <div class="glossary-term">Especificidade (Specificity)</div>
+        <div class="glossary-def">Sistema de pontuação que determina qual regra CSS vence quando múltiplas regras se aplicam ao mesmo elemento.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Flex Container / Flex Item</div>
+        <div class="glossary-def">O elemento com <code>display: flex</code> é o flex container; seus filhos diretos são os flex items.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">fr (fraction unit)</div>
+        <div class="glossary-def">Unidade de CSS Grid que representa uma fração do espaço disponível após subtrair gaps e trilhas fixas.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Grid Line / Grid Track / Grid Cell / Grid Area</div>
+        <div class="glossary-def">Grid Line: linha divisória numerada. Track: espaço entre duas linhas (coluna ou linha). Cell: interseção de uma track de linha com uma de coluna. Area: retângulo formado por múltiplas cells.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Margin Collapse</div>
+        <div class="glossary-def">Fusão de margens verticais adjacentes entre elementos block — a maior margem vence, não somam.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">clamp(min, ideal, max)</div>
+        <div class="glossary-def">Função CSS que retorna o valor ideal se estiver entre min e max, caso contrário retorna o limite atingido. Usada para values fluidos com limites.</div>
+      </div>
     </div>
 
-  </div><!-- /page -->
+    <!-- ── CHECKPOINT ── -->
+    <div class="section">
+      <div class="checkpoint">
+        <h3>🏁 Checkpoint — Desafio Final</h3>
+        <p>Construa uma <strong>landing page de produto</strong> usando exclusivamente HTML semântico e CSS (sem frameworks), com:</p>
+        <ul>
+          <li><strong>Header fixo</strong> com logo à esquerda e nav + CTA à direita (Flexbox, <code>position: sticky</code>)</li>
+          <li><strong>Hero section</strong> com texto e imagem lado a lado em telas grandes, empilhados em mobile (Grid ou Flexbox)</li>
+          <li><strong>Seção de features</strong>: grade de 3 colunas que vira 1 coluna no mobile com <code>auto-fit + minmax</code> — sem media query</li>
+          <li><strong>Seção de preços</strong>: 3 cards usando Grid, o card central com destaque (border, escala ou cor diferente)</li>
+          <li><strong>Footer</strong> com layout de 4 colunas que colapsa para 2 e depois 1 — apenas com media queries</li>
+          <li>Todas as unidades de espaçamento em <code>rem</code>, font-sizes com <code>clamp()</code>, cores em variáveis CSS</li>
+        </ul>
+        <div class="checkpoint-hint">💬 Dica: comece pelo mobile-first — estilize para tela pequena e use media queries para expandir para telas maiores. <code>min-width</code> em vez de <code>max-width</code>. Isso resulta em CSS mais limpo e componentes mais resilientes.</div>
+      </div>
+    </div>
+
+    <!-- ── PRÓXIMOS PASSOS ── -->
+    <div class="section">
+      <div class="section-label">// próximos passos</div>
+      <h2>O que vem a seguir?</h2>
+      <p style="margin-bottom:20px;">Com Box Model, Flexbox e Grid dominados, você tem a base completa de layout CSS. A próxima parada é Python — começaremos com instalação de ambiente, primeiros passos e os fundamentos da linguagem que vai turbinar seu backend e automações.</p>
+      <a href="py-01-ambiente-primeiros-passos.html" class="next-card">
+        <div>
+          <div class="next-card-label">Próxima aula · 🐍 Python</div>
+          <div class="next-card-title">Python — Ambiente & Primeiros Passos</div>
+        </div>
+        <span class="next-arrow">→</span>
+      </a>
+    </div>
+
+  </div>
 
   <script>
-    // Initialize syntax highlighting
-    document.addEventListener('DOMContentLoaded', () => {
-      hljs.highlightAll();
-    });
-
-    // Initialize Mermaid
-    mermaid.initialize({
-      startOnLoad: true,
-      theme: 'dark',
-      themeVariables: {
-        primaryColor: '#ef4444',
-        primaryTextColor: '#e8e8f0',
-        primaryBorderColor: 'rgba(239, 68, 68, 0.35)',
-        lineColor: '#8585a8',
-        background: '#111118',
-        mainBkg: '#16161f',
-        nodeBorder: '#ef4444'
-      }
-    });
-
-    // Scroll progress indicator (update progress bar)
+    const bar = document.getElementById('progressBar');
     window.addEventListener('scroll', () => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = (scrollTop / docHeight) * 100;
-      document.querySelector('.progress-bar-fill').style.width = progress + '%';
+      const doc = document.documentElement;
+      bar.style.width = (doc.scrollTop / (doc.scrollHeight - doc.clientHeight) * 100) + '%';
     });
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.hljs) hljs.highlightAll();
+    });
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
   </script>
 
 </body>
-
 </html>

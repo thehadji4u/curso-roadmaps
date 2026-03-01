@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JavaScript — Core & DOM · Aula 12</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Mermaid -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+  <!-- Highlight.js JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    /* ── Highlight.js github-dark inlined ── */
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
+    /* ── Design Tokens ── */
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #f59e0b;
+      --accent-dim: rgba(245,158,11,0.15);
+      --accent-border: rgba(245,158,11,0.35);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    /* ── Progress Bar ── */
+    .progress-bar-wrap {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--border);
+      z-index: 1000;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #fbbf24);
+      width: 0%;
+      transition: width 0.1s;
+    }
+
+    /* ── Top Nav ── */
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 32px;
+      background: rgba(10,10,15,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-back {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next {
+      display: flex; align-items: center; gap: 6px;
+      text-decoration: none; color: var(--muted);
+      font-size: 12px; letter-spacing: 0.05em;
+      padding: 6px 14px; border: 1px solid var(--border);
+      border-radius: 6px; background: transparent; transition: all 0.2s;
+    }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #fbbf24; }
+
+    /* ── Page Layout ── */
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 48px 24px 96px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 52px 0 40px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 56px;
+    }
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .hero-badge {
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #fff 40%, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+    }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    /* ── Section ── */
+    .section {
+      margin-bottom: 64px;
+    }
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+    .section h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    /* ── Callouts ── */
+    .callout {
+      border-radius: 8px;
+      padding: 18px 20px;
+      margin: 20px 0;
+      border-left: 3px solid;
+    }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.08); border-color: var(--success); }
+    .callout-tip .callout-title { color: var(--success); }
+    .callout-check { background: rgba(167,139,250,0.08); border-color: #a78bfa; }
+    .callout-check .callout-title { color: #a78bfa; }
+
+    /* ── Analogy Card ── */
+    .analogy-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .analogy-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+    .analogy-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+    .analogy-text {
+      font-size: 15px;
+      color: var(--text);
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+    .analogy-mapping {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 24px;
+    }
+    .analogy-real {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .analogy-tech {
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--accent);
+    }
+
+    /* ── Mermaid ── */
+    .mermaid-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 20px;
+      margin: 24px 0;
+      overflow: auto;
+    }
+    .mermaid-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    /* ── Table ── */
+    .table-wrap { overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th {
+      text-align: left;
+      padding: 10px 14px;
+      color: var(--accent);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(59,130,246,0.2); color: #60a5fa; }
+
+    /* ── Steps ── */
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step {
+      display: flex;
+      gap: 18px;
+      padding: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    .step-num {
+      flex-shrink: 0;
+      width: 32px; height: 32px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700;
+    }
+    .step-body { flex: 1; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    /* ── Code blocks ── */
+    pre {
+      background: #0d1117 !important;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 12px 0;
+      font-size: 13px;
+    }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 10px 16px 0;
+    }
+
+    /* ── Mini Cards Grid ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    @media (max-width: 600px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+    .card-mini {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      transition: border-color 0.2s;
+    }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; }
+    .pillar-badge {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    /* ── Video Cards ── */
+    .video-grid { display: grid; gap: 14px; }
+    .video-card {
+      display: flex;
+      gap: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+      transition: border-color 0.2s;
+    }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb {
+      flex-shrink: 0;
+      width: 52px; height: 52px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-info a {
+      font-size: 12px;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+    }
+    .video-info a:hover { text-decoration: underline; }
+
+    /* ── Checkpoint ── */
+    .checkpoint {
+      background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(251,191,36,0.04));
+      border: 1px solid var(--accent-border);
+      border-radius: 12px;
+      padding: 28px;
+    }
+    .checkpoint h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint {
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: rgba(245,158,11,0.06);
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* ── Pitfall / Warning Block ── */
+    .pitfall {
+      background: rgba(239,68,68,0.06);
+      border: 1px solid rgba(239,68,68,0.25);
+      border-radius: 10px;
+      padding: 20px;
+      margin: 16px 0;
+    }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; }
+
+    /* ── Next Steps ── */
+    .next-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 24px;
+      background: var(--surface);
+      border: 1px solid var(--accent-border);
+      border-radius: 10px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+
+    /* ── Glossary ── */
+    .glossary-item {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .glossary-term { color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+    .glossary-def { color: var(--muted); font-size: 13px; }
+
+    /* ── Inline code ── */
+    code:not(.hljs) {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--border);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: #fbbf24;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Progress Bar -->
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar"></div>
+  </div>
+
+  <!-- Top Nav -->
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="gh-03-colaboracao-prs.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">⚡ JavaScript</span> · Aula 12 / 50
+      </div>
+      <a href="js-02-arrays-funcoes-avancado.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- ── HERO ── -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>⚡ JavaScript</span>
+        <span class="hero-badge">Aula 12</span>
+      </div>
+      <h1>JavaScript — Core & DOM</h1>
+      <div class="hero-meta">
+        <span>⏱ ~35 min de leitura</span>
+        <span>🎯 Fundamentos</span>
+        <span>🔧 Hands-on incluído</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">var/let/const</span>
+        <span class="tag">tipos dinâmicos</span>
+        <span class="tag">funções</span>
+        <span class="tag">DOM</span>
+        <span class="tag">eventos</span>
+        <span class="tag">escopo</span>
+        <span class="tag">hoisting</span>
+      </div>
+    </div>
+
+    <!-- ── 1. POR QUE ISSO IMPORTA? ── -->
+    <div class="section">
+      <div class="section-label">// motivação</div>
+      <h2>Por que isso importa?</h2>
+      <p>
+        JavaScript é a <strong>única linguagem nativa dos navegadores</strong>. Não é possível escapar dela: todo app web moderno — React, Vue, Angular, Next.js — compila para JavaScript. Entender o core da linguagem é a diferença entre copiar código do Stack Overflow às cegas e realmente saber o que está acontecendo.
+      </p>
+      <p>
+        Nesta aula vamos cobrir os pilares que sustentam tudo: como JS gerencia tipos e variáveis, como funções funcionam de verdade (incluindo hoisting e closures), e como o DOM permite que código JS manipule o HTML da página em tempo real.
+      </p>
+      <div class="callout callout-info">
+        <div class="callout-title">💼 Por que um engenheiro sênior usa isso hoje</div>
+        Sêniors não "só usam React". Eles entendem que React é uma camada sobre JS puro. Quando algo quebra — um event listener não dispara, uma variável tem valor inesperado, um loop se comporta estranhamente — o debug exige conhecimento profundo do core da linguagem. Hoisting, coerção de tipos, propagação de eventos: esses são os "fantasmas" que assombram bugs de produção.
+      </div>
+    </div>
+
+    <!-- ── 2. ANALOGIA ── -->
+    <div class="section">
+      <div class="section-label">// analogia</div>
+      <h2>Antes do código: uma analogia</h2>
+      <div class="analogy-card">
+        <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
+        <div class="analogy-text">
+          Imagine uma <strong>peça de teatro</strong>. O HTML é o <em>roteiro e o cenário</em> — define o que existe, onde os objetos estão. O CSS é o <em>figurino e a iluminação</em> — define a aparência. O JavaScript é o <em>ator e o diretor ao mesmo tempo</em>: pode ler e alterar o roteiro ao vivo, mover objetos do cenário, responder às reações do público (eventos), e até criar novos atores em cena (criar elementos DOM dinamicamente).
+          <br><br>
+          O DOM (Document Object Model) é o <strong>mapa do palco</strong>: uma representação em árvore de todos os elementos da peça, que o JS pode navegar e modificar durante a apresentação.
+        </div>
+        <div class="analogy-mapping">
+          <span class="analogy-real">🗺️ Mapa do palco</span>
+          <span class="analogy-tech">→ DOM (Document Object Model)</span>
+          <span class="analogy-real">👋 Reação do público (aplausos)</span>
+          <span class="analogy-tech">→ Evento (click, input, scroll)</span>
+          <span class="analogy-real">🎭 Ator que muda o cenário</span>
+          <span class="analogy-tech">→ JavaScript manipulando o DOM</span>
+          <span class="analogy-real">📋 Roteiro guardado nos bastidores</span>
+          <span class="analogy-tech">→ Variáveis no escopo fechado (closure)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 3. CONCEITO CENTRAL — TIPOS E VARIÁVEIS ── -->
+    <div class="section">
+      <div class="section-label">// conceito 1</div>
+      <h2>Tipos & Variáveis</h2>
+      <p>
+        JavaScript é uma linguagem de <strong>tipagem dinâmica</strong>: o tipo de uma variável é determinado em runtime, não na declaração. Isso traz flexibilidade e também armadilhas.
+      </p>
+      <p>
+        Existem 8 tipos primitivos: <code>string</code>, <code>number</code>, <code>bigint</code>, <code>boolean</code>, <code>undefined</code>, <code>null</code>, <code>symbol</code> — e o tipo <code>object</code> (que inclui arrays, funções e objetos literais).
+      </p>
+
+      <div class="code-label">// tipos e declarações</div>
+      <pre><code class="language-javascript">// ─── As 3 formas de declarar variáveis ───────────────────
+var  legado = 'evitar em código novo';  // function-scoped, sofre hoisting
+let  mutavel = 42;                      // block-scoped, reatribuível
+const fixo = 'não pode ser reatribuído'; // block-scoped, obrigatório na maioria dos casos
+
+// ─── Tipos primitivos ─────────────────────────────────────
+let texto    = "Olá mundo";          // string
+let numero   = 3.14;                 // number (int e float são o mesmo tipo!)
+let enorme   = 9007199254740993n;    // bigint (sufixo n)
+let ativo    = true;                 // boolean
+let vazio    = null;                 // null (ausência intencional de valor)
+let naoInit;                         // undefined (variável sem valor)
+
+// ─── typeof ───────────────────────────────────────────────
+console.log(typeof "JS");   // "string"
+console.log(typeof 42);     // "number"
+console.log(typeof null);   // "object" ← bug histórico do JS! null NÃO é objeto
+console.log(typeof []);     // "object" ← arrays também são objects
+
+// ─── Coerção de tipos (armadilha clássica!) ───────────────
+console.log("5" + 3);    // "53"  (+ com string concatena)
+console.log("5" - 3);    // 2     (- converte string para number)
+console.log(true + 1);   // 2     (true vira 1)
+console.log(null + 1);   // 1     (null vira 0)
+
+// ─── Comparação: == vs === ─────────────────────────────────
+console.log(5 == "5");   // true  (== faz coerção — EVITE)
+console.log(5 === "5");  // false (=== sem coerção — USE SEMPRE)
+</code></pre>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Regra de ouro</div>
+        Sempre use <code>const</code> por padrão. Use <code>let</code> apenas quando precisar reatribuir. Nunca use <code>var</code> em código novo — seu escopo de função e hoisting causam bugs sutis e difíceis de rastrear.
+      </div>
+
+      <!-- Diagrama: Tipos JS -->
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// árvore de tipos JavaScript</div>
+        <div class="mermaid">
+graph TD
+    JS["🟡 Tipos JavaScript"]
+    JS --> P["Primitivos<br/>(imutáveis, por valor)"]
+    JS --> O["Object<br/>(mutável, por referência)"]
+    P --> S["string"]
+    P --> N["number"]
+    P --> B["boolean"]
+    P --> U["undefined"]
+    P --> NL["null"]
+    P --> BI["bigint"]
+    P --> SY["symbol"]
+    O --> OBJ["Objeto literal {}"]
+    O --> ARR["Array []"]
+    O --> FN["Function"]
+    O --> DATE["Date, RegExp..."]
+    style JS fill:#f59e0b,color:#000,stroke:none
+    style P fill:#1e1e2e,color:#e8e8f0,stroke:#f59e0b
+    style O fill:#1e1e2e,color:#e8e8f0,stroke:#f59e0b
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 4. TABELA COMPARATIVA ── -->
+    <div class="section">
+      <div class="section-label">// comparação</div>
+      <h2>var vs let vs const</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Declaração</th>
+              <th>Escopo</th>
+              <th>Hoisting</th>
+              <th>Reatribuível</th>
+              <th>Usar quando</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>var</code></td>
+              <td>Função</td>
+              <td><span class="badge badge-yellow">Inicializado como undefined</span></td>
+              <td>✅ Sim</td>
+              <td><span class="badge badge-red">Nunca em código novo</span></td>
+            </tr>
+            <tr>
+              <td><code>let</code></td>
+              <td>Bloco <code>{}</code></td>
+              <td><span class="badge badge-blue">Declarado mas não init (TDZ)</span></td>
+              <td>✅ Sim</td>
+              <td>Contadores, acumuladores</td>
+            </tr>
+            <tr>
+              <td><code>const</code></td>
+              <td>Bloco <code>{}</code></td>
+              <td><span class="badge badge-blue">Declarado mas não init (TDZ)</span></td>
+              <td>❌ Não</td>
+              <td><span class="badge badge-green">Padrão — use sempre</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout callout-info">
+        <div class="callout-title">💡 TDZ — Temporal Dead Zone</div>
+        Com <code>let</code> e <code>const</code>, a declaração existe no escopo mas <strong>não pode ser acessada antes da linha de declaração</strong>. Isso é chamado de Temporal Dead Zone e gera um <code>ReferenceError</code>. Com <code>var</code>, a variável existe (como <code>undefined</code>) desde o topo da função — o que é confuso.
+      </div>
+    </div>
+
+    <!-- ── CONCEITO 2: FUNÇÕES ── -->
+    <div class="section">
+      <div class="section-label">// conceito 2</div>
+      <h2>Funções — muito além do def</h2>
+      <p>
+        Em JavaScript, funções são <strong>cidadãos de primeira classe</strong>: podem ser atribuídas a variáveis, passadas como argumentos e retornadas de outras funções. Isso habilita padrões funcionais poderosos como callbacks, higher-order functions e closures.
+      </p>
+
+      <div class="grid-2" style="margin-bottom:20px;">
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(245,158,11,0.2);color:#fbbf24;">Declaration</span>
+          <h4>Function Declaration</h4>
+          <p>Sofre hoisting completo — pode ser chamada antes da definição no código.</p>
+        </div>
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(167,139,250,0.2);color:#c4b5fd;">Expression</span>
+          <h4>Arrow Function</h4>
+          <p>Sintaxe concisa. Não tem próprio <code>this</code> — usa o do contexto externo.</p>
+        </div>
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(6,182,212,0.2);color:#67e8f9;">Closure</span>
+          <h4>Closures</h4>
+          <p>Função que "lembra" as variáveis do escopo onde foi criada, mesmo após esse escopo terminar.</p>
+        </div>
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(16,185,129,0.2);color:#4ade80;">HOF</span>
+          <h4>Higher-order Functions</h4>
+          <p>Funções que recebem ou retornam outras funções. Base de <code>map</code>, <code>filter</code>, <code>reduce</code>.</p>
+        </div>
+      </div>
+
+      <div class="code-label">// todos os tipos de função</div>
+      <pre><code class="language-javascript">// ─── 1. Function Declaration (hoisting completo) ────────────
+saudar("Ana");   // funciona! hoisting eleva a função inteira
+
+function saudar(nome) {
+  return `Olá, ${nome}!`;
+}
+
+// ─── 2. Function Expression (não sofre hoisting) ──────────
+// saudarEx("Ana");  // ❌ TypeError: saudarEx is not a function
+
+const saudarEx = function(nome) {
+  return `Olá, ${nome}!`;
+};
+
+// ─── 3. Arrow Function ────────────────────────────────────
+const dobrar = (n) => n * 2;                     // implícito: return
+const somar  = (a, b) => a + b;
+const info   = nome => ({ name: nome, ts: Date.now() }); // objeto → parênteses
+
+// ─── 4. Closures na prática ───────────────────────────────
+function criarContador(inicio = 0) {
+  let count = inicio;            // esta variável "fica presa" na closure
+  return {
+    incrementar: () => ++count,
+    resetar: () => { count = inicio; },
+    valor: () => count,
+  };
+}
+
+const c = criarContador(10);
+console.log(c.incrementar()); // 11
+console.log(c.incrementar()); // 12
+console.log(c.resetar());     // undefined
+console.log(c.valor());       // 10
+
+// ─── 5. Higher-order functions ─────────────────────────────
+const numeros = [1, 2, 3, 4, 5];
+
+const dobrados    = numeros.map(n => n * 2);       // [2, 4, 6, 8, 10]
+const pares       = numeros.filter(n => n % 2 === 0); // [2, 4]
+const soma        = numeros.reduce((acc, n) => acc + n, 0); // 15
+</code></pre>
+    </div>
+
+    <!-- ── CONCEITO 3: ESCOPO E HOISTING ── -->
+    <div class="section">
+      <div class="section-label">// conceito 3</div>
+      <h2>Escopo & Hoisting</h2>
+      <p>
+        <strong>Escopo</strong> define onde uma variável ou função pode ser acessada. JavaScript tem escopo global, de função e de bloco (introduzido com <code>let</code>/<code>const</code> no ES6).
+      </p>
+      <p>
+        <strong>Hoisting</strong> é o comportamento do motor JS de "elevar" declarações para o topo do escopo antes de executar o código. <code>function declaration</code> sobe completa. <code>var</code> sobe mas inicializado como <code>undefined</code>. <code>let</code>/<code>const</code> entram na TDZ.
+      </p>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// cadeia de escopos (scope chain)</div>
+        <div class="mermaid">
+graph TD
+    G["🌐 Escopo Global<br/>(window / globalThis)"]
+    G --> F1["📦 Escopo da Função externa()<br/>(variáveis próprias)"]
+    F1 --> F2["📦 Escopo da Função interna()<br/>(acessa externo via closure)"]
+    F2 --> B1["⬛ Bloco if {} / for {}"]
+    style G fill:#f59e0b,color:#000,stroke:none
+    style F1 fill:#1e1e2e,color:#e8e8f0,stroke:#f59e0b
+    style F2 fill:#1e1e2e,color:#e8e8f0,stroke:#fbbf24
+    style B1 fill:#111118,color:#8585a8,stroke:#1e1e2e
+        </div>
+      </div>
+
+      <div class="code-label">// escopo e a armadilha clássica do var em loop</div>
+      <pre><code class="language-javascript">// ─── Problema com var em loops (escopo de função) ────────────
+for (var i = 0; i < 3; i++) {
+  setTimeout(() => console.log(i), 100);
+}
+// Imprime: 3, 3, 3 ← porque var é compartilhado!
+
+// ─── Solução com let (escopo de bloco) ───────────────────────
+for (let j = 0; j < 3; j++) {
+  setTimeout(() => console.log(j), 100);
+}
+// Imprime: 0, 1, 2 ✅ cada iteração tem seu próprio j
+
+// ─── Escopo léxico e closure ──────────────────────────────────
+function externa() {
+  const mensagem = "Olá do escopo externo";
+
+  function interna() {
+    console.log(mensagem); // acessa via closure
+  }
+
+  return interna;
+}
+
+const fn = externa();
+fn(); // "Olá do escopo externo" — mesmo após externa() ter terminado!
+</code></pre>
+    </div>
+
+    <!-- ── CONCEITO 4: DOM ── -->
+    <div class="section">
+      <div class="section-label">// conceito 4</div>
+      <h2>O DOM — Document Object Model</h2>
+      <p>
+        O DOM é a <strong>representação em árvore do HTML</strong> que o browser cria na memória. Cada tag HTML vira um nó (Node). O JavaScript pode navegar, ler e modificar essa árvore em tempo real, fazendo a página "ganhar vida".
+      </p>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// árvore DOM de uma página simples</div>
+        <div class="mermaid">
+graph TD
+    DOC["📄 document"]
+    DOC --> HTML["&lt;html&gt;"]
+    HTML --> HEAD["&lt;head&gt;"]
+    HTML --> BODY["&lt;body&gt;"]
+    HEAD --> TITLE["&lt;title&gt; 'Minha Página'"]
+    BODY --> H1["&lt;h1&gt; id='titulo'"]
+    BODY --> UL["&lt;ul&gt; class='lista'"]
+    BODY --> BTN["&lt;button&gt; id='btn'"]
+    UL --> LI1["&lt;li&gt; 'Item 1'"]
+    UL --> LI2["&lt;li&gt; 'Item 2'"]
+    style DOC fill:#f59e0b,color:#000,stroke:none
+    style HTML fill:#1e1e2e,color:#e8e8f0,stroke:#f59e0b
+    style BODY fill:#1e1e2e,color:#e8e8f0,stroke:#f59e0b
+        </div>
+      </div>
+
+      <div class="code-label">// selecionar, ler e modificar o DOM</div>
+      <pre><code class="language-javascript">// ─── Seleção de elementos ────────────────────────────────────
+const titulo = document.getElementById('titulo');
+const btn    = document.querySelector('#btn');           // CSS selector
+const itens  = document.querySelectorAll('.lista li');   // NodeList (todos)
+const inputs = document.getElementsByTagName('input');   // HTMLCollection
+
+// ─── Lendo e modificando conteúdo ────────────────────────────
+console.log(titulo.textContent);       // texto puro (sem HTML)
+console.log(titulo.innerHTML);         // texto com tags HTML
+titulo.textContent = 'Novo Título';
+titulo.innerHTML   = 'Título <em>estilizado</em>';
+
+// ─── Manipulando atributos e classes ─────────────────────────
+btn.setAttribute('disabled', true);
+btn.removeAttribute('disabled');
+btn.classList.add('ativo');
+btn.classList.remove('oculto');
+btn.classList.toggle('aberto');
+console.log(btn.classList.contains('ativo')); // true
+
+// ─── Manipulando estilos inline ──────────────────────────────
+titulo.style.color     = '#f59e0b';
+titulo.style.fontSize  = '2rem';
+titulo.style.display   = 'none';   // ocultar elemento
+
+// ─── Criando e inserindo elementos ───────────────────────────
+const novoItem = document.createElement('li');
+novoItem.textContent = 'Item Dinâmico';
+novoItem.classList.add('novo');
+document.querySelector('.lista').appendChild(novoItem);
+
+// Inserção posicionada (mais moderno)
+const ref = itens[0];
+ref.insertAdjacentElement('beforebegin', novoItem); // antes do primeiro item
+
+// ─── Removendo elementos ──────────────────────────────────────
+novoItem.remove(); // ES6 — simples e direto
+</code></pre>
+    </div>
+
+    <!-- ── CONCEITO 5: EVENTOS ── -->
+    <div class="section">
+      <div class="section-label">// conceito 5</div>
+      <h2>Eventos — a linguagem da interação</h2>
+      <p>
+        Eventos são o mecanismo pelo qual o browser comunica interações do usuário (cliques, teclado, formulários) ao JavaScript. O modelo de eventos do DOM funciona em três fases: <strong>captura</strong>, <strong>alvo</strong> e <strong>bubbling</strong>.
+      </p>
+
+      <div class="code-label">// addEventListener — a forma correta</div>
+      <pre><code class="language-javascript">// ─── addEventListener (prefira sempre sobre onclick = ...) ───
+const btn = document.querySelector('#btn');
+
+btn.addEventListener('click', function(event) {
+  console.log('Clicado!', event.target); // event.target = elemento clicado
+});
+
+// Arrow function — NÃO tem 'this' próprio (cuidado se precisar de this)
+btn.addEventListener('click', (e) => {
+  e.preventDefault();  // evita comportamento padrão (ex: form submit)
+  e.stopPropagation(); // impede o evento subir na árvore (bubbling)
+});
+
+// ─── Eventos de teclado ───────────────────────────────────────
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') console.log('Enter pressionado!');
+  if (e.ctrlKey && e.key === 's') {
+    e.preventDefault();
+    salvar();
+  }
+});
+
+// ─── Eventos de formulário ────────────────────────────────────
+const form  = document.querySelector('form');
+const input = document.querySelector('#nome');
+
+form.addEventListener('submit', (e) => {
+  e.preventDefault(); // impede reload da página
+  const valor = input.value.trim();
+  if (!valor) return console.error('Campo obrigatório!');
+  processarDados(valor);
+});
+
+input.addEventListener('input', (e) => {
+  console.log('Digitando:', e.target.value);
+});
+
+// ─── Event Delegation — técnica sênior ───────────────────────
+// Em vez de adicionar listener em cada <li>, adicionar no pai
+const lista = document.querySelector('.lista');
+
+lista.addEventListener('click', (e) => {
+  if (e.target.tagName === 'LI') {
+    e.target.classList.toggle('selecionado');
+    console.log('Item selecionado:', e.target.textContent);
+  }
+});
+// Funciona inclusive para elementos adicionados dinamicamente depois!
+</code></pre>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Pro tip: Event Delegation</div>
+        <strong>Event Delegation</strong> é um dos padrões mais usados em produção. Em vez de adicionar event listeners em múltiplos filhos, adicione um só no elemento pai e use <code>event.target</code> para identificar qual filho foi clicado. Isso economiza memória, é mais performático e funciona para elementos criados dinamicamente.
+      </div>
+
+      <!-- Diagrama bubbling -->
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// event bubbling — o evento sobe na árvore</div>
+        <div class="mermaid">
+sequenceDiagram
+    participant U as 👤 Usuário
+    participant BTN as &lt;button&gt;
+    participant DIV as &lt;div&gt;
+    participant BODY as &lt;body&gt;
+    participant DOC as document
+
+    U->>BTN: clica
+    Note over BTN: 🎯 Fase Alvo<br/>listener dispara aqui
+    BTN->>DIV: bubbling (evento sobe)
+    DIV->>BODY: bubbling
+    BODY->>DOC: bubbling
+    Note over DOC: stopPropagation()<br/>interrompe aqui
+        </div>
+      </div>
+    </div>
+
+    <!-- ── HANDS-ON ── -->
+    <div class="section">
+      <div class="section-label">// prática</div>
+      <h2>Mãos na massa — Mini Todo App</h2>
+      <p>Vamos construir um mini-app de tarefas usando tudo que aprendemos: DOM, eventos, closures e manipulação de elementos. Crie os arquivos abaixo e abra no browser.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Crie a estrutura HTML</div>
+            <div class="step-desc">Salve como <code>todo.html</code></div>
+            <pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="pt-BR"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;Mini Todo&lt;/title&gt;
+  &lt;style&gt;
+    body { font-family: sans-serif; max-width: 400px; margin: 40px auto; }
+    .task { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #eee; }
+    .task.done span { text-decoration: line-through; opacity: 0.5; }
+    button { cursor: pointer; }
+    #add-btn { background: #f59e0b; color: #000; border: none; padding: 8px 16px; border-radius: 4px; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;📋 Minhas Tarefas&lt;/h1&gt;
+  &lt;div style="display:flex; gap:8px; margin-bottom:20px;"&gt;
+    &lt;input id="task-input" type="text" placeholder="Nova tarefa..." style="flex:1; padding:8px;"&gt;
+    &lt;button id="add-btn"&gt;Adicionar&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;ul id="task-list" style="list-style:none; padding:0;"&gt;&lt;/ul&gt;
+  &lt;script src="todo.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Crie o JavaScript</div>
+            <div class="step-desc">Salve como <code>todo.js</code> na mesma pasta</div>
+            <pre><code class="language-javascript">// ─── Estado da aplicação ──────────────────────────────────────
+const state = {
+  tasks: [],
+  nextId: 1,
+};
+
+// ─── Seleção de elementos ──────────────────────────────────────
+const input    = document.getElementById('task-input');
+const addBtn   = document.getElementById('add-btn');
+const taskList = document.getElementById('task-list');
+
+// ─── Renderizar lista ──────────────────────────────────────────
+function render() {
+  taskList.innerHTML = ''; // limpa a lista
+
+  state.tasks.forEach(task => {
+    const li = document.createElement('li');
+    li.className = `task ${task.done ? 'done' : ''}`;
+    li.dataset.id = task.id; // guarda o id no elemento
+
+    li.innerHTML = `
+      <input type="checkbox" ${task.done ? 'checked' : ''}>
+      <span>${task.text}</span>
+      <button class="del-btn" style="margin-left:auto; background:none; border:none; color:red;">🗑</button>
+    `;
+
+    taskList.appendChild(li);
+  });
+}
+
+// ─── Adicionar tarefa ──────────────────────────────────────────
+function addTask() {
+  const text = input.value.trim();
+  if (!text) return;
+
+  state.tasks.push({ id: state.nextId++, text, done: false });
+  input.value = '';
+  render();
+}
+
+// ─── Event Delegation na lista ─────────────────────────────────
+taskList.addEventListener('click', (e) => {
+  const li = e.target.closest('li');
+  if (!li) return;
+
+  const id = Number(li.dataset.id);
+  const task = state.tasks.find(t => t.id === id);
+
+  if (e.target.matches('input[type="checkbox"]')) {
+    task.done = !task.done;
+    render();
+  }
+
+  if (e.target.matches('.del-btn')) {
+    state.tasks = state.tasks.filter(t => t.id !== id);
+    render();
+  }
+});
+
+// ─── Event listeners ──────────────────────────────────────────
+addBtn.addEventListener('click', addTask);
+input.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') addTask();
+});
+</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Abra no navegador e teste</div>
+            <div class="step-desc">Basta dar duplo clique em <code>todo.html</code> ou arraste para o browser. Teste: adicionar tarefas, marcar como concluídas e deletar.</div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Abra o DevTools e explore</div>
+            <div class="step-desc">Pressione <code>F12</code>, vá na aba <strong>Console</strong> e adicione breakpoints no código. Tente digitar <code>state</code> no console para ver o estado atual da aplicação.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ARMADILHAS COMUNS ── -->
+    <div class="section">
+      <div class="section-label">// pitfalls</div>
+      <h2>⚠️ Armadilhas Comuns</h2>
+
+      <div class="pitfall">
+        <div class="pitfall-title">1. Usar == ao invés de ===</div>
+        <p>O operador <code>==</code> faz coerção de tipo e produz resultados surpreendentes. <code>0 == false</code> é <code>true</code>. <code>"" == false</code> é <code>true</code>. Sempre use <code>===</code> e <code>!==</code>.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">2. var dentro de loops com setTimeout</div>
+        <p>Clássico: usar <code>var i</code> em um loop e criar funções que referenciam <code>i</code>. Todas as funções compartilham a mesma variável. A solução é usar <code>let</code>.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">3. Usar innerHTML com dados do usuário</div>
+        <p>Se você inserir input do usuário via <code>innerHTML</code>, abre brecha para XSS (Cross-site Scripting). Use <code>textContent</code> para texto puro ou sanitize os dados antes.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">4. Adicionar event listeners em loop sem delegation</div>
+        <p>Adicionar <code>addEventListener</code> em cada item de uma lista pode criar centenas de listeners desnecessários. Use Event Delegation — um único listener no pai.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">5. typeof null === "object"</div>
+        <p>Bug histórico do JavaScript que nunca foi corrigido por compatibilidade. Para verificar se algo é realmente null, use <code>value === null</code>, não <code>typeof</code>.</p>
+      </div>
+    </div>
+
+    <!-- ── VÍDEOS ── -->
+    <div class="section">
+      <div class="section-label">// curadoria</div>
+      <h2>Vídeos Recomendados</h2>
+      <div class="video-grid">
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">JavaScript in 100 Seconds</div>
+            <div class="video-channel">Fireship · ~2 min</div>
+            <div class="video-why">Por que assistir: Overview perfeito para fixar o panorama geral de JS antes de mergulhar nos detalhes.</div>
+            <a href="https://www.youtube.com/watch?v=DHjqpvDnNGE" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">JavaScript DOM Crash Course</div>
+            <div class="video-channel">Traversy Media · ~90 min</div>
+            <div class="video-why">Por que assistir: Cobertura completa de seleção, modificação e eventos do DOM com projetos práticos.</div>
+            <a href="https://www.youtube.com/watch?v=0ik6X4DJKCc" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">JavaScript Closures Explained</div>
+            <div class="video-channel">Fireship · ~10 min</div>
+            <div class="video-why">Por que assistir: A melhor explicação visual de closures — conceito fundamental para entender React hooks mais à frente.</div>
+            <a href="https://www.youtube.com/watch?v=vKJpN5FAeF4" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">var, let, const e Hoisting — O Guia Definitivo</div>
+            <div class="video-channel">Filipe Deschamps · ~20 min</div>
+            <div class="video-why">Por que assistir: Explicação em português com exemplos visuais do motor JS executando código — perfeito para desmistificar hoisting.</div>
+            <a href="https://www.youtube.com/results?search_query=var+let+const+hoisting+javascript+filipe+deschamps" target="_blank">Assistir →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── GLOSSÁRIO ── -->
+    <div class="section">
+      <div class="section-label">// glossário</div>
+      <h2>Termos desta Aula</h2>
+      <div class="glossary-item">
+        <div class="glossary-term">DOM (Document Object Model)</div>
+        <div class="glossary-def">Representação em árvore do HTML na memória do browser, que pode ser lida e modificada via JavaScript.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Hoisting</div>
+        <div class="glossary-def">Comportamento do motor JS de processar declarações antes de executar o código, "elevando-as" ao topo do escopo.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Closure</div>
+        <div class="glossary-def">Função que "lembra" e acessa variáveis do escopo externo onde foi criada, mesmo após esse escopo ter terminado.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Event Bubbling</div>
+        <div class="glossary-def">Propagação de um evento do elemento-alvo para os ancestrais na árvore DOM, até o document.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Event Delegation</div>
+        <div class="glossary-def">Padrão que usa um único event listener no elemento pai para gerenciar eventos de múltiplos filhos via event.target.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">TDZ (Temporal Dead Zone)</div>
+        <div class="glossary-def">Zona onde variáveis let/const existem no escopo mas não podem ser acessadas — entre o início do bloco e a linha de declaração.</div>
+      </div>
+    </div>
+
+    <!-- ── CHECKPOINT ── -->
+    <div class="section">
+      <div class="checkpoint">
+        <h3>🏁 Checkpoint — Desafio Final</h3>
+        <p>Expanda o Mini Todo App criado no hands-on com as seguintes funcionalidades:</p>
+        <ul>
+          <li>Adicionar um <strong>contador de tarefas pendentes</strong> que atualiza em tempo real (ex: "3 de 5 pendentes")</li>
+          <li>Implementar um <strong>filtro por status</strong> com 3 botões: Todas / Ativas / Concluídas — sem recarregar a página</li>
+          <li>Ao clicar duas vezes (<code>dblclick</code>) em uma tarefa, <strong>entrar em modo de edição</strong>: transformar o texto em um input, salvar ao pressionar Enter ou perder foco</li>
+          <li>Persistir as tarefas no <code>localStorage</code> para que sobrevivam ao refresh da página</li>
+        </ul>
+        <div class="checkpoint-hint">💬 Dica: para localStorage, use <code>JSON.stringify(state.tasks)</code> ao salvar e <code>JSON.parse()</code> ao carregar. Para o filtro, mantenha um estado <code>filtroAtual</code> e filtre o array antes de renderizar.</div>
+      </div>
+    </div>
+
+    <!-- ── PRÓXIMOS PASSOS ── -->
+    <div class="section">
+      <div class="section-label">// próximos passos</div>
+      <h2>O que vem a seguir?</h2>
+      <p style="margin-bottom:20px;">Com o core de JavaScript e DOM dominados, estamos prontos para mergulhar nos recursos modernos da linguagem: Promises, async/await, e as funções de array de alto nível que transformam a forma como escrevemos código.</p>
+      <a href="js-02-arrays-funcoes-avancado.html" class="next-card">
+        <div>
+          <div class="next-card-label">Próxima aula · ⚡ JavaScript</div>
+          <div class="next-card-title">Arrays Avançados, Promises & Async/Await</div>
+        </div>
+        <span class="next-arrow">→</span>
+      </a>
+    </div>
+
+  </div><!-- /page -->
+
+  <script>
+    // Progress Bar
+    const bar = document.getElementById('progressBar');
+    window.addEventListener('scroll', () => {
+      const doc = document.documentElement;
+      const scrolled = doc.scrollTop / (doc.scrollHeight - doc.clientHeight);
+      bar.style.width = (scrolled * 100) + '%';
+    });
+
+    // Highlight.js
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.hljs) hljs.highlightAll();
+    });
+
+    // Mermaid
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+  </script>
+
+</body>
+</html>

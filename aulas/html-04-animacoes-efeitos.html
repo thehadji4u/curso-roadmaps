@@ -4,12 +4,120 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CSS — Animações, Tipografia & Efeitos · HTML/CSS</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <title>CSS — Animações, Tipografia & Efeitos · Aula 10</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap"
+    rel="stylesheet">
+
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
   <style>
-    /* ─── TOKENS ────────────────────────────────────────────── */
+    pre code.hljs {
+      display: block;
+      overflow-x: auto;
+      padding: 1em
+    }
+
+    code.hljs {
+      padding: 3px 5px
+    }
+
+    .hljs {
+      color: #c9d1d9;
+      background: #0d1117
+    }
+
+    .hljs-doctag,
+    .hljs-keyword,
+    .hljs-meta .hljs-keyword,
+    .hljs-template-tag,
+    .hljs-template-variable,
+    .hljs-type,
+    .hljs-variable.language_ {
+      color: #ff7b72
+    }
+
+    .hljs-title,
+    .hljs-title.class_,
+    .hljs-title.class_.inherited__,
+    .hljs-title.function_ {
+      color: #d2a8ff
+    }
+
+    .hljs-attr,
+    .hljs-attribute,
+    .hljs-literal,
+    .hljs-meta,
+    .hljs-number,
+    .hljs-operator,
+    .hljs-variable,
+    .hljs-selector-attr,
+    .hljs-selector-class,
+    .hljs-selector-id {
+      color: #79c0ff
+    }
+
+    .hljs-regexp,
+    .hljs-string,
+    .hljs-meta .hljs-string {
+      color: #a5d6ff
+    }
+
+    .hljs-built_in,
+    .hljs-symbol {
+      color: #ffa657
+    }
+
+    .hljs-comment,
+    .hljs-code,
+    .hljs-formula {
+      color: #8b949e
+    }
+
+    .hljs-name,
+    .hljs-quote,
+    .hljs-selector-tag,
+    .hljs-selector-pseudo {
+      color: #7ee787
+    }
+
+    .hljs-subst {
+      color: #c9d1d9
+    }
+
+    .hljs-section {
+      color: #1f6feb;
+      font-weight: 700
+    }
+
+    .hljs-bullet {
+      color: #f2cc60
+    }
+
+    .hljs-emphasis {
+      color: #c9d1d9;
+      font-style: italic
+    }
+
+    .hljs-strong {
+      color: #c9d1d9;
+      font-weight: 700
+    }
+
+    .hljs-addition {
+      color: #aff5b4;
+      background-color: #033a16
+    }
+
+    .hljs-deletion {
+      color: #ffdcd7;
+      background-color: #67060c
+    }
+
     :root {
       --bg: #0a0a0f;
       --surface: #111118;
@@ -17,29 +125,1321 @@
       --border: #1e1e2e;
       --text: #e8e8f0;
       --muted: #8585a8;
-
       --accent: #ef4444;
       --accent-dim: rgba(239, 68, 68, 0.12);
       --accent-border: rgba(239, 68, 68, 0.35);
-
-      /* Semantic colors */
       --success: #10b981;
       --warn: #f59e0b;
       --danger: #ef4444;
       --info: #06b6d4;
     }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    .progress-bar-wrap {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--border);
+      z-index: 1000;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #fb923c);
+      width: 0%;
+      transition: width 0.1s;
+    }
+
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 32px;
+      background: rgba(10, 10, 15, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-back {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .nav-back:hover {
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-position {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+
+    .nav-position .track {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .nav-prev,
+    .nav-next {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: transparent;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .nav-prev:hover,
+    .nav-next:hover {
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .nav-prev.disabled {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    .nav-next {
+      border-color: var(--accent-border);
+      color: var(--accent);
+    }
+
+    .nav-next:hover {
+      background: var(--accent-dim);
+      color: #fb923c;
+    }
+
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 48px 24px 96px;
+    }
+
+    .hero {
+      padding: 52px 0 40px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 56px;
+    }
+
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .hero-badge {
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #fff 40%, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    .tag.accent {
+      background: var(--accent-dim);
+      border-color: var(--accent-border);
+      color: var(--accent);
+    }
+
+    .section {
+      margin-bottom: 64px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .section h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+
+    .section h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 32px 0 14px;
+      color: #fff;
+    }
+
+    .section p {
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .callout {
+      border-radius: 8px;
+      padding: 18px 20px;
+      margin: 20px 0;
+      border-left: 3px solid;
+    }
+
+    .callout-title {
+      font-weight: 700;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+
+    .callout-info {
+      background: rgba(6, 182, 212, 0.08);
+      border-color: var(--info);
+    }
+
+    .callout-info .callout-title {
+      color: var(--info);
+    }
+
+    .callout-warn {
+      background: rgba(245, 158, 11, 0.08);
+      border-color: var(--warn);
+    }
+
+    .callout-warn .callout-title {
+      color: var(--warn);
+    }
+
+    .callout-tip {
+      background: rgba(16, 185, 129, 0.08);
+      border-color: var(--success);
+    }
+
+    .callout-tip .callout-title {
+      color: var(--success);
+    }
+
+    .callout-danger {
+      background: rgba(239, 68, 68, 0.08);
+      border-color: var(--danger);
+    }
+
+    .callout-danger .callout-title {
+      color: var(--danger);
+    }
+
+    .analogy-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .analogy-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+
+    .analogy-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+
+    .analogy-text {
+      font-size: 15px;
+      color: var(--text);
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+
+    .analogy-mapping {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 24px;
+    }
+
+    .analogy-real {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .analogy-tech {
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--accent);
+    }
+
+    .mermaid-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 20px;
+      margin: 24px 0;
+      overflow: auto;
+    }
+
+    .mermaid-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin: 16px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead tr {
+      border-bottom: 2px solid var(--accent-border);
+    }
+
+    thead th {
+      text-align: left;
+      padding: 10px 14px;
+      color: var(--accent);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    tbody tr:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    tbody td {
+      padding: 11px 14px;
+      color: var(--text);
+      vertical-align: top;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .badge-green {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+    }
+
+    .badge-red {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+    }
+
+    .badge-yellow {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+    }
+
+    .badge-blue {
+      background: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .step {
+      display: flex;
+      gap: 18px;
+      padding: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .step-num {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .step-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .step-title {
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .step-desc {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    pre {
+      background: #0d1117 !important;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 12px 0;
+      font-size: 13px;
+    }
+
+    pre code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .code-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 10px 16px 0;
+    }
+
+    code:not(.hljs) {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid var(--border);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: #fb923c;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 640px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card-mini {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      transition: border-color 0.2s;
+    }
+
+    .card-mini:hover {
+      border-color: var(--accent-border);
+    }
+
+    .card-mini h4 {
+      color: #fff;
+      font-size: 14px;
+      margin: 8px 0 6px;
+    }
+
+    .card-mini p {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .compare-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 16px 0;
+    }
+
+    @media (max-width: 600px) {
+      .compare-split {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .compare-old {
+      background: rgba(239, 68, 68, 0.05);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .compare-new {
+      background: rgba(16, 185, 129, 0.05);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .compare-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .compare-old .compare-label {
+      color: #f87171;
+    }
+
+    .compare-new .compare-label {
+      color: #34d399;
+    }
+
+    .video-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .video-card {
+      display: flex;
+      gap: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+      transition: border-color 0.2s;
+    }
+
+    .video-card:hover {
+      border-color: var(--accent-border);
+    }
+
+    .video-thumb {
+      flex-shrink: 0;
+      width: 52px;
+      height: 52px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .video-info {
+      flex: 1;
+    }
+
+    .video-title {
+      font-weight: 700;
+      color: #fff;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .video-channel {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .video-why {
+      color: var(--text);
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+
+    .video-info a {
+      font-size: 12px;
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .video-info a:hover {
+      text-decoration: underline;
+    }
+
+    .checkpoint {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(251, 146, 60, 0.04));
+      border: 1px solid var(--accent-border);
+      border-radius: 12px;
+      padding: 28px;
+    }
+
+    .checkpoint h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .checkpoint p {
+      margin-bottom: 14px;
+    }
+
+    .checkpoint ul {
+      padding-left: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .checkpoint ul li {
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .checkpoint ul li::before {
+      content: '✦ ';
+      color: var(--accent);
+    }
+
+    .checkpoint-hint {
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: rgba(239, 68, 68, 0.06);
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .pitfall {
+      background: rgba(239, 68, 68, 0.06);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      border-radius: 10px;
+      padding: 20px;
+      margin: 16px 0;
+    }
+
+    .pitfall-title {
+      color: #f87171;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .glossary-item {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .glossary-term {
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .glossary-def {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .next-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 24px;
+      background: var(--surface);
+      border: 1px solid var(--accent-border);
+      border-radius: 10px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .next-card:hover {
+      background: var(--accent-dim);
+    }
+
+    .next-card-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .next-card-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .next-arrow {
+      font-size: 1.5rem;
+      color: var(--accent);
+    }
+
+    /* Terminal */
+    .terminal {
+      background: #000;
+      border: 1px solid #333;
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+
+    .terminal-bar {
+      background: #1a1a1a;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot-red {
+      background: #ef4444;
+    }
+
+    .dot-yellow {
+      background: #f59e0b;
+    }
+
+    .dot-green {
+      background: #10b981;
+    }
+
+    .terminal-title {
+      font-size: 11px;
+      color: #555;
+      margin-left: 6px;
+    }
+
+    .terminal-body {
+      padding: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 2;
+    }
+
+    .t-prompt {
+      color: #ef4444;
+    }
+
+    .t-cmd {
+      color: #e8e8f0;
+    }
+
+    .t-out {
+      color: #8585a8;
+    }
+
+    .t-comment {
+      color: #444;
+      font-style: italic;
+    }
+
+    /* LIVE DEMO BOX */
+    .demo-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+
+    .demo-bar {
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .demo-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .demo-content {
+      padding: 32px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 32px;
+      flex-wrap: wrap;
+      min-height: 120px;
+    }
+
+    /* Animation demos */
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      50% {
+        transform: scale(1.15);
+        opacity: 0.7;
+      }
+    }
+
+    @keyframes slide-in {
+      from {
+        transform: translateX(-40px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes bounce-in {
+      0% {
+        transform: scale(0.3);
+        opacity: 0;
+      }
+
+      60% {
+        transform: scale(1.1);
+      }
+
+      80% {
+        transform: scale(0.95);
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes gradient-shift {
+
+      0%,
+      100% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-12px);
+      }
+    }
+
+    @keyframes typewriter {
+      from {
+        width: 0;
+      }
+
+      to {
+        width: 100%;
+      }
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        border-color: transparent;
+      }
+
+      50% {
+        border-color: #ef4444;
+      }
+    }
+
+    .demo-spin {
+      width: 48px;
+      height: 48px;
+      border: 3px solid rgba(239, 68, 68, 0.2);
+      border-top-color: #ef4444;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .demo-pulse {
+      width: 48px;
+      height: 48px;
+      background: #ef4444;
+      border-radius: 50%;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    .demo-bounce {
+      width: 48px;
+      height: 48px;
+      background: #fb923c;
+      border-radius: 8px;
+      animation: bounce-in 1.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
+    }
+
+    .demo-float {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #ef4444, #fb923c);
+      border-radius: 50%;
+      animation: float 2s ease-in-out infinite;
+    }
+
+    .demo-gradient-text {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, #ef4444, #fb923c, #fbbf24, #ef4444);
+      background-size: 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradient-shift 3s ease infinite;
+      letter-spacing: -0.02em;
+    }
+
+    .demo-typewriter {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      color: #34d399;
+      white-space: nowrap;
+      overflow: hidden;
+      width: 0;
+      border-right: 2px solid #ef4444;
+      animation: typewriter 2.5s steps(22) forwards, blink 0.7s step-end infinite;
+      animation-delay: 0.5s;
+    }
+
+    /* Transform demos */
+    .transform-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-size: 13px;
+      color: var(--muted);
+      cursor: default;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      text-align: center;
+    }
+
+    .transform-card:hover {
+      border-color: var(--accent-border);
+      color: #fff;
+    }
+
+    .transform-skew:hover {
+      transform: skewX(-8deg);
+    }
+
+    .transform-scale:hover {
+      transform: scale(1.12);
+    }
+
+    .transform-rotate:hover {
+      transform: rotate(12deg);
+    }
+
+    .transform-3d:hover {
+      transform: perspective(400px) rotateY(25deg);
+    }
+
+    /* Typography demos */
+    .typo-showcase {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      margin: 20px 0;
+    }
+
+    .typo-row {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .typo-row:last-child {
+      border-bottom: none;
+    }
+
+    .typo-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      min-width: 120px;
+    }
+
+    .typo-sample {
+      color: #fff;
+    }
+
+    .typo-clamp {
+      font-size: clamp(1rem, 4vw, 2.5rem);
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+    }
+
+    .typo-fluid {
+      font-size: calc(12px + 1.5vw);
+    }
+
+    .typo-tracking {
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .typo-ligature {
+      font-family: 'JetBrains Mono', monospace;
+      font-feature-settings: "liga" 1, "calt" 1;
+      font-size: 15px;
+    }
+
+    .typo-balance {
+      text-wrap: balance;
+      max-width: 300px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    /* Filter demos */
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    @media (max-width: 600px) {
+      .filter-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .filter-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .filter-demo {
+      width: 40px;
+      height: 40px;
+      margin: 0 auto 8px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #ef4444, #fb923c);
+    }
+
+    .f-blur {
+      filter: blur(4px);
+    }
+
+    .f-brightness {
+      filter: brightness(1.8);
+    }
+
+    .f-saturate {
+      filter: saturate(0);
+    }
+
+    .f-drop {
+      filter: drop-shadow(0 4px 8px rgba(239, 68, 68, 0.6));
+    }
+
+    /* Timeline for animation model */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin: 20px 0;
+    }
+
+    .timeline-item {
+      display: flex;
+      gap: 16px;
+    }
+
+    .timeline-line {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .timeline-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+      margin-top: 5px;
+    }
+
+    .timeline-connector {
+      width: 2px;
+      flex: 1;
+      background: var(--border);
+      min-height: 20px;
+    }
+
+    .timeline-content {
+      padding-bottom: 20px;
+      flex: 1;
+    }
+
+    .timeline-pct {
+      font-size: 11px;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .timeline-desc {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* Easing visualizer */
+    .easing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    @media (max-width: 600px) {
+      .easing-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .easing-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .easing-card:hover {
+      border-color: var(--accent-border);
+    }
+
+    .easing-track {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin: 10px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .easing-ball {
+      width: 12px;
+      height: 12px;
+      background: var(--accent);
+      border-radius: 50%;
+      position: absolute;
+      top: -4px;
+      left: 0;
+    }
+
+    .easing-card:hover .easing-ball {
+      left: calc(100% - 12px);
+    }
+
+    .easing-linear .easing-ball {
+      transition: left 1s linear;
+    }
+
+    .easing-ease .easing-ball {
+      transition: left 1s ease;
+    }
+
+    .easing-ease-in .easing-ball {
+      transition: left 1s ease-in;
+    }
+
+    .easing-ease-out .easing-ball {
+      transition: left 1s ease-out;
+    }
+
+    .easing-spring .easing-ball {
+      transition: left 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .easing-elastic .easing-ball {
+      transition: left 1s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    }
+
+    .easing-name {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+
+    .easing-formula {
+      font-size: 10px;
+      color: var(--accent);
+      margin-top: 2px;
+    }
   </style>
-  <link rel="stylesheet" href="../assets/css/lesson.css">
 </head>
 
 <body>
 
-  <!-- Progress Bar -->
   <div class="progress-bar-wrap">
-    <div class="progress-bar-fill"></div>
+    <div class="progress-bar-fill" id="progressBar"></div>
   </div>
 
-  <!-- Top Navigation -->
   <nav class="top-nav">
     <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
     <div class="nav-center">
@@ -53,279 +1453,716 @@
 
   <div class="page">
 
-    <!-- ── HERO ─────────────────────────────────────────── -->
+    <!-- ── HERO ── -->
     <div class="hero">
       <div class="hero-eyebrow">
-        <span>🌐 HTML/CSS · 04 · Prioridade 2</span>
+        <span>🌐 HTML/CSS</span>
         <span class="hero-badge">Aula 10</span>
       </div>
-      <h1>CSS — Animações, Tipografia &amp; Efeitos</h1>
+      <h1>CSS — Animações, Tipografia & Efeitos</h1>
       <div class="hero-meta">
-        <span>⏱ ~35 min de leitura</span>
+        <span>⏱ ~60 min de leitura</span>
         <span>🎯 Intermediário</span>
         <span>🔧 Hands-on incluído</span>
       </div>
       <div class="hero-tags">
-        <span class="tag">@keyframes</span>
-        <span class="tag">transition</span>
-        <span class="tag">animation</span>
-        <span class="tag">transform</span>
-        <span class="tag">pseudo-elementos</span>
+        <span class="tag accent">@keyframes</span>
+        <span class="tag accent">animation</span>
+        <span class="tag accent">transition</span>
+        <span class="tag accent">transform</span>
+        <span class="tag accent">filter</span>
         <span class="tag">clamp()</span>
+        <span class="tag">font-feature-settings</span>
+        <span class="tag">perspective</span>
+        <span class="tag">cubic-bezier</span>
         <span class="tag">backdrop-filter</span>
         <span class="tag">will-change</span>
+        <span class="tag">text-wrap: balance</span>
       </div>
     </div>
 
-    <!-- ── 1. POR QUE ISSO IMPORTA ───────────────────── -->
+    <!-- ── 1. POR QUE IMPORTA ── -->
     <div class="section">
       <div class="section-label">// motivação</div>
       <h2>Por que isso importa?</h2>
       <p>
-        A diferença entre um site "funcional" e um produto que as pessoas <em>amam usar</em> quase sempre está no
-        movimento. Animações bem feitas guiam o olhar, confirmam ações, revelam hierarquia e criam sensação de qualidade
-        — tudo sem uma linha de JavaScript.
+        Uma interface que não tem feedback visual parece quebrada. Quando você clica num botão e nada muda, seu cérebro
+        assume que o clique não registrou. Quando uma mensagem de erro aparece de repente sem transição, o susto pode
+        levar o usuário a achar que algo deu errado. Animações e transições são a <em>linguagem não-verbal</em> do
+        design.
       </p>
       <p>
-        Mas há dois lados desta moeda: animações mal implementadas destroem a performance e causam náusea em usuários
-        com sensibilidade a movimento. Dominar CSS de animação é saber <strong>quando</strong> animar, <strong>o
-          que</strong> animar e <strong>como</strong> fazer isso com zero custo na thread principal.
+        Mas animações feitas erradas destroem a performance. Animar <code>top</code>, <code>left</code>,
+        <code>width</code> ou <code>margin</code> força o browser a recalcular o layout inteiro 60 vezes por segundo — o
+        que é catastrófico. Animações profissionais vivem exclusivamente em <strong>transform</strong> e
+        <strong>opacity</strong>, as duas propriedades que o browser pode delegar à GPU sem reflow.
+      </p>
+      <p>
+        Da mesma forma, tipografia fluida com <code>clamp()</code> elimina dezenas de media queries e cria experiências
+        que escalam suavemente entre todos os tamanhos de tela. Filtros CSS modernos como <code>blur()</code>,
+        <code>backdrop-filter</code> e <code>drop-shadow()</code> entregam efeitos que antes exigiam imagens ou Canvas.
       </p>
       <div class="callout callout-info">
-        <div class="callout-title">💼 Por que um engenheiro sênior usa isso hoje</div>
-        <p>
-          Times como Nubank e Notion definem <strong>design tokens de animação</strong> — variáveis CSS como
-          <code>--duration-fast: 150ms</code>, <code>--easing-spring: cubic-bezier(0.34,1.56,0.64,1)</code> — que
-          garantem consistência em todo o produto. Cada componente usa esses tokens, e quando o design system muda, uma
-          única variável atualiza tudo. Além disso, toda animação obedece <code>@media (prefers-reduced-motion)</code>
-          por padrão, tornando o produto acessível sem esforço extra.
-        </p>
+        <div class="callout-title">💼 Por que um engenheiro sênior domina isso profundamente</div>
+        Sêniors sabem que <strong>performance é UX</strong>. Eles auditam animações com DevTools → Performance para
+        garantir que rodam a 60fps, usam <code>will-change: transform</code> cirurgicamente para promover elementos à
+        camada GPU, e conhecem a diferença entre <code>transition</code> (para estados) e <code>animation</code> (para
+        loops e sequências complexas). Eles também dominam tipografia variável (<code>font-variation-settings</code>) e
+        acessibilidade — sempre respeitando <code>prefers-reduced-motion</code>.
       </div>
     </div>
 
-    <!-- ── 2. ANALOGIA ──────────────────────────────── -->
+    <!-- ── 2. ANALOGIA ── -->
     <div class="section">
       <div class="section-label">// analogia</div>
       <h2>Antes do código: uma analogia</h2>
       <div class="analogy-card">
         <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
         <div class="analogy-text">
-          Pense em um animador de cinema clássico como o Disney. Ele tem dois tipos de movimento:
-          <strong>transições</strong> são como cenas que conectam estado A ao estado B em resposta a um evento — o
-          personagem abre um olho quando chamado. <strong>Keyframe animations</strong> são como um loop de ação autônoma
-          — a chama de uma vela que oscila eternamente sem precisar de gatilho externo.
+          Pense num <strong>coreógrafo de cinema</strong>. Ele tem dois trabalhos distintos: criar <em>reações</em> aos
+          estímulos dos atores (quando o herói bate na mesa, a xícara treme — isso é <code>transition</code>, uma
+          resposta a uma mudança de estado) e criar <em>cenas coreografadas</em> que acontecem independentemente, com
+          início, meio e fim definidos no roteiro (a câmera gira em torno do personagem — isso é <code>animation</code>
+          com <code>@keyframes</code>).
           <br><br>
-          O animador da Disney também sabia o segredo do movimento orgânico: objetos reais <em>nunca</em> se movem em
-          linha reta com velocidade constante. Eles aceleram no início, desaceleram no fim, esticam, comprimem. Em CSS
-          isso se chama <strong>easing</strong> (cubic-bezier). E assim como um filme tem orçamento de fotogramas, seu
-          site tem orçamento de GPU — só as propriedades <code>transform</code> e <code>opacity</code> são "de graça".
+          O <strong>easing</strong> é o peso dos movimentos: um objeto pesado começa devagar e termina rápido (ease-in).
+          Uma bola de tênis quicando acelera ao cair e desacelera ao subir (ease-out). Um movimento totalmente mecânico
+          nunca existe na natureza — por isso <code>linear</code> parece artificial. <code>cubic-bezier</code> é a curva
+          de Bézier que modela qualquer ritmo da física real.
+          <br><br>
+          E o <strong>tipógrafo</strong> pensa no texto como escultura — escolhe peso, rastreamento, entrelinha, tamanho
+          fluido — para que a voz da marca respire igual em todos os dispositivos.
         </div>
         <div class="analogy-mapping">
-          <span class="analogy-real">Cena de transição entre estados</span>
-
-          <span class="analogy-arrow">→</span>
-
-          <span class="analogy-tech">CSS transition (ativada por evento)</span>
-          <span class="analogy-real">Loop autônomo da chama</span>
-
-          <span class="analogy-arrow">→</span>
-
-          <span class="analogy-tech">@keyframes + animation (roda sozinha)</span>
-          <span class="analogy-real">Curva de aceleração natural</span>
-
-          <span class="analogy-arrow">→</span>
-
-          <span class="analogy-tech">cubic-bezier / easing functions</span>
-          <span class="analogy-real">Orçamento de fotogramas (60 fps)</span>
-
-          <span class="analogy-arrow">→</span>
-
-          <span class="analogy-tech">Só animar transform & opacity</span>
+          <span class="analogy-real">🎬 Reação ao estímulo (xícara treme)</span>
+          <span class="analogy-tech">→ <code>transition</code> — animação de estado</span>
+          <span class="analogy-real">🎥 Cena coreografada no roteiro</span>
+          <span class="analogy-tech">→ <code>@keyframes</code> + <code>animation</code></span>
+          <span class="analogy-real">⚖️ Peso e ritmo do movimento</span>
+          <span class="analogy-tech">→ <code>cubic-bezier</code> — curva de easing</span>
+          <span class="analogy-real">🖋️ Texto como escultura</span>
+          <span class="analogy-tech">→ <code>clamp()</code> + <code>font-feature-settings</code></span>
         </div>
       </div>
     </div>
 
-    <!-- ── 3. CONCEITO CENTRAL ──────────────────────── -->
+    <!-- ── 3. CONCEITO CENTRAL: TRANSITION vs ANIMATION ── -->
     <div class="section">
-      <div class="section-label">// conceito</div>
-      <h2>O conceito</h2>
+      <div class="section-label">// conceito 1</div>
+      <h2>Transition vs Animation — quando usar cada um</h2>
+
       <p>
-        CSS oferece três sistemas de movimento que trabalham em conjunto: <strong>transitions</strong> para mudanças de
-        estado reativas, <strong>@keyframes + animation</strong> para sequências autônomas, e <strong>transform</strong>
-        como o "motor" de ambos — a única propriedade que move pixels sem disparar reflow na página.
+        A distinção fundamental: <code>transition</code> interpola <em>entre dois estados</em> CSS — funciona apenas
+        quando uma propriedade muda. <code>animation</code> + <code>@keyframes</code> define uma <em>sequência de
+          estados</em> com controle total sobre tempo, looping, preenchimento e direção.
       </p>
 
-      <div class="mermaid-wrap">
-        <div class="mermaid-label">// fluxo de decisão: qual sistema usar</div>
-        <pre class="mermaid">
-          graph TD
-          A["Preciso de movimento?"] --> B{"É uma resposta<br>a evento :hover / click?"}
-          B -->|"Sim"| C["CSS transition"]
-          B -->|"Não"| D{"Tem múltiplos<br>pontos intermediários?"}
-          D -->|"Não - A→B simples"| C
-          D -->|"Sim - A→B→C→D..."| E["@keyframes + animation"]
-          C --> F{"O que vou animar?"}
-          E --> F
-          F -->|"Mover / escalar / rotacionar"| G["transform: translate / scale / rotate ✅"]
-          F -->|"Mostrar / esconder"| H["opacity ✅"]
-          F -->|"Cor de fundo ou borda"| I["background-color / border-color ⚠️ OK se sem loop"]
-          F -->|"width, height, top, left"| J["❌ EVITAR — causa reflow"]
-          G --> K["GPU composta<br>60fps garantido"]
-          H --> K
-          I --> L["Compositor + layout<br>monitorar performance"]
-          J --> M["Reflow + repaint<br>janking visível"]
+      <div class="compare-split">
+        <div class="compare-old">
+          <div class="compare-label">transition — para estados</div>
+          <pre><code class="language-css">/* Ativado por mudança de estado */
+.btn {
+  background: #ef4444;
+  transform: scale(1);
+  transition:
+    background 0.2s ease,
+    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
 
-          style G fill:#10b981,color:#fff
-          style H fill:#10b981,color:#fff
-          style K fill:#10b981,color:#fff
-          style J fill:#ef4444,color:#fff
-          style M fill:#ef4444,color:#fff
-          style I fill:#f59e0b,color:#000
-          style C fill:#ef4444,color:#fff,stroke:#ef4444
-          style E fill:#ef4444,color:#fff,stroke:#ef4444
-        </pre>
+.btn:hover {
+  background: #dc2626;
+  transform: scale(1.05);
+}
+
+/* Shorthand completo */
+/* transition: property duration timing delay */
+transition: all 0.3s ease-in-out 0s;</code></pre>
+        </div>
+        <div class="compare-new">
+          <div class="compare-label">animation — para sequências</div>
+          <pre><code class="language-css">/* Roda automaticamente, independente */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+.loader {
+  animation:
+    pulse        /* nome do @keyframes */
+    1.5s         /* duration */
+    ease-in-out  /* timing-function */
+    0s           /* delay */
+    infinite     /* iteration-count */
+    alternate;   /* direction */
+}</code></pre>
+        </div>
       </div>
 
+      <h3>O modelo mental dos @keyframes</h3>
       <p>
-        O segredo da performance é entender o pipeline de renderização do browser: <strong>Layout → Paint →
-          Composite</strong>. Propriedades que acionam Layout (width, height, top, margin) são as mais caras. Transform
-        e opacity vivem apenas na etapa Composite — rodando inteiramente na GPU, sem tocar no layout da página. Por
-        isso, um card que "voa" com <code>transform: translateY(-8px)</code> usa 0% da CPU; o mesmo efeito com
-        <code>top: -8px</code> pode travar a animação.
+        Pense nos <code>@keyframes</code> como uma linha do tempo percentual de 0% a 100%. Em cada ponto você declara o
+        estado CSS desejado. O browser interpola entre eles usando a <code>timing-function</code>.
       </p>
+
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-line">
+            <div class="timeline-dot"></div>
+            <div class="timeline-connector"></div>
+          </div>
+          <div class="timeline-content">
+            <div class="timeline-pct">0% — from</div>
+            <div class="timeline-desc">Estado inicial. Pode usar a keyword <code>from</code> como alias.</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-line">
+            <div class="timeline-dot"></div>
+            <div class="timeline-connector"></div>
+          </div>
+          <div class="timeline-content">
+            <div class="timeline-pct">25%, 50%, 75% — intermediários</div>
+            <div class="timeline-desc">Quantos keyframes intermediários quiser. Cada um pode ter timing-function próprio
+              com <code>animation-timing-function</code> dentro do keyframe.</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-line">
+            <div class="timeline-dot"></div>
+          </div>
+          <div class="timeline-content">
+            <div class="timeline-pct">100% — to</div>
+            <div class="timeline-desc">Estado final. Pode usar a keyword <code>to</code> como alias.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">fluxo: propriedades da animation</div>
+        <div class="mermaid">
+          flowchart LR
+          A["@keyframes nome"] --> B["animation-name"]
+          C["animation-duration"] --> D["Loop"]
+          E["animation-timing-function"] --> D
+          F["animation-iteration-count"] --> D
+          G["animation-direction"] --> D
+          H["animation-fill-mode"] --> I["Estado Antes/Depois"]
+          B --> D
+          D --> I
+          style A fill:#1a0a0a,stroke:#ef4444,color:#ef4444
+          style D fill:#111118,stroke:#ef4444,color:#fff
+          style I fill:#0a1a0a,stroke:#10b981,color:#10b981
+        </div>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 animation-fill-mode é o mais esquecido</div>
+        <code>animation-fill-mode: forwards</code> mantém o estado final depois que a animação termina. Sem ele, o
+        elemento volta ao estado inicial — o que é quase sempre indesejado em animações de entrada. <code>both</code>
+        aplica o estado inicial antes do delay E o estado final após o fim.
+      </div>
     </div>
 
-    <!-- ── 4. TABELA COMPARATIVA ─────────────────────── -->
+    <!-- ── LIVE DEMOS ── -->
     <div class="section">
-      <div class="section-label">// comparação</div>
-      <h2>transition vs animation: guia de escolha</h2>
+      <div class="section-label">// demos ao vivo</div>
+      <h2>Animações em ação — ao vivo na página</h2>
+
+      <div class="demo-box">
+        <div class="demo-bar">
+          <div class="demo-dot"></div> animações com @keyframes
+        </div>
+        <div class="demo-content">
+          <div style="text-align:center">
+            <div class="demo-spin"></div>
+            <div style="font-size:10px;color:var(--muted);margin-top:8px;">spin</div>
+          </div>
+          <div style="text-align:center">
+            <div class="demo-pulse"></div>
+            <div style="font-size:10px;color:var(--muted);margin-top:8px;">pulse</div>
+          </div>
+          <div style="text-align:center">
+            <div class="demo-bounce"></div>
+            <div style="font-size:10px;color:var(--muted);margin-top:8px;">bounce</div>
+          </div>
+          <div style="text-align:center">
+            <div class="demo-float"></div>
+            <div style="font-size:10px;color:var(--muted);margin-top:8px;">float</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="demo-box" style="margin-top:16px;">
+        <div class="demo-bar">
+          <div class="demo-dot"></div> gradient animado + typewriter
+        </div>
+        <div class="demo-content" style="flex-direction:column;gap:20px;">
+          <div class="demo-gradient-text">CSS Magic</div>
+          <div style="overflow:hidden;">
+            <div class="demo-typewriter">console.log("hello, world!")</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 4. EASING ── -->
+    <div class="section">
+      <div class="section-label">// conceito 2</div>
+      <h2>Timing functions & cubic-bezier</h2>
+      <p>
+        A <code>timing-function</code> define o <em>ritmo</em> da animação — a curva de aceleração. Passe o mouse sobre
+        cada card para ver a diferença de comportamento ao vivo.
+      </p>
+
+      <div class="easing-grid">
+        <div class="easing-card easing-linear">
+          <div class="easing-name">linear</div>
+          <div class="easing-track">
+            <div class="easing-ball"></div>
+          </div>
+          <div class="easing-formula">velocidade constante</div>
+        </div>
+        <div class="easing-card easing-ease">
+          <div class="easing-name">ease</div>
+          <div class="easing-track">
+            <div class="easing-ball"></div>
+          </div>
+          <div class="easing-formula">padrão natural</div>
+        </div>
+        <div class="easing-card easing-ease-in">
+          <div class="easing-name">ease-in</div>
+          <div class="easing-track">
+            <div class="easing-ball"></div>
+          </div>
+          <div class="easing-formula">começa devagar</div>
+        </div>
+        <div class="easing-card easing-ease-out">
+          <div class="easing-name">ease-out</div>
+          <div class="easing-track">
+            <div class="easing-ball"></div>
+          </div>
+          <div class="easing-formula">termina devagar</div>
+        </div>
+        <div class="easing-card easing-spring">
+          <div class="easing-name">spring</div>
+          <div class="easing-track">
+            <div class="easing-ball"></div>
+          </div>
+          <div class="easing-formula">cubic-bezier(0.34,1.56,0.64,1)</div>
+        </div>
+        <div class="easing-card easing-elastic">
+          <div class="easing-name">elastic</div>
+          <div class="easing-track">
+            <div class="easing-ball"></div>
+          </div>
+          <div class="easing-formula">cubic-bezier(0.68,-0.55,0.27,1.55)</div>
+        </div>
+      </div>
+
+      <div class="callout callout-info">
+        <div class="callout-title">💡 Como funciona o cubic-bezier</div>
+        <code>cubic-bezier(x1, y1, x2, y2)</code> define dois pontos de controle P1 e P2 de uma curva de Bézier cúbica.
+        Os pontos P0=(0,0) e P3=(1,1) são fixos. X representa tempo (0→1), Y representa progresso (0→1). Quando Y > 1, o
+        elemento "ultrapassa" o destino, criando o efeito spring. Use <strong>cubic-bezier.com</strong> para visualizar
+        e criar suas curvas.
+      </div>
+    </div>
+
+    <!-- ── 5. TRANSFORMS ── -->
+    <div class="section">
+      <div class="section-label">// conceito 3</div>
+      <h2>CSS Transforms — 2D e 3D</h2>
+
+      <p>
+        <code>transform</code> é a única função CSS que o browser executa inteiramente na GPU, sem triggerar reflow ou
+        repaint do resto da página. Isso a torna a ferramenta ideal para animações performáticas.
+      </p>
+
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>Característica</th>
-              <th>transition</th>
-              <th>@keyframes + animation</th>
+              <th>Função</th>
+              <th>Descrição</th>
+              <th>Exemplo</th>
+              <th>Performance</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><strong>Gatilho</strong></td>
-              <td>Precisa de mudança de estado (:hover, :focus, classe JS)</td>
-              <td>Roda automaticamente ao renderizar</td>
+              <td><code>translateX/Y/Z()</code></td>
+              <td>Move o elemento sem afetar o layout</td>
+              <td><code>translate(20px, -10px)</code></td>
+              <td><span class="badge badge-green">GPU ✓</span></td>
             </tr>
             <tr>
-              <td><strong>Pontos intermediários</strong></td>
-              <td>Apenas início e fim</td>
-              <td>Infinitos — 0%, 25%, 60%, 100%...</td>
+              <td><code>scale()</code></td>
+              <td>Redimensiona em torno do transform-origin</td>
+              <td><code>scale(1.05)</code></td>
+              <td><span class="badge badge-green">GPU ✓</span></td>
             </tr>
             <tr>
-              <td><strong>Loop</strong></td>
-              <td>Não tem loop nativo</td>
-              <td><code>animation-iteration-count: infinite</code></td>
+              <td><code>rotate()</code></td>
+              <td>Rotaciona em graus, rad, turn</td>
+              <td><code>rotate(45deg)</code></td>
+              <td><span class="badge badge-green">GPU ✓</span></td>
             </tr>
             <tr>
-              <td><strong>Direção reversa</strong></td>
-              <td>Automático ao desfazer o estado</td>
-              <td><code>animation-direction: alternate</code></td>
+              <td><code>skew()</code></td>
+              <td>Inclina nos eixos X e/ou Y</td>
+              <td><code>skewX(-8deg)</code></td>
+              <td><span class="badge badge-green">GPU ✓</span></td>
             </tr>
             <tr>
-              <td><strong>Delay</strong></td>
-              <td><code>transition-delay</code></td>
-              <td><code>animation-delay</code> (aceita negativo!)</td>
+              <td><code>perspective()</code></td>
+              <td>Define profundidade para transforms 3D</td>
+              <td><code>perspective(400px)</code></td>
+              <td><span class="badge badge-green">GPU ✓</span></td>
             </tr>
             <tr>
-              <td><strong>Pausa</strong></td>
-              <td>Não tem</td>
-              <td><code>animation-play-state: paused</code></td>
+              <td><code>rotateY/X()</code></td>
+              <td>Rotação em 3D com profundidade</td>
+              <td><code>rotateY(30deg)</code></td>
+              <td><span class="badge badge-green">GPU ✓</span></td>
             </tr>
             <tr>
-              <td><strong>Uso típico</strong></td>
-              <td>Hover em botão, foco em input, abertura de menu</td>
-              <td>Loading spinner, skeleton, banner, efeito de entrada</td>
+              <td><code>matrix3d()</code></td>
+              <td>Transform completo via matriz 4×4</td>
+              <td>complexo — use JS</td>
+              <td><span class="badge badge-yellow">avançado</span></td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <div style="margin-top: 1.5rem;">
-        <h3 style="font-size:1.1rem; margin-bottom:0.75rem; color:var(--text)">Propriedades seguras para animar
-          (GPU-only)</h3>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Propriedade</th>
-                <th>Custo</th>
-                <th>Uso</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>transform: translate()</code></td>
-                <td>✅ Composite only</td>
-                <td>Mover elementos, slides, parallax</td>
-              </tr>
-              <tr>
-                <td><code>transform: scale()</code></td>
-                <td>✅ Composite only</td>
-                <td>Hover de cards, zoom, pop-in</td>
-              </tr>
-              <tr>
-                <td><code>transform: rotate()</code></td>
-                <td>✅ Composite only</td>
-                <td>Spinners, ícones, carousséis</td>
-              </tr>
-              <tr>
-                <td><code>opacity</code></td>
-                <td>✅ Composite only</td>
-                <td>Fade in/out, hover states</td>
-              </tr>
-              <tr>
-                <td><code>background-color</code></td>
-                <td>⚠️ Paint</td>
-                <td>OK para transições curtas</td>
-              </tr>
-              <tr>
-                <td><code>width / height</code></td>
-                <td>❌ Layout + Paint + Composite</td>
-                <td>Evitar — usar transform: scaleX() ou max-height hack</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      <p>Passe o mouse sobre os cards abaixo para ver cada transform:</p>
+
+      <div class="grid-2" style="grid-template-columns: repeat(4, 1fr);">
+        <div class="transform-card transform-skew">skew<br><span
+            style="font-size:10px;color:var(--muted);">skewX(-8deg)</span></div>
+        <div class="transform-card transform-scale">scale<br><span
+            style="font-size:10px;color:var(--muted);">scale(1.12)</span></div>
+        <div class="transform-card transform-rotate">rotate<br><span
+            style="font-size:10px;color:var(--muted);">rotate(12deg)</span></div>
+        <div class="transform-card transform-3d">3D Y<br><span
+            style="font-size:10px;color:var(--muted);">rotateY(25deg)</span></div>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ transform-origin importa muito</div>
+        Por padrão, o ponto de pivot de qualquer transform é o <strong>centro do elemento</strong> (50% 50%). Para um
+        botão que cresce ao hover, isso é perfeito. Para uma animação de cartão que "vira" (como um flip), você precisa
+        definir <code>transform-origin: left center</code> ou similar. E para o flip funcionar, o <em>pai</em> precisa
+        ter <code>perspective</code>.
       </div>
     </div>
 
-    <!-- ── 5. HANDS-ON ───────────────────────────────── -->
+    <!-- ── 6. TIPOGRAFIA ── -->
     <div class="section">
-      <div class="section-label">// prática</div>
-      <h2>Mãos na massa</h2>
-      <p>Vamos construir um componente de card de produto com 4 camadas de animação progressiva:</p>
+      <div class="section-label">// conceito 4</div>
+      <h2>Tipografia CSS Moderna</h2>
+
+      <p>
+        Tipografia vai muito além de <code>font-size</code> e <code>font-family</code>. CSS moderno oferece tipografia
+        verdadeiramente <em>responsiva</em>, <em>fluida</em> e com acesso às <em>features OpenType</em> das fontes.
+      </p>
+
+      <h3>clamp() — tipografia fluida sem media queries</h3>
+      <p>
+        <code>clamp(mínimo, preferido, máximo)</code> cria valores que crescem com o viewport sem precisar de
+        breakpoints. O valor "preferido" é tipicamente uma função de viewport (<code>vw</code>) que escala linearmente.
+      </p>
+
+      <div class="typo-showcase">
+        <div class="typo-row">
+          <div class="typo-label">clamp fluid</div>
+          <div class="typo-sample typo-clamp">Heading Fluido</div>
+        </div>
+        <div class="typo-row">
+          <div class="typo-label">calc + vw</div>
+          <div class="typo-sample typo-fluid">Texto que escala com o viewport</div>
+        </div>
+        <div class="typo-row">
+          <div class="typo-label">letter-spacing</div>
+          <div class="typo-sample typo-tracking">tracked uppercase label</div>
+        </div>
+        <div class="typo-row">
+          <div class="typo-label">ligatures (mono)</div>
+          <div class="typo-sample typo-ligature">!= === => -> <!-- <!-- --></div>
+        </div>
+        <div class="typo-row" style="border-bottom:none">
+          <div class="typo-label">text-wrap: balance</div>
+          <div class="typo-sample typo-balance">Um parágrafo com quebra de linha equilibrada que evita orphans visuais
+            feios.</div>
+        </div>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Fórmula para clamp tipográfico perfeito</div>
+        Use a fórmula: <code>clamp(min, calc(Xrem + Yvw), max)</code>. O X e Y são calculados para que o valor seja min
+        na viewport mínima e max na viewport máxima. Ferramentas como <strong>utopia.fyi</strong> geram esses valores
+        automaticamente para sistemas tipográficos inteiros.
+      </div>
+
+      <h3>font-feature-settings e variável</h3>
+      <p>Fontes OpenType modernas (como Inter, Recursive, Roboto Flex) têm features embutidas: números tabulares,
+        frações, ligatures, versaletes e mais. Fontes variáveis permitem controle contínuo de peso, largura e outros
+        eixos com uma única requisição de rede.</p>
+
+      <div class="code-label">tipografia avançada</div>
+      <pre><code class="language-css">/* Números tabulares em tabelas */
+.price-table td {
+  font-feature-settings: "tnum" 1; /* tabular numbers */
+  font-variant-numeric: tabular-nums;
+}
+
+/* Ligatures de código */
+.code-editor {
+  font-feature-settings: "liga" 1, "calt" 1;
+}
+
+/* Fonte variável — 1 arquivo, infinitos pesos */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900');
+
+.heading {
+  font-family: 'Inter', sans-serif;
+  font-variation-settings: 'wght' 750, 'slnt' 0;
+}
+
+/* Texto balanceado — sem orphans */
+.card-title {
+  text-wrap: balance; /* máx ~6 linhas */
+}
+
+/* text-wrap: pretty — para parágrafos */
+.body-text {
+  text-wrap: pretty;
+}
+
+/* Fluido: 16px @ 320px → 24px @ 1200px */
+.body-text {
+  font-size: clamp(1rem, calc(0.5rem + 2vw), 1.5rem);
+  line-height: clamp(1.5, calc(1.3 + 0.5vw), 1.75);
+}</code></pre>
+
+      <h3>Gradient text — texto com gradiente</h3>
+      <pre><code class="language-css">.gradient-heading {
+  background: linear-gradient(135deg, #ef4444, #fb923c, #fbbf24);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+
+  /* Para animar o gradiente */
+  background-size: 200%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% center; }
+  50%       { background-position: 100% center; }
+}</code></pre>
+    </div>
+
+    <!-- ── 7. FILTROS E EFEITOS ── -->
+    <div class="section">
+      <div class="section-label">// conceito 5</div>
+      <h2>Filtros CSS e Efeitos Visuais</h2>
+
+      <p>
+        A propriedade <code>filter</code> aplica efeitos de processamento de imagem diretamente em elementos HTML — sem
+        Canvas, sem JavaScript, sem imagens extras. <code>backdrop-filter</code> aplica os mesmos efeitos no conteúdo
+        <em>atrás</em> do elemento — criando o famoso efeito glassmorphism.
+      </p>
+
+      <div class="filter-grid">
+        <div class="filter-card">
+          <div class="filter-demo"></div>
+          original
+        </div>
+        <div class="filter-card">
+          <div class="filter-demo f-blur"></div>
+          blur(4px)
+        </div>
+        <div class="filter-card">
+          <div class="filter-demo f-brightness"></div>
+          brightness(1.8)
+        </div>
+        <div class="filter-card">
+          <div class="filter-demo f-saturate"></div>
+          saturate(0)
+        </div>
+        <div class="filter-card">
+          <div class="filter-demo f-drop"></div>
+          drop-shadow
+        </div>
+        <div class="filter-card">
+          <div class="filter-demo" style="filter:hue-rotate(120deg)"></div>
+          hue-rotate
+        </div>
+        <div class="filter-card">
+          <div class="filter-demo" style="filter:contrast(2)"></div>
+          contrast(2)
+        </div>
+        <div class="filter-card">
+          <div class="filter-demo" style="filter:sepia(1)"></div>
+          sepia(1)
+        </div>
+      </div>
+
+      <div class="code-label">glassmorphism com backdrop-filter</div>
+      <pre><code class="language-css">/* Card glassmorphism */
+.glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+}
+
+/* drop-shadow vs box-shadow */
+/* box-shadow — aplica na caixa retangular */
+.card { box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+
+/* drop-shadow — segue o contorno real (inclusive PNG transparentes) */
+.icon { filter: drop-shadow(0 4px 8px rgba(239,68,68,0.5)); }
+
+/* Mix de filtros em hover */
+.product-image {
+  filter: brightness(1) saturate(1);
+  transition: filter 0.3s ease;
+}
+.product-image:hover {
+  filter: brightness(1.1) saturate(1.2);
+}</code></pre>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ backdrop-filter cria um novo stacking context</div>
+        Quando você usa <code>backdrop-filter</code>, o elemento ganha um novo <em>stacking context</em> — o que pode
+        quebrar z-index de elementos filhos. Se um modal com backdrop-filter estiver aparecendo atrás de outros
+        elementos, esse é o culpado. Além disso, backdrop-filter ainda requer <code>-webkit-</code> prefix para Safari.
+      </div>
+    </div>
+
+    <!-- ── 8. PERFORMANCE ── -->
+    <div class="section">
+      <div class="section-label">// conceito 6</div>
+      <h2>Performance de Animações — o que a GPU quer</h2>
+
+      <p>
+        O browser renderiza em um pipeline de estágios: Style → Layout → Paint → Composite. Animar propriedades que
+        ativam os primeiros estágios é caro. A GPU só entra no último estágio (Composite). Para animações a 60fps, você
+        quer operar <strong>exclusivamente na etapa Composite</strong>.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Propriedade</th>
+              <th>Estágio disparado</th>
+              <th>Custo</th>
+              <th>Usar para animação?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>width</code>, <code>height</code>, <code>margin</code>, <code>top</code></td>
+              <td>Layout (Reflow)</td>
+              <td><span class="badge badge-red">Muito alto</span></td>
+              <td><span class="badge badge-red">Nunca</span></td>
+            </tr>
+            <tr>
+              <td><code>background</code>, <code>color</code>, <code>border</code>, <code>box-shadow</code></td>
+              <td>Paint (Repaint)</td>
+              <td><span class="badge badge-yellow">Médio</span></td>
+              <td><span class="badge badge-yellow">Com moderação</span></td>
+            </tr>
+            <tr>
+              <td><code>transform</code></td>
+              <td>Composite</td>
+              <td><span class="badge badge-green">GPU</span></td>
+              <td><span class="badge badge-green">✓ Sempre</span></td>
+            </tr>
+            <tr>
+              <td><code>opacity</code></td>
+              <td>Composite</td>
+              <td><span class="badge badge-green">GPU</span></td>
+              <td><span class="badge badge-green">✓ Sempre</span></td>
+            </tr>
+            <tr>
+              <td><code>filter</code></td>
+              <td>Composite (algumas vezes Paint)</td>
+              <td><span class="badge badge-yellow">Médio-baixo</span></td>
+              <td><span class="badge badge-yellow">Com cuidado</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>will-change — dica cirúrgica para o browser</h3>
+      <pre><code class="language-css">/* Avisa o browser ANTES para criar camada GPU */
+.modal {
+  will-change: transform, opacity;
+  /* Browser cria composite layer antecipadamente */
+}
+
+/* REMOVA após a animação terminar via JS */
+element.addEventListener('animationend', () => {
+  element.style.willChange = 'auto';
+});
+
+/* NÃO use em tudo — cada camada GPU usa memória */
+/* Ruim: */
+* { will-change: transform; } /* 💀 */
+
+/* Bom: somente em elementos que vão animar em breve */
+.card:hover { will-change: transform; }
+
+/* Melhor ainda: adicionar/remover via JS no mouseenter/leave */</code></pre>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ prefers-reduced-motion — acessibilidade obrigatória</div>
+        Muitos usuários têm fotossensibilidade ou vestigem. Nunca ignore a preferência do sistema operacional:
+        <pre style="margin-top:8px;"><code class="language-css">@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}</code></pre>
+      </div>
+    </div>
+
+    <!-- ── 9. HANDS-ON ── -->
+    <div class="section">
+      <div class="section-label">// hands-on</div>
+      <h2>Passo a Passo na Sua Máquina</h2>
 
       <div class="steps">
         <div class="step">
           <div class="step-num">1</div>
           <div class="step-body">
-            <div class="step-title">Crie o HTML base do card</div>
-            <div class="step-desc">Um card com imagem, título, preço e botão — a estrutura que vamos animar:</div>
-            <div class="code-wrap">
-              <div class="code-header">
-                <span class="code-filename">index.html</span>
-                <span class="code-lang">HTML</span>
+            <div class="step-title">Crie a estrutura do projeto</div>
+            <div class="step-desc">Um arquivo HTML simples com CSS inline para começar rápido.</div>
+            <div class="terminal">
+              <div class="terminal-bar">
+                <div class="dot dot-red"></div>
+                <div class="dot dot-yellow"></div>
+                <div class="dot dot-green"></div>
+                <div class="terminal-title">bash</div>
               </div>
-              <pre><code class="language-html">&lt;!-- Estrutura do card --&gt;
-&lt;div class="card"&gt;
-  &lt;div class="card-img-wrap"&gt;
-    &lt;img class="card-img" src="produto.jpg" alt="Produto"&gt;
-    &lt;span class="card-badge"&gt;Novo&lt;/span&gt;
-  &lt;/div&gt;
-  &lt;div class="card-body"&gt;
-    &lt;h3 class="card-title"&gt;Produto Incrível&lt;/h3&gt;
-    &lt;p class="card-price"&gt;R$ 299,00&lt;/p&gt;
-    &lt;button class="card-btn"&gt;Adicionar ao carrinho&lt;/button&gt;
-  &lt;/div&gt;
-&lt;/div&gt;</code></pre>
+              <div class="terminal-body">
+                <span class="t-prompt">$</span> <span class="t-cmd">mkdir css-animations && cd css-animations</span><br>
+                <span class="t-prompt">$</span> <span class="t-cmd">touch index.html</span><br>
+                <span class="t-prompt">$</span> <span class="t-cmd">code .</span>
+              </div>
             </div>
           </div>
         </div>
@@ -333,168 +2170,159 @@
         <div class="step">
           <div class="step-num">2</div>
           <div class="step-body">
-            <div class="step-title">Transitions no hover do card</div>
-            <div class="step-desc">Elevação suave, zoom da imagem e aparecimento do badge — tudo com transition:</div>
-            <div class="code-wrap">
-              <div class="code-header">
-                <span class="code-filename">style.css</span>
-                <span class="code-lang">CSS</span>
-              </div>
-              <pre><code class="language-css">/* Design tokens de animação */
-:root {
-  --duration-fast:   150ms;
-  --duration-base:   250ms;
-  --duration-slow:   400ms;
-  --ease-out:        cubic-bezier(0.0, 0.0, 0.2, 1);
-  --ease-spring:     cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-smooth:     cubic-bezier(0.4, 0.0, 0.2, 1);
-}
+            <div class="step-title">Crie um card com animação de entrada</div>
+            <div class="step-desc">Implemente slide-in com @keyframes, transition no hover e efeito glassmorphism.</div>
+            <div class="code-label">index.html</div>
+            <pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="pt-BR"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;CSS Animations Lab&lt;/title&gt;
+  &lt;style&gt;
+    /* Reset e base */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1a0a0a 0%, #0a0a1a 100%);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      padding: 48px;
+      justify-content: center;
+      align-items: center;
+      font-family: system-ui, sans-serif;
+    }
 
-/* Card base */
-.card {
-  border-radius: 16px;
-  overflow: hidden;
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  /* Transition do card inteiro */
-  transition:
-    transform var(--duration-base) var(--ease-out),
-    box-shadow var(--duration-base) var(--ease-out);
-}
+    /* ── ANIMAÇÃO DE ENTRADA ── */
+    @keyframes slide-in-up {
+      from {
+        transform: translateY(40px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
 
-/* Hover do card: eleva com transform (GPU ✅) */
-.card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 16px 40px rgba(0,0,0,0.15);
-}
+    /* ── CARD COM GLASSMORPHISM ── */
+    .card {
+      width: 280px;
+      padding: 28px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      color: #fff;
+      cursor: pointer;
 
-/* Imagem com zoom no hover */
-.card-img-wrap {
-  overflow: hidden;    /* corta o zoom */
-  position: relative;
-}
+      /* Animação de entrada */
+      animation: slide-in-up 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      opacity: 0; /* começa invisível */
 
-.card-img {
-  width: 100%;
-  display: block;
-  /* Transition da imagem */
-  transition: transform var(--duration-slow) var(--ease-smooth);
-}
+      /* Transition de hover */
+      transition:
+        transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+        border-color 0.2s ease,
+        box-shadow 0.3s ease;
+    }
 
-.card:hover .card-img {
-  transform: scale(1.08);  /* zoom — GPU ✅ */
-}
+    /* Delay escalonado para múltiplos cards */
+    .card:nth-child(1) { animation-delay: 0.1s; }
+    .card:nth-child(2) { animation-delay: 0.2s; }
+    .card:nth-child(3) { animation-delay: 0.3s; }
 
-/* Badge que aparece no hover */
-.card-badge {
-  position: absolute;
-  top: 12px; left: 12px;
-  background: #ef4444;
-  color: #fff;
-  padding: 4px 10px;
-  border-radius: 99px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  /* Estado inicial: invisível e levemente acima */
-  opacity: 0;
-  transform: translateY(-8px);
-  transition:
-    opacity var(--duration-fast) var(--ease-out),
-    transform var(--duration-fast) var(--ease-spring);
-}
+    .card:hover {
+      transform: translateY(-8px) scale(1.02);
+      border-color: rgba(239, 68, 68, 0.4);
+      box-shadow: 0 20px 40px rgba(239, 68, 68, 0.15);
+    }
 
-.card:hover .card-badge {
-  opacity: 1;
-  transform: translateY(0);
-}</code></pre>
-            </div>
+    /* Título com gradient */
+    .card-title {
+      font-size: clamp(1.2rem, 3vw, 1.5rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, #fff, #ef4444);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+      text-wrap: balance;
+    }
+
+    .card-body {
+      font-size: 14px;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.6;
+    }
+
+    /* ── LOADER ANIMADO ── */
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loader {
+      width: 40px; height: 40px;
+      border: 3px solid rgba(239,68,68,0.2);
+      border-top-color: #ef4444;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 12px auto 0;
+    }
+
+    /* ── ACESSIBILIDADE ── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="card"&gt;
+    &lt;div class="card-title"&gt;Animação de Entrada&lt;/div&gt;
+    &lt;div class="card-body"&gt;slide-in-up com cubic-bezier spring. Hover para ver o lift.&lt;/div&gt;
+    &lt;div class="loader"&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="card"&gt;
+    &lt;div class="card-title"&gt;Glassmorphism&lt;/div&gt;
+    &lt;div class="card-body"&gt;backdrop-filter blur + border semitransparente. Delay escalonado.&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="card"&gt;
+    &lt;div class="card-title"&gt;Gradient Text&lt;/div&gt;
+    &lt;div class="card-body"&gt;clamp() tipografia fluida + background-clip: text para gradiente.&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
           </div>
         </div>
 
         <div class="step">
           <div class="step-num">3</div>
           <div class="step-body">
-            <div class="step-title">@keyframes para o botão e loading state</div>
-            <div class="step-desc">Animação de "pulse" no botão e skeleton loading com shimmer:</div>
-            <div class="code-wrap">
-              <div class="code-header">
-                <span class="code-filename">style.css</span>
-                <span class="code-lang">CSS</span>
+            <div class="step-title">Abra no browser e use o DevTools Performance</div>
+            <div class="step-desc">Inspecione o desempenho das animações e valide as camadas GPU.</div>
+            <div class="terminal">
+              <div class="terminal-bar">
+                <div class="dot dot-red"></div>
+                <div class="dot dot-yellow"></div>
+                <div class="dot dot-green"></div>
+                <div class="terminal-title">Chrome DevTools</div>
               </div>
-              <pre><code class="language-css">/* Botão com shimmer de atenção */
-@keyframes shimmer {
-  0%   { background-position: -200% center; }
-  100% { background-position:  200% center; }
-}
-
-.card-btn {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  background: linear-gradient(
-    90deg,
-    #ef4444 0%,
-    #f97316 40%,
-    #ef4444 60%,
-    #ef4444 100%
-  );
-  background-size: 200% auto;
-  color: white;
-  transition: transform var(--duration-fast) var(--ease-spring);
-}
-
-.card-btn:hover {
-  animation: shimmer 1.5s linear infinite;
-  transform: scale(1.02);
-}
-
-.card-btn:active {
-  transform: scale(0.97);
-}
-
-/* ── Skeleton Loading ────────────────────────────── */
-@keyframes skeleton-wave {
-  0%   { transform: translateX(-100%); }
-  100% { transform: translateX(100%);  }
-}
-
-.skeleton {
-  background: #e8e8e8;
-  border-radius: 6px;
-  position: relative;
-  overflow: hidden;
-}
-
-/* O "brilho" que percorre o skeleton */
-.skeleton::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255,255,255,0.6) 50%,
-    transparent 100%
-  );
-  animation: skeleton-wave 1.4s ease-in-out infinite;
-}
-
-/* Spinner de loading */
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.spinner {
-  width: 24px;
-  height: 24px;
-  border: 3px solid rgba(239,68,68,0.2);
-  border-top-color: #ef4444;
-  border-radius: 50%;
-  animation: spin 700ms linear infinite;
-}</code></pre>
+              <div class="terminal-body">
+                <span class="t-comment"># Abra o index.html no Chrome</span><br>
+                <span class="t-comment"># F12 → aba "Rendering" → ative:</span><br>
+                <span class="t-out">✓ Paint flashing</span><br>
+                <span class="t-out">✓ Layer borders</span><br>
+                <span class="t-comment"># Você verá bordas coloridas nas composite layers</span><br>
+                <span class="t-comment"># Verde = boa animação (GPU), vermelho = repaint</span><br>
+                <br>
+                <span class="t-comment"># Aba Performance → Record → hover nos cards</span><br>
+                <span class="t-comment"># Verifique: 0 Layout e 0 Paint no flame chart</span>
+              </div>
             </div>
           </div>
         </div>
@@ -502,465 +2330,298 @@
         <div class="step">
           <div class="step-num">4</div>
           <div class="step-body">
-            <div class="step-title">Pseudo-elementos ::before/::after + prefers-reduced-motion</div>
-            <div class="step-desc">Efeito de brilho no hover usando apenas pseudo-elementos, e acessibilidade com
-              prefers-reduced-motion:</div>
-            <div class="code-wrap">
-              <div class="code-header">
-                <span class="code-filename">style.css</span>
-                <span class="code-lang">CSS</span>
-              </div>
-              <pre><code class="language-css">/* Efeito "luz que passa" no card com ::before */
-.card {
-  position: relative;  /* contexto para o pseudo-elemento */
-}
-
-.card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  /* Gradiente em diagonal que vai de transparente a branco suave */
-  background: linear-gradient(
-    135deg,
-    rgba(255,255,255,0.15) 0%,
-    transparent 50%
-  );
-  /* Começa fora da tela à esquerda */
-  transform: translateX(-100%);
-  transition: transform var(--duration-slow) var(--ease-out);
-  pointer-events: none;  /* não bloqueia cliques */
-  z-index: 1;
-}
-
-.card:hover::before {
-  transform: translateX(100%);  /* atravessa o card */
-}
-
-/* ── ACESSIBILIDADE: prefers-reduced-motion ───────── */
-/* Usuários que preferem menos movimento no sistema    */
-@media (prefers-reduced-motion: reduce) {
-  /* Remove TODAS as animações/transições */
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-/* Ou, de forma mais cirúrgica, manter apenas feedback essencial */
-@media (prefers-reduced-motion: reduce) {
-  .card:hover {
-    transform: none;  /* remove o lift */
-    box-shadow: 0 0 0 2px #ef4444;  /* usa outline como alternativa */
-  }
-  .card-img { transform: none; }
-}</code></pre>
+            <div class="step-title">Adicione uma animação de loading skeleton</div>
+            <div class="step-desc">Skeleton screens são padrão em apps modernos — implement com @keyframes shimmer.
             </div>
+            <div class="code-label">adicione ao CSS</div>
+            <pre><code class="language-css">@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.05) 0%,
+    rgba(255,255,255,0.12) 50%,
+    rgba(255,255,255,0.05) 100%
+  );
+  background-size: 2000px 100%;
+  animation: shimmer 1.5s linear infinite;
+  border-radius: 4px;
+}
+
+.skeleton-title {
+  height: 20px;
+  width: 70%;
+  margin-bottom: 12px;
+}
+
+.skeleton-text {
+  height: 14px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.skeleton-text:last-child { width: 60%; }</code></pre>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ── 6. CÓDIGO COMPLETO ────────────────────────── -->
+    <!-- ── 10. TABELA COMPARATIVA ── -->
     <div class="section">
-      <div class="section-label">// código</div>
-      <h2>Sistema completo: tipografia fluida + transforms + gradients</h2>
-      <p>Componente de hero section combinando clamp() para tipografia, backdrop-filter para glassmorphism, gradientes e
-        animação de entrada:</p>
+      <div class="section-label">// comparativo</div>
+      <h2>Guia de escolha — qual ferramenta usar</h2>
 
-      <div class="code-wrap">
-        <div class="code-header">
-          <span class="code-filename">hero-completo.css</span>
-          <span class="code-lang">CSS</span>
-        </div>
-        <pre><code class="language-css">/* ══════════════════════════════════════════════════
-   HERO SECTION — tipografia fluida + efeitos visuais
-   ══════════════════════════════════════════════════ */
-
-/* ── 1. Tipografia Fluida com clamp() ────────────── */
-/* clamp(min, preferred, max)
-   preferred = valor relativo ao viewport */
-:root {
-  /* Escala tipográfica que se adapta sem breakpoints */
-  --text-sm:   clamp(0.8rem,   0.75rem + 0.3vw,  0.875rem);
-  --text-base: clamp(1rem,     0.9rem  + 0.5vw,  1.125rem);
-  --text-lg:   clamp(1.1rem,   1rem    + 0.5vw,  1.25rem);
-  --text-xl:   clamp(1.25rem,  1.1rem  + 0.8vw,  1.5rem);
-  --text-2xl:  clamp(1.5rem,   1.2rem  + 1.5vw,  2rem);
-  --text-3xl:  clamp(2rem,     1.5rem  + 2.5vw,  3rem);
-  --text-hero: clamp(2.5rem,   2rem    + 3vw,    4.5rem);
-
-  /* Espaçamento fluido */
-  --space-sm:  clamp(0.75rem,  0.5rem  + 1vw,    1rem);
-  --space-md:  clamp(1.25rem,  1rem    + 2vw,    2rem);
-  --space-lg:  clamp(2rem,     1.5rem  + 3vw,    4rem);
-}
-
-/* ── 2. Hero com glassmorphism ─────────────────────── */
-.hero {
-  min-height: 80vh;
-  display: grid;
-  place-items: center;
-  position: relative;
-  overflow: hidden;
-  padding: var(--space-lg);
-}
-
-/* Gradiente de fundo com múltiplas camadas */
-.hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    /* Grade de linhas sutis */
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 40px,
-      rgba(255,255,255,0.03) 40px,
-      rgba(255,255,255,0.03) 41px
-    ),
-    /* Gradiente radial de brilho central */
-    radial-gradient(
-      ellipse 80% 60% at 50% 50%,
-      rgba(239, 68, 68, 0.15),
-      transparent 70%
-    ),
-    /* Fundo sólido */
-    #0a0a0f;
-  z-index: 0;
-}
-
-/* "Bolhas" de cor animadas */
-.hero-blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.4;
-  z-index: 0;
-  /* Cada bolha tem delay diferente para movimento assíncrono */
-  animation: float 8s ease-in-out infinite;
-}
-
-.hero-blob--1 {
-  width: 400px; height: 400px;
-  background: radial-gradient(circle, #ef4444, transparent);
-  top: -100px; right: -100px;
-  animation-delay: 0s;
-}
-
-.hero-blob--2 {
-  width: 300px; height: 300px;
-  background: radial-gradient(circle, #f97316, transparent);
-  bottom: -80px; left: -80px;
-  animation-delay: -4s;  /* começa no meio do ciclo */
-}
-
-@keyframes float {
-  0%, 100% { transform: translate(0, 0)    scale(1); }
-  33%       { transform: translate(30px, -20px) scale(1.05); }
-  66%       { transform: translate(-20px, 15px) scale(0.95); }
-}
-
-/* ── 3. Conteúdo do hero ─────────────────────────── */
-.hero-content {
-  position: relative;
-  z-index: 1;
-  text-align: center;
-  max-width: 700px;
-  /* Animação de entrada */
-  animation: fade-up 0.8s var(--ease-out) both;
-}
-
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.hero-title {
-  font-size: var(--text-hero);
-  font-weight: 900;
-  line-height: 1.05;
-  letter-spacing: -0.03em;
-  /* Gradiente no texto */
-  background: linear-gradient(135deg, #fff 30%, #ef4444 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: var(--space-sm);
-}
-
-.hero-subtitle {
-  font-size: var(--text-xl);
-  color: rgba(255,255,255,0.6);
-  margin-bottom: var(--space-md);
-  animation: fade-up 0.8s var(--ease-out) 0.15s both;
-}
-
-/* ── 4. Botão com glassmorphism ──────────────────── */
-.hero-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.9rem 2rem;
-  border-radius: 99px;
-  font-weight: 700;
-  font-size: var(--text-base);
-  text-decoration: none;
-  cursor: pointer;
-  border: 1px solid rgba(255,255,255,0.2);
-  /* Glassmorphism */
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  color: #fff;
-  animation: fade-up 0.8s var(--ease-out) 0.3s both;
-  transition:
-    background var(--duration-base) var(--ease-out),
-    transform   var(--duration-fast) var(--ease-spring),
-    box-shadow  var(--duration-base) var(--ease-out);
-}
-
-.hero-cta:hover {
-  background: rgba(239,68,68,0.3);
-  border-color: rgba(239,68,68,0.6);
-  box-shadow: 0 0 30px rgba(239,68,68,0.3);
-  transform: scale(1.04);
-}
-
-.hero-cta:active {
-  transform: scale(0.98);
-}
-
-/* ── 5. Transforms 3D: card flip ─────────────────── */
-.flip-card {
-  perspective: 1000px;  /* profundidade da cena 3D */
-  width: 200px;
-  height: 280px;
-}
-
-.flip-card-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;  /* filhos em 3D */
-  transition: transform 0.6s var(--ease-smooth);
-}
-
-.flip-card:hover .flip-card-inner {
-  transform: rotateY(180deg);
-}
-
-.flip-card-front,
-.flip-card-back {
-  position: absolute;
-  inset: 0;
-  backface-visibility: hidden;  /* esconde lado oposto */
-  border-radius: 12px;
-  padding: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.flip-card-back {
-  transform: rotateY(180deg);  /* começa virado */
-  background: #ef4444;
-  color: white;
-}</code></pre>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Cenário</th>
+              <th>Ferramenta ideal</th>
+              <th>Por quê</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Hover em botão</td>
+              <td><code>transition</code></td>
+              <td>Mudança simples entre 2 estados</td>
+            </tr>
+            <tr>
+              <td>Loading spinner</td>
+              <td><code>animation</code> + <code>@keyframes</code></td>
+              <td>Loop infinito, não depende de estado</td>
+            </tr>
+            <tr>
+              <td>Card que aparece ao rolar</td>
+              <td><code>animation</code> + Intersection Observer (JS)</td>
+              <td>Disparado por evento JS, estado único</td>
+            </tr>
+            <tr>
+              <td>Física complexa (bounce, spring)</td>
+              <td>Web Animations API / GSAP</td>
+              <td>CSS não modela molas com precisão</td>
+            </tr>
+            <tr>
+              <td>Ícone SVG animado</td>
+              <td>SMIL ou CSS animation</td>
+              <td>CSS animation funciona bem com SVG paths</td>
+            </tr>
+            <tr>
+              <td>Scroll-driven animation</td>
+              <td><code>animation-timeline: scroll()</code></td>
+              <td>CSS moderno sem JS — suporte crescente</td>
+            </tr>
+            <tr>
+              <td>Efeito glassmorphism</td>
+              <td><code>backdrop-filter</code></td>
+              <td>Nativo CSS, GPU-accelerated</td>
+            </tr>
+            <tr>
+              <td>Títulos que não quebram feio</td>
+              <td><code>text-wrap: balance</code></td>
+              <td>O browser equilibra as linhas automaticamente</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
-    <!-- ── 7. ERROS COMUNS ───────────────────────────── -->
+    <!-- ── 11. PITFALLS ── -->
     <div class="section">
-      <div class="section-label">// armadilhas</div>
-      <h2>Erros comuns</h2>
+      <div class="section-label">// armadilhas comuns</div>
+      <h2>⚠️ Pitfalls que todo dev comete</h2>
 
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Animar width/height em vez de transform: scale()</div>
-        <p>
-          <code>width: 0 → width: 100%</code> em transition dispara <strong>reflow completo</strong> a cada frame — o
-          browser recalcula o layout de toda a página. Resultado: janking visível, especialmente em mobile. A
-          alternativa é <code>transform: scaleX(0) → scaleX(1)</code>, que roda 100% na GPU. Para "revelar" altura, o
-          truque é <code>max-height: 0 → max-height: 500px</code> (com cuidado) ou usar a nova
-          <code>transition: height allow-discrete</code> do CSS moderno.
-        </p>
+      <div class="pitfall">
+        <div class="pitfall-title">1. Animar margin/top/left em vez de transform</div>
+        <p style="color:var(--muted);font-size:13px;">O erro mais comum. <code>margin-top: -20px</code> no hover em vez
+          de <code>transform: translateY(-20px)</code>. O resultado visual é idêntico, mas a performance é catastrófica
+          — forçando reflow de toda a página.</p>
       </div>
 
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Esquecer will-change em animações complexas</div>
-        <p>
-          Para elementos com animações pesadas, <code>will-change: transform</code> avisa o browser para criar uma
-          camada GPU antecipadamente. Mas use com moderação — cada <code>will-change</code> cria uma camada e consome
-          memória de GPU. Aplique apenas em elementos que realmente vão animar, e remova após a animação terminar se
-          possível. Nunca use <code>will-change: all</code>.
-        </p>
+      <div class="pitfall">
+        <div class="pitfall-title">2. will-change em tudo</div>
+        <p style="color:var(--muted);font-size:13px;"><code>will-change: transform</code> em todos os elementos não
+          acelera nada — desperdiça memória GPU e pode piorar a performance. Use cirurgicamente, somente em elementos
+          que realmente vão animar, e remova após a animação terminar.</p>
       </div>
 
-      <div class="callout callout-danger">
-        <div class="callout-title">🚨 Omitir prefers-reduced-motion</div>
-        <p>
-          Cerca de 26% dos usuários de iOS usam "Reduce Motion". Pessoas com epilepsia, vertigem, ou enxaqueca podem ser
-          fisicamente afetadas por animações que piscam ou se movem muito. Sempre inclua
-          <code>@media (prefers-reduced-motion: reduce)</code>. A regra de ouro: nunca animar nada que pisque mais de
-          3x/segundo, e sempre oferecer alternativa estática para qualquer animação "decorativa".
-        </p>
+      <div class="pitfall">
+        <div class="pitfall-title">3. Esquecer animation-fill-mode: forwards</div>
+        <p style="color:var(--muted);font-size:13px;">Você cria uma linda animação de fade-in, mas o elemento volta a
+          ser invisível quando ela termina. A solução é <code>animation-fill-mode: forwards</code> — ou
+          <code>both</code> quando há um delay também.</p>
       </div>
 
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ backdrop-filter sem fallback</div>
-        <p>
-          <code>backdrop-filter: blur()</code> não funciona em alguns contextos (elemento pai com
-          <code>overflow: hidden</code> em versões antigas, ou quando o browser não suporta). Sempre teste e ofereça um
-          background sólido como fallback: <code>background: rgba(0,0,0,0.8)</code> quando backdrop-filter não estiver
-          disponível usando <code>@supports not (backdrop-filter: blur(1px))</code>.
-        </p>
+      <div class="pitfall">
+        <div class="pitfall-title">4. Não respeitar prefers-reduced-motion</div>
+        <p style="color:var(--muted);font-size:13px;">Animar um site intensamente sem checar
+          <code>prefers-reduced-motion: reduce</code> pode causar enjoo ou crises em usuários com sensibilidades
+          vestibulares. É uma questão de acessibilidade, não de preferência.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">5. Criar @keyframes duplicados com nomes diferentes</div>
+        <p style="color:var(--muted);font-size:13px;">Quando o projeto cresce, é comum criar
+          <code>@keyframes fadeIn</code>, <code>@keyframes fade-in</code>, <code>@keyframes entrada</code> fazendo a
+          mesma coisa. Use um sistema de nomes e crie keyframes reutilizáveis em um arquivo global.</p>
       </div>
     </div>
 
-    <!-- ── 8. VÍDEOS ─────────────────────────────────── -->
+    <!-- ── 12. VÍDEOS ── -->
     <div class="section">
       <div class="section-label">// curadoria</div>
-      <h2>Referências em vídeo</h2>
-      <p>Vídeos validados para aprofundar cada área desta aula:</p>
-      <div class="videos-grid">
-
-        <a class="video-card" href="https://www.youtube.com/watch?v=PjDw3azfZWI" target="_blank">
+      <h2>Vídeos recomendados</h2>
+      <div class="video-grid">
+        <div class="video-card">
           <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title">CSS Animation Tutorial #1 - Introduction</div>
-            <div class="video-channel">The Net Ninja · série ~1h total (EN)</div>
-            <div class="video-why">Por que assistir: Série em playlist com 14 vídeos curtos (~5 min cada) cobrindo
-              transitions, @keyframes, timing functions, fill-mode e animações em cadeia. Ideal para consumir no ritmo
-              certo.</div>
-            <span class="video-watch">Assistir →</span>
+          <div class="video-info">
+            <div class="video-title">CSS Transitions & Animations in 100 Seconds</div>
+            <div class="video-channel">Fireship · ~2 min</div>
+            <div class="video-why">Por que assistir: visão geral rápida e densa da diferença entre transition e
+              animation com casos de uso reais.</div>
+            <a href="https://www.youtube.com/watch?v=HZHHBwzmJLk" target="_blank">Assistir →</a>
           </div>
-        </a>
-
-        <a class="video-card" href="https://www.youtube.com/watch?v=zHUpx90NerM" target="_blank">
+        </div>
+        <div class="video-card">
           <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title">CSS Transitions & Animations — Full Course</div>
-            <div class="video-channel">Traversy Media · ~50 min (EN)</div>
-            <div class="video-why">Por que assistir: Curso completo de animações CSS com projeto real. Cobre transition,
-              @keyframes, transforms 2D e 3D, e efeitos de flip card exatamente como visto nesta aula. Brad vai direto
-              ao ponto.</div>
-            <span class="video-watch">Assistir →</span>
+          <div class="video-info">
+            <div class="video-title">CSS Animation Performance — The Definitive Guide</div>
+            <div class="video-channel">Google Chrome Developers · ~15 min</div>
+            <div class="video-why">Por que assistir: explica o pipeline de renderização do browser e por que
+              transform/opacity são as únicas propriedades seguras para animar.</div>
+            <a href="https://www.youtube.com/watch?v=N5EW4HnF6FU" target="_blank">Assistir →</a>
           </div>
-        </a>
-
-        <a class="video-card" href="https://www.youtube.com/watch?v=YszONjKpgg4" target="_blank">
+        </div>
+        <div class="video-card">
           <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title">5 CSS mistakes you're probably making</div>
-            <div class="video-channel">Kevin Powell · ~14 min (EN)</div>
-            <div class="video-why">Por que assistir: Kevin mostra diretamente por que animar width/height é
-              problemático, por que usar transform é a solução correta, e como pensar em performance de animação.
-              Essencial para quem quer evitar jank.</div>
-            <span class="video-watch">Assistir →</span>
+          <div class="video-info">
+            <div class="video-title">CSS Clip Path, Filters & Glassmorphism</div>
+            <div class="video-channel">Kevin Powell · ~20 min</div>
+            <div class="video-why">Por que assistir: Kevin Powell é referência em CSS moderno. Este vídeo cobre filtros,
+              backdrop-filter e efeitos visuais de forma profunda e prática.</div>
+            <a href="https://www.youtube.com/watch?v=rrLAg7xNEra" target="_blank">Assistir →</a>
           </div>
-        </a>
-
-        <a class="video-card" href="https://www.youtube.com/watch?v=YDU_3WdfkxA" target="_blank">
+        </div>
+        <div class="video-card">
           <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title">Animações CSS na prática — Hora de Codar</div>
-            <div class="video-channel">Matheus Battisti · ~28 min (PT-BR)</div>
-            <div class="video-why">Por que assistir: Tutorial em português com projeto de card animado do zero —
-              transition, hover states, @keyframes para skeleton loading e efeito de entrada. Ótimo para revisar os
-              conceitos desta aula em PT-BR com código ao vivo.</div>
-            <span class="video-watch">Assistir →</span>
+          <div class="video-info">
+            <div class="video-title">Modern CSS Typography — clamp, fluid type & more</div>
+            <div class="video-channel">Kevin Powell · ~18 min</div>
+            <div class="video-why">Por que assistir: cobre clamp(), fluid typography, text-wrap e
+              font-variation-settings de forma completa, explicando o raciocínio por trás de cada ferramenta.</div>
+            <a href="https://www.youtube.com/watch?v=wARbgs5Fmuw" target="_blank">Assistir →</a>
           </div>
-        </a>
-
+        </div>
       </div>
     </div>
 
-    <!-- ── 9. CHECKPOINT ─────────────────────────────── -->
-    <div class="checkpoint">
-      <div class="checkpoint-label">// desafio</div>
-      <h3>🏁 Checkpoint — valide seu aprendizado</h3>
+    <!-- ── 13. GLOSSÁRIO ── -->
+    <div class="section">
+      <div class="section-label">// glossário</div>
+      <h2>Termos desta aula</h2>
+      <div class="glossary-item">
+        <div class="glossary-term">@keyframes</div>
+        <div class="glossary-def">Regra CSS que define uma sequência de estados (em percentuais de 0% a 100%) que o
+          browser interpola ao longo da animação.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">animation-fill-mode</div>
+        <div class="glossary-def">Define qual estado CSS é aplicado antes (none/both) e depois (forwards/both) da
+          animação. <code>forwards</code> mantém o estado final; sem ele o elemento retorna ao inicial.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">cubic-bezier</div>
+        <div class="glossary-def">Curva matemática de Bézier cúbica definida por 4 pontos que modela qualquer ritmo de
+          aceleração. É a base de todas as timing-functions CSS.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Reflow (Layout)</div>
+        <div class="glossary-def">Recálculo da posição e tamanho de todos os elementos afetados por uma mudança CSS.
+          Extremamente custoso — evitar durante animações.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Composite Layer</div>
+        <div class="glossary-def">Camada de renderização processada diretamente pela GPU, isolada do resto da página.
+          transform e opacity operam nesta camada, garantindo 60fps.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">backdrop-filter</div>
+        <div class="glossary-def">Aplica filtros CSS (blur, saturate, etc.) ao conteúdo visível <em>atrás</em> do
+          elemento, criando efeitos como glassmorphism.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">clamp(min, preferred, max)</div>
+        <div class="glossary-def">Função CSS que retorna um valor entre min e max, usando o valor "preferred" quando
+          dentro do intervalo. Ideal para tipografia fluida sem media queries.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">will-change</div>
+        <div class="glossary-def">Dica ao browser para criar uma composite layer antecipadamente para um elemento que
+          vai animar. Usar com moderação — cada layer consome memória GPU.</div>
+      </div>
+      <div class="glossary-item" style="border-bottom:none">
+        <div class="glossary-term">prefers-reduced-motion</div>
+        <div class="glossary-def">Media query que detecta se o usuário configurou o sistema para reduzir movimento.
+          Fundamental para acessibilidade em sites com animações.</div>
+      </div>
+    </div>
+
+    <!-- ── CHECKPOINT ── -->
+    <div class="section">
+      <div class="checkpoint">
+        <h3>🏁 Checkpoint</h3>
+        <p>Construa uma <strong>landing page animada</strong> com os seguintes elementos:</p>
+        <ul>
+          <li>Um hero com título usando <code>clamp()</code> para tipografia fluida e gradient text animado</li>
+          <li>Três cards com animação de entrada escalonada (<code>animation-delay</code>) e efeito glassmorphism no
+            hover</li>
+          <li>Um loader spinner personalizado com <code>@keyframes</code> e <code>cubic-bezier</code> spring</li>
+          <li>Um skeleton screen que aparece antes do "conteúdo carregar" (simule com setTimeout no JS)</li>
+          <li>Navegação com <code>backdrop-filter: blur()</code> que fica sticky no topo</li>
+          <li>Suporte a <code>prefers-reduced-motion</code> — todas as animações desativadas quando necessário</li>
+        </ul>
+        <div class="checkpoint-hint">💬 Dica: Valide sua landing page no DevTools → Rendering → Paint Flashing. Toda a
+          animação de hover deve ocorrer sem nenhum flash verde (que indica repaint). Se aparecer, você está animando
+          uma propriedade errada.</div>
+      </div>
+    </div>
+
+    <!-- ── PRÓXIMOS PASSOS ── -->
+    <div class="section">
+      <div class="section-label">// próximos passos</div>
+      <h2>O que vem a seguir</h2>
       <p>
-        Crie uma <strong>página de perfil animada</strong> do zero. O objetivo é demonstrar domínio das três ferramentas
-        (transition, @keyframes e transforms) e das boas práticas de performance e acessibilidade.
+        Você agora tem o toolkit completo de CSS visual — responsividade, custom properties, animações, tipografia e
+        efeitos. A próxima trilha é GitHub: a plataforma onde desenvolvedores colaboram e constroem software juntos.
+        Vamos aprender sobre Remote & Push/Pull, Pull Requests, Issues e muito mais.
       </p>
-      <ul>
-        <li>✓ <strong>Avatar com ring animado:</strong> borda que pulsa infinitamente usando @keyframes (escala +
-          opacidade, não width)</li>
-        <li>✓ <strong>Cards de skill com hover:</strong> ao passar o mouse, o card eleva com
-          <code>transform: translateY()</code> + sombra via transition — sem tocar em margin/top
-        </li>
-        <li>✓ <strong>Animação de entrada:</strong> cada card aparece com <code>fade-up</code> usando animation-delay
-          escalonado (0ms, 100ms, 200ms...) para efeito cascata</li>
-        <li>✓ <strong>Botão com pseudo-elemento:</strong> efeito de "luz que passa" usando ::before + overflow: hidden +
-          transform: translateX</li>
-        <li>✓ <strong>Tipografia fluida:</strong> pelo menos o título usa <code>clamp()</code> — sem media query para o
-          tamanho de fonte</li>
-        <li>✓ <strong>prefers-reduced-motion:</strong> todas as animações são desabilitadas/simplificadas quando a
-          preferência do sistema for "reduce"</li>
-      </ul>
-      <div class="checkpoint-hint">
-        💬 Dica: Comece sem nenhuma animação — HTML + CSS estático primeiro. Depois adicione as transitions, depois os
-        @keyframes. Por fim teste no DevTools: aba Animations mostra todas as animações rodando em tempo real, e você
-        pode simular prefers-reduced-motion em Rendering → Emulate CSS media feature.
-      </div>
-    </div>
-
-    <!-- ── PRÓXIMA AULA ───────────────────────────────── -->
-    <a href="gh-03-colaboracao-prs.html" class="next-lesson">
-      <div>
-        <div class="next-label">Próxima aula →</div>
-        <div class="next-title">🐙 GitHub — Colaboração &amp; Pull Requests</div>
-      </div>
-      <div class="next-arrow">→</div>
-    </a>
-
-    <!-- ── FOOTER ─────────────────────────────────────── -->
-    <div class="footer">
-      <span>🌐 HTML/CSS · Aula 10 / 50</span>
-      <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+      <a href="gh-03-colaboracao-prs.html" class="next-card">
+        <div>
+          <div class="next-card-label">→ Próxima aula</div>
+          <div class="next-card-title">GitHub — Colaboração & Pull Requests</div>
+        </div>
+        <div class="next-arrow">→</div>
+      </a>
     </div>
 
   </div><!-- /page -->
 
   <script>
-    // Syntax highlighting
-    document.addEventListener('DOMContentLoaded', () => {
-      hljs.highlightAll();
-    });
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+    hljs.highlightAll();
 
-    // Mermaid
-    mermaid.initialize({
-      startOnLoad: true,
-      theme: 'dark',
-      themeVariables: {
-        primaryColor: '#ef4444',
-        primaryTextColor: '#e8e8f0',
-        primaryBorderColor: 'rgba(239,68,68,0.35)',
-        lineColor: '#8585a8',
-        background: '#111118',
-        mainBkg: '#16161f',
-        nodeBorder: '#ef4444'
-      }
-    });
-
-    // Progress bar
+    // Progress bar de leitura
+    const bar = document.getElementById('progressBar');
     window.addEventListener('scroll', () => {
       const scrollTop = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-      document.querySelector('.progress-bar-fill').style.width = progress + '%';
+      const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      bar.style.width = pct + '%';
     });
   </script>
-
 </body>
 
 </html>

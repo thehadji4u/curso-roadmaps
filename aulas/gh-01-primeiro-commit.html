@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Do Zero ao Primeiro Commit · GitHub</title>
+  <title>Git — Do zero ao primeiro commit · Aula 01</title>
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
   <style>
-    /* ─── TOKENS ────────────────────────────────────────────── */
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
     :root {
       --bg: #0a0a0f;
       --surface: #111118;
@@ -19,28 +22,172 @@
       --border: #1e1e2e;
       --text: #e8e8f0;
       --muted: #8585a8;
-
       --accent: #58a6ff;
-      /* ex: #3b82f6 para Python */
-      --accent-dim: rgba(88, 166, 255, 0.1);
-      /* ex: rgba(59,130,246,0.15) */
-      --accent-border: rgba(88, 166, 255, 0.3);
-      /* ex: rgba(59,130,246,0.3) */
-
-      /* Semantic colors */
+      --accent-dim: rgba(88,166,255,0.15);
+      --accent-border: rgba(88,166,255,0.35);
       --success: #10b981;
       --warn: #f59e0b;
       --danger: #ef4444;
       --info: #06b6d4;
     }
-  </style>
-  <link rel="stylesheet" href="../assets/css/lesson.css">
-</head>
 
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #79c0ff); width: 0%; transition: width 0.1s; }
+
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; cursor: default; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #79c0ff; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.08); border-color: var(--success); }
+    .callout-tip .callout-title { color: var(--success); }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(88,166,255,0.2); color: #79c0ff; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+    .pillar-badge { font-size: 11px; padding: 3px 10px; border-radius: 4px; font-weight: 600; }
+
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-info a { font-size: 12px; color: var(--accent); text-decoration: none; }
+    .video-info a:hover { text-decoration: underline; }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(88,166,255,0.08), rgba(121,192,255,0.04)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(88,166,255,0.06); border-radius: 6px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; }
+
+    .glossary-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .glossary-term { color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+    .glossary-def { color: var(--muted); font-size: 13px; }
+
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #79c0ff; }
+
+    /* Terminal */
+    .terminal { background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .terminal-bar { background: #1a1a1a; padding: 8px 14px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ef4444; } .dot-yellow { background: #f59e0b; } .dot-green { background: #10b981; }
+    .terminal-title { font-size: 11px; color: #555; margin-left: 6px; }
+    .terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; }
+    .t-prompt { color: #10b981; } .t-cmd { color: #e8e8f0; } .t-out { color: #8585a8; } .t-comment { color: #444; font-style: italic; }
+
+    /* Git log visual */
+    .git-log { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+    .git-commit { display: flex; gap: 14px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .git-commit:last-child { border-bottom: none; }
+    .git-hash { color: #ffa657; flex-shrink: 0; width: 70px; }
+    .git-dot { flex-shrink: 0; width: 12px; height: 12px; border-radius: 50%; margin-top: 4px; }
+    .git-line { width: 2px; background: var(--border); margin: 0 5px; }
+    .git-msg { color: var(--text); }
+    .git-meta { color: var(--muted); font-size: 11px; margin-top: 2px; }
+    .ref-tag { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: 700; margin-right: 4px; }
+    .ref-head { background: rgba(88,166,255,0.2); color: #79c0ff; border: 1px solid rgba(88,166,255,0.4); }
+    .ref-main { background: rgba(16,185,129,0.2); color: #34d399; border: 1px solid rgba(16,185,129,0.4); }
+
+    /* State machine */
+    .state-machine { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin: 20px 0; }
+    .state-box { background: var(--surface); border: 1px solid var(--border); padding: 16px 12px; text-align: center; position: relative; }
+    .state-box:not(:last-child)::after { content: '→'; position: absolute; right: -10px; top: 50%; transform: translateY(-50%); color: var(--accent); font-size: 18px; z-index: 1; }
+    .state-name { font-weight: 700; color: #fff; font-size: 13px; margin-bottom: 4px; }
+    .state-cmd { font-size: 11px; color: var(--accent); font-family: 'JetBrains Mono', monospace; }
+    .state-desc { font-size: 11px; color: var(--muted); margin-top: 4px; }
+    @media (max-width: 640px) { .state-machine { grid-template-columns: 1fr 1fr; } .state-box::after { display: none; } }
+  </style>
+</head>
 <body>
 
   <div class="progress-bar-wrap">
-    <div class="progress-bar-fill"></div>
+    <div class="progress-bar-fill" id="progressBar"></div>
   </div>
 
   <nav class="top-nav">
@@ -56,280 +203,123 @@
 
   <div class="page">
 
-    <!-- ══════════════════════════════════════════
-         HERO
-    ══════════════════════════════════════════ -->
+    <!-- HERO -->
     <div class="hero">
       <div class="hero-eyebrow">
-        <span>🐙 GitHub · 01 · Prioridade 1</span>
-        <span class="hero-badge">Aula 01 — Base Universal</span>
+        <span>🐙 GitHub</span>
+        <span class="hero-badge">Aula 01</span>
       </div>
-      <h1>Git — Do Zero ao Primeiro Commit</h1>
+      <h1>Git — Do zero ao primeiro commit</h1>
       <div class="hero-meta">
-        <span>⏱ ~30 min de leitura</span>
-        <span>🎯 Iniciante absoluto</span>
+        <span>⏱ ~35 min de leitura</span>
+        <span>🎯 Fundamentos</span>
         <span>🔧 Hands-on incluído</span>
-        <span>💻 Terminal necessário</span>
       </div>
       <div class="hero-tags">
-        <span class="tag">git init</span>
-        <span class="tag">git add</span>
-        <span class="tag">git commit</span>
-        <span class="tag">git log</span>
+        <span class="tag accent">controle de versão</span>
+        <span class="tag accent">git init</span>
+        <span class="tag accent">git commit</span>
+        <span class="tag">staging area</span>
         <span class="tag">git status</span>
-        <span class="tag">SSH</span>
+        <span class="tag">git log</span>
+        <span class="tag">git diff</span>
         <span class="tag">.gitignore</span>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         1. POR QUE ISSO IMPORTA
-    ══════════════════════════════════════════ -->
+    <!-- 1. POR QUE IMPORTA -->
     <div class="section">
-      <div class="section-label">// 01 — motivação</div>
+      <div class="section-label">// motivação</div>
       <h2>Por que isso importa?</h2>
       <p>
-        Você provavelmente já teve uma pasta chamada <code>projeto_final_v3_ESSE_MESMO_agora_vai.zip</code>.
-        Isso é controle de versão manual — e é um desastre esperando para acontecer. O Git resolve isso de forma
-        elegante,
-        rápida e profissional.
+        Git é a habilidade mais transversal da engenharia de software moderna. Não importa se você trabalha com frontend, backend, dados ou DevOps — <strong>todo time usa Git</strong>. É o sistema que permite que dezenas de pessoas trabalhem no mesmo projeto simultaneamente, sem destruir o trabalho uma da outra.
       </p>
       <p>
-        Sem Git, você não consegue colaborar em equipe, contribuir para open source, usar GitHub Actions,
-        fazer deploy automático ou trabalhar em qualquer empresa de tecnologia do planeta.
-        É o <strong>pré-requisito de tudo</strong> neste roadmap.
+        Mais do que uma ferramenta de backup, Git é uma <strong>máquina do tempo para código</strong>. Você pode voltar a qualquer ponto da história do projeto, comparar o que mudou, entender por que uma mudança foi feita semanas atrás, e reverter erros com segurança. Nenhum desenvolvedor profissional trabalha sem ele.
       </p>
-
       <div class="callout callout-info">
-        <div class="callout-title">💼 Por que um engenheiro sênior usa isso hoje</div>
-        Todo time de engenharia opera com Git como infraestrutura fundamental — não é opcional.
-        Um sênior usa Git para: revisar o histórico de decisões técnicas (<code>git blame</code>),
-        reverter bugs em produção em segundos (<code>git revert</code>), criar branches isolados para experimentos
-        sem quebrar a main, e conectar cada commit a uma issue/PR rastreável.
-        É a base da comunicação técnica entre engenheiros.
+        <div class="callout-title">💼 Por que um engenheiro sênior domina Git profundamente</div>
+        Sêniors usam Git como extensão do pensamento. Commits atômicos bem escritos formam uma documentação viva do projeto. Um <code>git log</code> bem estruturado conta a história de cada decisão técnica. Em code reviews, o histórico de commits revela o raciocínio por trás das mudanças. Git não é opcional — é o idioma universal do desenvolvimento colaborativo.
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         2. ANALOGIA
-    ══════════════════════════════════════════ -->
+    <!-- 2. ANALOGIA -->
     <div class="section">
-      <div class="section-label">// 02 — analogia</div>
-      <h2>Antes do código: a analogia do videogame</h2>
-
+      <div class="section-label">// analogia</div>
+      <h2>Antes do código: uma analogia</h2>
       <div class="analogy-card">
-        <div class="analogy-label">🎮 Mundo Real → Git</div>
+        <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
         <div class="analogy-text">
-          Imagine que você está jogando um RPG de mundo aberto. A cada hora você aperta <strong>Salvar</strong> —
-          criando um checkpoint com o estado exato do jogo: sua vida, posição, inventário, missões completas.
-          Se você morrer ou tomar uma decisão ruim, você <strong>carrega o checkpoint</strong> e volta exatamente
-          para aquele estado. Você pode ter vários saves, comparar dois saves diferentes, e até jogar numa cópia
-          do save sem arriscar o original.
+          Imagine escrever um <strong>livro com co-autores</strong>. Sem Git, você teria um único documento Word compartilhado onde todo mundo edita ao mesmo tempo — um caos. Com Git, cada autor tem sua <em>própria cópia completa do livro</em> (repositório local), faz suas edições no rascunho (working directory), revisa o que vai incluir no próximo capítulo (staging area), e então "salva oficialmente" um capítulo finalizado (commit) com uma mensagem descritiva.
           <br><br>
-          O Git é exatamente isso para o seu código. Cada <code>git commit</code> é um checkpoint.
-          Você pode voltar para qualquer ponto da história, criar ramificações paralelas, e nunca mais perder trabalho.
+          O Git guarda um <em>snapshot completo</em> de cada versão salva, com data, autor e descrição. A qualquer momento, qualquer co-autor pode ver todos os rascunhos históricos, comparar versões e entender exatamente o que mudou entre dois capítulos.
         </div>
         <div class="analogy-mapping">
-          <span class="analogy-real">Apertar "Salvar" no jogo</span>
-          <span class="analogy-arrow">→</span>
-          <span class="analogy-tech">git commit</span>
-
-          <span class="analogy-real">Carregar um save antigo</span>
-          <span class="analogy-arrow">→</span>
-          <span class="analogy-tech">git checkout &lt;hash&gt;</span>
-
-          <span class="analogy-real">Jogar numa cópia do save</span>
-          <span class="analogy-arrow">→</span>
-          <span class="analogy-tech">git branch</span>
-
-          <span class="analogy-real">Ver todos os seus saves</span>
-          <span class="analogy-arrow">→</span>
-          <span class="analogy-tech">git log</span>
-
-          <span class="analogy-real">Nuvem de sincronização</span>
-          <span class="analogy-arrow">→</span>
-          <span class="analogy-tech">GitHub (remote)</span>
+          <span class="analogy-real">📖 Livro completo com histórico</span>
+          <span class="analogy-tech">→ Repositório Git</span>
+          <span class="analogy-real">✏️ Rascunho em edição</span>
+          <span class="analogy-tech">→ Working Directory</span>
+          <span class="analogy-real">📋 Capítulos prontos para publicar</span>
+          <span class="analogy-tech">→ Staging Area (Index)</span>
+          <span class="analogy-real">📸 Capítulo finalizado e numerado</span>
+          <span class="analogy-tech">→ Commit (snapshot permanente)</span>
         </div>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         3. CONCEITO CENTRAL
-    ══════════════════════════════════════════ -->
+    <!-- 3. O QUE É GIT -->
     <div class="section">
-      <div class="section-label">// 03 — conceito</div>
-      <h2>Como o Git pensa sobre arquivos</h2>
-
+      <div class="section-label">// conceito 1</div>
+      <h2>Git vs GitHub — não confunda</h2>
       <p>
-        O Git não rastreia arquivos inteiros a cada commit — ele rastreia <strong>mudanças (diffs)</strong>.
-        Todo arquivo no seu projeto existe em um de três estados. Entender esses estados é a chave para nunca
-        mais ficar confuso com Git.
+        Essa confusão é universal entre iniciantes. São coisas completamente diferentes:
       </p>
 
-      <div class="git-states">
-        <div class="git-state">
-          <div class="git-state-icon">📁</div>
-          <div class="git-state-name">Working Directory</div>
-          <div class="git-state-desc">Seus arquivos como você os vê no editor. Modificações ainda não registradas.</div>
-          <div class="git-state-cmd">git status (vermelho)</div>
-          <div class="git-arrow">→</div>
+      <div class="grid-2">
+        <div class="card-mini" style="border-color: var(--accent-border);">
+          <span class="pillar-badge" style="background:var(--accent-dim);color:var(--accent);">Git</span>
+          <h4>Sistema de controle de versão</h4>
+          <p>Software local, gratuito e open-source criado por Linus Torvalds em 2005. Roda na sua máquina. Funciona completamente offline. Gerencia o histórico de qualquer projeto.</p>
         </div>
-        <div class="git-state">
-          <div class="git-state-icon">📋</div>
-          <div class="git-state-name">Staging Area</div>
-          <div class="git-state-desc">Arquivos marcados para entrar no próximo commit. "Sala de espera" do commit.</div>
-          <div class="git-state-cmd">git status (verde)</div>
-          <div class="git-arrow">→</div>
-        </div>
-        <div class="git-state">
-          <div class="git-state-icon">🔒</div>
-          <div class="git-state-name">Repository</div>
-          <div class="git-state-desc">Histórico permanente e imutável. Cada commit tem um hash SHA único.</div>
-          <div class="git-state-cmd">git log</div>
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(255,255,255,0.08);color:var(--muted);">GitHub</span>
+          <h4>Plataforma de hospedagem</h4>
+          <p>Serviço web (da Microsoft) que armazena repositórios Git na nuvem. Adiciona features de colaboração: pull requests, issues, Actions, etc. Existem alternativas: GitLab, Bitbucket.</p>
         </div>
       </div>
 
-      <div class="mermaid-wrap">
-        <div class="mermaid-label">// fluxo completo de um commit</div>
-        <pre class="mermaid">
-          graph LR
-          A[📝 Editar arquivo] -->|git add| B[📋 Staging Area]
-          B -->|git commit| C[🔒 Repositório local]
-          C -->|git push| D[☁️ GitHub remote]
-          D -->|git pull| A
-          style A fill:#16161f,stroke:#58a6ff,color:#e8e8f0
-          style B fill:#16161f,stroke:#f59e0b,color:#e8e8f0
-          style C fill:#16161f,stroke:#10b981,color:#e8e8f0
-          style D fill:#16161f,stroke:#a855f7,color:#e8e8f0
-        </pre>
-      </div>
-
-      <h3>Git vs GitHub — não são a mesma coisa</h3>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Aspecto</th>
-              <th>Git</th>
-              <th>GitHub</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>O que é</strong></td>
-              <td class="td-neu">Software instalado na sua máquina</td>
-              <td class="td-neu">Plataforma web na nuvem</td>
-            </tr>
-            <tr>
-              <td><strong>Função</strong></td>
-              <td class="td-neu">Controle de versão local</td>
-              <td class="td-neu">Hospedagem e colaboração remota</td>
-            </tr>
-            <tr>
-              <td><strong>Sem internet</strong></td>
-              <td class="td-pro">✓ Funciona offline</td>
-              <td class="td-con">✗ Precisa de conexão</td>
-            </tr>
-            <tr>
-              <td><strong>Alternativas</strong></td>
-              <td class="td-neu">Mercurial, SVN (raros)</td>
-              <td class="td-neu">GitLab, Bitbucket, Gitea</td>
-            </tr>
-            <tr>
-              <td><strong>Criado por</strong></td>
-              <td class="td-neu">Linus Torvalds (2005)</td>
-              <td class="td-neu">Tom Preston-Werner (2008)</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="callout callout-info" style="margin-top:20px;">
+        <div class="callout-title">💡 A relação entre os dois</div>
+        Git é o motor. GitHub é a garagem na nuvem. Você usa Git localmente para gerenciar versões, e usa GitHub (ou outra plataforma) para compartilhar, colaborar e fazer backup na nuvem. Nesta aula foco em Git puro — GitHub vem na aula 03.
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         4. INSTALAÇÃO & CONFIGURAÇÃO
-    ══════════════════════════════════════════ -->
+    <!-- 4. INSTALAÇÃO E CONFIG -->
     <div class="section">
-      <div class="section-label">// 04 — setup</div>
-      <h2>Instalação & configuração</h2>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Sistema</th>
-              <th>Comando</th>
-              <th>Verificar</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>macOS</td>
-              <td><code>brew install git</code> ou instalar Xcode CLI tools</td>
-              <td><code>git --version</code></td>
-            </tr>
-            <tr>
-              <td>Ubuntu/Debian</td>
-              <td><code>sudo apt install git</code></td>
-              <td><code>git --version</code></td>
-            </tr>
-            <tr>
-              <td>Windows</td>
-              <td>Baixar em <a href="https://git-scm.com" target="_blank">git-scm.com</a> · inclui Git Bash</td>
-              <td><code>git --version</code> no Git Bash</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <p>Após instalar, <strong>configure sua identidade</strong> — essa informação vai em todo commit que você fizer:
-      </p>
-
-      <div class="code-wrap">
-        <div class="code-header">
-          <span class="code-filename">terminal</span>
-          <span class="code-lang">bash</span>
-        </div>
-        <pre><code class="language-bash"># Configuração global (feita uma única vez)
-git config --global user.name "Seu Nome"
-git config --global user.email "seu&#64;email.com"
-
-# Editor padrão (VS Code — recomendado)
-git config --global core.editor "code --wait"
-
-# Branch padrão como 'main' (padrão atual da indústria)
-git config --global init.defaultBranch main
-
-# Verificar tudo que foi configurado
-git config --list</code></pre>
-      </div>
-
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Use o mesmo email do GitHub</div>
-        O email que você configura aqui precisa ser o mesmo da sua conta GitHub para que seus commits apareçam
-        corretamente no seu perfil e no histórico de contribuições (o famoso gráfico verde).
-      </div>
-    </div>
-
-    <!-- ══════════════════════════════════════════
-         5. HANDS-ON PASSO A PASSO
-    ══════════════════════════════════════════ -->
-    <div class="section">
-      <div class="section-label">// 05 — mãos na massa</div>
-      <h2>Seu primeiro repositório — passo a passo</h2>
-      <p>Abra o terminal e execute exatamente estes comandos. Vamos criar um projeto real do zero.</p>
+      <div class="section-label">// conceito 2</div>
+      <h2>Instalação & Configuração</h2>
 
       <div class="steps">
-
         <div class="step">
           <div class="step-num">1</div>
           <div class="step-body">
-            <div class="step-title">Crie a pasta do projeto</div>
-            <div class="step-desc">Todo projeto Git começa com uma pasta. O Git vai rastrear tudo dentro dela.</div>
-            <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
+            <div class="step-title">Instale o Git</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal</span></div>
+              <div class="terminal-body">
+                <div><span class="t-comment"># macOS — via Homebrew</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">brew install git</span></div>
+                <br>
+                <div><span class="t-comment"># Ubuntu/Debian</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">sudo apt install git</span></div>
+                <br>
+                <div><span class="t-comment"># Windows — baixe em git-scm.com/download/win</span></div>
+                <div><span class="t-comment"># (inclui Git Bash, um terminal Unix no Windows)</span></div>
+                <br>
+                <div><span class="t-comment"># Verificar instalação</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git --version</span></div>
+                <div class="t-out">git version 2.43.0</div>
               </div>
-              <pre><code class="language-bash">mkdir meu-primeiro-repo
-cd meu-primeiro-repo</code></pre>
             </div>
           </div>
         </div>
@@ -337,20 +327,306 @@ cd meu-primeiro-repo</code></pre>
         <div class="step">
           <div class="step-num">2</div>
           <div class="step-body">
-            <div class="step-title">Inicialize o repositório Git</div>
-            <div class="step-desc">
-              Este comando cria uma pasta oculta <code>.git/</code> que guarda todo o histórico.
-              Você só faz isso <strong>uma vez</strong> por projeto.
-            </div>
-            <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
+            <div class="step-title">Configure sua identidade — obrigatório para commits</div>
+            <div class="step-desc">Git precisa saber quem está fazendo os commits. Essa configuração fica em <code>~/.gitconfig</code> e se aplica a todos os repositórios da máquina.</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal</span></div>
+              <div class="terminal-body">
+                <div><span class="t-comment"># Configuração global (--global = para todos os repos)</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git config --global user.name "Ana Silva"</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git config --global user.email "ana@exemplo.com"</span></div>
+                <br>
+                <div><span class="t-comment"># Editor padrão para mensagens de commit</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git config --global core.editor "code --wait"</span>  <span class="t-comment"># VS Code</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git config --global core.editor "nano"</span>           <span class="t-comment"># ou nano</span></div>
+                <br>
+                <div><span class="t-comment"># Branch padrão como 'main' (não 'master')</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git config --global init.defaultBranch main</span></div>
+                <br>
+                <div><span class="t-comment"># Verificar configurações</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git config --list</span></div>
+                <div class="t-out">user.name=Ana Silva</div>
+                <div class="t-out">user.email=ana@exemplo.com</div>
+                <div class="t-out">init.defaultBranch=main</div>
+                <div class="t-out">...</div>
               </div>
-              <pre><code class="language-bash">git init
-# Saída esperada: Initialized empty Git repository in .../meu-primeiro-repo/.git/
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-# Veja o que foi criado (pasta oculta)
-ls -la #linux
-dir -Force #windows</code></pre>
+    <!-- 5. AS TRÊS ÁREAS -->
+    <div class="section">
+      <div class="section-label">// conceito 3</div>
+      <h2>As três áreas do Git</h2>
+      <p>
+        Entender as três áreas é o insight mais importante desta aula. Todo arquivo em um repositório Git está em um desses três estados — e compreender as transições entre eles elimina a maioria das confusões de iniciantes.
+      </p>
+
+      <div class="state-machine">
+        <div class="state-box" style="border-top: 2px solid var(--warn); border-radius: 8px 0 0 8px;">
+          <div class="state-name">Working Directory</div>
+          <div class="state-cmd">— editar arquivo —</div>
+          <div class="state-desc">Onde você edita. Modificações ainda não rastreadas.</div>
+        </div>
+        <div class="state-box" style="border-top: 2px solid var(--info);">
+          <div class="state-name">Staging Area</div>
+          <div class="state-cmd">git add</div>
+          <div class="state-desc">Arquivos "preparados" para o próximo commit.</div>
+        </div>
+        <div class="state-box" style="border-top: 2px solid var(--accent);">
+          <div class="state-name">Repositório Local</div>
+          <div class="state-cmd">git commit</div>
+          <div class="state-desc">Snapshots permanentes com hash único.</div>
+        </div>
+        <div class="state-box" style="border-top: 2px solid var(--success); border-radius: 0 8px 8px 0;">
+          <div class="state-name">Repositório Remoto</div>
+          <div class="state-cmd">git push</div>
+          <div class="state-desc">GitHub/GitLab — compartilhado com o time.</div>
+        </div>
+      </div>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// ciclo de vida de um arquivo no git</div>
+        <div class="mermaid">
+stateDiagram-v2
+    [*] --> Untracked: novo arquivo criado
+    Untracked --> Staged: git add
+    Staged --> Committed: git commit
+    Committed --> Modified: editar arquivo
+    Modified --> Staged: git add
+    Staged --> Modified: git restore --staged
+    Modified --> Unmodified: git restore
+    Committed --> Unmodified: sem mudanças
+    Unmodified --> Modified: editar arquivo
+        </div>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Por que existe a Staging Area?</div>
+        À primeira vista parece redundante — por que não ir direto de "editado" para "commitado"? A staging area permite <strong>selecionar exatamente o que vai no próximo commit</strong>. Você pode ter mudanças em 5 arquivos mas fazer um commit só com 2 deles, mantendo os outros para o próximo. Isso resulta em commits atômicos e histórico limpo.
+      </div>
+    </div>
+
+    <!-- 6. COMANDOS CORE -->
+    <div class="section">
+      <div class="section-label">// conceito 4</div>
+      <h2>Comandos core — do init ao commit</h2>
+
+      <div class="code-label">// fluxo completo comentado</div>
+      <pre><code class="language-bash"># ── 1. Inicializar um repositório ───────────────────────────────
+git init                    # cria a pasta .git/ — repositório vazio
+git init meu-projeto        # cria a pasta e inicializa dentro
+
+# ── 2. Ver o estado atual do repositório ─────────────────────────
+git status                  # arquivos modificados, staged, untracked
+git status -s               # versão compacta (short)
+#  M = modified, A = added/staged, ?? = untracked, D = deleted
+
+# ── 3. Rastrear e preparar arquivos (staging) ─────────────────────
+git add arquivo.txt          # adiciona arquivo específico
+git add src/                 # adiciona pasta inteira
+git add *.py                 # adiciona todos os .py
+git add .                    # adiciona TUDO na pasta atual
+git add -p                   # modo interativo — escolhe pedaços (hunks)
+
+# ── 4. Remover da staging area sem desfazer mudanças ─────────────
+git restore --staged arquivo.txt   # retira do staging, mantém edições
+git reset HEAD arquivo.txt         # alternativa mais antiga
+
+# ── 5. Ver o que mudou ────────────────────────────────────────────
+git diff                    # working directory vs staging (o que ainda não fiz add)
+git diff --staged           # staging vs último commit (o que vai no próximo commit)
+git diff HEAD               # working directory vs último commit (tudo)
+git diff abc123 def456      # entre dois commits específicos
+
+# ── 6. Criar um commit ──────────────────────────────────────────
+git commit -m "feat: adiciona página de login"     # mensagem inline
+git commit                                          # abre editor configurado
+git commit -am "fix: corrige validação do email"   # add + commit (só modified, não untracked)
+
+# ── 7. Verificar o histórico ──────────────────────────────────────
+git log                     # log completo
+git log --oneline           # uma linha por commit (muito útil)
+git log --oneline --graph   # grafo de branches
+git log --oneline -10       # últimos 10 commits
+git log --author="Ana"      # commits de um autor específico
+git log -- arquivo.txt      # histórico de um arquivo específico
+
+# ── 8. Inspecionar um commit específico ──────────────────────────
+git show abc1234            # detalhes + diff de um commit
+git show HEAD               # detalhe do commit mais recente
+git show HEAD~2             # dois commits antes do HEAD
+
+# ── 9. Desfazer mudanças no working directory ─────────────────────
+git restore arquivo.txt     # descarta edições não staged (CUIDADO: irreversível)
+git restore .               # descarta TODAS as edições não staged
+</code></pre>
+
+      <h3>Anatomia de uma boa mensagem de commit</h3>
+      <p>Mensagens de commit são documentação. Um histórico com mensagens descritivas vale mais do que comentários no código — explica <em>o porquê</em>, não apenas o quê.</p>
+
+      <div class="code-label">// conventional commits — padrão da indústria</div>
+      <pre><code class="language-bash"># Formato: tipo(escopo): descrição
+# Linha em branco
+# Corpo opcional (mais detalhes)
+# Linha em branco
+# Rodapé opcional (BREAKING CHANGE, refs, etc.)
+
+# ── Tipos principais ──────────────────────────────────────────────
+feat:     # nova funcionalidade
+fix:      # correção de bug
+docs:     # mudança na documentação
+style:    # formatação, sem mudança de lógica
+refactor: # refatoração sem nova feature nem fix
+test:     # adiciona ou corrige testes
+chore:    # tarefas de manutenção, deps, build
+
+# ── Exemplos RUINS (evite) ────────────────────────────────────────
+git commit -m "fix"
+git commit -m "alterações"
+git commit -m "WIP"
+git commit -m "corrigindo bug da autenticação finalmente"
+
+# ── Exemplos BOM ──────────────────────────────────────────────────
+git commit -m "feat(auth): adiciona login com Google OAuth"
+git commit -m "fix(cart): corrige total quando desconto > 100%"
+git commit -m "docs(readme): atualiza instruções de instalação"
+git commit -m "refactor(api): extrai lógica de paginação para helper"
+
+# ── Commit com corpo detalhado ────────────────────────────────────
+git commit -m "feat(payment): implementa pagamento via PIX
+
+Integra com a API do Banco Central para geração de QR codes.
+O pagamento expira em 30 minutos conforme regulamentação do BCB.
+
+Closes #142"
+</code></pre>
+    </div>
+
+    <!-- 7. GITIGNORE -->
+    <div class="section">
+      <div class="section-label">// conceito 5</div>
+      <h2>.gitignore — o que nunca deve ir para o repo</h2>
+      <p>
+        O arquivo <code>.gitignore</code> lista padrões de arquivos e pastas que o Git deve ignorar completamente. Deve ser criado <strong>antes do primeiro commit</strong> e commitado junto com o projeto.
+      </p>
+
+      <div class="code-label">// .gitignore completo para um projeto web/Python</div>
+      <pre><code class="language-gitignore"># ── Ambientes virtuais Python ────────────────────────────────────
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# ── Node.js / JavaScript ─────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-error.log
+.npm
+dist/
+.next/
+.nuxt/
+
+# ── Variáveis de ambiente (NUNCA commite segredos!) ──────────────
+.env
+.env.local
+.env.*.local
+.env.production
+*.key
+*.pem
+secrets.json
+
+# ── IDEs e editores ───────────────────────────────────────────────
+.vscode/          # ou manter apenas .vscode/settings.json
+.idea/
+*.swp
+*.swo
+.DS_Store         # macOS
+Thumbs.db         # Windows
+desktop.ini
+
+# ── Logs e temporários ────────────────────────────────────────────
+*.log
+logs/
+tmp/
+temp/
+*.tmp
+coverage/
+.coverage
+htmlcov/
+
+# ── Banco de dados locais ─────────────────────────────────────────
+*.sqlite3
+*.db
+</code></pre>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Segredos no Git são para sempre</div>
+        Se você commitar um arquivo <code>.env</code> com senhas, tokens de API ou chaves privadas, esses segredos ficam no histórico do Git — mesmo depois de deletar o arquivo. Repositórios públicos são escaneados por bots 24/7 procurando exatamente isso. Sempre verifique com <code>git status</code> antes de commitar. Use <code>gitignore.io</code> para gerar .gitignore completo para seu stack.
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Pro tip: arquivo já rastreado mas precisa ignorar</div>
+        Se um arquivo já foi commitado e você quer que o Git passe a ignorá-lo: <code>git rm --cached arquivo.txt</code> (remove do tracking sem deletar o arquivo) → adicione ao .gitignore → commite as mudanças.
+      </div>
+    </div>
+
+    <!-- HANDS-ON -->
+    <div class="section">
+      <div class="section-label">// prática</div>
+      <h2>Mãos na massa — Do zero ao histórico</h2>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Crie e inicialize o projeto</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal</span></div>
+              <div class="terminal-body">
+                <div><span class="t-prompt">$</span> <span class="t-cmd">mkdir meu-primeiro-repo && cd meu-primeiro-repo</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git init</span></div>
+                <div class="t-out">Initialized empty Git repository in .../meu-primeiro-repo/.git/</div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git status</span></div>
+                <div class="t-out">On branch main</div>
+                <div class="t-out">No commits yet</div>
+                <div class="t-out">nothing to commit (create/copy files and use "git add" to track)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Crie o .gitignore e o README primeiro</div>
+            <div class="step-desc">Boa prática: o primeiro commit de qualquer projeto deve incluir o .gitignore.</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal</span></div>
+              <div class="terminal-body">
+                <div><span class="t-comment"># Cria o .gitignore</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">echo ".env" > .gitignore</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">echo "__pycache__/" >> .gitignore</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">echo ".venv/" >> .gitignore</span></div>
+                <br>
+                <div><span class="t-comment"># Cria o README</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">echo "# Meu Primeiro Repo" > README.md</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">echo "Aprendendo Git do zero." >> README.md</span></div>
+                <br>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git status</span></div>
+                <div class="t-out">Untracked files:</div>
+                <div class="t-out">        .gitignore</div>
+                <div class="t-out">        README.md</div>
+              </div>
             </div>
           </div>
         </div>
@@ -358,20 +634,20 @@ dir -Force #windows</code></pre>
         <div class="step">
           <div class="step-num">3</div>
           <div class="step-body">
-            <div class="step-title">Crie arquivos e veja o status</div>
-            <div class="step-desc">
-              O <code>git status</code> é seu melhor amigo — use-o constantemente.
-              Ele mostra exatamente o que está acontecendo no repositório.
-            </div>
-            <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
+            <div class="step-title">Primeiro commit</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal</span></div>
+              <div class="terminal-body">
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git add .</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git status</span></div>
+                <div class="t-out">Changes to be committed:</div>
+                <div class="t-out">        new file:   .gitignore</div>
+                <div class="t-out">        new file:   README.md</div>
+                <br>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git commit -m "chore: inicializa repositório com README e .gitignore"</span></div>
+                <div class="t-out">[main (root-commit) a1b2c3d] chore: inicializa repositório com README e .gitignore</div>
+                <div class="t-out"> 2 files changed, 5 insertions(+)</div>
               </div>
-              <pre><code class="language-bash"># Crie um arquivo README
-echo "# Meu Primeiro Repositório" > README.md
-echo "Aprendendo Git do zero." >> README.md
-
-# Veja o status — arquivo aparece em vermelho (untracked)
-git status</code></pre>
             </div>
           </div>
         </div>
@@ -379,424 +655,268 @@ git status</code></pre>
         <div class="step">
           <div class="step-num">4</div>
           <div class="step-body">
-            <div class="step-title">Adicione à staging area</div>
-            <div class="step-desc">
-              <code>git add</code> não salva nada ainda — ele apenas marca o arquivo como "quero incluir isso no próximo
-              commit".
-              É a staging area — a sala de espera do commit.
-            </div>
-            <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
-              </div>
-              <pre><code class="language-bash"># Adicionar um arquivo específico
-git add README.md
+            <div class="step-title">Crie mais arquivos e explore o histórico</div>
+            <pre><code class="language-bash"># Cria um arquivo Python
+cat > calculadora.py << 'EOF'
+def somar(a, b):
+    return a + b
 
-# OU adicionar tudo de uma vez (cuidado: adiciona TUDO)
-git add .
+def subtrair(a, b):
+    return a - b
 
-# Status agora — arquivo aparece em verde
-git status</code></pre>
-            </div>
+if __name__ == "__main__":
+    print(somar(10, 5))
+    print(subtrair(10, 5))
+EOF
+
+# Adiciona e commita
+git add calculadora.py
+git diff --staged          # veja exatamente o que vai no commit
+git commit -m "feat: adiciona calculadora com soma e subtração"
+
+# Edita o arquivo
+echo "" >> calculadora.py
+echo "def multiplicar(a, b):" >> calculadora.py
+echo "    return a * b" >> calculadora.py
+
+git diff                   # veja o que mudou (ainda não staged)
+git add calculadora.py
+git commit -m "feat(calc): adiciona operação de multiplicação"
+
+# Veja o histórico
+git log --oneline
+# def5678 feat(calc): adiciona operação de multiplicação
+# abc1234 feat: adiciona calculadora com soma e subtração
+# a1b2c3d chore: inicializa repositório com README e .gitignore
+
+# Inspecione um commit específico
+git show HEAD~1            # o commit anterior ao atual
+</code></pre>
           </div>
         </div>
 
         <div class="step">
           <div class="step-num">5</div>
           <div class="step-body">
-            <div class="step-title">Faça o primeiro commit</div>
-            <div class="step-desc">
-              O commit é o checkpoint. A mensagem deve descrever <strong>o que foi feito</strong>, não como.
-              Use o padrão <strong>Conventional Commits</strong> desde o início:
-              <code>feat:</code>, <code>fix:</code>, <code>docs:</code>, <code>chore:</code>
-            </div>
-            <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
+            <div class="step-title">Visualize o log bonito</div>
+            <div class="step-desc">Crie um alias útil no seu gitconfig:</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal</span></div>
+              <div class="terminal-body">
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git config --global alias.lg "log --oneline --graph --all --decorate"</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git lg</span></div>
+                <div class="t-out">* def5678 (HEAD -> main) feat(calc): adiciona multiplicação</div>
+                <div class="t-out">* abc1234 feat: adiciona calculadora com soma e subtração</div>
+                <div class="t-out">* a1b2c3d chore: inicializa repositório com README e .gitignore</div>
               </div>
-              <pre><code class="language-bash"># Commit com mensagem descritiva
-git commit -m "docs: add README with project description"
-
-# Saída esperada:
-# [main (root-commit) a3f9c21] docs: add README with project description
-#  1 file changed, 2 insertions(+)</code></pre>
             </div>
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="step-num">6</div>
-          <div class="step-body">
-            <div class="step-title">Explore o histórico</div>
-            <div class="step-desc">
-              O <code>git log</code> mostra toda a linha do tempo do projeto.
-              Cada commit tem um <strong>hash SHA único</strong> — 40 caracteres que identificam aquele estado exato do
-              código.
-            </div>
-            <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
+            <!-- Git log visual -->
+            <div class="git-log" style="margin-top:16px;">
+              <div class="git-commit">
+                <span class="git-hash">def5678</span>
+                <div>
+                  <div class="git-msg"><span class="ref-tag ref-head">HEAD</span><span class="ref-tag ref-main">main</span> feat(calc): adiciona operação de multiplicação</div>
+                  <div class="git-meta">Ana Silva · agora mesmo</div>
+                </div>
               </div>
-              <pre><code class="language-bash"># Log completo
-git log
-
-# Log compacto e visual (use sempre)
-git log --oneline --graph --all
-
-# Ver o que mudou num commit específico
-git show a3f9c21
-
-# Ver diferença entre working dir e último commit
-git diff</code></pre>
-            </div>
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="step-num">7</div>
-          <div class="step-body">
-            <div class="step-title">Crie um .gitignore</div>
-            <div class="step-desc">
-              O <code>.gitignore</code> lista arquivos que o Git deve <strong>ignorar completamente</strong>.
-              Nunca commite senhas, chaves de API, <code>node_modules/</code> ou arquivos de build.
-            </div>
-            <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">.gitignore</span><span
-                  class="code-lang">gitignore</span></div>
-              <pre><code class="language-bash"># Dependências
-node_modules/
-__pycache__/
-*.pyc
-
-# Variáveis de ambiente (NUNCA commite isso)
-.env
-.env.local
-*.env
-
-# Builds e compilados
-dist/
-build/
-*.o
-*.exe
-
-# Editor e sistema
-.DS_Store
-.vscode/
-*.swp
-Thumbs.db</code></pre>
-            </div>
-            <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
+              <div class="git-commit">
+                <span class="git-hash">abc1234</span>
+                <div>
+                  <div class="git-msg">feat: adiciona calculadora com soma e subtração</div>
+                  <div class="git-meta">Ana Silva · 5 min atrás</div>
+                </div>
               </div>
-              <pre><code class="language-bash"># Crie e commite o .gitignore
-git add .gitignore
-git commit -m "chore: add .gitignore"</code></pre>
+              <div class="git-commit">
+                <span class="git-hash">a1b2c3d</span>
+                <div>
+                  <div class="git-msg">chore: inicializa repositório com README e .gitignore</div>
+                  <div class="git-meta">Ana Silva · 10 min atrás</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         6. CÓDIGO COMPLETO — FLUXO DIÁRIO
-    ══════════════════════════════════════════ -->
+    <!-- ARMADILHAS -->
     <div class="section">
-      <div class="section-label">// 06 — referência</div>
-      <h2>O fluxo diário de um desenvolvedor</h2>
-      <p>Este é o ciclo que você vai repetir centenas de vezes. Memorize-o.</p>
+      <div class="section-label">// pitfalls</div>
+      <h2>⚠️ Armadilhas Comuns</h2>
 
-      <div class="code-wrap">
-        <div class="code-header">
-          <span class="code-filename">fluxo-diario.sh</span>
-          <span class="code-lang">bash</span>
-        </div>
-        <pre><code class="language-bash">### ─── INÍCIO DO DIA ──────────────────────────────────
-# 1. Verificar o estado atual do repositório
-git status
+      <div class="pitfall">
+        <div class="pitfall-title">1. git add . sem checar o git status antes</div>
+        <p>Rodar <code>git add .</code> cegamente pode incluir arquivos temporários, senhas em <code>.env</code> ou builds gerados. Sempre confira <code>git status</code> antes e tenha um <code>.gitignore</code> atualizado.</p>
+      </div>
 
-# 2. Ver histórico recente
-git log --oneline -5
+      <div class="pitfall">
+        <div class="pitfall-title">2. Commits gigantes com mensagem "várias mudanças"</div>
+        <p>Commits devem ser atômicos — uma mudança lógica por commit. Commits grandes são difíceis de revisar, reverter e entender. Se você está com dificuldade de descrever o commit em uma frase, ele provavelmente deve ser dividido.</p>
+      </div>
 
-### ─── DURANTE O TRABALHO ─────────────────────────────
-# 3. Editar arquivos no editor...
+      <div class="pitfall">
+        <div class="pitfall-title">3. Commitar segredos acidentalmente</div>
+        <p>Se acontecer: <strong>não basta deletar o arquivo e fazer outro commit</strong> — o segredo ainda está no histórico. Você precisa usar <code>git filter-repo</code> para reescrever o histórico E revogar/rotacionar a credencial vazada imediatamente.</p>
+      </div>
 
-# 4. Ver o que mudou (linha por linha)
-git diff
+      <div class="pitfall">
+        <div class="pitfall-title">4. Confundir git restore com git reset</div>
+        <p><code>git restore arquivo</code> descarta mudanças no working directory (perigoso, irreversível para mudanças não commitadas). <code>git restore --staged arquivo</code> apenas remove do staging. <code>git reset</code> tem comportamentos diferentes com <code>--soft</code>, <code>--mixed</code> e <code>--hard</code> — veremos na próxima aula.</p>
+      </div>
 
-# 5. Adicionar arquivos modificados à staging
-git add src/minha-feature.js    # arquivo específico
-git add src/                     # toda uma pasta
-git add -p                       # interativo: escolhe quais partes adicionar
-
-# 6. Revisar o que vai no commit
-git diff --staged
-
-# 7. Commitar com mensagem clara
-git commit -m "feat: add user authentication flow"
-
-### ─── INSPEÇÃO E DIAGNÓSTICO ──────────────────────────
-# Ver quem escreveu cada linha (investigar bugs)
-git blame src/minha-feature.js
-
-# Ver detalhes de um commit específico
-git show abc1234
-
-# Buscar commits por mensagem
-git log --grep="authentication"
-
-# Ver histórico de um arquivo específico
-git log --follow -p src/minha-feature.js</code></pre>
+      <div class="pitfall">
+        <div class="pitfall-title">5. Não configurar o user.name e user.email</div>
+        <p>Sem configuração, Git pode usar defaults incorretos ou recusar commits. Toda linha de <code>git log</code> mostra o autor — configure corretamente antes do primeiro commit de qualquer projeto.</p>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         7. DIAGRAMA — ANATOMIA DE UM COMMIT
-    ══════════════════════════════════════════ -->
+    <!-- TABELA DE REFERÊNCIA -->
     <div class="section">
-      <div class="section-label">// 07 — arquitetura</div>
-      <h2>Anatomia de um commit</h2>
-      <p>Cada commit é um objeto imutável no banco de dados do Git, com estrutura bem definida:</p>
-
-      <div class="diagram-wrap">
-        <div class="diagram-label">// estrutura interna de um commit Git</div>
-        <svg viewBox="-60 20 800 195" xmlns="http://www.w3.org/2000/svg" font-family="JetBrains Mono, monospace">
-          <defs>
-            <marker id="arr" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
-              <path d="M0,0 L0,6 L7,3 z" fill="#58a6ff" />
-            </marker>
-            <marker id="arr-left" markerWidth="7" markerHeight="7" refX="2" refY="3" orient="auto">
-              <path d="M7,0 L7,6 L0,3 z" fill="rgba(88,166,255,0.5)" />
-            </marker>
-          </defs>
-          <!-- Commit box -->
-          <rect x="10" y="40" width="200" height="130" rx="10" fill="rgba(88,166,255,0.08)"
-            stroke="rgba(88,166,255,0.4)" stroke-width="1.5" />
-          <text x="110" y="62" text-anchor="middle" fill="#93c5fd" font-size="11" font-weight="700"
-            letter-spacing="0.1em">COMMIT</text>
-          <text x="30" y="84" fill="#8585a8" font-size="10">hash: a3f9c21e...</text>
-          <text x="30" y="100" fill="#8585a8" font-size="10">tree: b4d8f3a...</text>
-          <text x="30" y="116" fill="#8585a8" font-size="10">parent: 00000000</text>
-          <text x="30" y="132" fill="#8585a8" font-size="10">author: João · 2024</text>
-          <text x="30" y="148" fill="#8585a8" font-size="10">msg: "feat: add..."</text>
-          <!-- Arrow commit → tree -->
-          <path d="M212 90 L260 90" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#arr)" />
-          <!-- Tree box -->
-          <rect x="262" y="55" width="160" height="70" rx="8" fill="rgba(88,166,255,0.06)" stroke="rgba(88,166,255,0.3)"
-            stroke-width="1.5" />
-          <text x="342" y="75" text-anchor="middle" fill="#93c5fd" font-size="11" font-weight="700">TREE</text>
-          <text x="280" y="92" fill="#8585a8" font-size="10">README.md → blob</text>
-          <text x="280" y="107" fill="#8585a8" font-size="10">src/ → tree</text>
-          <!-- Arrow tree → blob1 -->
-          <path d="M424 80 L472 60" stroke="#58a6ff" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr)" />
-          <path d="M424 90 L472 110" stroke="#58a6ff" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr)" />
-          <!-- Blob boxes -->
-          <rect x="474" y="30" width="140" height="55" rx="8" fill="rgba(16,185,129,0.07)" stroke="rgba(16,185,129,0.3)"
-            stroke-width="1.5" />
-          <text x="544" y="52" text-anchor="middle" fill="#6ee7b7" font-size="10" font-weight="700">BLOB
-            (arquivo)</text>
-          <text x="544" y="68" text-anchor="middle" fill="#8585a8" font-size="9">conteúdo do README.md</text>
-          <rect x="474" y="95" width="140" height="55" rx="8" fill="rgba(16,185,129,0.07)" stroke="rgba(16,185,129,0.3)"
-            stroke-width="1.5" />
-          <text x="544" y="117" text-anchor="middle" fill="#6ee7b7" font-size="10" font-weight="700">BLOB
-            (arquivo)</text>
-          <text x="544" y="133" text-anchor="middle" fill="#8585a8" font-size="9">conteúdo do index.js</text>
-          <!-- Parent arrow (exits bottom, curves left → previous commit) -->
-          <path d="M110 172 L110 192 Q110 202 95 202 L-30 202" stroke="rgba(88,166,255,0.3)" stroke-width="1.5"
-            fill="none" stroke-dasharray="5,3" marker-end="url(#arr)" />
-          <text x="45" y="213" text-anchor="middle" fill="#8585a8" font-size="8">aponta para commit anterior</text>
-        </svg>
-      </div>
-
-      <div class="diagram-explanation">
-        <div class="explain-card">
-          <h4 style="color: #93c5fd;">📦 COMMIT</h4>
-          <p>O objeto principal. Contém metadados (autor, data, mensagem) e um ponteiro para a <strong>tree</strong> que
-            representa o estado dos arquivos naquele momento. Também aponta para o commit anterior (parent).</p>
-        </div>
-        <div class="explain-card">
-          <h4 style="color: #93c5fd;">🌳 TREE</h4>
-          <p>Um diretório. Lista todos os arquivos e subpastas daquele commit, apontando para <strong>blobs</strong>
-            (arquivos) ou outras <strong>trees</strong> (subpastas).</p>
-        </div>
-        <div class="explain-card">
-          <h4 style="color: #6ee7b7;">📄 BLOB</h4>
-          <p>O conteúdo real de um arquivo. O Git armazena cada versão como um blob único identificado por um hash SHA.
-            Se dois arquivos forem idênticos, compartilham o mesmo blob.</p>
-        </div>
-      </div>
-
-      <div class="callout callout-info" style="margin-top: 20px;">
-        <div class="callout-title">🔗 Como ler o diagrama</div>
-        Quando você faz <code>git commit</code>, o Git cria esse grafo: o <strong>COMMIT</strong> aponta para uma
-        <strong>TREE</strong> (a "foto" da pasta raiz), que por sua vez aponta para os <strong>BLOBs</strong> (o
-        conteúdo de cada arquivo). A seta tracejada na parte inferior mostra que cada commit aponta para seu commit
-        anterior — formando a linha do tempo do projeto.
+      <div class="section-label">// referência</div>
+      <h2>Comandos desta aula — cheat sheet</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Comando</th><th>O que faz</th><th>Quando usar</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>git init</code></td><td>Inicializa repositório na pasta atual</td><td>Início de qualquer projeto</td></tr>
+            <tr><td><code>git config --global</code></td><td>Configura nome, email, editor</td><td>Uma vez por máquina</td></tr>
+            <tr><td><code>git status</code></td><td>Estado atual dos arquivos</td><td>Sempre — antes e depois de tudo</td></tr>
+            <tr><td><code>git add .</code></td><td>Adiciona tudo ao staging</td><td>Após verificar o status</td></tr>
+            <tr><td><code>git add -p</code></td><td>Adiciona pedaços interativamente</td><td>Commits atômicos precisos</td></tr>
+            <tr><td><code>git commit -m</code></td><td>Cria snapshot com mensagem</td><td>Após o add</td></tr>
+            <tr><td><code>git diff</code></td><td>O que mudou (não staged)</td><td>Antes de fazer add</td></tr>
+            <tr><td><code>git diff --staged</code></td><td>O que vai no próximo commit</td><td>Revisão antes do commit</td></tr>
+            <tr><td><code>git log --oneline</code></td><td>Histórico compacto</td><td>Ver o que aconteceu</td></tr>
+            <tr><td><code>git show HEAD</code></td><td>Detalhes do último commit</td><td>Inspecionar mudanças</td></tr>
+            <tr><td><code>git restore arquivo</code></td><td>Descarta mudanças locais</td><td>⚠️ Irreversível — use com cuidado</td></tr>
+            <tr><td><code>git restore --staged</code></td><td>Remove do staging (mantém edições)</td><td>Desfazer add sem perder trabalho</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         8. PITFALLS
-    ══════════════════════════════════════════ -->
+    <!-- VÍDEOS -->
     <div class="section">
-      <div class="section-label">// 08 — armadilhas</div>
-      <h2>Erros que todo iniciante comete</h2>
-
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Commitar a pasta .git ou arquivos .env</div>
-        <p>A pasta <code>.git/</code> nunca deve ser commitada — ela JÁ É o repositório. Arquivos <code>.env</code> com
-          senhas e chaves de API nunca devem entrar no Git. Sempre crie o <code>.gitignore</code> antes do primeiro
-          commit.</p>
-      </div>
-
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Mensagens de commit vazias ou inúteis</div>
-        <p>"fix", "wip", "atualizei", "commit" — estas mensagens são inúteis no futuro. Quando você procurar "quando
-          esse bug foi introduzido?" em 3 meses, vai agradecer por ter escrito
-          <code>"fix: resolve null pointer on user login when session expires"</code>.
-        </p>
-      </div>
-
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Usar git add . sem revisar</div>
-        <p><code>git add .</code> adiciona TUDO, incluindo arquivos temporários, logs e segredos. Prefira
-          <code>git add -p</code> (modo interativo) ou adicione por arquivo. Ao menos faça <code>git status</code> antes
-          de commitar.
-        </p>
-      </div>
-
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Confundir Git com GitHub</div>
-        <p>Git é local, GitHub é remoto. Você pode usar Git sem GitHub. <code>git commit</code> não envia nada para a
-          internet — para isso você precisa de <code>git push</code> (que veremos na aula 03).</p>
-      </div>
-    </div>
-
-    <!-- ══════════════════════════════════════════
-         9. VÍDEOS
-    ══════════════════════════════════════════ -->
-    <div class="section">
-      <div class="section-label">// 09 — curadoria</div>
-      <h2>Referências em vídeo</h2>
-      <p>Selecionados especificamente para este conteúdo — não são substitutos, são complementos:</p>
-
-      <div class="videos-grid">
-        <a class="video-card" href="https://www.youtube.com/watch?v=RGOj5yH7evk" target="_blank">
+      <div class="section-label">// curadoria</div>
+      <h2>Vídeos Recomendados</h2>
+      <div class="video-grid">
+        <div class="video-card">
           <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title">Git and GitHub for Beginners — Crash Course</div>
-            <div class="video-channel">freeCodeCamp · ~68 min</div>
-            <div class="video-why">Por que assistir: Cobre exatamente o conteúdo desta aula de forma visual e prática. O
-              melhor recurso único para iniciantes em inglês.</div>
-            <span class="video-watch">Assistir →</span>
-          </div>
-        </a>
-
-        <a class="video-card" href="https://www.youtube.com/watch?v=_OZVJpLHUaI" target="_blank">
-          <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title">Git Tutorial for Beginners - Crash Course</div>
-            <div class="video-channel">Academind · ~30 min</div>
-            <div class="video-why">Por que assistir: Explicação do fluxo completo com exemplos reais de terminal.
-              Excelente para reforçar após esta aula.</div>
-            <span class="video-watch">Assistir →</span>
-          </div>
-        </a>
-
-        <a class="video-card" href="https://www.youtube.com/watch?v=hwP7WQkmECE" target="_blank">
-          <div class="video-thumb">▶</div>
-          <div>
+          <div class="video-info">
             <div class="video-title">Git in 100 Seconds</div>
             <div class="video-channel">Fireship · ~2 min</div>
-            <div class="video-why">Por que assistir: Resumo visual ultra-rápido dos conceitos centrais. Perfeito como
-              revisão antes de praticar.</div>
-            <span class="video-watch">Assistir →</span>
+            <div class="video-why">Por que assistir: O melhor overview de Git que existe. Explica o conceito de snapshots e a staging area com animações em 100 segundos.</div>
+            <a href="https://www.youtube.com/watch?v=hwP7WQkmECE" target="_blank" rel="noopener noreferrer">Assistir →</a>
           </div>
-        </a>
-
-        <a class="video-card" href="https://www.youtube.com/watch?v=e9lnsKot_SQ" target="_blank">
+        </div>
+        <div class="video-card">
           <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title">How Git Works: Explained in 4 Minutes</div>
-            <div class="video-channel">ByteByteGo · ~4 min</div>
-            <div class="video-why">Por que assistir: Explica visualmente como o Git armazena snapshots internamente —
-              desmistifica o que acontece de verdade quando você faz um commit.</div>
-            <span class="video-watch">Assistir →</span>
+          <div class="video-info">
+            <div class="video-title">Git Tutorial for Beginners — Crash Course</div>
+            <div class="video-channel">Traversy Media · ~35 min</div>
+            <div class="video-why">Por que assistir: Cobre exatamente o conteúdo desta aula do zero — init, add, commit, diff, log — com projeto prático do começo ao fim.</div>
+            <a href="https://www.youtube.com/watch?v=SWYqp7iY_Tc" target="_blank" rel="noopener noreferrer">Assistir →</a>
           </div>
-        </a>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Git e GitHub para Iniciantes — Curso Completo</div>
+            <div class="video-channel">Rafaella Ballerini · ~1h20</div>
+            <div class="video-why">Por que assistir: O curso de Git em português mais bem avaliado da plataforma — explica desde o conceito até pull requests com clareza e didática excelentes.</div>
+            <a href="https://www.youtube.com/watch?v=UBAX-13g8OM" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Conventional Commits — Padrão para mensagens</div>
+            <div class="video-channel">Filipe Deschamps · ~15 min</div>
+            <div class="video-why">Por que assistir: Explica o padrão Conventional Commits com exemplos reais de projetos open-source — imprescindível para trabalhar em times.</div>
+            <a href="https://www.youtube.com/results?search_query=conventional+commits+filipe+deschamps" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         10. CHECKPOINT
-    ══════════════════════════════════════════ -->
-    <div class="checkpoint">
-      <div class="checkpoint-label">// 10 — desafio</div>
-      <h3>🏁 Checkpoint — valide seu aprendizado</h3>
-      <p>Execute este desafio do zero, sem copiar comandos desta aula. Se conseguir, você dominou o conteúdo.</p>
-      <ul>
-        <li>Crie um repositório chamado <code>checkpoint-git</code> do zero</li>
-        <li>Configure sua identidade Git corretamente (<code>git config</code>)</li>
-        <li>Crie pelo menos 3 arquivos diferentes (ex: <code>index.html</code>, <code>style.css</code>,
-          <code>README.md</code>)
-        </li>
-        <li>Faça 3 commits separados com mensagens no padrão Conventional Commits</li>
-        <li>Crie um <code>.gitignore</code> que ignore arquivos <code>.env</code> e <code>node_modules/</code></li>
-        <li>Execute <code>git log --oneline --graph</code> e confirme que vê os 3 commits no histórico</li>
-        <li>Use <code>git diff HEAD~1 HEAD</code> para ver o que mudou entre o penúltimo e último commit</li>
-      </ul>
-      <div class="checkpoint-hint">
-        💬 Dica: Se travar em qualquer passo, volte para a seção "Mãos na Massa" desta aula.
-        O objetivo não é decorar os comandos — é entender <em>o que cada um faz</em>.
-        Use <code>git status</code> depois de cada ação para ver o que mudou.
+    <!-- GLOSSÁRIO -->
+    <div class="section">
+      <div class="section-label">// glossário</div>
+      <h2>Termos desta Aula</h2>
+      <div class="glossary-item">
+        <div class="glossary-term">Repositório (repo)</div>
+        <div class="glossary-def">Pasta gerenciada pelo Git, contendo a pasta oculta <code>.git/</code> com todo o histórico do projeto.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Working Directory</div>
+        <div class="glossary-def">A pasta do projeto onde você edita arquivos. Estado "sujo" antes de fazer add.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Staging Area (Index)</div>
+        <div class="glossary-def">Área intermediária onde arquivos são preparados antes de virar commit. Permite commits precisos e atômicos.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Commit</div>
+        <div class="glossary-def">Snapshot imutável do estado do projeto em um momento. Tem hash SHA-1 único, autor, data e mensagem.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">HEAD</div>
+        <div class="glossary-def">Ponteiro para o commit atual (geralmente o mais recente da branch). <code>HEAD~1</code> = commit anterior, <code>HEAD~2</code> = dois antes.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">.gitignore</div>
+        <div class="glossary-def">Arquivo de texto com padrões de arquivos e pastas que o Git deve ignorar completamente.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">SHA-1 / Hash</div>
+        <div class="glossary-def">Identificador único de 40 caracteres gerado para cada commit (ex: <code>a1b2c3d</code>). Garante integridade do histórico.</div>
       </div>
     </div>
 
-    <!-- ── PRÓXIMA AULA ── -->
-    <a href="gh-02-branches-merge.html" class="next-lesson">
-      <div>
-        <div class="next-label">Próxima aula →</div>
-        <div class="next-title">02 — Git: Branches, Merge & Conflitos</div>
+    <!-- CHECKPOINT -->
+    <div class="section">
+      <div class="checkpoint">
+        <h3>🏁 Checkpoint — Desafio Final</h3>
+        <p>Crie um repositório Git para um projeto fictício de sua escolha e construa um histórico de pelo menos <strong>6 commits atômicos</strong>:</p>
+        <ul>
+          <li>Commit 1 — <code>chore:</code> .gitignore + README com descrição do projeto</li>
+          <li>Commit 2 — <code>feat:</code> estrutura inicial de pastas e arquivo principal</li>
+          <li>Commit 3 — <code>feat:</code> primeira funcionalidade (qualquer função Python)</li>
+          <li>Commit 4 — <code>feat:</code> segunda funcionalidade independente</li>
+          <li>Commit 5 — <code>docs:</code> atualiza README com instruções de uso</li>
+          <li>Commit 6 — <code>fix:</code> corrige um bug real ou simulado na funcionalidade 1</li>
+        </ul>
+        <p>Após os commits, rode <code>git log --oneline</code> e verifique se cada mensagem descreve claramente o que mudou. Use <code>git show &lt;hash&gt;</code> para inspecionar pelo menos 2 commits e confirmar que o diff corresponde à mensagem.</p>
+        <div class="checkpoint-hint">💬 Dica: use <code>git add -p</code> em pelo menos um commit para praticar o modo interativo de staging. Ele permite selecionar exatamente quais linhas vão para o próximo commit — um hábito de engenheiro sênior.</div>
       </div>
-      <div class="next-arrow">→</div>
-    </a>
-
-    <!-- ── FOOTER ── -->
-    <div class="footer">
-      <span>🐙 GitHub · Aula 01 / 50 · ID: 01-GH-01</span>
-      <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
     </div>
 
-  </div><!-- /page -->
+    <!-- PRÓXIMOS PASSOS -->
+    <div class="section">
+      <div class="section-label">// próximos passos</div>
+      <h2>O que vem a seguir?</h2>
+      <p style="margin-bottom:20px;">Com o fluxo básico de commits dominado, estamos prontos para o conceito mais poderoso do Git: branches. Elas permitem desenvolver features em paralelo sem interferir no código principal — o coração do desenvolvimento colaborativo.</p>
+      <a href="gh-02-branches-merge.html" class="next-card">
+        <div>
+          <div class="next-card-label">Próxima aula · 🐙 GitHub</div>
+          <div class="next-card-title">Git — Branches, Merge & Conflitos</div>
+        </div>
+        <span class="next-arrow">→</span>
+      </a>
+    </div>
 
+  </div>
 
   <script>
-    // Initialize syntax highlighting
-    document.addEventListener('DOMContentLoaded', () => {
-      hljs.highlightAll();
-    });
-
-    // Initialize Mermaid
-    mermaid.initialize({
-      startOnLoad: true,
-      theme: 'dark',
-      themeVariables: {
-        primaryColor: '#58a6ff',
-        primaryTextColor: '#e8e8f0',
-        primaryBorderColor: 'rgba(88, 166, 255, 0.3)',
-        lineColor: '#8585a8',
-        background: '#111118',
-        mainBkg: '#16161f',
-        nodeBorder: '#58a6ff'
-      }
-    });
-
-    // Scroll progress indicator (update progress bar)
+    const bar = document.getElementById('progressBar');
     window.addEventListener('scroll', () => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = (scrollTop / docHeight) * 100;
-      document.querySelector('.progress-bar-fill').style.width = progress + '%';
+      const doc = document.documentElement;
+      bar.style.width = (doc.scrollTop / (doc.scrollHeight - doc.clientHeight) * 100) + '%';
     });
+    document.addEventListener('DOMContentLoaded', () => { if (window.hljs) hljs.highlightAll(); });
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
   </script>
-
 </body>
-
 </html>

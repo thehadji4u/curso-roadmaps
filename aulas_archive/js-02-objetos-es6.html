@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JavaScript — Objetos, Arrays & ES6+ · Aula 13</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    /* ── Highlight.js github-dark inlined ── */
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #f59e0b;
+      --accent-dim: rgba(245,158,11,0.15);
+      --accent-border: rgba(245,158,11,0.35);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #fbbf24); width: 0%; transition: width 0.1s; }
+
+    .top-nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 32px;
+      background: rgba(10,10,15,0.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #fbbf24; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.08); border-color: var(--success); }
+    .callout-tip .callout-title { color: var(--success); }
+    .callout-check { background: rgba(167,139,250,0.08); border-color: #a78bfa; }
+    .callout-check .callout-title { color: #a78bfa; }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(59,130,246,0.2); color: #60a5fa; }
+    .badge-purple { background: rgba(167,139,250,0.2); color: #c4b5fd; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    @media (max-width: 640px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; }
+    .pillar-badge { font-size: 11px; padding: 3px 10px; border-radius: 4px; font-weight: 600; }
+
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-info a { font-size: 12px; color: var(--accent); text-decoration: none; letter-spacing: 0.05em; }
+    .video-info a:hover { text-decoration: underline; }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(251,191,36,0.04)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(245,158,11,0.06); border-radius: 6px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; }
+
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+
+    .glossary-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .glossary-term { color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+    .glossary-def { color: var(--muted); font-size: 13px; }
+
+    /* Feature highlight box */
+    .feature-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .feature-box-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .feature-box-icon { font-size: 20px; }
+    .feature-box-title { font-family: 'Syne', sans-serif; font-weight: 700; color: #fff; }
+    .feature-box-tag { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); }
+
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #fbbf24; }
+
+    /* Comparison split */
+    .compare-split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+    @media (max-width: 600px) { .compare-split { grid-template-columns: 1fr; } }
+    .compare-old { background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.2); border-radius: 8px; padding: 16px; }
+    .compare-new { background: rgba(16,185,129,0.05); border: 1px solid rgba(16,185,129,0.2); border-radius: 8px; padding: 16px; }
+    .compare-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; font-weight: 600; }
+    .compare-old .compare-label { color: #f87171; }
+    .compare-new .compare-label { color: #34d399; }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar"></div>
+  </div>
+
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="js-01-core-dom.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">⚡ JavaScript</span> · Aula 13 / 50
+      </div>
+      <a href="js-03-async-promises.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- ── HERO ── -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>⚡ JavaScript</span>
+        <span class="hero-badge">Aula 13</span>
+      </div>
+      <h1>Objetos, Arrays & ES6+</h1>
+      <div class="hero-meta">
+        <span>⏱ ~40 min de leitura</span>
+        <span>🎯 Fundamentos → Intermediário</span>
+        <span>🔧 Hands-on incluído</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">destructuring</span>
+        <span class="tag accent">spread / rest</span>
+        <span class="tag">prototype chain</span>
+        <span class="tag">classes ES6</span>
+        <span class="tag">modules</span>
+        <span class="tag">map / filter / reduce</span>
+        <span class="tag">template literals</span>
+      </div>
+    </div>
+
+    <!-- ── 1. POR QUE ISSO IMPORTA? ── -->
+    <div class="section">
+      <div class="section-label">// motivação</div>
+      <h2>Por que isso importa?</h2>
+      <p>
+        Objetos e arrays são as estruturas de dados mais usadas em JavaScript. Quase tudo no ecossistema JS — respostas de API, estado de componentes React, configurações de build — é um objeto ou array. Dominar como <em>navegar, transformar e compor</em> essas estruturas é o que separa quem escreve código funcional de quem escreve código elegante e sustentável.
+      </p>
+      <p>
+        O ES6 (lançado em 2015) e as versões subsequentes trouxeram açúcares sintáticos que revolucionaram a forma de escrever JS moderno: destructuring, spread operator, template literals, classes, modules e muito mais. Todo codebase profissional usa esses recursos no dia a dia.
+      </p>
+      <div class="callout callout-info">
+        <div class="callout-title">💼 Por que um engenheiro sênior usa isso hoje</div>
+        Ao revisar um PR, sêniors reconhecem imediatamente código "pré-ES6" — cheio de <code>var</code>, concatenação de strings e loops <code>for</code> manuais — como sinal de inexperiência. Além de mais legível, o código moderno é menos propenso a bugs. <code>map/filter/reduce</code>, destructuring e spread são a linguagem comum dos times de alto nível; sem eles, você não vai entender nem escrever React de forma fluente.
+      </div>
+    </div>
+
+    <!-- ── 2. ANALOGIA ── -->
+    <div class="section">
+      <div class="section-label">// analogia</div>
+      <h2>Antes do código: uma analogia</h2>
+      <div class="analogy-card">
+        <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
+        <div class="analogy-text">
+          Imagine uma <strong>ficha de cadastro de funcionário</strong>. A ficha tem campos nomeados (nome, cargo, salário) — isso é um <strong>objeto</strong>. A lista de todos os funcionários da empresa é um <strong>array de objetos</strong>.
+          <br><br>
+          O <strong>destructuring</strong> é como arrancar só os campos que você precisa da ficha, em vez de carregar o formulário inteiro. O <strong>spread operator</strong> é como fotocopiar uma ficha e adicionar novos campos à cópia sem alterar o original. Os <strong>modules</strong> são como departamentos da empresa: cada um tem suas próprias responsabilidades e expõe só o que precisa para os outros.
+        </div>
+        <div class="analogy-mapping">
+          <span class="analogy-real">📋 Ficha de funcionário</span>
+          <span class="analogy-tech">→ Objeto JavaScript <code>{ chave: valor }</code></span>
+          <span class="analogy-real">📂 Lista de funcionários</span>
+          <span class="analogy-tech">→ Array de objetos <code>[{}, {}, {}]</code></span>
+          <span class="analogy-real">✂️ Arrancar só nome e cargo</span>
+          <span class="analogy-tech">→ Destructuring <code>const { nome, cargo } = func</code></span>
+          <span class="analogy-real">🗂️ Departamentos isolados</span>
+          <span class="analogy-tech">→ ES Modules (<code>import/export</code>)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CONCEITO 1: OBJETOS ── -->
+    <div class="section">
+      <div class="section-label">// conceito 1</div>
+      <h2>Objetos — a estrutura universal do JS</h2>
+      <p>
+        Um objeto em JavaScript é uma coleção de <strong>pares chave-valor</strong>. Chaves são strings (ou Symbols), valores podem ser qualquer tipo — incluindo funções (que então se chamam <em>métodos</em>) e outros objetos (objetos aninhados).
+      </p>
+
+      <div class="code-label">// criação, acesso, modificação e métodos úteis</div>
+      <pre><code class="language-javascript">// ─── Criação de objetos ──────────────────────────────────────
+const usuario = {
+  nome: 'Ana Silva',
+  idade: 28,
+  cargo: 'Engenheira Sênior',
+  ativo: true,
+  enderecos: { cidade: 'São Paulo', estado: 'SP' },    // aninhado
+  saudar() {                                            // método (ES6 shorthand)
+    return `Olá, sou ${this.nome}`;
+  },
+};
+
+// ─── Acesso a propriedades ────────────────────────────────────
+console.log(usuario.nome);            // dot notation
+console.log(usuario['cargo']);        // bracket notation (útil com variáveis)
+console.log(usuario.enderecos.cidade);// encadeamento
+console.log(usuario.telefone);        // undefined (sem erro)
+console.log(usuario.telefone ?? 'N/A');  // nullish coalescing — default para null/undefined
+
+// ─── Modificação e adição ─────────────────────────────────────
+usuario.idade = 29;                   // modifica
+usuario.email = 'ana@dev.com';        // adiciona nova chave
+delete usuario.ativo;                 // remove
+
+// ─── Métodos essenciais de Object ────────────────────────────
+const chaves   = Object.keys(usuario);    // ['nome', 'idade', ...]
+const valores  = Object.values(usuario);  // ['Ana Silva', 29, ...]
+const entradas = Object.entries(usuario); // [['nome','Ana'], ['idade',29], ...]
+
+// Iterar com entries é ouro:
+for (const [chave, valor] of Object.entries(usuario)) {
+  console.log(`${chave}: ${valor}`);
+}
+
+// ─── Checando existência de chave ─────────────────────────────
+console.log('nome' in usuario);               // true
+console.log(usuario.hasOwnProperty('nome'));  // true
+</code></pre>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Pro tip: Optional Chaining (?.) </div>
+        Ao acessar objetos aninhados ou propriedades que podem não existir, use <code>obj?.prop?.subprop</code> em vez de verificar cada nível com <code>if</code>. Se qualquer nível for <code>null</code> ou <code>undefined</code>, a expressão retorna <code>undefined</code> silenciosamente, sem jogar <code>TypeError</code>.
+        <br><br>
+        <code>console.log(usuario?.enderecos?.bairro);</code> → <code>undefined</code> (sem erro)
+      </div>
+    </div>
+
+    <!-- ── CONCEITO 2: DESTRUCTURING ── -->
+    <div class="section">
+      <div class="section-label">// conceito 2</div>
+      <h2>Destructuring — extraia o que precisa</h2>
+      <p>
+        Destructuring é uma sintaxe que permite <strong>extrair valores de objetos e arrays</strong> para variáveis de forma concisa. É um dos recursos ES6 mais usados no dia a dia, especialmente ao trabalhar com parâmetros de função e respostas de API.
+      </p>
+
+      <div class="compare-split">
+        <div class="compare-old">
+          <div class="compare-label">❌ Antes do ES6</div>
+          <pre><code class="language-javascript">const nome  = usuario.nome;
+const cargo = usuario.cargo;
+const cidade = usuario.enderecos.cidade;
+
+// arrays
+const primeiro = arr[0];
+const segundo  = arr[1];
+</code></pre>
+        </div>
+        <div class="compare-new">
+          <div class="compare-label">✅ Com Destructuring</div>
+          <pre><code class="language-javascript">const { nome, cargo } = usuario;
+const { enderecos: { cidade } } = usuario;
+
+// arrays
+const [primeiro, segundo] = arr;
+const [, , terceiro] = arr; // pula posições
+</code></pre>
+        </div>
+      </div>
+
+      <div class="code-label">// destructuring avançado — renomear, defaults, rest</div>
+      <pre><code class="language-javascript">// ─── Renomear ao desestruturar ─────────────────────────────────
+const { nome: nomeCompleto, cargo: funcao = 'Dev' } = usuario;
+//      ↑ extrai 'nome' e salva em 'nomeCompleto'
+//                              ↑ valor default se a chave não existir
+
+// ─── Destructuring em parâmetros de função ─────────────────────
+function exibirUsuario({ nome, cargo, ativo = true }) {
+  console.log(`${nome} — ${cargo} (${ativo ? 'ativo' : 'inativo'})`);
+}
+exibirUsuario(usuario);
+
+// ─── Rest em destructuring ─────────────────────────────────────
+const { nome: n, ...restante } = usuario;
+// n = 'Ana Silva'
+// restante = { cargo, enderecos, ... } (tudo menos nome)
+
+// ─── Array destructuring com swap ──────────────────────────────
+let a = 1, b = 2;
+[a, b] = [b, a];   // troca de valores sem variável temporária!
+console.log(a, b); // 2, 1
+
+// ─── Destructuring com loops ──────────────────────────────────
+const usuarios = [
+  { nome: 'Ana', cargo: 'Sênior' },
+  { nome: 'Bob', cargo: 'Júnior' },
+];
+
+for (const { nome, cargo } of usuarios) {
+  console.log(`${nome}: ${cargo}`);
+}
+</code></pre>
+    </div>
+
+    <!-- ── CONCEITO 3: SPREAD E REST ── -->
+    <div class="section">
+      <div class="section-label">// conceito 3</div>
+      <h2>Spread & Rest — expandir e coletar</h2>
+      <p>
+        O operador <code>...</code> tem dois comportamentos dependendo do contexto. Como <strong>spread</strong>, ele <em>expande</em> um array ou objeto. Como <strong>rest</strong>, ele <em>coleta</em> o que sobrou em uma variável.
+      </p>
+
+      <div class="code-label">// spread e rest na prática</div>
+      <pre><code class="language-javascript">// ─── SPREAD: expandir arrays ───────────────────────────────────
+const frutas = ['maçã', 'banana'];
+const mais   = ['uva', ...frutas, 'pera'];   // ['uva', 'maçã', 'banana', 'pera']
+const copia  = [...frutas];                  // cópia rasa (shallow clone)
+
+Math.max(...[1, 5, 3, 9, 2]);              // spread em chamada de função → 9
+
+// ─── SPREAD: merge e override de objetos ──────────────────────
+const base = { cor: 'azul', tamanho: 'M', estoque: 10 };
+const override = { tamanho: 'G', desconto: 0.1 };
+
+// Última propriedade vence — padrão para "merge com override"
+const produto = { ...base, ...override };
+// { cor: 'azul', tamanho: 'G', estoque: 10, desconto: 0.1 }
+
+// Imutabilidade: atualizar objeto sem mutar o original ✅
+const usuarioAtualizado = { ...usuario, idade: 30, email: 'novo@dev.com' };
+
+// ─── REST: coletar argumentos ─────────────────────────────────
+function somar(...numeros) {            // rest em parâmetro
+  return numeros.reduce((a, n) => a + n, 0);
+}
+console.log(somar(1, 2, 3, 4, 5)); // 15
+
+function log(nivel, ...mensagens) {    // primeiro fixo, resto coletado
+  console.log(`[${nivel}]`, ...mensagens);
+}
+log('INFO', 'Servidor', 'iniciado', 'na porta 3000');
+
+// ─── Clonar vs referência ─────────────────────────────────────
+// ⚠️ Spread faz SHALLOW clone (apenas 1 nível de profundidade)
+const original = { nome: 'Ana', endereco: { cidade: 'SP' } };
+const clone    = { ...original };
+
+clone.nome = 'Bob';                  // ✅ não afeta original
+clone.endereco.cidade = 'RJ';       // ❌ AFETA original! (mesmo objeto aninhado)
+
+// Deep clone: use structuredClone() (moderno) ou JSON.parse(JSON.stringify())
+const deepClone = structuredClone(original);
+</code></pre>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Shallow vs Deep Clone</div>
+        O spread <code>{ ...obj }</code> e <code>[...arr]</code> fazem <strong>shallow clone</strong> — copiam apenas o primeiro nível. Objetos aninhados ainda são compartilhados por referência. Para clonar estruturas profundas, use <code>structuredClone(obj)</code> (nativo desde 2022) ou bibliotecas como Lodash's <code>_.cloneDeep()</code>.
+      </div>
+    </div>
+
+    <!-- ── CONCEITO 4: ARRAYS AVANÇADOS ── -->
+    <div class="section">
+      <div class="section-label">// conceito 4</div>
+      <h2>Arrays — transformação funcional</h2>
+      <p>
+        Os métodos funcionais de array (<code>map</code>, <code>filter</code>, <code>reduce</code>, <code>find</code>, <code>some</code>, <code>every</code>) são a espinha dorsal do JavaScript moderno. Eles evitam loops imperativos, não mutam o array original e podem ser encadeados.
+      </p>
+
+      <!-- Diagrama de pipeline -->
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// pipeline de transformação de array</div>
+        <div class="mermaid">
+graph LR
+    A["Array original<br/>[1,2,3,4,5,6]"]
+    A -->|".filter(n => n > 2)"| B["[3,4,5,6]"]
+    B -->|".map(n => n * 10)"| C["[30,40,50,60]"]
+    C -->|".reduce((a,n) => a+n, 0)"| D["180"]
+    style A fill:#1e1e2e,color:#e8e8f0,stroke:#f59e0b
+    style B fill:#1e1e2e,color:#e8e8f0,stroke:#f59e0b
+    style C fill:#1e1e2e,color:#e8e8f0,stroke:#f59e0b
+    style D fill:#f59e0b,color:#000,stroke:none
+        </div>
+      </div>
+
+      <div class="code-label">// os 8 métodos funcionais que você vai usar todo dia</div>
+      <pre><code class="language-javascript">const produtos = [
+  { id: 1, nome: 'Notebook',  preco: 4500, categoria: 'tech',  estoque: 3 },
+  { id: 2, nome: 'Mouse',     preco: 150,  categoria: 'tech',  estoque: 50 },
+  { id: 3, nome: 'Cadeira',   preco: 1200, categoria: 'moveis',estoque: 0 },
+  { id: 4, nome: 'Monitor',   preco: 2800, categoria: 'tech',  estoque: 7 },
+  { id: 5, nome: 'Mesa',      preco: 900,  categoria: 'moveis',estoque: 4 },
+];
+
+// ── map: transformar cada elemento → retorna novo array mesmo tamanho ──
+const nomes = produtos.map(p => p.nome);
+// ['Notebook', 'Mouse', 'Cadeira', 'Monitor', 'Mesa']
+
+const comDesconto = produtos.map(p => ({ ...p, preco: p.preco * 0.9 }));
+// Novo array com preços 10% menores (original intacto)
+
+// ── filter: selecionar → retorna subconjunto ───────────────────
+const tech       = produtos.filter(p => p.categoria === 'tech');
+const emEstoque  = produtos.filter(p => p.estoque > 0);
+const caro       = produtos.filter(p => p.preco > 1000);
+
+// ── reduce: acumular → retorna um único valor ──────────────────
+const totalEstoque  = produtos.reduce((acc, p) => acc + p.estoque, 0);  // 64
+const valorTotal    = produtos.reduce((acc, p) => acc + p.preco * p.estoque, 0);
+
+// Agrupar por categoria (reduce para objeto):
+const porCategoria = produtos.reduce((acc, p) => {
+  acc[p.categoria] = acc[p.categoria] || [];
+  acc[p.categoria].push(p);
+  return acc;
+}, {});
+// { tech: [...], moveis: [...] }
+
+// ── find / findIndex: encontrar primeiro match ─────────────────
+const notebook = produtos.find(p => p.nome === 'Notebook');  // objeto ou undefined
+const idx      = produtos.findIndex(p => p.id === 3);        // 2 ou -1
+
+// ── some / every: testar condição ─────────────────────────────
+const temSemEstoque = produtos.some(p => p.estoque === 0);   // true
+const todosDisponiveis = produtos.every(p => p.estoque > 0); // false
+
+// ── sort: ordenar (MUTA o array — use com cuidado) ────────────
+const porPreco = [...produtos].sort((a, b) => a.preco - b.preco); // asc
+const porNome  = [...produtos].sort((a, b) => a.nome.localeCompare(b.nome));
+
+// ── flat / flatMap ─────────────────────────────────────────────
+const tags = [['js','es6'], ['react','hooks'], ['node']];
+const todasTags = tags.flat();    // ['js', 'es6', 'react', 'hooks', 'node']
+const tagsUpper = tags.flatMap(arr => arr.map(t => t.toUpperCase()));
+
+// ── ENCADEAMENTO (chaining) ────────────────────────────────────
+const resultado = produtos
+  .filter(p => p.categoria === 'tech' && p.estoque > 0)
+  .map(p => ({ nome: p.nome, precoComDesconto: (p.preco * 0.85).toFixed(2) }))
+  .sort((a, b) => a.precoComDesconto - b.precoComDesconto);
+</code></pre>
+
+      <div class="table-wrap" style="margin-top:24px;">
+        <table>
+          <thead>
+            <tr><th>Método</th><th>O que retorna</th><th>Muta o original?</th><th>Quando usar</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>map()</code></td><td>Array mesmo tamanho</td><td><span class="badge badge-green">Não</span></td><td>Transformar cada elemento</td></tr>
+            <tr><td><code>filter()</code></td><td>Array menor ou igual</td><td><span class="badge badge-green">Não</span></td><td>Selecionar elementos</td></tr>
+            <tr><td><code>reduce()</code></td><td>Qualquer tipo</td><td><span class="badge badge-green">Não</span></td><td>Acumular, agrupar</td></tr>
+            <tr><td><code>find()</code></td><td>Elemento ou undefined</td><td><span class="badge badge-green">Não</span></td><td>Primeiro match</td></tr>
+            <tr><td><code>some()</code></td><td>boolean</td><td><span class="badge badge-green">Não</span></td><td>Ao menos um satisfaz?</td></tr>
+            <tr><td><code>every()</code></td><td>boolean</td><td><span class="badge badge-green">Não</span></td><td>Todos satisfazem?</td></tr>
+            <tr><td><code>sort()</code></td><td>Array (mesmo)</td><td><span class="badge badge-red">Sim ⚠️</span></td><td>Ordenar (use <code>[...arr].sort()</code>)</td></tr>
+            <tr><td><code>splice()</code></td><td>Removidos</td><td><span class="badge badge-red">Sim ⚠️</span></td><td>Inserir/remover posições</td></tr>
+            <tr><td><code>slice()</code></td><td>Sub-array</td><td><span class="badge badge-green">Não</span></td><td>Fatiar sem mutar</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── CONCEITO 5: TEMPLATE LITERALS & SHORTHAND ── -->
+    <div class="section">
+      <div class="section-label">// conceito 5</div>
+      <h2>ES6+ — Sintaxe moderna essencial</h2>
+      <p>
+        Além de destructuring e spread, o ES6+ trouxe vários recursos que aparecem em todo codebase moderno. Vamos cobrir os mais frequentes:
+      </p>
+
+      <div class="grid-2" style="margin-bottom: 20px;">
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(245,158,11,0.2);color:#fbbf24;">Template Literals</span>
+          <h4>Strings com superpoderes</h4>
+          <p>Interpolação com <code>${expr}</code>, multi-linha nativa, tagged templates para formatação customizada.</p>
+        </div>
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(167,139,250,0.2);color:#c4b5fd;">Shorthand Properties</span>
+          <h4>Menos código, mesma intenção</h4>
+          <p>Quando chave e variável têm o mesmo nome: <code>{ nome }</code> em vez de <code>{ nome: nome }</code>.</p>
+        </div>
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(6,182,212,0.2);color:#67e8f9;">Optional Chaining</span>
+          <h4><code>?.</code> para navegação segura</h4>
+          <p>Evita <code>TypeError</code> ao acessar propriedades em objetos que podem ser <code>null</code> ou <code>undefined</code>.</p>
+        </div>
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(16,185,129,0.2);color:#4ade80;">Nullish Coalescing</span>
+          <h4><code>??</code> para defaults precisos</h4>
+          <p>Retorna o lado direito <strong>apenas</strong> se o esquerdo for <code>null</code> ou <code>undefined</code> (diferente de <code>||</code> que rejeita qualquer falsy).</p>
+        </div>
+      </div>
+
+      <div class="code-label">// ES6+ na prática</div>
+      <pre><code class="language-javascript">// ─── Template Literals ────────────────────────────────────────
+const nome = 'Ana';
+const cargo = 'Sênior';
+
+// Antes:
+const msg1 = 'Olá, ' + nome + '! Você é ' + cargo + '.';
+
+// ES6+:
+const msg2 = `Olá, ${nome}! Você é ${cargo}.`;
+
+// Expressões completas dentro:
+const preco = 1500;
+const label = `Preço: R$ ${(preco * 1.1).toFixed(2)} (com 10% de taxa)`;
+
+// Multi-linha real:
+const html = `
+  <div class="card">
+    <h2>${nome}</h2>
+    <p>${cargo}</p>
+  </div>
+`.trim();
+
+// ─── Shorthand property names ──────────────────────────────────
+const x = 10, y = 20;
+const ponto = { x, y };              // { x: 10, y: 20 }
+
+// Computed property names:
+const campo = 'email';
+const obj = { [campo]: 'ana@dev.com' }; // { email: 'ana@dev.com' }
+
+// ─── Optional Chaining ?. ─────────────────────────────────────
+const config = { db: { host: 'localhost' } };
+console.log(config?.db?.host);        // 'localhost'
+console.log(config?.cache?.host);     // undefined (sem erro!)
+console.log(config?.metodo?.());      // undefined (sem erro ao chamar método)
+
+// ─── Nullish Coalescing ?? vs || ─────────────────────────────
+// O problema com ||:
+const porta1 = 0 || 3000;         // 3000 ← ERRADO! 0 é falsy, mas pode ser válido
+const porta2 = 0 ?? 3000;         // 0    ← CORRETO! ?? só ativa em null/undefined
+
+const usuario = { nome: '', admin: false };
+const nome1 = usuario.nome || 'Anônimo';  // 'Anônimo' ← errado se '' é válido
+const nome2 = usuario.nome ?? 'Anônimo'; // '' ← mantém string vazia
+
+// ─── Logical Assignment (ES2021) ─────────────────────────────
+let config2 = null;
+config2 ??= { theme: 'dark' };    // atribui APENAS se for null/undefined
+config2.debug ||= false;          // atribui APENAS se for falsy
+config2.level &&= config2.level + 1; // atribui APENAS se for truthy
+</code></pre>
+    </div>
+
+    <!-- ── CONCEITO 6: PROTOTYPE E CLASSES ── -->
+    <div class="section">
+      <div class="section-label">// conceito 6</div>
+      <h2>Prototype Chain & Classes ES6</h2>
+      <p>
+        JavaScript usa <strong>herança prototípica</strong>: cada objeto tem um <em>prototype</em> (protótipo), e ao acessar uma propriedade, o motor JS sobe a cadeia de protótipos até encontrá-la ou chegar em <code>null</code>. As <strong>classes ES6</strong> são açúcar sintático sobre esse mecanismo — não mudam o modelo interno, apenas tornam o código mais legível.
+      </p>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// prototype chain</div>
+        <div class="mermaid">
+graph TD
+    I["instância: ana<br/>(nome, cargo)"]
+    I -->|"__proto__"| P["Usuario.prototype<br/>(saudar, promover)"]
+    P -->|"__proto__"| O["Object.prototype<br/>(toString, hasOwnProperty...)"]
+    O -->|"__proto__"| N["null ← fim da cadeia"]
+    style I fill:#f59e0b,color:#000,stroke:none
+    style P fill:#1e1e2e,color:#e8e8f0,stroke:#f59e0b
+    style O fill:#1e1e2e,color:#e8e8f0,stroke:#8585a8
+    style N fill:#111118,color:#8585a8,stroke:#1e1e2e
+        </div>
+      </div>
+
+      <div class="code-label">// classes ES6 — sintaxe moderna de OOP em JS</div>
+      <pre><code class="language-javascript">// ─── Classe base ──────────────────────────────────────────────
+class Pessoa {
+  #cpf;  // campo privado (ES2022 — # = privado de verdade)
+
+  constructor(nome, idade, cpf) {
+    this.nome  = nome;
+    this.idade = idade;
+    this.#cpf  = cpf;
+  }
+
+  // Getter (acesso como propriedade)
+  get info() {
+    return `${this.nome} (${this.idade} anos)`;
+  }
+
+  // Método de instância
+  aniversario() {
+    this.idade++;
+    return this;  // permite encadeamento: pessoa.aniversario().aniversario()
+  }
+
+  // Método estático (chamado na classe, não na instância)
+  static comparar(a, b) {
+    return a.idade - b.idade;
+  }
+
+  toString() {
+    return this.info;
+  }
+}
+
+// ─── Herança ──────────────────────────────────────────────────
+class Funcionario extends Pessoa {
+  #salario;
+
+  constructor(nome, idade, cpf, cargo, salario) {
+    super(nome, idade, cpf);  // obrigatório chamar super() antes de usar this
+    this.cargo   = cargo;
+    this.#salario = salario;
+  }
+
+  get salario() { return this.#salario; }
+
+  // Override do método pai
+  get info() {
+    return `${super.info} — ${this.cargo}`;  // super acessa o método do pai
+  }
+
+  promover(novoCargo, aumento) {
+    this.cargo     = novoCargo;
+    this.#salario *= (1 + aumento);
+    return this;
+  }
+}
+
+// ─── Uso ──────────────────────────────────────────────────────
+const ana = new Funcionario('Ana', 28, '111.222.333-44', 'Desenvolvedora', 8000);
+console.log(ana.info);            // 'Ana (28 anos) — Desenvolvedora'
+ana.promover('Sênior', 0.2).aniversario();
+console.log(ana.salario);         // 9600
+console.log(ana instanceof Funcionario); // true
+console.log(ana instanceof Pessoa);      // true
+
+// ─── Verificar prototype ─────────────────────────────────────
+console.log(Object.getPrototypeOf(ana) === Funcionario.prototype); // true
+</code></pre>
+    </div>
+
+    <!-- ── CONCEITO 7: MODULES ── -->
+    <div class="section">
+      <div class="section-label">// conceito 7</div>
+      <h2>ES Modules — import / export</h2>
+      <p>
+        Modules são a forma nativa de JavaScript de organizar código em arquivos separados, com escopo isolado. Cada módulo é um arquivo; o que não for exportado é privado. Isso é a base de todo projeto Node.js e frontend moderno.
+      </p>
+
+      <div class="code-label">// math.js — módulo que exporta utilidades</div>
+      <pre><code class="language-javascript">// ─── Exportações nomeadas (named exports) ─────────────────────
+export const PI = 3.14159;
+
+export function soma(a, b) { return a + b; }
+export function media(...nums) { return nums.reduce((a, n) => a + n, 0) / nums.length; }
+
+// ─── Export default (um por arquivo) ─────────────────────────
+export default class Calculadora {
+  historico = [];  // class field (ES2022)
+
+  calcular(op, a, b) {
+    const resultado = op === '+' ? a + b : op === '-' ? a - b
+                    : op === '*' ? a * b : a / b;
+    this.historico.push({ op, a, b, resultado });
+    return resultado;
+  }
+}
+</code></pre>
+
+      <div class="code-label">// app.js — importando o módulo</div>
+      <pre><code class="language-javascript">// ─── Import named ────────────────────────────────────────────
+import { PI, soma, media } from './math.js';
+
+// ─── Import default ──────────────────────────────────────────
+import Calculadora from './math.js';
+
+// ─── Ambos juntos ────────────────────────────────────────────
+import Calculadora, { PI, soma } from './math.js';
+
+// ─── Renomear ao importar ─────────────────────────────────────
+import { soma as somar, media as calcMedia } from './math.js';
+
+// ─── Importar tudo como namespace ─────────────────────────────
+import * as MathUtils from './math.js';
+console.log(MathUtils.PI);    // 3.14159
+console.log(MathUtils.soma(2, 3)); // 5
+
+// ─── Dynamic import (lazy loading) ──────────────────────────
+// Carrega o módulo somente quando necessário (retorna Promise)
+const { soma: s } = await import('./math.js');
+console.log(s(10, 20)); // 30
+</code></pre>
+
+      <div class="callout callout-info">
+        <div class="callout-title">💡 CommonJS vs ES Modules</div>
+        Node.js historicamente usava <code>require()</code> / <code>module.exports</code> (CommonJS). ES Modules (<code>import</code>/<code>export</code>) são o padrão moderno e nativo do browser. Em projetos Node modernos, use <code>"type": "module"</code> no <code>package.json</code> ou extensão <code>.mjs</code>. Bundlers como Vite e esbuild lidam com a compatibilidade automaticamente.
+      </div>
+    </div>
+
+    <!-- ── HANDS-ON ── -->
+    <div class="section">
+      <div class="section-label">// prática</div>
+      <h2>Mãos na massa — Refatorar com ES6+</h2>
+      <p>Vamos pegar código legado e reescrevê-lo com todos os recursos que aprendemos. Execute no DevTools do browser ou no Node.js.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Código legado — identifique os problemas</div>
+            <div class="step-desc">Antes de ver a solução, tente identificar o que pode ser melhorado</div>
+            <pre><code class="language-javascript">// ❌ CÓDIGO LEGADO
+var usuarios = [
+  { nome: 'Ana', cargo: 'Dev', salario: 8000, ativo: true },
+  { nome: 'Bob', cargo: 'QA',  salario: 5000, ativo: false },
+  { nome: 'Cia', cargo: 'Dev', salario: 9000, ativo: true },
+  { nome: 'Dan', cargo: 'PM',  salario: 7000, ativo: true },
+];
+
+// Filtrar devs ativos e mostrar com 15% de aumento
+var resultado = [];
+for (var i = 0; i < usuarios.length; i++) {
+  var u = usuarios[i];
+  if (u.ativo && u.cargo === 'Dev') {
+    resultado.push({
+      nome: u.nome,
+      cargo: u.cargo,
+      novoSalario: u.salario + u.salario * 0.15,
+    });
+  }
+}
+for (var j = 0; j < resultado.length; j++) {
+  var r = resultado[j];
+  console.log(r.nome + ' (' + r.cargo + '): R$ ' + r.novoSalario.toFixed(2));
+}
+</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Versão ES6+ — limpa e expressiva</div>
+            <pre><code class="language-javascript">// ✅ CÓDIGO MODERNO
+const usuarios = [
+  { nome: 'Ana', cargo: 'Dev', salario: 8000, ativo: true },
+  { nome: 'Bob', cargo: 'QA',  salario: 5000, ativo: false },
+  { nome: 'Cia', cargo: 'Dev', salario: 9000, ativo: true },
+  { nome: 'Dan', cargo: 'PM',  salario: 7000, ativo: true },
+];
+
+usuarios
+  .filter(({ ativo, cargo }) => ativo && cargo === 'Dev')
+  .map(({ nome, cargo, salario }) => ({
+    nome,
+    cargo,
+    novoSalario: (salario * 1.15).toFixed(2),
+  }))
+  .forEach(({ nome, cargo, novoSalario }) => {
+    console.log(`${nome} (${cargo}): R$ ${novoSalario}`);
+  });
+
+// ─── Bonus: agrupar por cargo com reduce ─────────────────────
+const porCargo = usuarios.reduce((acc, { cargo, nome }) => ({
+  ...acc,
+  [cargo]: [...(acc[cargo] ?? []), nome],
+}), {});
+
+console.log(porCargo);
+// { Dev: ['Ana', 'Cia'], QA: ['Bob'], PM: ['Dan'] }
+</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Crie um mini sistema de produtos com módulos</div>
+            <div class="step-desc">Crie dois arquivos e abra no browser com um servidor local (ex: <code>npx serve .</code>)</div>
+            <pre><code class="language-javascript">// ─── produto.js ──────────────────────────────────────────────
+export class Produto {
+  #id = crypto.randomUUID();
+
+  constructor(nome, preco, categoria, estoque = 0) {
+    this.nome      = nome;
+    this.preco     = preco;
+    this.categoria = categoria;
+    this.estoque   = estoque;
+  }
+
+  get id()          { return this.#id; }
+  get disponivel()  { return this.estoque > 0; }
+  get precoFmt()    { return `R$ ${this.preco.toFixed(2)}`; }
+
+  aplicarDesconto(pct) {
+    this.preco *= (1 - pct);
+    return this;
+  }
+}
+
+export const filtrarPorCategoria = (produtos, cat) =>
+  produtos.filter(p => p.categoria === cat);
+
+export const totalEmEstoque = produtos =>
+  produtos.reduce((acc, p) => acc + p.preco * p.estoque, 0);
+
+// ─── main.js ─────────────────────────────────────────────────
+import { Produto, filtrarPorCategoria, totalEmEstoque } from './produto.js';
+
+const catalogo = [
+  new Produto('Notebook', 4500, 'tech', 3),
+  new Produto('Mouse', 150, 'tech', 50),
+  new Produto('Cadeira', 1200, 'moveis', 0),
+].map(p => p.categoria === 'tech' ? p.aplicarDesconto(0.1) : p);
+
+const tech = filtrarPorCategoria(catalogo, 'tech');
+console.log('Produtos tech com desconto:', tech.map(p => `${p.nome}: ${p.precoFmt}`));
+console.log('Total em estoque: R$', totalEmEstoque(catalogo).toFixed(2));
+</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Explore no DevTools</div>
+            <div class="step-desc">Abra o console e experimente: use <code>Object.keys()</code>, <code>Object.entries()</code> e métodos de array encadeados sobre os dados. Tente criar um novo <code>Produto</code> e aplicar desconto em cadeia.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ARMADILHAS ── -->
+    <div class="section">
+      <div class="section-label">// pitfalls</div>
+      <h2>⚠️ Armadilhas Comuns</h2>
+
+      <div class="pitfall">
+        <div class="pitfall-title">1. sort() muta o array original</div>
+        <p><code>[...arr].sort(compareFn)</code> — sempre faça uma cópia com spread antes de ordenar para evitar efeitos colaterais. O mesmo vale para <code>splice()</code> e <code>reverse()</code>.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">2. Comparação de objetos com ===</div>
+        <p>Objetos são comparados por referência, não por valor. <code>{ a: 1 } === { a: 1 }</code> é <code>false</code>. Para comparar conteúdo use <code>JSON.stringify()</code> (simples) ou bibliotecas como Lodash's <code>_.isEqual()</code> (robusto).</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">3. || como default quando 0 ou "" são valores válidos</div>
+        <p>Use <code>??</code> (nullish coalescing) quando o valor padrão deve ser aplicado <em>apenas</em> para <code>null</code>/<code>undefined</code>, não para qualquer falsy (<code>0</code>, <code>""</code>, <code>false</code>).</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">4. map() quando você quer efeito colateral</div>
+        <p><code>map()</code> é para transformar dados — ele sempre cria um novo array. Se você só quer executar código para cada item (ex: console.log, chamada de API), use <code>forEach()</code>. Retornar <code>undefined</code> implicitamente dentro de um <code>map</code> é sinal de uso errado.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">5. Esquecer de retornar valor em reduce()</div>
+        <p>O acumulador do <code>reduce()</code> é o que você retorna a cada iteração. Esquecer o <code>return</code> (ou usar <code>{}</code> sem parênteses em arrow function) resulta em <code>undefined</code> acumulado.</p>
+        <pre style="margin-top:8px;"><code class="language-javascript">// ❌ Bug: sem return
+arr.reduce((acc, n) => { acc + n }, 0); // acumulador vira undefined!
+
+// ✅ Correto:
+arr.reduce((acc, n) => acc + n, 0);
+arr.reduce((acc, n) => { return acc + n; }, 0); // ou com chaves + return explícito
+</code></pre>
+      </div>
+    </div>
+
+    <!-- ── VÍDEOS ── -->
+    <div class="section">
+      <div class="section-label">// curadoria</div>
+      <h2>Vídeos Recomendados</h2>
+      <div class="video-grid">
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Array Methods — map, filter, reduce</div>
+            <div class="video-channel">Web Dev Simplified · ~15 min</div>
+            <div class="video-why">Por que assistir: Explicação visual com exemplos do mundo real. Desmistifica reduce de vez.</div>
+            <a href="https://www.youtube.com/watch?v=R8rmfD9Y5-c" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">JavaScript ES6+ Features — The Practical Guide</div>
+            <div class="video-channel">Traversy Media · ~30 min</div>
+            <div class="video-why">Por que assistir: Cobre destructuring, spread, classes e modules em sequência com projetos práticos.</div>
+            <a href="https://www.youtube.com/watch?v=NCwa_xi0Uuc" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">JavaScript Prototype Chain Explained</div>
+            <div class="video-channel">Fireship · ~8 min</div>
+            <div class="video-why">Por que assistir: A melhor visualização da prototype chain — essencial antes de mergulhar em React e frameworks.</div>
+            <a href="https://www.youtube.com/watch?v=wstwjQ1yqWQ" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">ES Modules — import & export completo</div>
+            <div class="video-channel">Filipe Deschamps · ~25 min</div>
+            <div class="video-why">Por que assistir: Explica CommonJS vs ESM em português com exemplos práticos em Node.js moderno.</div>
+            <a href="https://www.youtube.com/results?search_query=es+modules+import+export+filipe+deschamps" target="_blank">Assistir →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── GLOSSÁRIO ── -->
+    <div class="section">
+      <div class="section-label">// glossário</div>
+      <h2>Termos desta Aula</h2>
+      <div class="glossary-item">
+        <div class="glossary-term">Destructuring</div>
+        <div class="glossary-def">Sintaxe ES6 que extrai valores de objetos ou arrays para variáveis individuais em uma única expressão.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Spread Operator (<code>...</code>)</div>
+        <div class="glossary-def">Expande um iterável (array, objeto) em seus elementos individuais, usado para clonar, mesclar e passar argumentos.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Rest Parameters (<code>...</code>)</div>
+        <div class="glossary-def">Coleta múltiplos argumentos de função em um único array. Mesmo símbolo do spread, contexto diferente.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Prototype Chain</div>
+        <div class="glossary-def">Mecanismo de herança do JS onde objetos delegam propriedades não encontradas ao seu protótipo, subindo a cadeia até null.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Named Export / Default Export</div>
+        <div class="glossary-def">Named exports exportam múltiplas coisas por nome; default export exporta uma coisa principal por arquivo.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Nullish Coalescing (<code>??</code>)</div>
+        <div class="glossary-def">Operador que retorna o lado direito apenas se o lado esquerdo for null ou undefined (não qualquer falsy).</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Optional Chaining (<code>?.</code>)</div>
+        <div class="glossary-def">Acessa propriedades aninhadas de forma segura — retorna undefined se qualquer nível da cadeia for null/undefined.</div>
+      </div>
+    </div>
+
+    <!-- ── CHECKPOINT ── -->
+    <div class="section">
+      <div class="checkpoint">
+        <h3>🏁 Checkpoint — Desafio Final</h3>
+        <p>Construa um <strong>módulo de gerenciamento de biblioteca</strong> usando tudo desta aula:</p>
+        <ul>
+          <li>Crie uma classe <code>Livro</code> com campos privados (<code>#id</code>, <code>#emprestado</code>), getters e métodos <code>emprestar()</code> / <code>devolver()</code></li>
+          <li>Crie uma classe <code>Biblioteca</code> que gerencia um array de livros com métodos: <code>adicionar()</code>, <code>buscarPorTitulo()</code>, <code>listarDisponiveis()</code>, <code>estatisticas()</code></li>
+          <li>O método <code>estatisticas()</code> deve usar <code>reduce()</code> para retornar: total de livros, total emprestados, autores únicos e autor mais prolífico</li>
+          <li>Exporte a classe e um array de livros de demonstração como <code>export default</code> e <code>export const</code> respectivamente</li>
+          <li>Em um arquivo separado, importe e demonstre o uso com destructuring, spread e optional chaining</li>
+        </ul>
+        <div class="checkpoint-hint">💬 Dica: use <code>Set</code> para autores únicos (<code>new Set(livros.map(l => l.autor))</code>) e <code>Map</code> para contar ocorrências por autor antes de encontrar o máximo com <code>reduce()</code>.</div>
+      </div>
+    </div>
+
+    <!-- ── PRÓXIMOS PASSOS ── -->
+    <div class="section">
+      <div class="section-label">// próximos passos</div>
+      <h2>O que vem a seguir?</h2>
+      <p style="margin-bottom:20px;">Com objetos, arrays e ES6+ dominados, você tem a base sólida para entender um dos aspectos mais únicos e poderosos do JavaScript: o modelo de concorrência assíncrona. Na próxima aula, desvendaremos o Event Loop, Promises e async/await.</p>
+      <a href="js-03-async-promises.html" class="next-card">
+        <div>
+          <div class="next-card-label">Próxima aula · ⚡ JavaScript</div>
+          <div class="next-card-title">Async: Event Loop, Promises & Fetch API</div>
+        </div>
+        <span class="next-arrow">→</span>
+      </a>
+    </div>
+
+  </div><!-- /page -->
+
+  <script>
+    // Progress bar
+    const bar = document.getElementById('progressBar');
+    window.addEventListener('scroll', () => {
+      const doc = document.documentElement;
+      bar.style.width = (doc.scrollTop / (doc.scrollHeight - doc.clientHeight) * 100) + '%';
+    });
+
+    // Highlight.js
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.hljs) hljs.highlightAll();
+    });
+
+    // Mermaid
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+  </script>
+
+</body>
+</html>

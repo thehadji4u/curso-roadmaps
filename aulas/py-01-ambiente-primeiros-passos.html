@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ambiente & Primeiros Passos · Python</title>
+  <title>Python — Ambiente & Primeiros Passos · Aula 05</title>
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
   <style>
-    /* ─── TOKENS ────────────────────────────────────────────── */
+    /* ── Highlight.js github-dark inlined ── */
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
     :root {
       --bg: #0a0a0f;
       --surface: #111118;
@@ -19,32 +23,198 @@
       --border: #1e1e2e;
       --text: #e8e8f0;
       --muted: #8585a8;
-
       --accent: #3b82f6;
-      /* ex: #3b82f6 para Python */
-      --accent-dim: rgba(59, 130, 246, 0.12);
-      /* ex: rgba(59,130,246,0.15) */
-      --accent-border: rgba(59, 130, 246, 0.35);
-      /* ex: rgba(59,130,246,0.3) */
-
-      /* Semantic colors */
+      --accent-dim: rgba(59,130,246,0.15);
+      --accent-border: rgba(59,130,246,0.35);
       --success: #10b981;
       --warn: #f59e0b;
       --danger: #ef4444;
       --info: #06b6d4;
     }
-  </style>
-  <link rel="stylesheet" href="../assets/css/lesson.css">
-</head>
 
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #60a5fa); width: 0%; transition: width 0.1s; }
+
+    .top-nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 32px;
+      background: rgba(10,10,15,0.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #60a5fa; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.08); border-color: var(--success); }
+    .callout-tip .callout-title { color: var(--success); }
+    .callout-check { background: rgba(167,139,250,0.08); border-color: #a78bfa; }
+    .callout-check .callout-title { color: #a78bfa; }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(59,130,246,0.2); color: #60a5fa; }
+    .badge-purple { background: rgba(167,139,250,0.2); color: #c4b5fd; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    @media (max-width: 640px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+    .pillar-badge { font-size: 11px; padding: 3px 10px; border-radius: 4px; font-weight: 600; }
+
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-info a { font-size: 12px; color: var(--accent); text-decoration: none; }
+    .video-info a:hover { text-decoration: underline; }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(96,165,250,0.04)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(59,130,246,0.06); border-radius: 6px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; }
+
+    .glossary-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .glossary-term { color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+    .glossary-def { color: var(--muted); font-size: 13px; }
+
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #60a5fa; }
+
+    /* ── OS tabs ── */
+    .os-tabs { display: flex; gap: 0; margin-bottom: 0; border-bottom: 1px solid var(--border); }
+    .os-tab { padding: 8px 18px; font-size: 12px; letter-spacing: 0.05em; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; user-select: none; }
+    .os-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .os-panel { display: none; }
+    .os-panel.active { display: block; }
+
+    /* ── Type cards ── */
+    .type-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+    .type-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+    .type-card:hover { border-color: var(--accent-border); }
+    .type-name { font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; font-family: 'JetBrains Mono', monospace; }
+    .type-example { font-size: 12px; color: #a5d6ff; font-family: 'JetBrains Mono', monospace; margin-bottom: 6px; }
+    .type-desc { font-size: 12px; color: var(--muted); }
+
+    /* ── Terminal block ── */
+    .terminal { background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .terminal-bar { background: #1a1a1a; padding: 8px 14px; display: flex; align-items: center; gap: 8px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ef4444; }
+    .dot-yellow { background: #f59e0b; }
+    .dot-green { background: #10b981; }
+    .terminal-title { font-size: 11px; color: #666; margin-left: 8px; }
+    .terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.8; }
+    .terminal-body .prompt { color: #10b981; }
+    .terminal-body .cmd { color: #e8e8f0; }
+    .terminal-body .out { color: #8585a8; }
+    .terminal-body .comment { color: #555; }
+
+    /* ── Compare split ── */
+    .compare-split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+    @media (max-width: 600px) { .compare-split { grid-template-columns: 1fr; } }
+    .compare-old { background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.2); border-radius: 8px; padding: 16px; }
+    .compare-new { background: rgba(16,185,129,0.05); border: 1px solid rgba(16,185,129,0.2); border-radius: 8px; padding: 16px; }
+    .compare-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; font-weight: 600; }
+    .compare-old .compare-label { color: #f87171; }
+    .compare-new .compare-label { color: #34d399; }
+  </style>
+</head>
 <body>
 
-  <!-- Barra de leitura -->
   <div class="progress-bar-wrap">
-    <div class="progress-bar-fill"></div>
+    <div class="progress-bar-fill" id="progressBar"></div>
   </div>
 
-  <!-- Navegação principal -->
   <nav class="top-nav">
     <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
     <div class="nav-center">
@@ -58,527 +228,312 @@
 
   <div class="page">
 
-    <!-- ══════════════════════════════════════════
-         HERO
-    ══════════════════════════════════════════ -->
+    <!-- ── HERO ── -->
     <div class="hero">
       <div class="hero-eyebrow">
-        <span>🐍 Python · 01 · Prioridade 1</span>
+        <span>🐍 Python</span>
         <span class="hero-badge">Aula 05</span>
       </div>
-      <h1>Python — Ambiente &amp; Primeiros Passos</h1>
+      <h1>Ambiente & Primeiros Passos</h1>
       <div class="hero-meta">
         <span>⏱ ~35 min de leitura</span>
         <span>🎯 Fundamentos</span>
         <span>🔧 Hands-on incluído</span>
       </div>
       <div class="hero-tags">
-        <span class="tag">Python 3</span>
-        <span class="tag">pip</span>
-        <span class="tag">venv</span>
-        <span class="tag">VS Code</span>
-        <span class="tag">int / float / str / bool</span>
-        <span class="tag">tipagem dinâmica</span>
+        <span class="tag accent">Python 3</span>
+        <span class="tag accent">pip</span>
+        <span class="tag accent">venv</span>
+        <span class="tag">tipos</span>
+        <span class="tag">variáveis</span>
+        <span class="tag">strings</span>
         <span class="tag">f-strings</span>
-        <span class="tag">slicing</span>
+        <span class="tag">VS Code</span>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         01 — POR QUE ISSO IMPORTA?
-    ══════════════════════════════════════════ -->
+    <!-- ── 1. POR QUE IMPORTA ── -->
     <div class="section">
-      <div class="section-label">// 01 — motivação</div>
+      <div class="section-label">// motivação</div>
       <h2>Por que isso importa?</h2>
       <p>
-        Python é a linguagem mais usada em ciência de dados, automação, back-end e inteligência artificial. A sintaxe
-        limpa, o ecossistema gigante de bibliotecas e a facilidade de leitura tornam Python a melhor escolha para quem
-        quer escrever código que <em>outros humanos consigam entender</em>.
+        Python se tornou a linguagem mais popular do mundo por razões concretas: sintaxe limpa e legível, ecossistema vasto (ciência de dados, IA, web, automação) e curva de aprendizado suave que não sacrifica poder. Hoje Python roda os modelos de linguagem mais avançados do planeta, os pipelines de dados de grandes empresas e os backends de serviços de alto tráfego.
       </p>
       <p>
-        Mas antes de escrever qualquer script útil, é preciso entender três coisas: como configurar o <strong>ambiente
-          isolado</strong> para cada projeto (venv), quais são os <strong>tipos primitivos</strong> da linguagem (int,
-        float, str, bool, None) e como <strong>formatar e manipular texto</strong> com f-strings e métodos de string.
-        Esses são os tijolos de tudo que virá depois.
+        Antes de escrever qualquer linha de código Python, precisamos de um ambiente funcionando corretamente. Isso significa a versão certa do Python, isolamento de dependências com ambientes virtuais, e um editor configurado. Esses detalhes fazem toda a diferença entre um setup profissional e horas perdidas com conflitos de pacotes.
       </p>
       <div class="callout callout-info">
-        <div class="callout-title">💼 Por que um engenheiro sênior usa isso hoje</div>
-        Sêniors nunca instalam bibliotecas no Python global do sistema. Cada projeto tem seu próprio <code>venv</code>
-        com dependências declaradas em <code>requirements.txt</code> ou <code>pyproject.toml</code>. Isso garante
-        reprodutibilidade: qualquer colega (ou servidor de CI) consegue recriar o ambiente exato com um único comando.
+        <div class="callout-title">💼 Por que um engenheiro sênior se preocupa tanto com o ambiente</div>
+        "Funciona na minha máquina" é uma das frases mais temidas em times de engenharia. Ambientes virtuais (<code>venv</code>), arquivos <code>requirements.txt</code> e ferramentas como <code>pyenv</code> existem exatamente para eliminar esse problema. Um setup profissional é reproduzível, isolado e documentado — qualquer colega pode clonar o repo e rodar o projeto em minutos.
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         02 — ANALOGIA
-    ══════════════════════════════════════════ -->
+    <!-- ── 2. ANALOGIA ── -->
     <div class="section">
-      <div class="section-label">// 02 — analogia</div>
+      <div class="section-label">// analogia</div>
       <h2>Antes do código: uma analogia</h2>
       <div class="analogy-card">
         <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
         <div class="analogy-text">
-          Imagine que você é um chef de cozinha. Você tem uma <strong>cozinha industrial compartilhada</strong> no
-          restaurante — mas cada receita exige ingredientes específicos e versões diferentes de equipamentos. Se você
-          usar a cozinha geral para tudo, os ingredientes de um prato vão contaminar outro.<br><br>
-          A solução profissional é ter <strong>estações de trabalho individuais e isoladas</strong> — uma para
-          confeitaria, outra para grelhados, outra para pratos frios. Cada estação tem exatamente o que precisa, sem
-          interferir nas outras.<br><br>
-          No Python, essa "estação isolada" se chama <strong>virtualenv (venv)</strong>. O Python global do sistema
-          operacional é a cozinha industrial — você nunca mexe nela diretamente. Para cada projeto, você cria um venv
-          limpo.
+          Imagine um <strong>chef de cozinha profissional</strong>. Antes de cozinhar, ele não usa uma cozinha compartilhada bagunçada — ele tem a <em>própria bancada</em> organizada (ambiente virtual), com seus <em>utensílios específicos</em> (pacotes instalados), em versões que ele sabe que funcionam para as suas receitas. Se outro chef usa a mesma cozinha mas com diferentes utensílios, eles não se atrapalham.
+          <br><br>
+          O Python instalado no sistema é a <em>cozinha do prédio</em>. Cada projeto com seu <code>venv</code> é como ter a <em>própria bancada isolada</em>. O <code>pip</code> é o sistema de delivery que traz os ingredientes (pacotes). O <code>requirements.txt</code> é a <em>lista de compras</em> que qualquer pessoa pode usar para montar a mesma bancada em qualquer lugar.
         </div>
         <div class="analogy-mapping">
-          <span class="analogy-real">Cozinha industrial global</span>
-
-          <span class="analogy-arrow">→</span>
-
-          <span class="analogy-tech">Python do sistema (nunca toque)</span>
-          <span class="analogy-real">Estação de trabalho isolada</span>
-
-          <span class="analogy-arrow">→</span>
-
-          <span class="analogy-tech"><code>venv</code> do projeto</span>
-          <span class="analogy-real">Lista de ingredientes da receita</span>
-
-          <span class="analogy-arrow">→</span>
-
-          <span class="analogy-tech"><code>requirements.txt</code></span>
-          <span class="analogy-real">Tipo de ingrediente (líquido, sólido…)</span>
-
-          <span class="analogy-arrow">→</span>
-
-          <span class="analogy-tech">tipo de dado (<code>int</code>, <code>str</code>…)</span>
+          <span class="analogy-real">🏠 Cozinha do prédio (compartilhada)</span>
+          <span class="analogy-tech">→ Python do sistema</span>
+          <span class="analogy-real">🍳 Bancada própria isolada</span>
+          <span class="analogy-tech">→ Ambiente virtual (<code>venv</code>)</span>
+          <span class="analogy-real">🚚 Delivery de ingredientes</span>
+          <span class="analogy-tech">→ <code>pip install pacote</code></span>
+          <span class="analogy-real">🛒 Lista de compras da receita</span>
+          <span class="analogy-tech">→ <code>requirements.txt</code></span>
         </div>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         03 — INSTALAÇÃO & AMBIENTE
-    ══════════════════════════════════════════ -->
+    <!-- ── 3. INSTALAÇÃO ── -->
     <div class="section">
-      <div class="section-label">// 03 — instalação &amp; ambiente</div>
-      <h2>Python 3, pip e venv</h2>
+      <div class="section-label">// conceito 1</div>
+      <h2>Instalando Python 3</h2>
       <p>
-        O ecossistema Python tem três peças fundamentais: o <strong>interpretador</strong> (Python 3), o
-        <strong>gerenciador de pacotes</strong> (pip) e o <strong>ambiente virtual</strong> (venv). Entender como as
-        três se relacionam elimina 80% dos problemas de iniciantes.
+        Sempre use Python 3 — Python 2 chegou ao fim de vida em 2020. A versão mínima recomendada para projetos novos é Python 3.11+, que trouxe melhorias significativas de performance e mensagens de erro muito mais claras.
       </p>
 
       <div class="mermaid-wrap">
-        <div class="mermaid-label">// relação entre Python, pip e venv</div>
-        <pre class="mermaid">
-          graph TD
-          A[🖥️ Sistema Operacional] --> B[Python 3 global]
-          B --> C[pip global]
-          B --> D[python -m venv meu-projeto]
-          D --> E[📁 meu-projeto/venv/]
-          E --> F[Python 3 isolado]
-          E --> G[pip isolado]
-          G --> H[requests 2.31]
-          G --> I[pandas 2.0]
-          H --> J[✅ só neste projeto]
-          I --> J
-          style B fill:#1e3a5f,stroke:#3b82f6,color:#93c5fd
-          style E fill:#0f3020,stroke:#10b981,color:#6ee7b7
-          style J fill:#0f3020,stroke:#10b981,color:#6ee7b7
-        </pre>
+        <div class="mermaid-label">// fluxo de decisão: qual método usar?</div>
+        <div class="mermaid">
+flowchart TD
+    OS{"Qual sistema\noperacional?"}
+    OS --> MAC["🍎 macOS"]
+    OS --> WIN["🪟 Windows"]
+    OS --> LIN["🐧 Linux"]
+    MAC --> BREW["Homebrew\nbrew install python@3.12"]
+    MAC --> PYENV_M["pyenv (recomendado\npara múltiplas versões)"]
+    WIN --> STORE["Microsoft Store\n(simples, para iniciantes)"]
+    WIN --> PYENV_W["pyenv-win\n(recomendado)"]
+    LIN --> APT["apt/dnf: já instalado\napt install python3.12"]
+    LIN --> PYENV_L["pyenv\n(recomendado)"]
+    style OS fill:#3b82f6,color:#fff,stroke:none
+    style PYENV_M fill:#1e1e2e,color:#60a5fa,stroke:#3b82f6
+    style PYENV_W fill:#1e1e2e,color:#60a5fa,stroke:#3b82f6
+    style PYENV_L fill:#1e1e2e,color:#60a5fa,stroke:#3b82f6
+        </div>
       </div>
 
-      <h3>Comparativo: pip global vs venv</h3>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Abordagem</th>
-              <th>Como funciona</th>
-              <th>Problema</th>
-              <th>Usar quando?</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>pip install</code> global</td>
-              <td>Instala no Python do sistema</td>
-              <td>Conflito de versões entre projetos. Projeto A quer <code>requests==2.28</code>, projeto B quer
-                <code>requests==2.31</code> — impossível ter os dois
-              </td>
-              <td>❌ Nunca. Mesmo para testar rapidamente, use <code>pipx</code> para CLIs globais</td>
-            </tr>
-            <tr>
-              <td><code>venv</code> + <code>pip install</code></td>
-              <td>Cria Python isolado por projeto</td>
-              <td>Nenhum — é o padrão correto</td>
-              <td>✅ Sempre. Para qualquer projeto Python</td>
-            </tr>
-            <tr>
-              <td><code>conda</code></td>
-              <td>Gerenciador de ambiente alternativo</td>
-              <td>Mais pesado; útil para data science com dependências nativas (NumPy, OpenCV)</td>
-              <td>✅ Para projetos de data science com dependências C/CUDA</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <!-- OS TABS -->
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin:20px 0;">
+        <div class="os-tabs" id="osTabs">
+          <div class="os-tab active" onclick="switchTab('mac')">🍎 macOS</div>
+          <div class="os-tab" onclick="switchTab('win')">🪟 Windows</div>
+          <div class="os-tab" onclick="switchTab('linux')">🐧 Linux</div>
+        </div>
 
-      <h3>VS Code ou PyCharm?</h3>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Editor</th>
-              <th>Prós</th>
-              <th>Contras</th>
-              <th>Melhor para</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>VS Code</strong></td>
-              <td>Leve, extensível, gratuito, multi-linguagem, terminal integrado, extensão Pylance excelente</td>
-              <td>Requer configuração inicial do ambiente Python</td>
-              <td>Maioria dos projetos, full-stack, devs que usam mais de uma linguagem</td>
-            </tr>
-            <tr>
-              <td><strong>PyCharm</strong></td>
-              <td>Zero configuração para Python, debugger poderoso, refatoração avançada, gerencia venv automaticamente
-              </td>
-              <td>Pesado, versão Community limitada, só Python</td>
-              <td>Projetos Python puros, quem quer um IDE que "só funciona"</td>
-            </tr>
-          </tbody>
-        </table>
+        <div style="padding:20px;">
+          <div class="os-panel active" id="panel-mac">
+            <p style="color:var(--muted);font-size:13px;margin-bottom:12px;">Recomendado: instalar via Homebrew (gerenciador de pacotes do macOS)</p>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal — macOS</span></div>
+              <div class="terminal-body">
+                <div><span class="prompt">$</span> <span class="cmd"># 1. Instalar Homebrew (se não tiver)</span></div>
+                <div><span class="prompt">$</span> <span class="cmd">/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</span></div>
+                <div class="out" style="margin-top:8px;">&nbsp;</div>
+                <div><span class="prompt">$</span> <span class="cmd"># 2. Instalar Python 3.12</span></div>
+                <div><span class="prompt">$</span> <span class="cmd">brew install python@3.12</span></div>
+                <div class="out" style="margin-top:8px;">&nbsp;</div>
+                <div><span class="prompt">$</span> <span class="cmd"># 3. Verificar instalação</span></div>
+                <div><span class="prompt">$</span> <span class="cmd">python3 --version</span></div>
+                <div class="out">Python 3.12.x</div>
+                <div><span class="prompt">$</span> <span class="cmd">pip3 --version</span></div>
+                <div class="out">pip 24.x from /usr/local/lib/python3.12/...</div>
+              </div>
+            </div>
+            <div class="callout callout-tip" style="margin-top:12px;">
+              <div class="callout-title">🔥 Pro tip: pyenv para múltiplas versões</div>
+              Se você trabalha em projetos que exigem versões diferentes, use <code>brew install pyenv</code> e gerencie versões com <code>pyenv install 3.12.0</code> e <code>pyenv global 3.12.0</code>.
+            </div>
+          </div>
+
+          <div class="os-panel" id="panel-win">
+            <p style="color:var(--muted);font-size:13px;margin-bottom:12px;">Opção mais simples para iniciantes: baixar o instalador oficial.</p>
+            <div class="steps">
+              <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                  <div class="step-title">Baixe o instalador</div>
+                  <div class="step-desc">Acesse <strong>python.org/downloads</strong> e baixe a versão 3.12 (ou mais recente) para Windows.</div>
+                </div>
+              </div>
+              <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                  <div class="step-title">CRUCIAL: marque "Add Python to PATH"</div>
+                  <div class="step-desc">Na primeira tela do instalador, marque obrigatoriamente a opção <strong>"Add Python 3.12 to PATH"</strong> antes de clicar em Install. Sem isso, o terminal não encontra o Python.</div>
+                </div>
+              </div>
+              <div class="step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                  <div class="step-title">Verifique no PowerShell</div>
+                  <div class="terminal">
+                    <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">PowerShell</span></div>
+                    <div class="terminal-body">
+                      <div><span class="prompt">></span> <span class="cmd">python --version</span></div>
+                      <div class="out">Python 3.12.x</div>
+                      <div><span class="prompt">></span> <span class="cmd">pip --version</span></div>
+                      <div class="out">pip 24.x from C:\Users\...\python3.12\...</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="os-panel" id="panel-linux">
+            <p style="color:var(--muted);font-size:13px;margin-bottom:12px;">Linux geralmente já vem com Python, mas pode não ser a versão mais recente.</p>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal — Ubuntu/Debian</span></div>
+              <div class="terminal-body">
+                <div><span class="prompt">$</span> <span class="cmd"># Adicionar repositório com versões recentes</span></div>
+                <div><span class="prompt">$</span> <span class="cmd">sudo add-apt-repository ppa:deadsnakes/ppa</span></div>
+                <div><span class="prompt">$</span> <span class="cmd">sudo apt update</span></div>
+                <div class="out" style="margin-top:4px;">&nbsp;</div>
+                <div><span class="prompt">$</span> <span class="cmd">sudo apt install python3.12 python3.12-venv python3-pip</span></div>
+                <div class="out" style="margin-top:4px;">&nbsp;</div>
+                <div><span class="prompt">$</span> <span class="cmd">python3.12 --version</span></div>
+                <div class="out">Python 3.12.x</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         04 — TIPOS & VARIÁVEIS
-    ══════════════════════════════════════════ -->
+    <!-- ── 4. VENV ── -->
     <div class="section">
-      <div class="section-label">// 04 — tipos &amp; variáveis</div>
-      <h2>Tipos primitivos e tipagem dinâmica</h2>
+      <div class="section-label">// conceito 2</div>
+      <h2>Ambientes Virtuais com venv</h2>
       <p>
-        Python é <strong>dinamicamente tipado</strong>: a variável não tem tipo — o <em>objeto que ela referencia</em>
-        tem. Isso significa que <code>x = 10</code> cria um objeto <code>int</code> e aponta <code>x</code> para ele. Em
-        seguida, <code>x = "hello"</code> aponta <code>x</code> para um objeto <code>str</code> diferente. O tipo
-        anterior simplesmente deixa de ser referenciado.
+        Um ambiente virtual cria uma cópia isolada do Python com seu próprio conjunto de pacotes instalados. Isso garante que projeto A usando <code>requests==2.28</code> não conflite com projeto B usando <code>requests==2.31</code>.
       </p>
 
-      <div class="types-grid">
-        <div class="type-card">
-          <div class="type-name">int</div>
-          <div class="type-kw">inteiro</div>
-          <div class="type-ex">42 · -7 · 0</div>
-        </div>
-        <div class="type-card">
-          <div class="type-name">float</div>
-          <div class="type-kw">ponto flutuante</div>
-          <div class="type-ex">3.14 · -0.5 · 1e10</div>
-        </div>
-        <div class="type-card">
-          <div class="type-name">str</div>
-          <div class="type-kw">string / texto</div>
-          <div class="type-ex">"olá" · 'mundo'</div>
-        </div>
-        <div class="type-card">
-          <div class="type-name">bool</div>
-          <div class="type-kw">booleano</div>
-          <div class="type-ex">True · False</div>
-        </div>
-        <div class="type-card">
-          <div class="type-name">None</div>
-          <div class="type-kw">ausência de valor</div>
-          <div class="type-ex">None (único valor)</div>
-        </div>
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Regra de ouro: SEMPRE use venv</div>
+        Nunca instale pacotes no Python do sistema com <code>pip install</code> global. Sempre crie um <code>venv</code> por projeto. Este é o primeiro hábito que diferencia um dev profissional de um iniciante.
       </div>
 
-      <div class="code-wrap">
-        <div class="code-header">
-          <span class="code-filename">📄 tipos.py</span>
-          <span class="code-lang">Python</span>
+      <div class="terminal">
+        <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal — fluxo completo de um projeto</span></div>
+        <div class="terminal-body">
+          <div><span class="prompt">$</span> <span class="cmd"># 1. Criar pasta do projeto e entrar nela</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">mkdir meu-projeto && cd meu-projeto</span></div>
+          <br>
+          <div><span class="prompt">$</span> <span class="cmd"># 2. Criar o ambiente virtual (pasta .venv dentro do projeto)</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">python3 -m venv .venv</span></div>
+          <div class="comment"># Cria: .venv/bin/python, .venv/bin/pip, etc.</div>
+          <br>
+          <div><span class="prompt">$</span> <span class="cmd"># 3. ATIVAR o ambiente virtual</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">source .venv/bin/activate</span>  <span class="comment"># macOS/Linux</span></div>
+          <div><span class="prompt">></span> <span class="cmd">.venv\Scripts\activate</span>     <span class="comment"># Windows PowerShell</span></div>
+          <br>
+          <div class="comment"># O prompt muda — sinal de que o venv está ativo:</div>
+          <div><span class="prompt" style="color:#60a5fa;">(.venv) $</span> <span class="cmd">which python</span></div>
+          <div class="out">/home/user/meu-projeto/.venv/bin/python</div>
+          <br>
+          <div><span class="prompt" style="color:#60a5fa;">(.venv) $</span> <span class="cmd"># 4. Instalar pacotes — vão para o .venv, não o sistema!</span></div>
+          <div><span class="prompt" style="color:#60a5fa;">(.venv) $</span> <span class="cmd">pip install requests pandas</span></div>
+          <br>
+          <div><span class="prompt" style="color:#60a5fa;">(.venv) $</span> <span class="cmd"># 5. Salvar dependências (compartilhar com o time)</span></div>
+          <div><span class="prompt" style="color:#60a5fa;">(.venv) $</span> <span class="cmd">pip freeze > requirements.txt</span></div>
+          <br>
+          <div><span class="prompt" style="color:#60a5fa;">(.venv) $</span> <span class="cmd"># Para desativar quando terminar</span></div>
+          <div><span class="prompt" style="color:#60a5fa;">(.venv) $</span> <span class="cmd">deactivate</span></div>
+          <div><span class="prompt">$</span> <span class="cmd"># Prompt volta ao normal</span></div>
+          <br>
+          <div><span class="prompt">$</span> <span class="cmd"># Outro dev clona o repo e recria o ambiente:</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">python3 -m venv .venv && source .venv/bin/activate</span></div>
+          <div><span class="prompt" style="color:#60a5fa;">(.venv) $</span> <span class="cmd">pip install -r requirements.txt</span></div>
+          <div class="out">Successfully installed requests-2.31.0 pandas-2.1.0 ...</div>
         </div>
-        <pre><code class="language-python"># ─── Tipagem dinâmica: a variável aponta para um objeto ───────
-x = 42             # x aponta para um int
-print(type(x))     # &lt;class 'int'&gt;
-
-x = 3.14           # agora aponta para um float
-print(type(x))     # &lt;class 'float'&gt;
-
-x = "Python"       # agora aponta para uma str
-print(type(x))     # &lt;class 'str'&gt;
-
-# ─── int ──────────────────────────────────────────────────────
-idade = 25
-ano = 2024
-resultado = idade + ano          # 2049
-grande = 1_000_000               # underscores para legibilidade
-
-# Conversão (casting)
-texto_numero = "42"
-numero = int(texto_numero)       # "42" → 42
-pi_inteiro = int(3.99)           # trunca (não arredonda): 3
-
-# ─── float ────────────────────────────────────────────────────
-preco = 29.90
-taxa = 0.1
-total = preco * (1 + taxa)       # 32.89
-
-# ⚠️ Cuidado: ponto flutuante não é exato
-print(0.1 + 0.2)                 # 0.30000000000000004
-# Use Decimal para valores financeiros:
-from decimal import Decimal
-print(Decimal("0.1") + Decimal("0.2"))  # 0.3
-
-# ─── bool ─────────────────────────────────────────────────────
-ativo = True
-desativado = False
-
-# Em Python, bool é subclasse de int
-print(int(True))   # 1
-print(int(False))  # 0
-print(True + True) # 2 (!!)
-
-# Valores "falsy" (avaliam como False):
-# False, 0, 0.0, "", [], {}, (), None
-# Tudo o mais é "truthy"
-if []:             # lista vazia → False
-    print("nunca")
-if [0]:            # lista com um elemento → True
-    print("sempre")
-
-# ─── None ─────────────────────────────────────────────────────
-resultado = None   # variável sem valor definido ainda
-print(resultado is None)  # True — use 'is', não '=='
-
-# Função que não retorna nada explicitamente
-def sem_retorno():
-    pass
-
-print(sem_retorno())  # None</code></pre>
       </div>
 
       <div class="callout callout-tip">
-        <div class="callout-title">🔥 Pro tip — type hints (desde Python 3.5+)</div>
-        Python moderno usa <strong>anotações de tipo</strong> para documentar intenção e habilitar checagem estática com
-        <code>mypy</code> ou Pylance. Não é obrigatório, mas é padrão em código profissional:<br><br>
-        <code>nome: str = "Ana"</code><br>
-        <code>idade: int = 30</code><br>
-        <code>preco: float = 9.99</code><br>
-        <code>ativo: bool = True</code><br>
-        <code>resultado: int | None = None</code> &nbsp;← <em>union type — pode ser int ou None</em>
+        <div class="callout-title">🔥 Pro tip: .gitignore o .venv</div>
+        Nunca commite a pasta <code>.venv</code> no Git — ela contém binários específicos do sistema e pode ter centenas de MB. Adicione <code>.venv/</code> ao seu <code>.gitignore</code>. O que vai para o repo é apenas o <code>requirements.txt</code>.
       </div>
+
+      <h3>pip — gerenciando pacotes</h3>
+      <div class="code-label">// comandos pip essenciais</div>
+      <pre><code class="language-bash"># Instalar um pacote
+pip install requests
+
+# Instalar versão específica
+pip install requests==2.31.0
+
+# Instalar versão mínima
+pip install "requests>=2.28,<3.0"
+
+# Instalar múltiplos pacotes de uma vez
+pip install requests pandas numpy matplotlib
+
+# Atualizar pacote
+pip install --upgrade requests
+
+# Remover pacote
+pip uninstall requests
+
+# Ver pacotes instalados
+pip list
+
+# Ver informações de um pacote
+pip show requests
+
+# Salvar dependências exatas
+pip freeze > requirements.txt
+
+# Instalar a partir do arquivo
+pip install -r requirements.txt
+
+# Buscar pacotes disponíveis
+pip index versions requests  # ver todas as versões disponíveis
+</code></pre>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         05 — STRINGS & FORMATAÇÃO
-    ══════════════════════════════════════════ -->
+    <!-- ── 5. VS CODE ── -->
     <div class="section">
-      <div class="section-label">// 05 — strings &amp; formatação</div>
-      <h2>Strings — f-strings, métodos e slicing</h2>
+      <div class="section-label">// conceito 3</div>
+      <h2>Configurando o VS Code para Python</h2>
       <p>
-        Strings em Python são <strong>imutáveis e indexadas</strong>. Cada caractere tem uma posição (índice) começando
-        do zero. Isso permite acessar partes específicas com a notação de <em>slicing</em>:
-        <code>texto[início:fim:passo]</code>.
+        VS Code com as extensões certas é o editor mais usado para Python, combinando leveza, IntelliSense poderoso, debugging integrado e terminal embutido.
       </p>
-
-      <h3>Formas de criar strings</h3>
-      <div class="code-wrap">
-        <div class="code-header">
-          <span class="code-filename">📄 strings_basico.py</span>
-          <span class="code-lang">Python</span>
-        </div>
-        <pre><code class="language-python"># Aspas simples ou duplas — equivalentes
-nome = 'Ana'
-sobrenome = "Silva"
-
-# Triple quotes: strings multilinhas
-descricao = """
-Engenheira de Software
-São Paulo, SP
-"""
-
-# ─── Concatenação vs f-string ─────────────────────────────────
-# ❌ Evite concatenação com +
-mensagem_ruim = "Olá, " + nome + "! Você tem " + str(30) + " anos."
-
-# ✅ Prefira f-string (desde Python 3.6)
-mensagem = f"Olá, {nome}! Você tem {30} anos."
-
-# f-strings aceitam expressões inteiras
-preco = 49.9
-print(f"Preço: R$ {preco:.2f}")          # Preço: R$ 49.90
-print(f"Dobro: R$ {preco * 2:.2f}")      # Dobro: R$ 99.80
-print(f"{'centralizado':^20}")            # texto centralizado em 20 chars
-print(f"{1_000_000:,}")                   # 1,000,000 (separador de milhar)
-
-# Diagnóstico rápido com f-string (Python 3.8+)
-x = 42
-print(f"{x = }")   # x = 42 (útil para debug)</code></pre>
-      </div>
-
-      <h3>Slicing — fatiando strings</h3>
-      <div class="code-wrap">
-        <div class="code-header">
-          <span class="code-filename">📄 slicing.py</span>
-          <span class="code-lang">Python</span>
-        </div>
-        <pre><code class="language-python">texto = "Python 3.12"
-#        0123456789...
-#       -11-10-9...  (índices negativos)
-
-# Sintaxe: texto[início:fim:passo]
-# fim é EXCLUSIVO — texto[0:6] pega índices 0,1,2,3,4,5
-
-print(texto[0])        # 'P'          — primeiro caractere
-print(texto[-1])       # '2'          — último caractere
-print(texto[0:6])      # 'Python'     — do 0 ao 5 (fim=6 excl.)
-print(texto[7:])       # '3.12'       — do 7 até o fim
-print(texto[:6])       # 'Python'     — do início até 5
-print(texto[::2])      # 'Pto .2'     — de 2 em 2
-print(texto[::-1])     # '21.3 nohtyP' — invertido
-
-# Casos práticos de slicing
-cpf = "123.456.789-00"
-apenas_digitos = cpf.replace(".", "").replace("-", "")  # "12345678900"
-primeiros_3 = cpf[:3]  # "123"
-
-url = "https://exemplo.com/path"
-sem_https = url[8:]    # "exemplo.com/path"</code></pre>
-      </div>
-
-      <h3>Métodos essenciais de string</h3>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Método</th>
-              <th>O que faz</th>
-              <th>Exemplo</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>.upper()</code> / <code>.lower()</code></td>
-              <td>Converte maiúscula/minúscula</td>
-              <td><code>"Ana".upper()</code> → <code>"ANA"</code></td>
-            </tr>
-            <tr>
-              <td><code>.strip()</code></td>
-              <td>Remove espaços (e \n, \t) no início e fim</td>
-              <td><code>"  oi  ".strip()</code> → <code>"oi"</code></td>
-            </tr>
-            <tr>
-              <td><code>.split(sep)</code></td>
-              <td>Divide em lista pelo separador</td>
-              <td><code>"a,b,c".split(",")</code> → <code>["a","b","c"]</code></td>
-            </tr>
-            <tr>
-              <td><code>.join(lista)</code></td>
-              <td>Une lista em string com separador</td>
-              <td><code>", ".join(["a","b"])</code> → <code>"a, b"</code></td>
-            </tr>
-            <tr>
-              <td><code>.replace(old, new)</code></td>
-              <td>Substitui todas as ocorrências</td>
-              <td><code>"aabaa".replace("a","x")</code> → <code>"xxbxx"</code></td>
-            </tr>
-            <tr>
-              <td><code>.startswith()</code> / <code>.endswith()</code></td>
-              <td>Verifica prefixo/sufixo</td>
-              <td><code>"foto.png".endswith(".png")</code> → <code>True</code></td>
-            </tr>
-            <tr>
-              <td><code>.find(sub)</code></td>
-              <td>Retorna índice da primeira ocorrência (ou -1)</td>
-              <td><code>"abcabc".find("c")</code> → <code>2</code></td>
-            </tr>
-            <tr>
-              <td><code>.count(sub)</code></td>
-              <td>Conta quantas vezes sub aparece</td>
-              <td><code>"banana".count("a")</code> → <code>3</code></td>
-            </tr>
-            <tr>
-              <td><code>.zfill(width)</code></td>
-              <td>Preenche à esquerda com zeros</td>
-              <td><code>"42".zfill(5)</code> → <code>"00042"</code></td>
-            </tr>
-            <tr>
-              <td><code>.isdigit()</code></td>
-              <td>True se todos os chars são dígitos</td>
-              <td><code>"123".isdigit()</code> → <code>True</code></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="code-wrap">
-        <div class="code-header">
-          <span class="code-filename">📄 strings_metodos.py</span>
-          <span class="code-lang">Python</span>
-        </div>
-        <pre><code class="language-python"># ─── Pipeline de limpeza de dados (padrão real) ───────────────
-entrada_usuario = "  ana.silva@GMAIL.COM  "
-
-email_limpo = (entrada_usuario
-    .strip()           # remove espaços externos
-    .lower()           # normaliza para minúsculo
-)
-print(email_limpo)     # "ana.silva@gmail.com"
-
-# ─── Split e Join — transformar estrutura ────────────────────
-csv_linha = "Ana,30,São Paulo,Engenheira"
-campos = csv_linha.split(",")
-# ['Ana', '30', 'São Paulo', 'Engenheira']
-
-# Reconstruir como TSV (tab-separated)
-tsv_linha = "\t".join(campos)
-
-# ─── Verificações práticas ────────────────────────────────────
-extensoes_permitidas = (".jpg", ".jpeg", ".png", ".webp")
-arquivo = "foto_perfil.PNG"
-
-if arquivo.lower().endswith(extensoes_permitidas):
-    print("Arquivo de imagem válido")
-
-# ─── Formatação de números com f-string ──────────────────────
-populacao = 215_300_000
-pib = 2_081_235_000_000.50
-
-print(f"Brasil: {populacao:,} habitantes")     # 215,300,000
-print(f"PIB: R$ {pib:,.2f}")                  # R$ 2,081,235,000,000.50
-print(f"Crescimento: {0.0312:.1%}")            # 3.1%</code></pre>
-      </div>
-
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Strings são imutáveis — não se alteram no lugar</div>
-        Todos os métodos de string retornam uma <strong>nova string</strong>. O original nunca muda. Um erro clássico:
-        <br><br>
-        <code>texto = "  olá  "</code><br>
-        <code>texto.strip()         # ← não faz nada! resultado é descartado</code><br>
-        <code>texto = texto.strip() # ← correto: reatribua</code>
-      </div>
-    </div>
-
-    <!-- ══════════════════════════════════════════
-         06 — HANDS-ON PASSO A PASSO
-    ══════════════════════════════════════════ -->
-    <div class="section">
-      <div class="section-label">// 06 — hands-on</div>
-      <h2>Mãos na massa — configure e rode seu primeiro projeto</h2>
 
       <div class="steps">
         <div class="step">
           <div class="step-num">1</div>
           <div class="step-body">
-            <div class="step-title">Instale o Python 3 (se necessário)</div>
-            <div class="step-desc">Verifique se já tem Python 3 instalado:</div>
-            <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
+            <div class="step-title">Instale as extensões essenciais</div>
+            <div class="step-desc">Abra o VS Code → <kbd>Ctrl/Cmd + Shift + X</kbd> → busque e instale:</div>
+            <div class="grid-2" style="margin-top:10px;">
+              <div class="card-mini">
+                <span class="pillar-badge" style="background:var(--accent-dim);color:var(--accent);">Obrigatória</span>
+                <h4>Python (Microsoft)</h4>
+                <p>IntelliSense, linting, debugging, seletor de interpreter</p>
               </div>
-              <pre><code class="language-bash">python3 --version   # deve mostrar Python 3.11+ ou 3.12+
-# Se não tiver: https://python.org/downloads
-# macOS com Homebrew:  brew install python@3.12
-# Ubuntu/Debian:       sudo apt install python3.12 python3.12-venv</code></pre>
+              <div class="card-mini">
+                <span class="pillar-badge" style="background:var(--accent-dim);color:var(--accent);">Obrigatória</span>
+                <h4>Pylance</h4>
+                <p>Type checking, auto-complete avançado, inlay hints</p>
+              </div>
+              <div class="card-mini">
+                <span class="pillar-badge" style="background:rgba(16,185,129,0.2);color:#34d399;">Recomendada</span>
+                <h4>Ruff</h4>
+                <p>Linter e formatter ultra-rápido (substitui flake8 + black)</p>
+              </div>
+              <div class="card-mini">
+                <span class="pillar-badge" style="background:rgba(16,185,129,0.2);color:#34d399;">Recomendada</span>
+                <h4>Python Debugger</h4>
+                <p>Debugger visual com breakpoints e inspeção de variáveis</p>
+              </div>
             </div>
           </div>
         </div>
@@ -586,46 +541,390 @@ print(f"Crescimento: {0.0312:.1%}")            # 3.1%</code></pre>
         <div class="step">
           <div class="step-num">2</div>
           <div class="step-body">
-            <div class="step-title">Crie o projeto e o ambiente virtual</div>
-            <div class="step-desc">A ordem importa: crie a pasta, entre nela, crie o venv, ative.</div>
-            <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
-              </div>
-              <pre><code class="language-bash">mkdir meu-primeiro-projeto
-cd meu-primeiro-projeto
-
-# Criar o venv (convenção: nomear de .venv)
-python3 -m venv .venv
-
-# Ativar o venv
-# macOS/Linux:
-source .venv/bin/activate
-# Windows (PowerShell):
-# .venv\Scripts\Activate.ps1
-
-# Confirmar que está ativo (prompt muda para (.venv))
-which python   # deve apontar para .venv/bin/python</code></pre>
-            </div>
+            <div class="step-title">Selecione o interpreter do venv</div>
+            <div class="step-desc">Abra a pasta do projeto no VS Code → <kbd>Ctrl/Cmd + Shift + P</kbd> → "Python: Select Interpreter" → escolha o Python dentro de <code>.venv</code> (geralmente listado como "('.venv': venv)")</div>
           </div>
         </div>
 
         <div class="step">
           <div class="step-num">3</div>
           <div class="step-body">
-            <div class="step-title">Instale uma biblioteca e registre as dependências</div>
-            <div class="step-desc">Instale <code>rich</code> (biblioteca de output bonito no terminal) e salve em
-              <code>requirements.txt</code>:
-            </div>
-            <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
+            <div class="step-title">Configure o settings.json do projeto</div>
+            <div class="step-desc">Crie a pasta <code>.vscode/</code> na raiz do projeto e adicione:</div>
+            <pre><code class="language-json">// .vscode/settings.json
+{
+  "python.defaultInterpreterPath": ".venv/bin/python",
+  "editor.formatOnSave": true,
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.codeActionsOnSave": {
+      "source.fixAll.ruff": "explicit",
+      "source.organizeImports.ruff": "explicit"
+    }
+  },
+  "python.analysis.typeCheckingMode": "basic"
+}
+</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 6. TIPOS E VARIÁVEIS ── -->
+    <div class="section">
+      <div class="section-label">// conceito 4</div>
+      <h2>Tipos & Variáveis em Python</h2>
+      <p>
+        Python é <strong>dinamicamente tipado</strong> (o tipo é inferido em runtime) mas também <strong>fortemente tipado</strong> (não converte automaticamente entre tipos incompatíveis). Isso é diferente do JavaScript — Python não vai somar uma string com um número silenciosamente.
+      </p>
+
+      <div class="type-grid">
+        <div class="type-card">
+          <div class="type-name">int</div>
+          <div class="type-example">42 · -7 · 1_000_000</div>
+          <div class="type-desc">Inteiro de precisão arbitrária. Underscores para legibilidade.</div>
+        </div>
+        <div class="type-card">
+          <div class="type-name">float</div>
+          <div class="type-example">3.14 · -0.5 · 1.5e10</div>
+          <div class="type-desc">Ponto flutuante de 64 bits (IEEE 754). Cuidado com imprecisão!</div>
+        </div>
+        <div class="type-card">
+          <div class="type-name">str</div>
+          <div class="type-example">"olá" · 'mundo' · """multi"""</div>
+          <div class="type-desc">String imutável. Aspas simples ou duplas (escolha uma e seja consistente).</div>
+        </div>
+        <div class="type-card">
+          <div class="type-name">bool</div>
+          <div class="type-example">True · False</div>
+          <div class="type-desc">Subclasse de int — True == 1, False == 0. Maiúscula obrigatória!</div>
+        </div>
+        <div class="type-card">
+          <div class="type-name">NoneType</div>
+          <div class="type-example">None</div>
+          <div class="type-desc">Ausência de valor. Equivalente ao null de outras linguagens.</div>
+        </div>
+        <div class="type-card">
+          <div class="type-name">complex</div>
+          <div class="type-example">3 + 4j</div>
+          <div class="type-desc">Número complexo nativo. Usado em computação científica.</div>
+        </div>
+      </div>
+
+      <div class="code-label">// variáveis, tipagem e operações</div>
+      <pre><code class="language-python"># ─── Declaração de variáveis (sem palavra-chave!) ────────────
+nome = "Ana Silva"
+idade = 28
+altura = 1.72
+ativo = True
+cargo = None   # ainda não definido
+
+# ─── Convenções de nomenclatura (PEP 8) ──────────────────────
+nome_completo = "snake_case"      # variáveis e funções: snake_case
+TAXA_IMPOSTO = 0.15               # constantes: UPPER_SNAKE_CASE
+class MinhaClasse: pass           # classes: PascalCase
+_privado = "convencão"            # privado por convenção (não é enforçado)
+
+# ─── Type hints (Python 3.5+) — documente sem sacrificar dinamismo ──
+nome: str = "Ana"
+idade: int = 28
+preco: float = 99.90
+ativo: bool = True
+dados: list[str] = ["a", "b"]
+config: dict[str, int] = {"timeout": 30}
+resultado: str | None = None      # Python 3.10+ — Union com |
+
+# ─── Verificação de tipo em runtime ─────────────────────────
+type(nome)          # <class 'str'>
+isinstance(idade, int)    # True
+isinstance(idade, (int, float))  # True — verifica múltiplos tipos
+
+# ─── Conversão explícita (casting) ───────────────────────────
+int("42")           # 42
+float("3.14")       # 3.14
+str(100)            # "100"
+bool(0)             # False
+bool("")            # False — strings vazias são falsy
+bool("qualquer")    # True  — strings não vazias são truthy
+list("abc")         # ['a', 'b', 'c']
+
+# ─── Operadores ───────────────────────────────────────────────
+10 + 3    # 13   (adição)
+10 - 3    # 7    (subtração)
+10 * 3    # 30   (multiplicação)
+10 / 3    # 3.333... (divisão SEMPRE retorna float)
+10 // 3   # 3    (divisão inteira — floor division)
+10 % 3    # 1    (módulo — resto da divisão)
+10 ** 3   # 1000 (exponenciação)
+
+# ─── Operadores de comparação ─────────────────────────────────
+5 == 5     # True
+5 != 4     # True
+5 > 3      # True
+5 >= 5     # True
+5 is None  # False — 'is' compara identidade, não igualdade!
+None is None  # True
+
+# ─── Valores truthy e falsy ───────────────────────────────────
+# Falsy: None, False, 0, 0.0, "", [], {}, set()
+# Todo o resto é truthy
+
+if []:
+    print("nunca executa")  # lista vazia é falsy
+
+if [0]:
+    print("executa!")       # lista com elemento (mesmo que 0) é truthy
+
+# ─── Múltipla atribuição e swap ───────────────────────────────
+a, b, c = 1, 2, 3           # unpacking
+a, b = b, a                 # swap sem variável temporária
+primeiro, *resto = [1, 2, 3, 4, 5]  # starred assignment
+# primeiro = 1, resto = [2, 3, 4, 5]
+</code></pre>
+    </div>
+
+    <!-- ── 7. STRINGS ── -->
+    <div class="section">
+      <div class="section-label">// conceito 5</div>
+      <h2>Strings & Formatação</h2>
+      <p>
+        Strings em Python são objetos imutáveis com um arsenal de métodos embutidos. A forma moderna e preferida de formatação é a <strong>f-string</strong> — introduzida no Python 3.6 e adotada universalmente por ser a mais legível e performática.
+      </p>
+
+      <div class="compare-split">
+        <div class="compare-old">
+          <div class="compare-label">❌ Formas antigas</div>
+          <pre><code class="language-python"># Concatenação (verbosa)
+msg = "Olá, " + nome + "!"
+
+# % formatting (estilo C)
+msg = "Olá, %s! Você tem %d anos." % (nome, idade)
+
+# .format() (mais legível, mas verboso)
+msg = "Olá, {}! Você tem {} anos.".format(nome, idade)
+</code></pre>
+        </div>
+        <div class="compare-new">
+          <div class="compare-label">✅ f-strings (use sempre)</div>
+          <pre><code class="language-python"># f-string — prefixo f antes das aspas
+msg = f"Olá, {nome}! Você tem {idade} anos."
+
+# Expressões completas dentro das {}
+msg = f"Preço: R$ {preco * 1.1:.2f}"
+msg = f"{'ATIVO' if ativo else 'INATIVO'}"
+msg = f"Hoje: {datetime.now():%d/%m/%Y}"
+</code></pre>
+        </div>
+      </div>
+
+      <div class="code-label">// strings — tudo que você precisa saber</div>
+      <pre><code class="language-python"># ─── Criação ──────────────────────────────────────────────────
+s1 = 'aspas simples'
+s2 = "aspas duplas"                    # equivalentes
+s3 = """string
+multi-linha"""                          # preserva quebras de linha
+s4 = r"C:\Users\ana\Desktop"           # raw string — ignora escape sequences
+s5 = b"bytes"                          # bytes literal
+
+# ─── f-strings com formatação de números ─────────────────────
+pi = 3.14159265
+preco = 1500000.50
+pct = 0.856
+
+f"{pi:.2f}"          # "3.14"       — 2 casas decimais
+f"{pi:10.3f}"        # "    3.142"  — largura 10, 3 decimais
+f"{preco:,.2f}"      # "1,500,000.50" — separador de milhares
+f"{pct:.1%}"         # "85.6%"      — porcentagem
+f"{42:05d}"          # "00042"      — preenche com zeros
+f"{42:b}"            # "101010"     — binário
+f"{42:#x}"           # "0x2a"       — hexadecimal com prefixo
+f"{'center':^20}"    # "     center      " — centralizado em 20 chars
+f"{'left':<20}"      # "left                " — alinhado à esquerda
+
+# ─── Métodos essenciais de string ────────────────────────────
+texto = "  Olá, Mundo!  "
+
+texto.strip()               # "Olá, Mundo!" — remove espaços dos lados
+texto.lstrip()              # "Olá, Mundo!  " — só da esquerda
+texto.rstrip()              # "  Olá, Mundo!" — só da direita
+texto.lower()               # "  olá, mundo!  "
+texto.upper()               # "  OLÁ, MUNDO!  "
+texto.title()               # "  Olá, Mundo!  "
+texto.capitalize()          # "  olá, mundo!  " → "  Olá, mundo!  "
+texto.replace("Mundo", "Python")  # "  Olá, Python!  "
+texto.count("o")            # 2 (case-sensitive)
+texto.find("Mundo")         # 6 (índice) ou -1 se não encontrar
+texto.startswith("  Olá")  # True
+texto.endswith("!  ")       # True
+
+# Split e join — operações essenciais
+csv_linha = "Ana,28,Engenheira,São Paulo"
+campos = csv_linha.split(",")
+# ['Ana', '28', 'Engenheira', 'São Paulo']
+
+palavras = ["Python", "é", "incrível"]
+" ".join(palavras)    # "Python é incrível"
+", ".join(palavras)   # "Python, é, incrível"
+
+# ─── Slicing — fatiamento ─────────────────────────────────────
+s = "Python"
+#    0 1 2 3 4 5   (índices positivos)
+#   -6-5-4-3-2-1   (índices negativos)
+
+s[0]      # 'P'
+s[-1]     # 'n'
+s[1:4]    # 'yth'    — do índice 1 até 3 (4 exclusivo)
+s[:3]     # 'Pyt'    — do início até 3
+s[3:]     # 'hon'    — do 3 até o fim
+s[::2]    # 'Pto'    — passo 2
+s[::-1]   # 'nohtyP' — string invertida!
+
+# ─── Verificações ─────────────────────────────────────────────
+"py" in "python"         # True
+"123".isdigit()          # True
+"abc".isalpha()          # True
+"  ".isspace()           # True
+"Ana Silva".split()      # ['Ana', 'Silva']
+len("Python")            # 6
+
+# ─── Strings multilinha e docstrings ─────────────────────────
+mensagem = (
+    "Strings longas podem ser "
+    "concatenadas implicitamente "
+    "dentro de parênteses."
+)
+
+def calcular(x, y):
+    """
+    Calcula a soma de x e y.
+
+    Args:
+        x: primeiro número
+        y: segundo número
+
+    Returns:
+        A soma dos dois números.
+    """
+    return x + y
+</code></pre>
+    </div>
+
+    <!-- ── HANDS-ON ── -->
+    <div class="section">
+      <div class="section-label">// prática</div>
+      <h2>Mãos na massa — Seu primeiro projeto Python</h2>
+      <p>Vamos configurar um projeto do zero, com venv, e criar um script de análise de texto que usa tudo que aprendemos.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Configure o projeto</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal</span></div>
+              <div class="terminal-body">
+                <div><span class="prompt">$</span> <span class="cmd">mkdir analisador-texto && cd analisador-texto</span></div>
+                <div><span class="prompt">$</span> <span class="cmd">python3 -m venv .venv</span></div>
+                <div><span class="prompt">$</span> <span class="cmd">source .venv/bin/activate</span>  <span class="comment"># Windows: .venv\Scripts\activate</span></div>
+                <div><span class="prompt" style="color:#60a5fa;">(.venv) $</span> <span class="cmd">pip install rich</span>  <span class="comment"># biblioteca para output colorido no terminal</span></div>
+                <div><span class="prompt" style="color:#60a5fa;">(.venv) $</span> <span class="cmd">pip freeze > requirements.txt</span></div>
+                <div><span class="prompt" style="color:#60a5fa;">(.venv) $</span> <span class="cmd">code .</span>  <span class="comment"># abre o VS Code</span></div>
               </div>
-              <pre><code class="language-bash">pip install rich
+            </div>
+          </div>
+        </div>
 
-# Registrar todas as dependências instaladas
-pip freeze > requirements.txt
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Crie <code>analisador.py</code></div>
+            <pre><code class="language-python">"""
+Analisador de Texto — demonstra tipos, variáveis e strings em Python.
+"""
 
-# Ver o que foi instalado
-cat requirements.txt   # rich==13.x.x</code></pre>
+# ─── Dados de entrada ────────────────────────────────────────────
+texto: str = """
+Python é uma linguagem de programação de alto nível, interpretada e de
+propósito geral. Foi criada por Guido van Rossum e lançada em 1991.
+Python enfatiza a legibilidade do código e permite que programadores
+expressem conceitos em menos linhas de código do que outras linguagens.
+"""
+
+autor: str = "Análise automática"
+versao: float = 1.0
+exportar: bool = True
+
+# ─── Processamento — usando métodos de string ─────────────────────
+texto_limpo: str = texto.strip()
+palavras: list[str] = texto_limpo.split()
+caracteres: int = len(texto_limpo)
+linhas: list[str] = texto_limpo.split("\n")
+sentencas: list[str] = texto_limpo.replace("?", ".").replace("!", ".").split(".")
+sentencas = [s.strip() for s in sentencas if s.strip()]  # lista por compreensão!
+
+total_palavras: int = len(palavras)
+total_caracteres: int = sum(len(p) for p in palavras)
+media_caracteres: float = total_caracteres / total_palavras if total_palavras else 0
+
+# Palavra mais longa
+palavra_mais_longa: str = max(palavras, key=len)
+
+# Frequência de palavras (case-insensitive)
+frequencia: dict[str, int] = {}
+for palavra in palavras:
+    chave = palavra.lower().strip(".,!?;:")  # remove pontuação
+    frequencia[chave] = frequencia.get(chave, 0) + 1
+
+top_5 = sorted(frequencia.items(), key=lambda x: x[1], reverse=True)[:5]
+
+# ─── Relatório com f-strings ──────────────────────────────────────
+print("=" * 55)
+print(f"{'RELATÓRIO DE ANÁLISE DE TEXTO':^55}")
+print("=" * 55)
+print(f"  Autor    : {autor}")
+print(f"  Versão   : {versao:.1f}")
+print(f"  Exportar : {'✅ Sim' if exportar else '❌ Não'}")
+print("-" * 55)
+print(f"  Palavras        : {total_palavras:>8,}")
+print(f"  Caracteres      : {caracteres:>8,}")
+print(f"  Sentenças       : {len(sentencas):>8,}")
+print(f"  Média chars/pal : {media_caracteres:>8.1f}")
+print(f"  Palavra mais longa: {palavra_mais_longa!r} ({len(palavra_mais_longa)} chars)")
+print("-" * 55)
+print(f"  TOP 5 PALAVRAS MAIS FREQUENTES:")
+for i, (palavra, freq) in enumerate(top_5, start=1):
+    barra = "█" * freq
+    print(f"    {i}. {palavra:<20} {freq:>3}x  {barra}")
+print("=" * 55)
+
+# ─── Verificações de tipo ─────────────────────────────────────────
+print(f"\n  type(texto)    : {type(texto)}")
+print(f"  type(versao)   : {type(versao)}")
+print(f"  type(palavras) : {type(palavras)}")
+print(f"  type(frequencia): {type(frequencia)}")
+</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Execute e explore</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal</span></div>
+              <div class="terminal-body">
+                <div><span class="prompt" style="color:#60a5fa;">(.venv) $</span> <span class="cmd">python analisador.py</span></div>
+                <div class="out">=======================================================</div>
+                <div class="out">            RELATÓRIO DE ANÁLISE DE TEXTO             </div>
+                <div class="out">=======================================================</div>
+                <div class="out">  Autor    : Análise automática</div>
+                <div class="out">  Versão   : 1.0</div>
+                <div class="out">  Exportar : ✅ Sim</div>
+                <div class="out">-------------------------------------------------------</div>
+                <div class="out">  Palavras        :       54</div>
+                <div class="out">  Caracteres      :      408</div>
+                <div class="out">  ...</div>
+              </div>
             </div>
           </div>
         </div>
@@ -633,252 +932,221 @@ cat requirements.txt   # rich==13.x.x</code></pre>
         <div class="step">
           <div class="step-num">4</div>
           <div class="step-body">
-            <div class="step-title">Crie o script principal</div>
-            <div class="step-desc">Crie <code>main.py</code> e rode com o Python do venv:</div>
-            <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">📄 main.py</span><span
-                  class="code-lang">Python</span></div>
-              <pre><code class="language-python">from rich import print as rprint
-from rich.table import Table
-
-# ─── Tipos primitivos em ação ──────────────────────────────
-nome: str   = "Ana Silva"
-idade: int  = 28
-altura: float = 1.65
-ativo: bool = True
-cargo: str | None = None   # ainda não definido
-
-# ─── f-strings ─────────────────────────────────────────────
-rprint(f"[bold blue]Usuário:[/] {nome}")
-rprint(f"Idade: [green]{idade}[/] anos | Altura: {altura:.2f}m")
-rprint(f"Ativo: {'✅' if ativo else '❌'}")
-rprint(f"Cargo: {cargo if cargo is not None else '[dim]não definido[/]'}")
-
-# ─── Manipulação de strings ─────────────────────────────────
-email_bruto = "  ANA.SILVA@EMPRESA.COM  "
-email = email_bruto.strip().lower()
-rprint(f"\nEmail normalizado: [cyan]{email}[/]")
-
-usuario, dominio = email.split("@")
-rprint(f"Usuário: {usuario} | Domínio: {dominio}")
-
-# ─── Slicing ────────────────────────────────────────────────
-rprint(f"\nPrimeiro nome: [yellow]{nome[:3]}[/]")   # "Ana"
-rprint(f"Invertido: {nome[::-1]}")
-
-# ─── Tabela com rich ────────────────────────────────────────
-tabela = Table(title="Resumo do perfil")
-tabela.add_column("Campo",  style="cyan")
-tabela.add_column("Valor",  style="white")
-tabela.add_column("Tipo",   style="dim")
-
-campos = [
-    ("nome",   nome,         type(nome).__name__),
-    ("idade",  str(idade),   type(idade).__name__),
-    ("altura", str(altura),  type(altura).__name__),
-    ("ativo",  str(ativo),   type(ativo).__name__),
-    ("cargo",  str(cargo),   type(cargo).__name__),
-]
-
-for campo, valor, tipo in campos:
-    tabela.add_row(campo, valor, tipo)
-
-rprint(tabela)</code></pre>
-            </div>
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="step-num">5</div>
-          <div class="step-body">
-            <div class="step-title">Execute e observe</div>
-            <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
+            <div class="step-title">Explore o REPL interativo</div>
+            <div class="step-desc">O REPL (Read-Eval-Print Loop) é o modo interativo do Python — ideal para experimentar rapidamente.</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal — REPL Python</span></div>
+              <div class="terminal-body">
+                <div><span class="prompt" style="color:#60a5fa;">(.venv) $</span> <span class="cmd">python3</span></div>
+                <div class="out">Python 3.12.x ...</div>
+                <div><span class="prompt" style="color:#60a5fa;">>>></span> <span class="cmd">nome = "Python"</span></div>
+                <div><span class="prompt" style="color:#60a5fa;">>>></span> <span class="cmd">f"Olá, {nome}! {len(nome)} letras."</span></div>
+                <div class="out">'Olá, Python! 6 letras.'</div>
+                <div><span class="prompt" style="color:#60a5fa;">>>></span> <span class="cmd">nome[::-1]</span></div>
+                <div class="out">'nohtyP'</div>
+                <div><span class="prompt" style="color:#60a5fa;">>>></span> <span class="cmd">type(3.14)</span></div>
+                <div class="out">&lt;class 'float'&gt;</div>
+                <div><span class="prompt" style="color:#60a5fa;">>>></span> <span class="cmd">exit()</span></div>
               </div>
-              <pre><code class="language-bash">python main.py
-# Você verá uma tabela colorida no terminal com os tipos
-# e valores de cada variável</code></pre>
-            </div>
-            <div class="callout callout-tip">
-              <div class="callout-title">🔥 Pro tip — .gitignore para Python</div>
-              Nunca commite o <code>.venv</code> no Git. Crie um <code>.gitignore</code> com:
-              <br><br>
-              <code>.venv/<br>__pycache__/<br>*.pyc<br>.env</code>
-              <br><br>
-              Qualquer colega recria o ambiente com:
-              <code>python3 -m venv .venv &amp;&amp; pip install -r requirements.txt</code>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         07 — PITFALLS COMUNS
-    ══════════════════════════════════════════ -->
+    <!-- ── ARMADILHAS ── -->
     <div class="section">
-      <div class="section-label">// 07 — armadilhas</div>
-      <h2>Erros que todo mundo comete</h2>
+      <div class="section-label">// pitfalls</div>
+      <h2>⚠️ Armadilhas Comuns</h2>
 
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Usar pip install sem ativar o venv</div>
-        Se você esquecer de ativar o venv e rodar <code>pip install</code>, a biblioteca vai para o Python global do
-        sistema. Seu projeto vai funcionar na sua máquina, mas não em outro ambiente. <strong>Sempre verifique se o
-          prompt mostra <code>(.venv)</code> antes de instalar.</strong>
+      <div class="pitfall">
+        <div class="pitfall-title">1. Instalar pacotes sem ativar o venv</div>
+        <p>Se você rodar <code>pip install</code> sem o venv ativo, o pacote vai para o Python do sistema e pode causar conflitos. Sempre verifique se o prompt mostra <code>(.venv)</code> antes de instalar qualquer coisa.</p>
       </div>
 
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Comparar None com ==</div>
-        Use sempre <code>x is None</code>, não <code>x == None</code>. A razão: <code>==</code> chama o método
-        <code>__eq__</code> do objeto, que pode ser sobrescrito. <code>is</code> compara identidade de objeto — mais
-        seguro e mais idiomático em Python.
+      <div class="pitfall">
+        <div class="pitfall-title">2. Usar <code>is</code> para comparar valores (não identidade)</div>
+        <p><code>==</code> compara valor (conteúdo). <code>is</code> compara identidade (se são o mesmo objeto na memória). Use <code>==</code> para comparar strings, números e coleções. Use <code>is</code> apenas para checar <code>None</code>, <code>True</code> e <code>False</code>.</p>
+        <pre><code class="language-python">a = "python"
+b = "python"
+a == b   # True  ✅
+a is b   # True  (por otimização do Python — mas não confie nisso!)
+
+x = [1, 2, 3]
+y = [1, 2, 3]
+x == y   # True  ✅ — mesmo conteúdo
+x is y   # False ✅ — objetos diferentes na memória
+</code></pre>
       </div>
 
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Aritmética de ponto flutuante para dinheiro</div>
-        <code>0.1 + 0.2 != 0.3</code> em Python (e em qualquer linguagem que usa IEEE 754). Para valores financeiros,
-        use sempre <code>from decimal import Decimal</code> e passe os valores como strings:
-        <code>Decimal("0.10") + Decimal("0.20")</code>.
+      <div class="pitfall">
+        <div class="pitfall-title">3. Imprecisão de float</div>
+        <p>Floats em Python (como em toda linguagem com IEEE 754) têm imprecisão. Nunca use floats para cálculos monetários!</p>
+        <pre><code class="language-python">0.1 + 0.2          # 0.30000000000000004 — surpresa!
+
+# Soluções:
+from decimal import Decimal
+Decimal("0.1") + Decimal("0.2")  # Decimal('0.3') ✅
+
+round(0.1 + 0.2, 2)  # 0.3 — aceitável para display
+</code></pre>
       </div>
 
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Strings mutáveis — armadilha clássica</div>
-        <code>nome = "ana"</code><br>
-        <code>nome.capitalize()  # retorna "Ana" mas NÃO altera nome</code><br>
-        <code>print(nome)        # ainda "ana"!</code><br><br>
-        Correto: <code>nome = nome.capitalize()</code>
+      <div class="pitfall">
+        <div class="pitfall-title">4. Strings são imutáveis — não podem ser modificadas in-place</div>
+        <p>Métodos de string retornam uma NOVA string — não modificam a original. Se você não capturar o retorno, a operação é perdida.</p>
+        <pre><code class="language-python">nome = "ana silva"
+nome.title()          # retorna "Ana Silva" mas não muda 'nome'
+print(nome)           # "ana silva" — ainda minúsculo!
+
+nome = nome.title()   # ✅ captura o resultado
+print(nome)           # "Ana Silva"
+</code></pre>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">5. Misturar Python 2 e Python 3</div>
+        <p>Em alguns sistemas, <code>python</code> ainda aponta para Python 2. Sempre use <code>python3</code> explicitamente (ou configure o alias). Verifique com <code>python --version</code> e <code>python3 --version</code>.</p>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         08 — VÍDEOS
-    ══════════════════════════════════════════ -->
+    <!-- ── VÍDEOS ── -->
     <div class="section">
-      <div class="section-label">// 08 — curadoria</div>
-      <h2>Referências em vídeo</h2>
-
-      <div class="videos-grid">
-        <a class="video-card" href="https://www.youtube.com/watch?v=rfscVS0vtbw" target="_blank">
+      <div class="section-label">// curadoria</div>
+      <h2>Vídeos Recomendados</h2>
+      <div class="video-grid">
+        <div class="video-card">
           <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title">Learn Python — Full Course for Beginners</div>
-            <div class="video-channel">freeCodeCamp · ~4h 26min</div>
-            <div class="video-why">Por que assistir: Referência definitiva para quem começa do zero. Os primeiros 90
-              minutos cobrem exatamente esta aula — instalação, tipos, strings, operadores. Use como suporte prático.
-            </div>
-            <span class="video-watch">Assistir →</span>
-          </div>
-        </a>
-
-        <a class="video-card" href="https://www.youtube.com/watch?v=_uQrJ0TkZlc" target="_blank">
-          <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title">Python Tutorial — Python Full Course for Beginners</div>
-            <div class="video-channel">Programming with Mosh · ~6h</div>
-            <div class="video-why">Por que assistir: Cobertura profunda de tipos, strings e fundamentos com ênfase em
-              boas práticas. Mosh explica o "porquê" de cada decisão de design da linguagem.</div>
-            <span class="video-watch">Assistir →</span>
-          </div>
-        </a>
-
-        <a class="video-card" href="https://www.youtube.com/watch?v=x7X9w_GIm1s" target="_blank">
-          <div class="video-thumb">▶</div>
-          <div>
+          <div class="video-info">
             <div class="video-title">Python in 100 Seconds</div>
             <div class="video-channel">Fireship · ~2 min</div>
-            <div class="video-why">Por que assistir: Visão ultrarrápida da linguagem — sintaxe, tipagem dinâmica,
-              ecossistema. Ótimo para consolidar o big picture antes de se aprofundar nos detalhes.</div>
-            <span class="video-watch">Assistir →</span>
+            <div class="video-why">Por que assistir: Overview visual e rápido do que faz Python especial — ideal para fixar o contexto antes de mergulhar na sintaxe.</div>
+            <a href="https://www.youtube.com/watch?v=x7X9w_GIm1s" target="_blank" rel="noopener noreferrer">Assistir →</a>
           </div>
-        </a>
-
-        <a class="video-card" href="https://www.youtube.com/watch?v=kqtD5dpn9C8" target="_blank">
+        </div>
+        <div class="video-card">
           <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title">Python for Beginners — Learn Python in 1 Hour</div>
-            <div class="video-channel">Programming with Mosh · ~1h</div>
-            <div class="video-why">Por que assistir: Versão condensada focada nos fundamentos essenciais. Ideal para
-              quem quer fazer a primeira passagem rápida antes de ir para os exemplos hands-on.</div>
-            <span class="video-watch">Assistir →</span>
+          <div class="video-info">
+            <div class="video-title">Python Virtual Environments — A Primer</div>
+            <div class="video-channel">Corey Schafer · ~15 min</div>
+            <div class="video-why">Por que assistir: O guia definitivo de venv em Python — demonstra o problema com pacotes globais e mostra o fluxo completo de forma prática.</div>
+            <a href="https://www.youtube.com/watch?v=APOPm01BVrk" target="_blank" rel="noopener noreferrer">Assistir →</a>
           </div>
-        </a>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Python Strings — All You Need to Know</div>
+            <div class="video-channel">Tech With Tim · ~25 min</div>
+            <div class="video-why">Por que assistir: Cobre métodos, slicing e f-strings com exemplos práticos. Excelente para solidificar a manipulação de strings.</div>
+            <a href="https://www.youtube.com/watch?v=alnzFK-4xMY" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">VS Code + Python: Setup Profissional</div>
+            <div class="video-channel">Filipe Deschamps · ~20 min</div>
+            <div class="video-why">Por que assistir: Configuração de VS Code com venv, Pylance e debugging integrado — setup completo em português para não perder tempo.</div>
+            <a href="https://www.youtube.com/results?search_query=vs+code+python+setup+filipe+deschamps" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         09 — CHECKPOINT
-    ══════════════════════════════════════════ -->
-    <div class="checkpoint">
-      <div class="checkpoint-label">// desafio</div>
-      <h3>🏁 Checkpoint — valide seu aprendizado</h3>
-      <p>Crie um script <code>perfil.py</code> que simula o cadastro e exibição de um perfil de usuário:</p>
-      <ul>
-        <li>Configure um <code>venv</code> isolado, instale a biblioteca <code>rich</code> e salve as dependências em
-          <code>requirements.txt</code>
-        </li>
-        <li>Declare variáveis com type hints para: <code>nome</code> (str), <code>idade</code> (int),
-          <code>altura</code> (float), <code>ativo</code> (bool) e <code>bio</code> (str | None)
-        </li>
-        <li>Normalize um e-mail de entrada com <code>.strip().lower()</code> e valide se termina com
-          <code>@gmail.com</code> ou <code>@outlook.com</code>
-        </li>
-        <li>Use f-strings para exibir: nome em maiúsculas, altura com 2 casas decimais, e a mensagem "Usuário ativo ✅"
-          ou "Usuário inativo ❌" baseada no bool</li>
-        <li>Aplique slicing para extrair: primeiro nome, inicial do sobrenome, e inverta o nome completo</li>
-        <li>Mostre o tipo de cada variável com <code>type(x).__name__</code> numa tabela formatada</li>
-      </ul>
-      <div class="checkpoint-hint">💬 Dica: use <code>rich.table.Table</code> para formatar a saída — é uma ótima forma
-        de visualizar tipos e valores ao mesmo tempo. Se travar no venv, revise o Passo 2 do hands-on.</div>
-    </div>
-
-    <!-- ══════════════════════════════════════════
-         PRÓXIMA AULA
-    ══════════════════════════════════════════ -->
-    <a href="py-02-logica-funcoes.html" class="next-lesson">
-      <div>
-        <div class="next-label">Próxima aula →</div>
-        <div class="next-title">Python — Lógica &amp; Funções</div>
+    <!-- ── GLOSSÁRIO ── -->
+    <div class="section">
+      <div class="section-label">// glossário</div>
+      <h2>Termos desta Aula</h2>
+      <div class="glossary-item">
+        <div class="glossary-term">venv (Virtual Environment)</div>
+        <div class="glossary-def">Ambiente Python isolado por projeto, com seu próprio interpretador e pacotes independentes do sistema.</div>
       </div>
-      <div class="next-arrow">→</div>
-    </a>
-
-    <div class="footer">
-      <span>🐍 Python · Aula 05 / 50</span>
-      <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+      <div class="glossary-item">
+        <div class="glossary-term">pip</div>
+        <div class="glossary-def">Gerenciador de pacotes padrão do Python. "Pip Installs Packages" — busca e instala pacotes do PyPI (Python Package Index).</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">requirements.txt</div>
+        <div class="glossary-def">Arquivo de texto com a lista de pacotes e versões exatas de um projeto. Gerado por <code>pip freeze</code>, reproduzido com <code>pip install -r</code>.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Type Hints</div>
+        <div class="glossary-def">Anotações opcionais de tipo introduzidas no Python 3.5. Não são enforçadas em runtime, mas habilitam análise estática com Pylance/mypy.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">f-string</div>
+        <div class="glossary-def">String literal prefixada com <code>f</code> ou <code>F</code> que permite embutir expressões Python dentro de <code>{}</code>. Introduzida no Python 3.6.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">REPL</div>
+        <div class="glossary-def">Read-Eval-Print Loop — modo interativo do Python ativado com o comando <code>python3</code>. Executa código linha a linha imediatamente.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">PEP 8</div>
+        <div class="glossary-def">Guia de estilo oficial do Python. Define convenções de nomenclatura, indentação (4 espaços), comprimento de linha (79-99 chars) e muito mais.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Slicing</div>
+        <div class="glossary-def">Sintaxe <code>seq[start:stop:step]</code> para extrair partes de strings, listas e outros iteráveis. O índice stop é sempre exclusivo.</div>
+      </div>
     </div>
 
-  </div><!-- /page -->
+    <!-- ── CHECKPOINT ── -->
+    <div class="section">
+      <div class="checkpoint">
+        <h3>🏁 Checkpoint — Desafio Final</h3>
+        <p>Crie um script Python chamado <strong><code>gerador_relatorio.py</code></strong> que:</p>
+        <ul>
+          <li>Defina um dicionário <code>produto</code> com ao menos 6 campos: <code>nome</code> (str), <code>preco</code> (float), <code>estoque</code> (int), <code>categoria</code> (str), <code>ativo</code> (bool) e <code>desconto</code> (float entre 0 e 1)</li>
+          <li>Calcule e armazene em variáveis com type hints: preço com desconto, margem de lucro (assuma custo = 60% do preço original), e classificação do estoque ("Crítico" &lt; 5, "Baixo" &lt; 20, "Normal" &lt; 100, "Alto" ≥ 100)</li>
+          <li>Imprima um relatório formatado usando f-strings com: título centralizado em 50 chars, todos os valores monetários com 2 casas decimais e separador de milhar, percentuais com 1 casa e símbolo %, status do produto (ativo/inativo) com emoji, e a barra de estoque visual com <code>█</code> proporcional (máx 20 blocos)</li>
+          <li>Ao final, use <code>type()</code> para imprimir o tipo Python de cada campo do dicionário</li>
+        </ul>
+        <div class="checkpoint-hint">💬 Dica: para a barra de estoque, calcule <code>blocos = min(20, estoque // 5)</code> e faça <code>"█" * blocos + "░" * (20 - blocos)</code>. Para classificação, use um dicionário de thresholds e itere sobre ele, ou use uma cadeia de if/elif.</div>
+      </div>
+    </div>
+
+    <!-- ── PRÓXIMOS PASSOS ── -->
+    <div class="section">
+      <div class="section-label">// próximos passos</div>
+      <h2>O que vem a seguir?</h2>
+      <p style="margin-bottom: 20px;">Com o ambiente configurado e os fundamentos de tipos, variáveis e strings sólidos, estamos prontos para dar vida à lógica — controle de fluxo, funções e list comprehensions. A próxima aula é onde o Python começa a mostrar seu poder real.</p>
+      <a href="py-02-logica-funcoes.html" class="next-card">
+        <div>
+          <div class="next-card-label">Próxima aula · 🐍 Python</div>
+          <div class="next-card-title">Python — Lógica & Funções</div>
+        </div>
+        <span class="next-arrow">→</span>
+      </a>
+    </div>
+
+  </div>
 
   <script>
-    // Initialize syntax highlighting
-    document.addEventListener('DOMContentLoaded', () => {
-      hljs.highlightAll();
-    });
-
-    // Initialize Mermaid
-    mermaid.initialize({
-      startOnLoad: true,
-      theme: 'dark',
-      themeVariables: {
-        primaryColor: '#3b82f6',
-        primaryTextColor: '#e8e8f0',
-        primaryBorderColor: 'rgba(59, 130, 246, 0.35)',
-        lineColor: '#8585a8',
-        background: '#111118',
-        mainBkg: '#16161f',
-        nodeBorder: '#3b82f6'
-      }
-    });
-
-    // Scroll progress indicator (update progress bar)
+    // Progress bar
+    const bar = document.getElementById('progressBar');
     window.addEventListener('scroll', () => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = (scrollTop / docHeight) * 100;
-      document.querySelector('.progress-bar-fill').style.width = progress + '%';
+      const doc = document.documentElement;
+      bar.style.width = (doc.scrollTop / (doc.scrollHeight - doc.clientHeight) * 100) + '%';
     });
+
+    // OS Tabs
+    function switchTab(os) {
+      document.querySelectorAll('.os-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.os-panel').forEach(p => p.classList.remove('active'));
+      document.querySelector(`[onclick="switchTab('${os}')"]`).classList.add('active');
+      document.getElementById(`panel-${os}`).classList.add('active');
+    }
+
+    // Highlight.js
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.hljs) hljs.highlightAll();
+    });
+
+    // Mermaid
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
   </script>
 
 </body>
-
 </html>

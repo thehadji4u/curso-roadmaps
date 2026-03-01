@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lógica & Funções · Python</title>
+  <title>Python — Lógica & Funções · Aula 06</title>
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
   <style>
-    /* ─── TOKENS ────────────────────────────────────────────── */
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
     :root {
       --bg: #0a0a0f;
       --surface: #111118;
@@ -19,28 +22,179 @@
       --border: #1e1e2e;
       --text: #e8e8f0;
       --muted: #8585a8;
-
       --accent: #3b82f6;
-      /* ex: #3b82f6 para Python */
-      --accent-dim: rgba(59, 130, 246, 0.12);
-      /* ex: rgba(59,130,246,0.15) */
-      --accent-border: rgba(59, 130, 246, 0.35);
-      /* ex: rgba(59,130,246,0.3) */
-
-      /* Semantic colors */
+      --accent-dim: rgba(59,130,246,0.15);
+      --accent-border: rgba(59,130,246,0.35);
       --success: #10b981;
       --warn: #f59e0b;
       --danger: #ef4444;
       --info: #06b6d4;
     }
-  </style>
-  <link rel="stylesheet" href="../assets/css/lesson.css">
-</head>
 
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #60a5fa); width: 0%; transition: width 0.1s; }
+
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; display: inline-flex; align-items: center; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #60a5fa; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.08); border-color: var(--success); }
+    .callout-tip .callout-title { color: var(--success); }
+    .callout-danger { background: rgba(239,68,68,0.08); border-color: var(--danger); }
+    .callout-danger .callout-title { color: var(--danger); }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(59,130,246,0.2); color: #60a5fa; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #60a5fa; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 8px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+
+    .compare-split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+    @media (max-width: 600px) { .compare-split { grid-template-columns: 1fr; } }
+    .compare-old { background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.2); border-radius: 8px; padding: 16px; }
+    .compare-new { background: rgba(16,185,129,0.05); border: 1px solid rgba(16,185,129,0.2); border-radius: 8px; padding: 16px; }
+    .compare-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; font-weight: 600; }
+    .compare-old .compare-label { color: #f87171; }
+    .compare-new .compare-label { color: #34d399; }
+
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-info a { font-size: 12px; color: var(--accent); text-decoration: none; }
+    .video-info a:hover { text-decoration: underline; }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(96,165,250,0.04)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(59,130,246,0.06); border-radius: 6px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; }
+
+    .glossary-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .glossary-term { color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+    .glossary-def { color: var(--muted); font-size: 13px; }
+
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+
+    /* Terminal */
+    .terminal { background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .terminal-bar { background: #1a1a1a; padding: 8px 14px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ef4444; } .dot-yellow { background: #f59e0b; } .dot-green { background: #10b981; }
+    .terminal-title { font-size: 11px; color: #555; margin-left: 6px; }
+    .terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; }
+    .t-prompt { color: #60a5fa; } .t-cmd { color: #e8e8f0; } .t-out { color: #8585a8; } .t-comment { color: #444; font-style: italic; }
+
+    /* Comprehension pipeline visual */
+    .pipeline { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin: 16px 0; }
+    .pipe-box { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+    .pipe-box.source { border-color: rgba(245,158,11,0.5); color: #fbbf24; }
+    .pipe-box.expr { border-color: rgba(59,130,246,0.5); color: #60a5fa; }
+    .pipe-box.cond { border-color: rgba(16,185,129,0.5); color: #34d399; }
+    .pipe-box.result { border-color: rgba(167,139,250,0.5); color: #c4b5fd; }
+    .pipe-arrow { color: var(--muted); font-size: 18px; }
+    .pipe-label { font-size: 10px; color: var(--muted); text-align: center; margin-top: 4px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+    /* Scope visual */
+    .scope-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin: 16px 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+    .scope-global { border: 2px dashed rgba(245,158,11,0.4); border-radius: 8px; padding: 16px; }
+    .scope-label { font-size: 10px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
+    .scope-func { border: 2px dashed rgba(59,130,246,0.4); border-radius: 6px; padding: 14px; margin-top: 10px; }
+    .scope-inner { border: 2px dashed rgba(16,185,129,0.4); border-radius: 4px; padding: 12px; margin-top: 10px; }
+    .scope-var { color: #fbbf24; margin: 4px 0; }
+    .scope-var.local { color: #60a5fa; }
+    .scope-var.inner { color: #34d399; }
+  </style>
+</head>
 <body>
 
   <div class="progress-bar-wrap">
-    <div class="progress-bar-fill"></div>
+    <div class="progress-bar-fill" id="progressBar"></div>
   </div>
 
   <nav class="top-nav">
@@ -50,858 +204,1123 @@
       <div class="nav-position">
         <span class="track">🐍 Python</span> · Aula 06 / 50
       </div>
-      <a href="py-03-colecoes-arquivos.html" class="nav-next">Próxima →</a>
+      <a href="py-03-estruturas-dados.html" class="nav-next">Próxima →</a>
     </div>
   </nav>
 
   <div class="page">
 
-    <!-- ══════════════════════════════════════════
-         HERO
-    ══════════════════════════════════════════ -->
+    <!-- ── HERO ── -->
     <div class="hero">
       <div class="hero-eyebrow">
-        <span>🐍 Python · 02 · Prioridade 1</span>
+        <span>🐍 Python</span>
         <span class="hero-badge">Aula 06</span>
       </div>
-      <h1>Python — Lógica &amp; Funções</h1>
+      <h1>Lógica & Funções</h1>
       <div class="hero-meta">
-        <span>⏱ ~35 min de leitura</span>
-        <span>🎯 Fundamentos</span>
+        <span>⏱ ~40 min de leitura</span>
+        <span>🎯 Fundamentos → Intermediário</span>
         <span>🔧 Hands-on incluído</span>
       </div>
       <div class="hero-tags">
-        <span class="tag">if / elif / else</span>
-        <span class="tag">for / while</span>
-        <span class="tag">break / continue</span>
-        <span class="tag">def</span>
-        <span class="tag">*args / **kwargs</span>
-        <span class="tag">list comprehension</span>
-        <span class="tag">generator</span>
-        <span class="tag">map / filter / zip</span>
+        <span class="tag accent">if / elif / else</span>
+        <span class="tag accent">for / while</span>
+        <span class="tag accent">funções</span>
+        <span class="tag accent">list comprehension</span>
+        <span class="tag">match/case</span>
+        <span class="tag">args / kwargs</span>
+        <span class="tag">lambda</span>
+        <span class="tag">escopo</span>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         01 — POR QUE ISSO IMPORTA?
-    ══════════════════════════════════════════ -->
+    <!-- ── 1. POR QUE IMPORTA ── -->
     <div class="section">
-      <div class="section-label">// 01 — motivação</div>
+      <div class="section-label">// motivação</div>
       <h2>Por que isso importa?</h2>
       <p>
-        Toda lógica de negócio se reduz a três operações: <strong>decidir</strong> (if/elif/else),
-        <strong>repetir</strong> (for/while) e <strong>encapsular</strong> (funções). Sem dominar esses três pilares,
-        você não consegue escrever nem o script mais simples de automação.
+        Na aula anterior, aprendemos a guardar dados em variáveis. Mas código real não é apenas armazenar — é <strong>tomar decisões</strong>, <strong>repetir tarefas</strong> e <strong>organizar lógica em blocos reutilizáveis</strong>. Isso é o que fazemos com controle de fluxo e funções.
       </p>
       <p>
-        E as <strong>list comprehensions</strong> — junto com <code>map</code>, <code>filter</code>, <code>zip</code> e
-        expressões geradoras — são a diferença entre código Python que parece C traduzido e código Python idiomático que
-        sêniors reconhecem como profissional. São a ferramenta que transforma 5 linhas de loop em 1 linha elegante e
-        legível.
+        List comprehensions são, junto com f-strings, um dos traços mais reconhecíveis de Python idiomático. Elas transformam loops de 4 linhas em uma expressão elegante de 1 linha, e são usadas absolutamente em todo código Python profissional — desde scripts de automação a pipelines de dados com pandas.
       </p>
       <div class="callout callout-info">
-        <div class="callout-title">💼 Por que um engenheiro sênior usa isso hoje</div>
-        Em revisões de código, sêniors sinalizam três coisas: funções que fazem mais de uma coisa, loops que poderiam
-        ser comprehensions, e parâmetros sem type hints. Dominar esses padrões é o que separa código que "funciona" de
-        código que é <em>aprovado em PR</em>.
+        <div class="callout-title">💼 Por que um engenheiro sênior domina isso profundamente</div>
+        Funções bem escritas — pequenas, com responsabilidade única, com type hints e docstrings — são o sinal mais claro de maturidade em Python. Code reviews rejeitam ativamente funções longas, com muitos parâmetros posicionais e sem documentação. E saber quando usar uma comprehension vs um loop explícito é uma decisão de legibilidade que sêniors fazem automaticamente.
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         02 — ANALOGIA
-    ══════════════════════════════════════════ -->
+    <!-- ── 2. ANALOGIA ── -->
     <div class="section">
-      <div class="section-label">// 02 — analogia</div>
+      <div class="section-label">// analogia</div>
       <h2>Antes do código: uma analogia</h2>
       <div class="analogy-card">
         <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
         <div class="analogy-text">
-          Pense numa <strong>linha de montagem de fábrica</strong>. Existe um operador que inspeciona cada peça e toma
-          decisões: "se a peça está dentro da especificação, segue; se não, vai para retrabalho" — isso é o
-          <strong>if/elif/else</strong>.<br><br>
-          A esteira em movimento é o <strong>for loop</strong>: processa cada peça em sequência, uma a uma, até acabar o
-          lote. O inspetor de qualidade parado na mesma posição enquanto o produto não atinge o critério é o
-          <strong>while loop</strong>: continua até a condição ser satisfeita.<br><br>
-          Um <strong>departamento especializado</strong> dentro da fábrica é uma <strong>função</strong>: recebe
-          matéria-prima (parâmetros), executa um processo definido, e retorna o produto (return). A fábrica não precisa
-          saber o que acontece lá dentro — só o que entra e o que sai.<br><br>
-          E a <strong>list comprehension</strong> é uma máquina CNC automatizada: em vez de um operador processar peça
-          por peça manualmente (loop explícito), a máquina recebe o lote inteiro, aplica a transformação e retorna tudo
-          pronto em um único passo.
+          Imagine um <strong>chef de cozinha num restaurante</strong>. Ele não recozinha do zero cada prato toda vez — ele tem <em>receitas</em> (funções) que definem os passos. Antes de executar cada receita, ele <em>toma decisões</em>: "se o cliente pediu sem glúten → substituir farinha" (<code>if</code>). Para preparar 20 pratos do mesmo tipo, ele <em>repete os passos</em> para cada pedido (<code>for</code>). E para preparar a guarnição de todos os pratos de uma vez, ele usa uma técnica em lote — "prepare um legume diferente para cada prato da comanda" (<strong>list comprehension</strong>).
+          <br><br>
+          Funções são as receitas documentadas: recebem ingredientes (<em>parâmetros</em>), executam os passos, e retornam o prato pronto (<em>return</em>). Uma boa receita não depende de ingredientes que não foram entregues na hora — assim como uma boa função não depende de variáveis globais.
         </div>
         <div class="analogy-mapping">
-          <span class="analogy-real">Inspetor tomando decisão</span>
-
-          <span class="analogy-arrow">→</span>
-
-          <span class="analogy-tech"><code>if / elif / else</code></span>
-          <span class="analogy-real">Esteira processando lote</span>
-
-          <span class="analogy-arrow">→</span>
-
-          <span class="analogy-tech"><code>for</code> loop</span>
-          <span class="analogy-real">Aguardando critério ser atingido</span>
-
-          <span class="analogy-arrow">→</span>
-
-          <span class="analogy-tech"><code>while</code> loop</span>
-          <span class="analogy-real">Departamento especializado</span>
-
-          <span class="analogy-arrow">→</span>
-
-          <span class="analogy-tech"><code>def</code> função</span>
-          <span class="analogy-real">Máquina CNC automatizada</span>
-
-          <span class="analogy-arrow">→</span>
-
-          <span class="analogy-tech">list comprehension</span>
+          <span class="analogy-real">📋 Receita documentada</span>
+          <span class="analogy-tech">→ <code>def</code> com docstring</span>
+          <span class="analogy-real">🥕 Ingredientes entregues</span>
+          <span class="analogy-tech">→ Parâmetros da função</span>
+          <span class="analogy-real">🍽️ Prato entregue ao cliente</span>
+          <span class="analogy-tech">→ <code>return</code></span>
+          <span class="analogy-real">❓ "Se sem glúten, substituir"</span>
+          <span class="analogy-tech">→ <code>if / elif / else</code></span>
+          <span class="analogy-real">🔁 Repetir para cada pedido</span>
+          <span class="analogy-tech">→ <code>for pedido in pedidos</code></span>
+          <span class="analogy-real">⚡ Preparar guarnição de todos em lote</span>
+          <span class="analogy-tech">→ List comprehension</span>
         </div>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         03 — ESTRUTURAS DE CONTROLE
-    ══════════════════════════════════════════ -->
+    <!-- ── 3. CONTROLE DE FLUXO ── -->
     <div class="section">
-      <div class="section-label">// 03 — estruturas de controle</div>
-      <h2>if / elif / else — decisões</h2>
+      <div class="section-label">// conceito 1</div>
+      <h2>Controle de Fluxo — if, elif, else</h2>
+      <p>
+        Python usa <strong>indentação</strong> (4 espaços, nunca tabs) para definir blocos de código. Não há chaves <code>{}</code> como em outras linguagens. A indentação é sintaxe — um espaço errado é um bug.
+      </p>
 
       <div class="mermaid-wrap">
-        <div class="mermaid-label">// fluxo de decisão if/elif/else</div>
-        <pre class="mermaid">
-          flowchart TD
-          A([início]) --> B{condição 1?}
-          B -- True --> C[bloco if]
-          B -- False --> D{condição 2?}
-          D -- True --> E[bloco elif]
-          D -- False --> F[bloco else]
-          C --> G([fim])
-          E --> G
-          F --> G
-          style A fill:#1e3a5f,stroke:#3b82f6,color:#93c5fd
-          style G fill:#1e3a5f,stroke:#3b82f6,color:#93c5fd
-          style C fill:#0f3020,stroke:#10b981,color:#6ee7b7
-          style E fill:#3d2f0f,stroke:#f59e0b,color:#fcd34d
-          style F fill:#2d1515,stroke:#ef4444,color:#fca5a5
-        </pre>
+        <div class="mermaid-label">// fluxo de decisão — if / elif / else</div>
+        <div class="mermaid">
+flowchart TD
+    A["Avalia condição if"] --> B{True?}
+    B -- Sim --> C["Executa bloco if"]
+    B -- Não --> D{Tem elif?}
+    D -- Sim --> E{Condição elif True?}
+    E -- Sim --> F["Executa bloco elif"]
+    E -- Não --> D2{Mais elif?}
+    D2 -- Sim --> E
+    D2 -- Não --> G{Tem else?}
+    D -- Não --> G
+    G -- Sim --> H["Executa bloco else"]
+    G -- Não --> I["Continua execução"]
+    C --> I
+    F --> I
+    H --> I
+    style C fill:#10b981,color:#fff,stroke:none
+    style F fill:#3b82f6,color:#fff,stroke:none
+    style H fill:#8585a8,color:#fff,stroke:none
+        </div>
       </div>
 
-      <div class="code-wrap">
-        <div class="code-header">
-          <span class="code-filename">📄 controle.py</span>
-          <span class="code-lang">Python</span>
-        </div>
-        <pre><code class="language-python"># ─── if / elif / else ─────────────────────────────────────────
-nota = 78
+      <div class="code-label">// if / elif / else — tudo que você precisa saber</div>
+      <pre><code class="language-python"># ─── Forma básica ────────────────────────────────────────────────
+temperatura = 38.5
 
-if nota >= 90:
-    conceito = "A"
-elif nota >= 80:
-    conceito = "B"
-elif nota >= 70:
-    conceito = "C"
+if temperatura >= 39:
+    print("Febre alta — procure um médico")
+elif temperatura >= 37.5:
+    print("Febre leve — descanse e tome líquidos")
+elif temperatura >= 36:
+    print("Temperatura normal")
 else:
-    conceito = "Reprovado"
+    print("Hipotermia — aqueça-se")
 
-print(f"Conceito: {conceito}")   # C
+# ─── Operadores de comparação e lógicos ─────────────────────────
+x = 15
 
-# ─── Operadores de comparação e lógicos ───────────────────────
-x, y = 10, 20
-print(x == y)    # False  — igualdade
-print(x != y)    # True   — diferença
-print(x < y)     # True
-print(x >= 10)   # True
+# Comparação
+x > 10        # True
+x >= 15       # True
+x == 15       # True
+x != 20       # True
+x < 0         # False
 
-# Operadores lógicos: and, or, not
-idade = 25
-tem_carteira = True
+# Lógicos: and, or, not
+x > 10 and x < 20    # True  — ambas verdadeiras
+x < 5  or  x > 10    # True  — pelo menos uma verdadeira
+not x > 10            # False — inverte o resultado
 
-if idade >= 18 and tem_carteira:
-    print("Pode dirigir")
+# Encadeamento (Python exclusivo — muito expressivo!)
+10 < x < 20          # True — equivale a: x > 10 and x < 20
+1 <= x <= 100        # True
 
-# ─── Operador ternário (expressão condicional) ─────────────────
-# Equivalente a: resultado = valor_se_true if condição else valor_se_false
-status = "maior" if idade >= 18 else "menor"
-print(status)    # "maior"
+# ─── Operador ternário — if em uma linha ─────────────────────────
+status = "maior" if x >= 18 else "menor"
+# Leia como: "status é 'maior' SE x >= 18, SENÃO 'menor'"
 
-# ─── Encadeamento de comparações (Pythônico) ───────────────────
-temperatura = 22
-if 18 <= temperatura <= 26:   # Python permite isso — muito legível
-    print("Temperatura agradável")
+# Com lógica mais complexa — use com moderação!
+desconto = 0.2 if x > 10 else (0.1 if x > 5 else 0)
 
-# ─── Match/case (Python 3.10+) — switch melhorado ─────────────
-comando = "quit"
+# ─── match / case — Python 3.10+ (structural pattern matching) ──
+comando = "sair"
 
 match comando:
-    case "start":
-        print("Iniciando...")
-    case "stop" | "quit":    # múltiplos valores no mesmo case
+    case "ajuda":
+        print("Comandos disponíveis: ajuda, sair, status")
+    case "sair":
         print("Encerrando...")
-    case _:                  # default
-        print(f"Comando desconhecido: {comando}")</code></pre>
-      </div>
+    case "status":
+        print("Tudo funcionando.")
+    case _:                    # wildcard — equivale ao else
+        print(f"Comando desconhecido: {comando}")
 
-      <h3>for e while — repetições</h3>
+# match com tipos e estruturas
+ponto = (0, 5)
 
-      <div class="code-wrap">
-        <div class="code-header">
-          <span class="code-filename">📄 loops.py</span>
-          <span class="code-lang">Python</span>
-        </div>
-        <pre><code class="language-python"># ─── for — iterar sobre sequências ───────────────────────────
+match ponto:
+    case (0, 0):
+        print("Origem")
+    case (x, 0):
+        print(f"Eixo X em {x}")
+    case (0, y):
+        print(f"Eixo Y em {y}")
+    case (x, y):
+        print(f"Ponto ({x}, {y})")
+
+# ─── Valores truthy e falsy em condicionais ─────────────────────
+lista = []
+nome = ""
+valor = None
+
+# Em vez de verificar explicitamente:
+if len(lista) == 0:  # funciona, mas não é idiomático
+    print("vazia")
+
+# Use a avaliação de truthiness:
+if not lista:        # ✅ idiomático — lista vazia é falsy
+    print("vazia")
+
+if nome:             # só executa se nome não for vazio
+    print(f"Olá, {nome}!")
+
+resultado = valor or "padrão"   # "padrão" se valor for falsy
+config = None
+timeout = config or 30          # 30 se config for None/0/""
+</code></pre>
+    </div>
+
+    <!-- ── 4. LOOPS ── -->
+    <div class="section">
+      <div class="section-label">// conceito 2</div>
+      <h2>Loops — for e while</h2>
+      <p>
+        Python tem dois tipos de loop. <code>for</code> itera sobre qualquer objeto iterável — listas, strings, dicionários, ranges, arquivos. <code>while</code> repete enquanto uma condição for verdadeira. Na prática, 90% dos loops em Python são <code>for</code>.
+      </p>
+
+      <div class="code-label">// for loop — a forma idiomática de iterar</div>
+      <pre><code class="language-python"># ─── Iterando sobre coleções ─────────────────────────────────────
 frutas = ["maçã", "banana", "laranja"]
 
 for fruta in frutas:
     print(fruta)
 
-# enumerate: índice + valor ao mesmo tempo
-for i, fruta in enumerate(frutas):
-    print(f"{i}: {fruta}")   # 0: maçã / 1: banana / 2: laranja
+# ─── range() — sequência numérica ────────────────────────────────
+range(5)          # 0, 1, 2, 3, 4
+range(2, 8)       # 2, 3, 4, 5, 6, 7
+range(0, 10, 2)   # 0, 2, 4, 6, 8 (step 2)
+range(10, 0, -1)  # 10, 9, 8, ..., 1 (decrescente)
 
-# range: gerar sequência numérica
-for n in range(5):           # 0, 1, 2, 3, 4
+for i in range(5):
+    print(i)      # 0 1 2 3 4
+
+# ─── enumerate() — índice + valor juntos ────────────────────────
+for i, fruta in enumerate(frutas):
+    print(f"{i}: {fruta}")
+# 0: maçã
+# 1: banana
+# 2: laranja
+
+for i, fruta in enumerate(frutas, start=1):  # índice começa em 1
+    print(f"{i}. {fruta}")
+
+# ─── zip() — iterar múltiplas listas juntas ──────────────────────
+nomes   = ["Ana", "Bruno", "Carol"]
+notas   = [9.5, 7.2, 8.8]
+turmas  = ["A", "B", "A"]
+
+for nome, nota, turma in zip(nomes, notas, turmas):
+    status = "aprovado" if nota >= 7 else "reprovado"
+    print(f"{nome} (Turma {turma}): {nota:.1f} — {status}")
+
+# ─── Iterando dicionários ─────────────────────────────────────────
+config = {"host": "localhost", "port": 5432, "db": "mydb"}
+
+for chave in config:               # itera pelas chaves
+    print(chave)
+
+for valor in config.values():      # itera pelos valores
+    print(valor)
+
+for chave, valor in config.items():  # itera por (chave, valor) — mais comum
+    print(f"  {chave} = {valor}")
+
+# ─── break, continue, else ───────────────────────────────────────
+numeros = [3, 7, 2, 9, 1, 5]
+
+# break — sai do loop imediatamente
+for n in numeros:
+    if n == 9:
+        print(f"Encontrei o 9! Parando.")
+        break
     print(n)
 
-for n in range(2, 10, 2):    # início=2, fim=10(excl.), passo=2
-    print(n)                 # 2, 4, 6, 8
+# continue — pula para a próxima iteração
+for n in numeros:
+    if n % 2 == 0:
+        continue         # pula números pares
+    print(n)             # imprime apenas ímpares: 3, 7, 9, 1, 5
 
-# Iterar sobre dicionário
-configs = {"host": "localhost", "port": 5432, "db": "mydb"}
+# else no for — executa SE o loop terminar SEM break
+for n in numeros:
+    if n > 100:
+        print("Encontrei número > 100")
+        break
+else:
+    print("Nenhum número > 100 encontrado")  # executa — não houve break
+</code></pre>
 
-for chave, valor in configs.items():
-    print(f"{chave}: {valor}")
-
-# ─── while — repetir até condição ser falsa ───────────────────
+      <div class="code-label">// while loop — quando usar</div>
+      <pre><code class="language-python"># ─── while — repete enquanto a condição for True ─────────────────
 tentativas = 0
 max_tentativas = 3
 
 while tentativas < max_tentativas:
     senha = input("Senha: ")
-    if senha == "secreta":
-        print("Acesso liberado!")
-        break            # sai do loop imediatamente
+    if senha == "python123":
+        print("Acesso concedido!")
+        break
     tentativas += 1
-    print(f"Tentativa {tentativas}/{max_tentativas}")
+    print(f"Incorreta. {max_tentativas - tentativas} tentativas restantes.")
 else:
-    # bloco else do while: executa se o loop terminar SEM break
-    print("Acesso bloqueado.")
+    print("Conta bloqueada.")
 
-# ─── break, continue, pass ────────────────────────────────────
-numeros = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+# ─── Loop infinito controlado ────────────────────────────────────
+while True:
+    comando = input("> ").strip().lower()
+    if comando == "sair":
+        break
+    elif comando == "ajuda":
+        print("Comandos: ajuda, versão, sair")
+    elif comando == "versão":
+        print("v1.0")
+    else:
+        print(f"Desconhecido: {comando}")
 
-for n in numeros:
-    if n % 2 == 0:
-        continue    # pula os pares — vai para próxima iteração
-    if n > 7:
-        break       # para tudo quando n > 7
-    print(n)        # imprime: 1, 3, 5, 7
-
-# pass: bloco vazio (placeholder)
-def funcao_ainda_nao_implementada():
-    pass   # evita SyntaxError num bloco vazio</code></pre>
-      </div>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Comando</th>
-              <th>O que faz</th>
-              <th>Quando usar</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>break</code></td>
-              <td>Interrompe o loop imediatamente — sai dele</td>
-              <td>Encontrou o que buscava; condição de erro; loop infinito controlado</td>
-            </tr>
-            <tr>
-              <td><code>continue</code></td>
-              <td>Pula para a próxima iteração — ignora o resto do bloco atual</td>
-              <td>Filtrar itens inválidos; pular casos especiais no meio do loop</td>
-            </tr>
-            <tr>
-              <td><code>pass</code></td>
-              <td>Não faz absolutamente nada — bloco válido sintaticamente</td>
-              <td>Placeholder em funções/classes/branches ainda não implementados</td>
-            </tr>
-            <tr>
-              <td><code>else</code> no loop</td>
-              <td>Executa ao final do loop <em>somente se não houve</em> <code>break</code></td>
-              <td>Confirmar que a busca no loop não encontrou nada</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+# ─── Evite while True sem break garantido ───────────────────────
+# Sempre tenha uma condição de saída clara ou um contador de segurança
+max_iter = 1000
+contador = 0
+while True:
+    contador += 1
+    if contador >= max_iter:
+        raise RuntimeError("Loop excedeu o limite de iterações")
+    # ... lógica do loop ...
+    if condicao_de_saida:
+        break
+</code></pre>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         04 — FUNÇÕES
-    ══════════════════════════════════════════ -->
+    <!-- ── 5. FUNÇÕES ── -->
     <div class="section">
-      <div class="section-label">// 04 — funções</div>
-      <h2>def — encapsulando lógica reutilizável</h2>
+      <div class="section-label">// conceito 3</div>
+      <h2>Funções — o coração do código reutilizável</h2>
       <p>
-        Uma função bem escrita faz <strong>uma única coisa</strong>, faz bem, e tem um nome que descreve o que ela faz.
-        Esse princípio — <em>Single Responsibility</em> — é a regra mais importante ao escrever funções em qualquer
-        linguagem.
+        Funções encapsulam lógica em um bloco nomeado, reutilizável e testável. Uma boa função faz <strong>uma única coisa</strong>, faz bem e tem um nome que descreve essa coisa claramente.
       </p>
 
-      <div class="code-wrap">
-        <div class="code-header">
-          <span class="code-filename">📄 funcoes.py</span>
-          <span class="code-lang">Python</span>
-        </div>
-        <pre><code class="language-python"># ─── Função básica com type hints ────────────────────────────
+      <div class="code-label">// anatomia completa de uma função Python</div>
+      <pre><code class="language-python">from typing import Optional
+
+# ─── Função simples ───────────────────────────────────────────────
 def saudar(nome: str) -> str:
     """Retorna uma saudação personalizada."""
     return f"Olá, {nome}!"
 
-print(saudar("Ana"))    # Olá, Ana!
-
-# ─── Parâmetros padrão (default) ──────────────────────────────
-def conectar(host: str, porta: int = 5432, ssl: bool = True) -> str:
-    protocolo = "ssl" if ssl else "tcp"
-    return f"{protocolo}://{host}:{porta}"
-
-print(conectar("localhost"))              # ssl://localhost:5432
-print(conectar("db.prod.com", ssl=False)) # tcp://db.prod.com:5432
-
-# ⚠️ ARMADILHA: nunca use objeto mutável como default!
-# def errado(lista=[]):   ← a MESMA lista é compartilhada entre chamadas!
-def correto(lista: list | None = None) -> list:
-    if lista is None:
-        lista = []
-    lista.append(1)
-    return lista
-
-# ─── *args — número variável de argumentos posicionais ────────
-def somar(*numeros: int) -> int:
-    """Soma qualquer quantidade de números."""
-    return sum(numeros)   # numeros é uma tupla internamente
-
-print(somar(1, 2, 3))          # 6
-print(somar(10, 20, 30, 40))   # 100
-
-# ─── **kwargs — número variável de argumentos nomeados ────────
-def criar_usuario(**dados: str) -> dict:
-    """Cria um dicionário de usuário com campos opcionais."""
-    return {"id": "usr_001", **dados}
-
-usuario = criar_usuario(nome="Ana", email="ana@ex.com", cargo="dev")
-# {"id": "usr_001", "nome": "Ana", "email": "ana@ex.com", "cargo": "dev"}
-
-# ─── Combinando: pos, *, kw-only, **kwargs ────────────────────
-def processar(arquivo: str, *, encoding: str = "utf-8", verbose: bool = False) -> None:
+# ─── Parâmetros com valor padrão ─────────────────────────────────
+def criar_usuario(
+    nome: str,
+    email: str,
+    ativo: bool = True,         # padrão = True
+    papel: str = "viewer",      # padrão = "viewer"
+) -> dict:
     """
-    O * força que encoding e verbose sejam passados como keyword-only.
-    Impossível chamar processar("f.txt", "latin-1") — TypeError.
-    """
-    if verbose:
-        print(f"Processando {arquivo} com {encoding}")
-
-processar("dados.csv", encoding="latin-1", verbose=True)
-
-# ─── Retornando múltiplos valores (na verdade uma tupla) ──────
-def minmax(numeros: list[int]) -> tuple[int, int]:
-    return min(numeros), max(numeros)
-
-menor, maior = minmax([3, 1, 4, 1, 5, 9, 2])
-print(f"min={menor}, max={maior}")   # min=1, max=9
-
-# ─── Funções lambda (anônimas) ────────────────────────────────
-# Úteis como argumento de outra função — não para lógica complexa
-dobrar = lambda x: x * 2
-print(dobrar(5))   # 10
-
-# Uso prático: ordenar por critério customizado
-pessoas = [("Ana", 28), ("Beto", 22), ("Carol", 35)]
-por_idade = sorted(pessoas, key=lambda p: p[1])
-# [("Beto", 22), ("Ana", 28), ("Carol", 35)]</code></pre>
-      </div>
-
-      <div class="callout callout-tip">
-        <div class="callout-title">🔥 Pro tip — docstrings são contratos</div>
-        Toda função pública deve ter docstring. IDEs as mostram no hover; ferramentas como <code>pydoc</code> e
-        <code>Sphinx</code> geram documentação automaticamente a partir delas. Use o formato Google ou NumPy:
-        <br><br>
-        <pre style="background:var(--surface2);padding:12px;border-radius:6px;font-size:12px;margin-top:8px;">def calcular_imc(peso: float, altura: float) -> float:
-    """Calcula o Índice de Massa Corporal.
+    Cria um dicionário de usuário com os dados fornecidos.
 
     Args:
-        peso: Peso em quilogramas.
-        altura: Altura em metros.
+        nome:  Nome completo do usuário.
+        email: Endereço de email (usado para login).
+        ativo: Se o usuário pode acessar o sistema. Default True.
+        papel: Nível de permissão. Default 'viewer'.
 
     Returns:
-        IMC arredondado com 1 casa decimal.
-
-    Raises:
-        ValueError: Se altura for zero ou negativa.
+        Dicionário com os dados do usuário.
     """
-    if altura &lt;= 0:
-        raise ValueError("Altura deve ser positiva")
-    return round(peso / altura ** 2, 1)</pre>
-      </div>
-    </div>
+    return {
+        "nome": nome,
+        "email": email,
+        "ativo": ativo,
+        "papel": papel,
+    }
 
-    <!-- ══════════════════════════════════════════
-         05 — LIST COMPREHENSIONS, GENERATOR, MAP, FILTER, ZIP
-    ══════════════════════════════════════════ -->
-    <div class="section">
-      <div class="section-label">// 05 — comprehensions &amp; itertools funcionais</div>
-      <h2>List comprehensions, generators, map, filter e zip</h2>
+# Chamada com argumentos posicionais e keyword arguments
+user1 = criar_usuario("Ana", "ana@ex.com")
+user2 = criar_usuario("Bruno", "bruno@ex.com", papel="admin")
+user3 = criar_usuario(nome="Carol", email="carol@ex.com", ativo=False)
+
+# ─── *args — número variável de argumentos posicionais ───────────
+def somar(*numeros: float) -> float:
+    """Soma qualquer quantidade de números."""
+    return sum(numeros)
+
+somar(1, 2, 3)          # 6
+somar(10, 20)            # 30
+somar(*[1, 2, 3, 4, 5]) # 15  — desempacota a lista
+
+# ─── **kwargs — argumentos nomeados variáveis ─────────────────────
+def registrar_evento(tipo: str, **dados) -> None:
+    """Registra um evento com metadados arbitrários."""
+    print(f"[{tipo}]")
+    for chave, valor in dados.items():
+        print(f"  {chave}: {valor}")
+
+registrar_evento("LOGIN", usuario="ana", ip="192.168.1.1", timestamp="2024-11-15")
+# [LOGIN]
+#   usuario: ana
+#   ip: 192.168.1.1
+#   timestamp: 2024-11-15
+
+# ─── Retorno múltiplo (via tuple) ────────────────────────────────
+def min_max(numeros: list[float]) -> tuple[float, float]:
+    """Retorna (mínimo, máximo) de uma lista."""
+    return min(numeros), max(numeros)
+
+minimo, maximo = min_max([3, 1, 7, 2, 9])
+print(f"Min: {minimo}, Max: {maximo}")   # Min: 1, Max: 9
+
+# ─── Funções com Optional ────────────────────────────────────────
+def buscar_usuario(id: int) -> Optional[dict]:
+    """Retorna o usuário ou None se não encontrado."""
+    banco = {1: {"nome": "Ana"}, 2: {"nome": "Bruno"}}
+    return banco.get(id)   # retorna None se id não existir
+
+usuario = buscar_usuario(1)
+if usuario:
+    print(usuario["nome"])
+</code></pre>
+
+      <h3>Escopo de variáveis — LEGB</h3>
       <p>
-        List comprehensions são a forma <strong>mais Pythônica de transformar e filtrar listas</strong>. A sintaxe:
-        <code>[expressão for item in iterável if condição]</code>. A condição é opcional. Quando ficam complexas demais,
-        use um loop explícito — legibilidade sempre vence.
+        Python resolve nomes de variáveis seguindo a ordem <strong>LEGB</strong>: Local → Enclosing → Global → Built-in. Entender escopo evita bugs silenciosos e o uso desnecessário de <code>global</code>.
       </p>
 
-      <div class="compare-grid">
-        <div class="compare-card">
-          <div class="compare-label bad">❌ loop explícito verboso</div>
-          <div class="code-wrap" style="margin:0;border:none;border-radius:0;">
-            <pre><code class="language-python">quadrados = []
+      <div class="scope-wrap">
+        <div class="scope-global">
+          <div class="scope-label">🌍 Global scope</div>
+          <div class="scope-var">taxa = 0.15  <span style="color:var(--muted)"># variável global</span></div>
+          <div class="scope-var">app_nome = "DevApp"</div>
+          <div class="scope-func">
+            <div class="scope-label">📦 Local scope — calcular_imposto()</div>
+            <div class="scope-var local">valor = 1000  <span style="color:var(--muted)"># variável local</span></div>
+            <div class="scope-var local">imposto = valor * taxa  <span style="color:var(--muted)"># acessa global 'taxa'</span></div>
+            <div class="scope-inner">
+              <div class="scope-label">🔒 Enclosing scope — função interna</div>
+              <div class="scope-var inner">desconto = 0.05  <span style="color:var(--muted)"># enclosing para inner</span></div>
+              <div class="scope-var inner">liquido = valor * (1 - desconto)  <span style="color:var(--muted)"># acessa enclosing 'valor'</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-label">// escopo LEGB na prática</div>
+      <pre><code class="language-python">taxa = 0.15                # Global
+
+def calcular_imposto(valor: float) -> float:
+    imposto = valor * taxa     # Local 'imposto', acessa Global 'taxa'
+    return imposto
+
+# ─── Nunca modifique globais dentro de funções ───────────────────
+contador = 0
+
+# ❌ Ruim — dificulta testes e raciocínio
+def incrementar_ruim():
+    global contador           # declara intenção de modificar global
+    contador += 1
+
+# ✅ Bom — recebe e retorna, sem efeito colateral oculto
+def incrementar(contador: int) -> int:
+    return contador + 1
+
+contador = incrementar(contador)
+
+# ─── Closures — funções que "lembram" o escopo externo ───────────
+def criar_multiplicador(fator: float):
+    """Retorna uma função que multiplica por fator."""
+    def multiplicar(x: float) -> float:
+        return x * fator      # acessa 'fator' do escopo externo (Enclosing)
+    return multiplicar
+
+dobrar   = criar_multiplicador(2)
+triplicar = criar_multiplicador(3)
+
+dobrar(5)     # 10
+triplicar(5)  # 15
+# 'fator' é "capturado" no closure de cada função retornada
+</code></pre>
+
+      <h3>Funções lambda</h3>
+      <div class="code-label">// lambda — funções anônimas de uma linha</div>
+      <pre><code class="language-python"># Sintaxe: lambda parâmetros: expressão
+
+# Equivalentes:
+def quadrado(x): return x ** 2
+quadrado_lambda = lambda x: x ** 2
+
+# Uso prático — onde lambdas brilham: como argumento de outra função
+produtos = [
+    {"nome": "Notebook", "preco": 3500},
+    {"nome": "Mouse",    "preco": 80},
+    {"nome": "Teclado",  "preco": 250},
+]
+
+# Ordenar por preço
+ordenados = sorted(produtos, key=lambda p: p["preco"])
+
+# Ordenar por nome (case-insensitive)
+por_nome = sorted(produtos, key=lambda p: p["nome"].lower())
+
+# Filtrar produtos acima de R$200
+caros = list(filter(lambda p: p["preco"] > 200, produtos))
+
+# Obter apenas os preços
+precos = list(map(lambda p: p["preco"], produtos))  # [3500, 80, 250]
+
+# ⚠️ Use lambdas apenas quando são simples e inline.
+# Se precisar de docstring, múltiplas linhas ou reuso → use def.
+</code></pre>
+    </div>
+
+    <!-- ── 6. LIST COMPREHENSIONS ── -->
+    <div class="section">
+      <div class="section-label">// conceito 4</div>
+      <h2>List Comprehensions — Python no seu melhor</h2>
+      <p>
+        List comprehensions são uma das construções mais elegantes e idiomáticas do Python. Elas combinam criação de lista, transformação e filtragem em uma <strong>única expressão declarativa</strong>, inspirada na notação matemática de conjuntos.
+      </p>
+
+      <!-- Pipeline visual -->
+      <div style="padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin: 16px 0;">
+        <div style="font-size: 10px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 16px;">// anatomia de uma list comprehension</div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-bottom: 16px;">
+          <span style="color: #c4b5fd;">[</span>
+          <span style="color: #60a5fa; background: rgba(59,130,246,0.1); padding: 2px 8px; border-radius: 4px;">expressão</span>
+          <span style="color: #fbbf24;">for</span>
+          <span style="color: #ffa657;">item</span>
+          <span style="color: #fbbf24;">in</span>
+          <span style="color: #ffa657; background: rgba(245,158,11,0.1); padding: 2px 8px; border-radius: 4px;">iterável</span>
+          <span style="color: #34d399;">if</span>
+          <span style="color: #34d399; background: rgba(16,185,129,0.1); padding: 2px 8px; border-radius: 4px;">condição</span>
+          <span style="color: #c4b5fd;">]</span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 12px;">
+          <div style="background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.3); padding: 8px 12px; border-radius: 6px;">
+            <div style="color: #60a5fa; font-weight: 700; margin-bottom: 3px;">expressão</div>
+            <div style="color: var(--muted);">O que colocar na lista. Pode ser o próprio item ou qualquer transformação.</div>
+          </div>
+          <div style="background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.3); padding: 8px 12px; border-radius: 6px;">
+            <div style="color: #fbbf24; font-weight: 700; margin-bottom: 3px;">for item in iterável</div>
+            <div style="color: var(--muted);">Fonte dos dados. Qualquer iterável Python.</div>
+          </div>
+          <div style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.3); padding: 8px 12px; border-radius: 6px;">
+            <div style="color: #34d399; font-weight: 700; margin-bottom: 3px;">if condição (opcional)</div>
+            <div style="color: var(--muted);">Filtra: só inclui itens onde a condição é True.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="compare-split">
+        <div class="compare-old">
+          <div class="compare-label">❌ Loop imperativo — 5 linhas</div>
+          <pre><code class="language-python">quadrados = []
 for n in range(10):
     if n % 2 == 0:
         quadrados.append(n ** 2)
-# [0, 4, 16, 36, 64]</code></pre>
-          </div>
+# [0, 4, 16, 36, 64]
+</code></pre>
         </div>
-        <div class="compare-card">
-          <div class="compare-label good">✅ list comprehension</div>
-          <div class="code-wrap" style="margin:0;border:none;border-radius:0;">
-            <pre><code class="language-python">quadrados = [
+        <div class="compare-new">
+          <div class="compare-label">✅ Comprehension — 1 linha</div>
+          <pre><code class="language-python">quadrados = [
     n ** 2
     for n in range(10)
     if n % 2 == 0
 ]
-# [0, 4, 16, 36, 64]</code></pre>
-          </div>
+# [0, 4, 16, 36, 64]
+</code></pre>
         </div>
       </div>
 
-      <div class="code-wrap">
-        <div class="code-header">
-          <span class="code-filename">📄 comprehensions.py</span>
-          <span class="code-lang">Python</span>
-        </div>
-        <pre><code class="language-python"># ─── List comprehension — transformar e filtrar ───────────────
-nomes = ["Ana", "Bruno", "Carlos", "Diana", "Eduardo"]
+      <div class="code-label">// comprehensions — do básico ao avançado</div>
+      <pre><code class="language-python"># ─── List comprehension básica ───────────────────────────────────
+numeros = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
-# Filtrar nomes com mais de 4 letras, em maiúsculas
-longos = [n.upper() for n in nomes if len(n) > 4]
-# ["BRUNO", "CARLOS", "DIANA", "EDUARDO"]
+dobros      = [n * 2 for n in numeros]
+pares       = [n for n in numeros if n % 2 == 0]
+quadrados_impares = [n**2 for n in numeros if n % 2 != 0]
 
-# ─── Dict comprehension ───────────────────────────────────────
-precos = {"maçã": 3.5, "banana": 1.2, "laranja": 2.8}
+# Com strings
+palavras = ["python", "é", "incrível", "e", "elegante"]
+maiusculas = [p.upper() for p in palavras]
+longas     = [p for p in palavras if len(p) > 3]
+titulos    = [p.title() for p in palavras if len(p) > 2]
 
-# Aplicar desconto de 10% em todos
-com_desconto = {fruta: round(p * 0.9, 2) for fruta, p in precos.items()}
-# {"maçã": 3.15, "banana": 1.08, "laranja": 2.52}
+# Transformação de dicionários em listas
+produtos = [
+    {"nome": "Notebook", "preco": 3500, "estoque": 5},
+    {"nome": "Mouse",    "preco": 80,   "estoque": 0},
+    {"nome": "Teclado",  "preco": 250,  "estoque": 12},
+]
 
-# ─── Set comprehension ────────────────────────────────────────
-palavras = ["python", "é", "incrível", "python", "é", "rápido"]
-unicas = {p for p in palavras}   # {"python", "é", "incrível", "rápido"}
+# Só os nomes dos produtos com estoque
+disponiveis = [p["nome"] for p in produtos if p["estoque"] > 0]
+# ['Notebook', 'Teclado']
 
-# ─── Expressão geradora (generator expression) ────────────────
-# Igual à list comprehension, mas com () em vez de []
-# Não cria a lista em memória — calcula valor por valor (lazy)
-# Ideal para somar/iterar sequências grandes
+# Aplicar desconto e criar nova estrutura
+com_desconto = [
+    {"nome": p["nome"], "preco_final": p["preco"] * 0.9}
+    for p in produtos
+    if p["estoque"] > 0
+]
 
-# ❌ Lista: carrega tudo na memória de uma vez
-total_lista = sum([n ** 2 for n in range(1_000_000)])
+# ─── Dict comprehension ───────────────────────────────────────────
+# {chave: valor for item in iterável if condição}
 
-# ✅ Generator: usa O(1) de memória — calcula cada valor sob demanda
-total_gen = sum(n ** 2 for n in range(1_000_000))  # mesmo resultado, muito menos RAM
+# Inverter chave e valor
+original = {"a": 1, "b": 2, "c": 3}
+invertido = {v: k for k, v in original.items()}
+# {1: 'a', 2: 'b', 3: 'c'}
 
-# ─── map() — aplicar função a cada elemento ───────────────────
-# map(função, iterável) → retorna iterator lazy
-numeros = [1, 2, 3, 4, 5]
+# Criar dict de {nome: preco} dos disponíveis
+preco_map = {p["nome"]: p["preco"] for p in produtos if p["estoque"] > 0}
+# {'Notebook': 3500, 'Teclado': 250}
 
-dobros = list(map(lambda x: x * 2, numeros))   # [2, 4, 6, 8, 10]
+# ─── Set comprehension ───────────────────────────────────────────
+texto = "abracadabra"
+letras_unicas = {c for c in texto}     # {'a', 'b', 'c', 'd', 'r'}
 
-# Com função nomeada (mais legível para funções complexas)
-def formatar_moeda(valor: float) -> str:
-    return f"R$ {valor:.2f}"
+# ─── Generator expression — lazy (não cria a lista toda na memória)
+# Use quando só vai iterar UMA VEZ ou o dataset é muito grande
+soma_quadrados = sum(n**2 for n in range(1_000_000))  # sem colchetes!
+primeiro_par   = next(n for n in range(100) if n % 2 == 0 and n > 50)
 
-precos_fmt = list(map(formatar_moeda, [10.5, 3.99, 99.0]))
-# ["R$ 10.50", "R$ 3.99", "R$ 99.00"]
+# ─── Comprehension aninhada (use com moderação!) ──────────────────
+# Transpor uma matriz 3x3
+matriz = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+transposta = [[linha[i] for linha in matriz] for i in range(3)]
+# [[1, 4, 7], [2, 5, 8], [3, 6, 9]]
 
-# ─── filter() — manter apenas elementos que passam no teste ───
-# filter(função_bool, iterável) → retorna iterator lazy
-pares = list(filter(lambda x: x % 2 == 0, range(10)))
-# [0, 2, 4, 6, 8]
-
-# Equivalente (mais legível):
-pares_comp = [x for x in range(10) if x % 2 == 0]
-
-# ─── zip() — combinar iteráveis em pares ──────────────────────
-nomes    = ["Ana", "Bruno", "Carlos"]
-salarios = [5000, 7500, 6200]
-cargos   = ["dev jr", "dev sr", "designer"]
-
-# Zipar em uma lista de tuplas
-equipe = list(zip(nomes, salarios, cargos))
-# [("Ana",5000,"dev jr"), ("Bruno",7500,"dev sr"), ("Carlos",6200,"designer")]
-
-for nome, salario, cargo in zip(nomes, salarios, cargos):
-    print(f"{nome:10} | {cargo:10} | R$ {salario:,}")
-
-# Deszipar: * (unpacking) reverte o zip
-cols = zip(*equipe)   # cada coluna vira um iterador separado
-
-# zip_longest (itertools): preenche com fillvalue se tamanhos diferentes
-from itertools import zip_longest
-a = [1, 2, 3]
-b = ["x", "y"]
-list(zip_longest(a, b, fillvalue=None))   # [(1,"x"), (2,"y"), (3,None)]</code></pre>
-      </div>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Ferramenta</th>
-              <th>Retorna</th>
-              <th>Quando preferir</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>[x for x in it]</code></td>
-              <td>Lista (em memória)</td>
-              <td>Quando precisa do resultado como lista para indexar, fatiar ou reutilizar</td>
-            </tr>
-            <tr>
-              <td><code>(x for x in it)</code></td>
-              <td>Generator (lazy)</td>
-              <td>Quando só vai iterar uma vez ou passar para <code>sum()</code>/<code>max()</code> — economiza RAM</td>
-            </tr>
-            <tr>
-              <td><code>map(f, it)</code></td>
-              <td>Iterator lazy</td>
-              <td>Aplicar função já existente elemento a elemento — mais legível que lambda inline</td>
-            </tr>
-            <tr>
-              <td><code>filter(f, it)</code></td>
-              <td>Iterator lazy</td>
-              <td>Quando a condição de filtro está numa função nomeada com lógica mais complexa</td>
-            </tr>
-            <tr>
-              <td><code>zip(a, b)</code></td>
-              <td>Iterator de tuplas lazy</td>
-              <td>Combinar dois ou mais iteráveis em paralelo — substitui <code>range(len(a))</code> com índice</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+# Flatten (achatar) lista de listas
+aninhada = [[1, 2], [3, 4], [5, 6]]
+plana = [item for sublista in aninhada for item in sublista]
+# [1, 2, 3, 4, 5, 6]
+# Leia: "para cada item em cada sublista de aninhada"
+</code></pre>
 
       <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Comprehension aninhada: cuidado com a legibilidade</div>
-        <code>[x for row in matrix for x in row]</code> é legível: achata uma matriz.<br>
-        <code>[[f(x) for x in row] for row in matrix if row]</code> já está no limite.<br>
-        <code>[x for a in b for c in d if e for f in g]</code> — use um loop explícito. Código que não se consegue ler
-        em 5 segundos é código que vai causar bug.
+        <div class="callout-title">⚠️ Quando NÃO usar comprehension</div>
+        Use comprehension para <strong>criar/transformar coleções</strong>. Se você está usando uma comprehension apenas para efeitos colaterais (ex: imprimir, chamar funções), use um loop <code>for</code> explícito — é mais claro. Comprehensions com 3+ condições ou aninhamentos de 3+ níveis também ficam ilegíveis: quebre em funções ou loops.
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         06 — HANDS-ON PASSO A PASSO
-    ══════════════════════════════════════════ -->
+    <!-- ── HANDS-ON ── -->
     <div class="section">
-      <div class="section-label">// 06 — hands-on</div>
-      <h2>Mãos na massa — processador de notas escolares</h2>
-      <p>Vamos construir um script que processa uma lista de alunos e notas, aplicando lógica, funções e comprehensions
-        juntos.</p>
+      <div class="section-label">// prática</div>
+      <h2>Mãos na massa — Sistema de Notas Escolares</h2>
+      <p>Vamos construir um sistema completo de processamento de notas que usa tudo desta aula: funções, loops, condicionais e comprehensions.</p>
 
       <div class="steps">
         <div class="step">
           <div class="step-num">1</div>
           <div class="step-body">
-            <div class="step-title">Crie o arquivo</div>
-            <div class="step-desc">No venv da aula anterior (ou crie um novo), crie <code>notas.py</code>.</div>
-            <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
-              </div>
-              <pre><code class="language-bash">cd meu-primeiro-projeto
-source .venv/bin/activate
-touch notas.py</code></pre>
-            </div>
+            <div class="step-title">Crie <code>notas.py</code> com as funções base</div>
+            <pre><code class="language-python">"""
+Sistema de Notas Escolares.
+Demonstra funções, controle de fluxo e list comprehensions.
+"""
+
+from statistics import mean, stdev
+
+# ─── Tipos de dados ──────────────────────────────────────────────
+type Aluno = dict[str, str | list[float]]   # Python 3.12+
+# ou: from typing import TypeAlias
+# Aluno: TypeAlias = dict
+
+TURMAS = ("A", "B", "C")
+
+# ─── Funções puras — sem efeitos colaterais ──────────────────────
+
+def calcular_media(notas: list[float]) -> float:
+    """Calcula a média aritmética de uma lista de notas."""
+    if not notas:
+        return 0.0
+    return mean(notas)
+
+
+def classificar_aluno(media: float) -> str:
+    """
+    Classifica o desempenho do aluno pela média.
+
+    Args:
+        media: Média das notas (0.0 a 10.0).
+
+    Returns:
+        Classificação textual do desempenho.
+    """
+    if media >= 9.0:
+        return "Excelente"
+    elif media >= 7.5:
+        return "Bom"
+    elif media >= 6.0:
+        return "Regular"
+    elif media >= 5.0:
+        return "Recuperação"
+    else:
+        return "Reprovado"
+
+
+def criar_aluno(
+    nome: str,
+    turma: str,
+    notas: list[float],
+) -> dict:
+    """Cria e valida um registro de aluno."""
+    if turma not in TURMAS:
+        raise ValueError(f"Turma inválida: {turma}. Válidas: {TURMAS}")
+    if not all(0 <= n <= 10 for n in notas):
+        raise ValueError("Notas devem estar entre 0 e 10")
+
+    media = calcular_media(notas)
+    return {
+        "nome": nome,
+        "turma": turma,
+        "notas": notas,
+        "media": round(media, 2),
+        "status": classificar_aluno(media),
+    }
+
+
+def gerar_relatorio(alunos: list[dict]) -> dict:
+    """
+    Gera estatísticas da turma usando comprehensions.
+
+    Returns:
+        Dicionário com métricas da turma.
+    """
+    if not alunos:
+        return {}
+
+    medias = [a["media"] for a in alunos]
+
+    return {
+        "total":         len(alunos),
+        "aprovados":     len([a for a in alunos if a["media"] >= 6.0]),
+        "reprovados":    len([a for a in alunos if a["media"] < 5.0]),
+        "recuperacao":   len([a for a in alunos if 5.0 <= a["media"] < 6.0]),
+        "media_turma":   round(mean(medias), 2),
+        "desvio_padrao": round(stdev(medias), 2) if len(medias) > 1 else 0,
+        "melhor":        max(alunos, key=lambda a: a["media"])["nome"],
+        "pior":          min(alunos, key=lambda a: a["media"])["nome"],
+        "por_status":    {
+            status: [a["nome"] for a in alunos if a["status"] == status]
+            for status in ["Excelente", "Bom", "Regular", "Recuperação", "Reprovado"]
+            if any(a["status"] == status for a in alunos)
+        }
+    }
+
+
+def imprimir_relatorio(turma: str, alunos: list[dict]) -> None:
+    """Imprime o relatório formatado da turma."""
+    stats = gerar_relatorio(alunos)
+    sep = "─" * 52
+
+    print(f"\n{'═'*52}")
+    print(f"{'RELATÓRIO — TURMA ' + turma:^52}")
+    print(f"{'═'*52}")
+
+    # Imprime cada aluno ordenado por média (decrescente)
+    for aluno in sorted(alunos, key=lambda a: a["media"], reverse=True):
+        barra_notas = " ".join(f"{n:.1f}" for n in aluno["notas"])
+        status_fmt  = f"[{aluno['status']}]"
+        print(f"  {aluno['nome']:<18} {aluno['media']:>5.2f}  {status_fmt:<15} {barra_notas}")
+
+    print(sep)
+    print(f"  Alunos: {stats['total']}  |  "
+          f"Aprovados: {stats['aprovados']}  |  "
+          f"Reprovados: {stats['reprovados']}")
+    print(f"  Média da turma: {stats['media_turma']:.2f}  "
+          f"  DP: {stats['desvio_padrao']:.2f}")
+    print(f"  🏆 Melhor: {stats['melhor']}  |  ⚠️  Atenção: {stats['pior']}")
+
+    print(f"\n  POR STATUS:")
+    for status, nomes in stats["por_status"].items():
+        print(f"    {status:<15} → {', '.join(nomes)}")
+    print(f"{'═'*52}\n")
+</code></pre>
           </div>
         </div>
 
         <div class="step">
           <div class="step-num">2</div>
           <div class="step-body">
-            <div class="step-title">Escreva as funções</div>
-            <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">📄 notas.py</span><span
-                  class="code-lang">Python</span></div>
-              <pre><code class="language-python">"""Processador de notas escolares — demonstração de lógica e funções."""
+            <div class="step-title">Crie <code>main.py</code> para executar</div>
+            <pre><code class="language-python">from notas import criar_aluno, imprimir_relatorio
 
-# ─── Dados de entrada ─────────────────────────────────────────
-alunos = [
-    {"nome": "Ana",     "notas": [8.5, 9.0, 7.5, 9.5]},
-    {"nome": "Bruno",   "notas": [6.0, 5.5, 7.0, 6.5]},
-    {"nome": "Carlos",  "notas": [9.5, 9.8, 10.0, 9.2]},
-    {"nome": "Diana",   "notas": [4.5, 5.0, 6.0, 5.5]},
-    {"nome": "Eduardo", "notas": [7.0, 8.0, 7.5, 8.5]},
+# ─── Dados dos alunos ────────────────────────────────────────────
+dados_brutos = [
+    ("Ana Lima",      "A", [9.5, 8.7, 9.2, 10.0]),
+    ("Bruno Souza",   "A", [6.1, 7.3, 5.9, 6.8]),
+    ("Carol Mendes",  "A", [4.5, 5.0, 3.8, 4.2]),
+    ("Diego Torres",  "A", [8.0, 7.5, 8.8, 9.1]),
+    ("Elena Costa",   "A", [5.5, 4.8, 5.2, 6.0]),
 ]
 
-# ─── Funções ──────────────────────────────────────────────────
-def calcular_media(notas: list[float]) -> float:
-    """Retorna a média aritmética de uma lista de notas."""
-    return sum(notas) / len(notas)
+# Criando alunos via list comprehension + tratamento de erro
+alunos = []
+for nome, turma, notas in dados_brutos:
+    try:
+        aluno = criar_aluno(nome, turma, notas)
+        alunos.append(aluno)
+    except ValueError as e:
+        print(f"⚠️ Erro ao criar aluno {nome}: {e}")
 
+# Gerando relatório
+imprimir_relatorio("A", alunos)
 
-def determinar_conceito(media: float) -> str:
-    """Converte média numérica em conceito A-F."""
-    if media >= 9.0:
-        return "A"
-    elif media >= 7.5:
-        return "B"
-    elif media >= 6.0:
-        return "C"
-    elif media >= 5.0:
-        return "D"
-    else:
-        return "F"
+# ─── Análises com comprehensions ─────────────────────────────────
+print("📊 ANÁLISES RÁPIDAS")
+print("─" * 40)
 
+# Alunos aprovados (média >= 6.0)
+aprovados = [a["nome"] for a in alunos if a["media"] >= 6.0]
+print(f"Aprovados ({len(aprovados)}): {', '.join(aprovados)}")
 
-def formatar_aluno(aluno: dict) -> dict:
-    """Enriquece o dicionário do aluno com média e conceito."""
-    media = calcular_media(aluno["notas"])
-    return {
-        "nome":     aluno["nome"],
-        "media":    round(media, 2),
-        "conceito": determinar_conceito(media),
-        "aprovado": media >= 6.0,
-    }
+# Mapa nome → média
+mapa_notas = {a["nome"].split()[0]: a["media"] for a in alunos}
+print(f"\nMapa de médias: {mapa_notas}")
 
-
-# ─── Processar usando list comprehension ──────────────────────
-resultado = [formatar_aluno(a) for a in alunos]
-
-# ─── Filtrar aprovados/reprovados ────────────────────────────
-aprovados   = [a for a in resultado if a["aprovado"]]
-reprovados  = [a for a in resultado if not a["aprovado"]]
-
-# ─── Estatísticas com map + zip ───────────────────────────────
-medias = [a["media"] for a in resultado]
-nomes  = [a["nome"]  for a in resultado]
-
-media_turma = sum(medias) / len(medias)
-
-# Maior e menor média usando zip
-ranking = sorted(zip(medias, nomes), reverse=True)
-
-# ─── Exibir resultado ─────────────────────────────────────────
-print("=" * 48)
-print(f"{'BOLETIM DA TURMA':^48}")
-print("=" * 48)
-
-for a in resultado:
-    status = "✅" if a["aprovado"] else "❌"
-    print(f"{a['nome']:<10} | média {a['media']:>5.2f} | [{a['conceito']}] {status}")
-
-print("-" * 48)
-print(f"Média da turma: {media_turma:.2f}")
-print(f"Aprovados:  {len(aprovados)} | Reprovados: {len(reprovados)}")
-print("\n📊 Ranking:")
-for i, (media, nome) in enumerate(ranking, 1):
-    print(f"  {i}º {nome:<10} — {media:.2f}")
+# Notas acima de 8 de TODOS os alunos (flatten)
+todas_notas_altas = [
+    f"{a['nome'].split()[0]}:{n}"
+    for a in alunos
+    for n in a["notas"]
+    if n >= 8.0
+]
+print(f"\nNotas ≥ 8.0: {todas_notas_altas}")
 </code></pre>
-            </div>
           </div>
         </div>
 
         <div class="step">
           <div class="step-num">3</div>
           <div class="step-body">
-            <div class="step-title">Execute e analise</div>
-            <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
+            <div class="step-title">Execute e explore</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal</span></div>
+              <div class="terminal-body">
+                <div><span class="t-prompt">(.venv) $</span> <span class="t-cmd">python main.py</span></div>
+                <div class="t-out">════════════════════════════════════════════════════</div>
+                <div class="t-out">          RELATÓRIO — TURMA A                      </div>
+                <div class="t-out">════════════════════════════════════════════════════</div>
+                <div class="t-out">  Ana Lima           9.35  [Excelente]      9.5 8.7 9.2 10.0</div>
+                <div class="t-out">  Diego Torres       8.35  [Bom]            8.0 7.5 8.8 9.1</div>
+                <div class="t-out">  Bruno Souza        6.52  [Regular]        6.1 7.3 5.9 6.8</div>
+                <div class="t-out">  ...</div>
+                <div class="t-out t-comment" style="margin-top:8px;"># Experimente:</div>
+                <div><span class="t-prompt">(.venv) $</span> <span class="t-cmd">python3 -c "from notas import classificar_aluno; print(classificar_aluno(8.5))"</span></div>
+                <div class="t-out">Bom</div>
               </div>
-              <pre><code class="language-bash">python notas.py</code></pre>
             </div>
-            <div class="callout callout-check">
-              <div class="callout-title">✅ O que observar</div>
-              Note como <code>formatar_aluno</code> faz <em>uma única coisa</em>. As funções <code>calcular_media</code>
-              e <code>determinar_conceito</code> são independentes e testáveis isoladamente. A list comprehension na
-              linha <code>resultado = [...]</code> substitui um loop de 5+ linhas por 1 linha legível.
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Explore no REPL interativo</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">REPL Python</span></div>
+              <div class="terminal-body">
+                <div><span class="t-prompt">>>></span> <span class="t-cmd"># Teste comprehensions ao vivo</span></div>
+                <div><span class="t-prompt">>>></span> <span class="t-cmd">[n**2 for n in range(10) if n % 2 == 0]</span></div>
+                <div class="t-out">[0, 4, 16, 36, 64]</div>
+                <div><span class="t-prompt">>>></span> <span class="t-cmd">{k: k**2 for k in range(5)}</span></div>
+                <div class="t-out">{0: 0, 1: 1, 2: 4, 3: 9, 4: 16}</div>
+                <div><span class="t-prompt">>>></span> <span class="t-cmd">sum(n for n in range(101))</span></div>
+                <div class="t-out">5050</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         07 — PITFALLS COMUNS
-    ══════════════════════════════════════════ -->
+    <!-- ── ARMADILHAS ── -->
     <div class="section">
-      <div class="section-label">// 07 — armadilhas</div>
-      <h2>Erros que todo mundo comete</h2>
+      <div class="section-label">// pitfalls</div>
+      <h2>⚠️ Armadilhas Comuns</h2>
 
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Default mutável em parâmetro de função</div>
-        <code>def adicionar(item, lista=[]):</code> — a lista padrão é criada <strong>uma vez</strong> quando a função é
-        definida, não a cada chamada. Todas as chamadas compartilham a mesma lista. Use <code>None</code> como default e
-        crie dentro da função.
+      <div class="pitfall">
+        <div class="pitfall-title">1. Parâmetro padrão mutável — o bug mais clássico de Python</div>
+        <p>Valores padrão de funções são avaliados <strong>uma única vez</strong> na definição da função, não a cada chamada. Usar um objeto mutável como padrão causa comportamento surpreendente:</p>
+        <pre><code class="language-python"># ❌ ERRADO — lista é compartilhada entre todas as chamadas!
+def adicionar(item, lista=[]):
+    lista.append(item)
+    return lista
+
+adicionar("a")   # ['a']
+adicionar("b")   # ['a', 'b']  ← esperávamos ['b']!
+adicionar("c")   # ['a', 'b', 'c']
+
+# ✅ CORRETO — usa None como sentinela
+def adicionar(item, lista=None):
+    if lista is None:
+        lista = []
+    lista.append(item)
+    return lista
+</code></pre>
       </div>
 
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Modificar a lista que você está iterando</div>
-        <pre style="background:var(--surface2);padding:10px;border-radius:6px;font-size:12px;margin-top:6px;">nums = [1, 2, 3, 4, 5]
-for n in nums:
+      <div class="pitfall">
+        <div class="pitfall-title">2. Modificar uma lista enquanto itera sobre ela</div>
+        <p>Adicionar ou remover itens de uma lista durante o <code>for</code> causa comportamento imprevisível. Itere sobre uma cópia ou use comprehension.</p>
+        <pre><code class="language-python">numeros = [1, 2, 3, 4, 5, 6]
+
+# ❌ Pula elementos — remove itens durante a iteração
+for n in numeros:
     if n % 2 == 0:
-        nums.remove(n)   # ← comportamento indefinido! pula elementos
-# Correto: itere sobre uma cópia ou use comprehension
-nums = [n for n in nums if n % 2 != 0]</pre>
+        numeros.remove(n)
+
+# ✅ Itera sobre uma cópia
+for n in numeros[:]:
+    if n % 2 == 0:
+        numeros.remove(n)
+
+# ✅ Mais idiomático — filtra com comprehension
+numeros = [n for n in numeros if n % 2 != 0]
+</code></pre>
       </div>
 
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Usar range(len(lista)) quando não precisa do índice</div>
-        <code>for i in range(len(nomes)): print(nomes[i])</code> é código C em Python. O idiomático é
-        <code>for nome in nomes: print(nome)</code>. Se precisar do índice E do valor:
-        <code>for i, nome in enumerate(nomes)</code>.
+      <div class="pitfall">
+        <div class="pitfall-title">3. Usar range(len(lista)) quando pode usar enumerate</div>
+        <p>Acessar elementos por índice com <code>range(len(lista))</code> é o estilo C/Java em Python. O idiomático é usar <code>enumerate</code>.</p>
+        <pre><code class="language-python">frutas = ["maçã", "banana", "laranja"]
+
+# ❌ Não-idiomático
+for i in range(len(frutas)):
+    print(f"{i}: {frutas[i]}")
+
+# ✅ Idiomático
+for i, fruta in enumerate(frutas):
+    print(f"{i}: {fruta}")
+</code></pre>
       </div>
 
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Comprehension com efeitos colaterais</div>
-        List comprehension é para <em>criar listas</em>, não para executar efeitos colaterais.
-        <code>[print(x) for x in lista]</code> é antipadrão — cria uma lista de <code>None</code> desnecessariamente.
-        Use um <code>for</code> loop quando o objetivo é efeito colateral (imprimir, salvar, enviar).
+      <div class="pitfall">
+        <div class="pitfall-title">4. Comprehension para efeito colateral</div>
+        <p>Comprehensions devem ser usadas para <em>criar coleções</em>. Usá-las apenas para chamar funções ou imprimir é confuso e desperdiça memória construindo uma lista que não será usada.</p>
+        <pre><code class="language-python"># ❌ Comprehension como loop disfarçado
+[print(n) for n in range(10)]     # cria lista [None, None, ...] que joga fora
+
+# ✅ Use for para efeitos colaterais
+for n in range(10):
+    print(n)
+</code></pre>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">5. Confundir return None implícito</div>
+        <p>Toda função Python retorna <code>None</code> se não houver <code>return</code> explícito. Isso causa bugs silenciosos quando você esquece de retornar um valor.</p>
+        <pre><code class="language-python">def somar(a, b):
+    resultado = a + b
+    # Esqueceu o return!
+
+total = somar(3, 4)
+print(total + 1)   # TypeError: unsupported operand type(s): NoneType + int
+</code></pre>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         08 — VÍDEOS
-    ══════════════════════════════════════════ -->
+    <!-- ── TABELA COMPARATIVA ── -->
     <div class="section">
-      <div class="section-label">// 08 — curadoria</div>
-      <h2>Referências em vídeo</h2>
-      <div class="videos-grid">
-        <a class="video-card" href="https://www.youtube.com/watch?v=9Os0o3wzS_I" target="_blank">
-          <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title">Python Functions — Corey Schafer</div>
-            <div class="video-channel">Corey Schafer · ~22 min</div>
-            <div class="video-why">Por que assistir: Cobre def, args, kwargs, default params e closures de forma
-              progressiva com exemplos reais. É a referência mais clara sobre funções Python em português do conteúdo
-              disponível.</div>
-            <span class="video-watch">Assistir →</span>
-          </div>
-        </a>
-
-        <a class="video-card" href="https://www.youtube.com/watch?v=3dt4OGnU5sM" target="_blank">
-          <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title">Python List Comprehensions — Corey Schafer</div>
-            <div class="video-channel">Corey Schafer · ~18 min</div>
-            <div class="video-why">Por que assistir: Desmonta a sintaxe de comprehension passo a passo, mostrando a
-              equivalência com loops e quando usar cada abordagem. Exemplos com map, filter e geradoras.</div>
-            <span class="video-watch">Assistir →</span>
-          </div>
-        </a>
-
-        <a class="video-card" href="https://www.youtube.com/watch?v=C-gEQdGVXbk" target="_blank">
-          <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title">10 Python Tips and Tricks</div>
-            <div class="video-channel">Corey Schafer · ~40 min</div>
-            <div class="video-why">Por que assistir: Foco em boas práticas de design de funções — princípio de
-              responsabilidade única, naming, parâmetros. Ideal para desenvolver o instinto certo desde o início.</div>
-            <span class="video-watch">Assistir →</span>
-          </div>
-        </a>
-
-        <a class="video-card" href="https://www.youtube.com/watch?v=hUes6y2b--0" target="_blank">
-          <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title">map, filter and reduce — Socratica</div>
-            <div class="video-channel">Socratica · ~8 min</div>
-            <div class="video-why">Por que assistir: Explicação precisa e elegante das funções de ordem superior do
-              Python. Mostra os padrões funcionais com exemplos limpos, deixando claro quando usar cada um.</div>
-            <span class="video-watch">Assistir →</span>
-          </div>
-        </a>
+      <div class="section-label">// referência</div>
+      <h2>Loop vs Comprehension — quando usar cada um</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Situação</th><th>Use</th><th>Por quê</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Criar lista transformada/filtrada</td>
+              <td><span class="badge badge-green">Comprehension</span></td>
+              <td>Declarativo, uma linha, mais rápido</td>
+            </tr>
+            <tr>
+              <td>Executar efeito colateral (print, salvar)</td>
+              <td><span class="badge badge-blue">for loop</span></td>
+              <td>Mais claro a intenção</td>
+            </tr>
+            <tr>
+              <td>Lógica complexa com múltiplos passos</td>
+              <td><span class="badge badge-blue">for loop</span></td>
+              <td>Mais legível que comprehension longa</td>
+            </tr>
+            <tr>
+              <td>Iterar uma vez sobre dados grandes</td>
+              <td><span class="badge badge-yellow">Generator</span></td>
+              <td>Lazy — não carrega tudo na memória</td>
+            </tr>
+            <tr>
+              <td>Repetir enquanto condição</td>
+              <td><span class="badge badge-blue">while loop</span></td>
+              <td>Número de iterações desconhecido</td>
+            </tr>
+            <tr>
+              <td>Criar dicionário de forma declarativa</td>
+              <td><span class="badge badge-green">Dict comprehension</span></td>
+              <td><code>{k: v for k, v in items}</code></td>
+            </tr>
+            <tr>
+              <td>Deduplicar com transformação</td>
+              <td><span class="badge badge-green">Set comprehension</span></td>
+              <td><code>{x.lower() for x in lista}</code></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         09 — CHECKPOINT
-    ══════════════════════════════════════════ -->
-    <div class="checkpoint">
-      <div class="checkpoint-label">// desafio</div>
-      <h3>🏁 Checkpoint — valide seu aprendizado</h3>
-      <p>Construa um <strong>analisador de temperaturas</strong> para uma série de cidades:</p>
-      <ul>
-        <li>Crie uma lista de dicionários com pelo menos 5 cidades e suas temperaturas diárias (7 dias cada) — use
-          valores realistas para o Brasil</li>
-        <li>Escreva funções separadas para: calcular média, mínimo e máximo; classificar o clima (<code>"frio"</code>,
-          <code>"ameno"</code>, <code>"quente"</code>) baseado na média; e formatar o resumo da cidade
-        </li>
-        <li>Use <strong>*args</strong> na função de estatísticas para aceitar qualquer quantidade de temperaturas</li>
-        <li>Processe todas as cidades com uma <strong>list comprehension</strong>, chamando a função de formatação em
-          cada uma</li>
-        <li>Use <strong>filter()</strong> para extrair só as cidades classificadas como "quente"</li>
-        <li>Use <strong>zip()</strong> para combinar os nomes das cidades com suas médias e exibir um ranking ordenado
-        </li>
-        <li>Implemente o loop de exibição usando <code>enumerate()</code> para mostrar a posição no ranking</li>
-      </ul>
-      <div class="checkpoint-hint">💬 Dica: comece pelas funções, teste cada uma isoladamente com <code>print()</code>
-        antes de montar o pipeline completo. Função que funciona sozinha raramente quebra quando combinada.</div>
-    </div>
-
-    <!-- ══════════════════════════════════════════
-         PRÓXIMA AULA
-    ══════════════════════════════════════════ -->
-    <a href="py-03-colecoes-arquivos.html" class="next-lesson">
-      <div>
-        <div class="next-label">Próxima aula →</div>
-        <div class="next-title">Python — Coleções &amp; Arquivos</div>
+    <!-- ── VÍDEOS ── -->
+    <div class="section">
+      <div class="section-label">// curadoria</div>
+      <h2>Vídeos Recomendados</h2>
+      <div class="video-grid">
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Python Functions — Everything You Need to Know</div>
+            <div class="video-channel">Corey Schafer · ~30 min</div>
+            <div class="video-why">Por que assistir: O guia definitivo de funções em Python — cobre *args, **kwargs, closures e decorators com exemplos muito claros e progressivos.</div>
+            <a href="https://www.youtube.com/watch?v=9Os0o3wzS_I" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Comprehensions in Python — The BEST Way to Build Lists</div>
+            <div class="video-channel">Tech With Tim · ~20 min</div>
+            <div class="video-why">Por que assistir: Mostra list, dict e set comprehensions com exemplos reais de dados, incluindo o caso de comprehensions aninhadas com flatten.</div>
+            <a href="https://www.youtube.com/watch?v=3dt4OGnU5sM" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Python Loops — For, While, Break, Continue e Else</div>
+            <div class="video-channel">Sentdex · ~25 min</div>
+            <div class="video-why">Por que assistir: Cobre o comportamento único do else no for/while de Python, que poucos tutoriais explicam bem — junto com enumerate e zip.</div>
+            <a href="https://www.youtube.com/watch?v=6iF8Xb7Z3wQ" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Python Match Statement — Structural Pattern Matching</div>
+            <div class="video-channel">Fireship · ~8 min</div>
+            <div class="video-why">Por que assistir: Overview rápido e visual do match/case do Python 3.10+ com casos de uso reais — essencial para código moderno.</div>
+            <a href="https://www.youtube.com/watch?v=scNNi4860kk" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
       </div>
-      <div class="next-arrow">→</div>
-    </a>
-
-    <div class="footer">
-      <span>🐍 Python · Aula 06 / 50</span>
-      <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
     </div>
 
-  </div><!-- /page -->
+    <!-- ── GLOSSÁRIO ── -->
+    <div class="section">
+      <div class="section-label">// glossário</div>
+      <h2>Termos desta Aula</h2>
+      <div class="glossary-item">
+        <div class="glossary-term">Controle de Fluxo</div>
+        <div class="glossary-def">Estruturas que determinam a ordem de execução do código: if/elif/else, for, while, break, continue.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Indentação</div>
+        <div class="glossary-def">Em Python, a indentação (4 espaços) define blocos de código — é sintaxe obrigatória, não estética.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">List Comprehension</div>
+        <div class="glossary-def">Sintaxe concisa para criar listas: <code>[expressão for item in iterável if condição]</code>. Mais legível e geralmente mais rápida que loops equivalentes.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">*args / **kwargs</div>
+        <div class="glossary-def"><code>*args</code> captura argumentos posicionais extras como tuple. <code>**kwargs</code> captura argumentos nomeados extras como dict. Permitem funções com assinatura flexível.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Escopo LEGB</div>
+        <div class="glossary-def">Ordem de resolução de nomes em Python: Local → Enclosing → Global → Built-in.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Closure</div>
+        <div class="glossary-def">Função que "captura" variáveis do escopo onde foi definida, mesmo depois que esse escopo deixou de existir.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Generator Expression</div>
+        <div class="glossary-def">Como uma list comprehension, mas sem colchetes e com avaliação lazy — produz um item por vez sem criar toda a lista na memória.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Funções Puras</div>
+        <div class="glossary-def">Funções sem efeitos colaterais: dada a mesma entrada, sempre retornam a mesma saída, sem modificar estado externo. São mais fáceis de testar e raciocinar.</div>
+      </div>
+    </div>
+
+    <!-- ── CHECKPOINT ── -->
+    <div class="section">
+      <div class="checkpoint">
+        <h3>🏁 Checkpoint — Desafio Final</h3>
+        <p>Crie um script <code>loja.py</code> que implemente um <strong>sistema de processamento de pedidos</strong> usando tudo desta aula:</p>
+        <ul>
+          <li>Uma função <code>calcular_total(itens: list[dict], desconto: float = 0) -> float</code> que receba uma lista de <code>{"produto": str, "preco": float, "quantidade": int}</code> e aplique o desconto ao total</li>
+          <li>Uma função <code>categorizar_pedido(total: float) -> str</code> que retorne "Pequeno" (&lt; R$100), "Médio" (R$100–500), "Grande" (R$500–2000) ou "VIP" (&gt; R$2000)</li>
+          <li>Uma list comprehension que filtre apenas itens com <code>quantidade > 0</code> e gere uma lista de strings formatadas <code>"2x Notebook — R$ 7.000,00"</code></li>
+          <li>Um dict comprehension que crie um mapa <code>{produto: subtotal}</code> de cada item</li>
+          <li>Um loop <code>while</code> que simule um "caixa": aceita entradas do tipo <code>"produto:preço:qtd"</code>, monta o pedido e imprime o total a cada item adicionado, até o usuário digitar <code>"fim"</code></li>
+        </ul>
+        <div class="checkpoint-hint">💬 Dica: para o loop do caixa, use <code>input()</code> e <code>try/except ValueError</code> para lidar com entradas inválidas. Estruture com <code>while True</code> e <code>break</code> ao receber "fim". Use <code>*itens</code> para desempacotar o split em 3 variáveis com validação.</div>
+      </div>
+    </div>
+
+    <!-- ── PRÓXIMOS PASSOS ── -->
+    <div class="section">
+      <div class="section-label">// próximos passos</div>
+      <h2>O que vem a seguir?</h2>
+      <p style="margin-bottom: 20px;">Com lógica e funções no cinto, vamos mergulhar nas estruturas de dados nativas do Python — listas, dicionários, conjuntos e tuplas. Elas são a espinha dorsal de qualquer programa real e a base para entender pandas e bancos de dados mais à frente.</p>
+      <a href="py-03-estruturas-dados.html" class="next-card">
+        <div>
+          <div class="next-card-label">Próxima aula · 🐍 Python</div>
+          <div class="next-card-title">Python — Estruturas de Dados</div>
+        </div>
+        <span class="next-arrow">→</span>
+      </a>
+    </div>
+
+  </div>
 
   <script>
-    // Initialize syntax highlighting
-    document.addEventListener('DOMContentLoaded', () => {
-      hljs.highlightAll();
-    });
-
-    // Initialize Mermaid
-    mermaid.initialize({
-      startOnLoad: true,
-      theme: 'dark',
-      themeVariables: {
-        primaryColor: '#3b82f6',
-        primaryTextColor: '#e8e8f0',
-        primaryBorderColor: 'rgba(59, 130, 246, 0.35)',
-        lineColor: '#8585a8',
-        background: '#111118',
-        mainBkg: '#16161f',
-        nodeBorder: '#3b82f6'
-      }
-    });
-
-    // Scroll progress indicator (update progress bar)
+    const bar = document.getElementById('progressBar');
     window.addEventListener('scroll', () => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = (scrollTop / docHeight) * 100;
-      document.querySelector('.progress-bar-fill').style.width = progress + '%';
+      const doc = document.documentElement;
+      bar.style.width = (doc.scrollTop / (doc.scrollHeight - doc.clientHeight) * 100) + '%';
     });
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.hljs) hljs.highlightAll();
+    });
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
   </script>
-
 </body>
-
 </html>

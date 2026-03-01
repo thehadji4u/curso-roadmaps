@@ -4,19 +4,120 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GitHub — Colaboração & Pull Requests · 🐙 GitHub</title>
+  <title>GitHub — Colaboração & Pull Requests · Aula 11</title>
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap"
+    rel="stylesheet">
 
-
-
-
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
   <style>
-    /* ─── TOKENS ────────────────────────────────────────────── */
+    pre code.hljs {
+      display: block;
+      overflow-x: auto;
+      padding: 1em
+    }
+
+    code.hljs {
+      padding: 3px 5px
+    }
+
+    .hljs {
+      color: #c9d1d9;
+      background: #0d1117
+    }
+
+    .hljs-doctag,
+    .hljs-keyword,
+    .hljs-meta .hljs-keyword,
+    .hljs-template-tag,
+    .hljs-template-variable,
+    .hljs-type,
+    .hljs-variable.language_ {
+      color: #ff7b72
+    }
+
+    .hljs-title,
+    .hljs-title.class_,
+    .hljs-title.class_.inherited__,
+    .hljs-title.function_ {
+      color: #d2a8ff
+    }
+
+    .hljs-attr,
+    .hljs-attribute,
+    .hljs-literal,
+    .hljs-meta,
+    .hljs-number,
+    .hljs-operator,
+    .hljs-variable,
+    .hljs-selector-attr,
+    .hljs-selector-class,
+    .hljs-selector-id {
+      color: #79c0ff
+    }
+
+    .hljs-regexp,
+    .hljs-string,
+    .hljs-meta .hljs-string {
+      color: #a5d6ff
+    }
+
+    .hljs-built_in,
+    .hljs-symbol {
+      color: #ffa657
+    }
+
+    .hljs-comment,
+    .hljs-code,
+    .hljs-formula {
+      color: #8b949e
+    }
+
+    .hljs-name,
+    .hljs-quote,
+    .hljs-selector-tag,
+    .hljs-selector-pseudo {
+      color: #7ee787
+    }
+
+    .hljs-subst {
+      color: #c9d1d9
+    }
+
+    .hljs-section {
+      color: #1f6feb;
+      font-weight: 700
+    }
+
+    .hljs-bullet {
+      color: #f2cc60
+    }
+
+    .hljs-emphasis {
+      color: #c9d1d9;
+      font-style: italic
+    }
+
+    .hljs-strong {
+      color: #c9d1d9;
+      font-weight: 700
+    }
+
+    .hljs-addition {
+      color: #aff5b4;
+      background-color: #033a16
+    }
+
+    .hljs-deletion {
+      color: #ffdcd7;
+      background-color: #67060c
+    }
+
     :root {
       --bg: #0a0a0f;
       --surface: #111118;
@@ -24,1385 +125,1775 @@
       --border: #1e1e2e;
       --text: #e8e8f0;
       --muted: #8585a8;
-
       --accent: #58a6ff;
-      --accent-dim: rgba(88, 166, 255, 0.12);
-      --accent-border: rgba(88, 166, 255, 0.35);
-
-      /* Semantic colors */
+      --accent-dim: rgba(88, 166, 255, 0.10);
+      --accent-border: rgba(88, 166, 255, 0.30);
       --success: #10b981;
       --warn: #f59e0b;
       --danger: #ef4444;
       --info: #06b6d4;
     }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    .progress-bar-wrap {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--border);
+      z-index: 1000;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #79c0ff);
+      width: 0%;
+      transition: width 0.1s;
+    }
+
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 32px;
+      background: rgba(10, 10, 15, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-back {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .nav-back:hover {
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-position {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+
+    .nav-position .track {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .nav-prev,
+    .nav-next {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: transparent;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .nav-prev:hover,
+    .nav-next:hover {
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .nav-prev.disabled {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    .nav-next {
+      border-color: var(--accent-border);
+      color: var(--accent);
+    }
+
+    .nav-next:hover {
+      background: var(--accent-dim);
+      color: #79c0ff;
+    }
+
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 48px 24px 96px;
+    }
+
+    .hero {
+      padding: 52px 0 40px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 56px;
+    }
+
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .hero-badge {
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #fff 40%, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    .tag.accent {
+      background: var(--accent-dim);
+      border-color: var(--accent-border);
+      color: var(--accent);
+    }
+
+    .section {
+      margin-bottom: 64px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .section h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+
+    .section h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 32px 0 14px;
+      color: #fff;
+    }
+
+    .section p {
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .callout {
+      border-radius: 8px;
+      padding: 18px 20px;
+      margin: 20px 0;
+      border-left: 3px solid;
+    }
+
+    .callout-title {
+      font-weight: 700;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+
+    .callout-info {
+      background: rgba(6, 182, 212, 0.08);
+      border-color: var(--info);
+    }
+
+    .callout-info .callout-title {
+      color: var(--info);
+    }
+
+    .callout-warn {
+      background: rgba(245, 158, 11, 0.08);
+      border-color: var(--warn);
+    }
+
+    .callout-warn .callout-title {
+      color: var(--warn);
+    }
+
+    .callout-tip {
+      background: rgba(16, 185, 129, 0.08);
+      border-color: var(--success);
+    }
+
+    .callout-tip .callout-title {
+      color: var(--success);
+    }
+
+    .callout-danger {
+      background: rgba(239, 68, 68, 0.08);
+      border-color: var(--danger);
+    }
+
+    .callout-danger .callout-title {
+      color: var(--danger);
+    }
+
+    .analogy-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .analogy-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+
+    .analogy-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+
+    .analogy-text {
+      font-size: 15px;
+      color: var(--text);
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+
+    .analogy-mapping {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 24px;
+    }
+
+    .analogy-real {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .analogy-tech {
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--accent);
+    }
+
+    .mermaid-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 20px;
+      margin: 24px 0;
+      overflow: auto;
+    }
+
+    .mermaid-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin: 16px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead tr {
+      border-bottom: 2px solid var(--accent-border);
+    }
+
+    thead th {
+      text-align: left;
+      padding: 10px 14px;
+      color: var(--accent);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    tbody tr:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    tbody td {
+      padding: 11px 14px;
+      color: var(--text);
+      vertical-align: top;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .badge-green {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+    }
+
+    .badge-red {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+    }
+
+    .badge-yellow {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+    }
+
+    .badge-blue {
+      background: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .step {
+      display: flex;
+      gap: 18px;
+      padding: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .step-num {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .step-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .step-title {
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .step-desc {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    pre {
+      background: #0d1117 !important;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 12px 0;
+      font-size: 13px;
+    }
+
+    pre code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .code-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 10px 16px 0;
+    }
+
+    code:not(.hljs) {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid var(--border);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: #79c0ff;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 640px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card-mini {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      transition: border-color 0.2s;
+    }
+
+    .card-mini:hover {
+      border-color: var(--accent-border);
+    }
+
+    .card-mini h4 {
+      color: #fff;
+      font-size: 14px;
+      margin: 8px 0 6px;
+    }
+
+    .card-mini p {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .compare-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 16px 0;
+    }
+
+    @media (max-width: 600px) {
+      .compare-split {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .compare-old {
+      background: rgba(239, 68, 68, 0.05);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .compare-new {
+      background: rgba(16, 185, 129, 0.05);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .compare-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .compare-old .compare-label {
+      color: #f87171;
+    }
+
+    .compare-new .compare-label {
+      color: #34d399;
+    }
+
+    .video-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .video-card {
+      display: flex;
+      gap: 16px;
+      padding: 18px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      transition: border-color 0.2s;
+    }
+
+    .video-card:hover {
+      border-color: var(--accent-border);
+    }
+
+    .video-thumb {
+      flex-shrink: 0;
+      width: 56px;
+      height: 56px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: var(--accent);
+    }
+
+    .video-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .video-title {
+      font-weight: 700;
+      color: #fff;
+      font-size: 14px;
+      margin-bottom: 3px;
+    }
+
+    .video-channel {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .video-why {
+      font-size: 13px;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .video-card a {
+      font-size: 12px;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+    }
+
+    .video-card a:hover {
+      text-decoration: underline;
+    }
+
+    .checkpoint {
+      background: var(--surface2);
+      border: 1px solid var(--accent-border);
+      border-radius: 12px;
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .checkpoint::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), #79c0ff);
+    }
+
+    .checkpoint h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+
+    .checkpoint p {
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+
+    .checkpoint ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+
+    .checkpoint ul li {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .checkpoint ul li::before {
+      content: '✦ ';
+      color: var(--accent);
+    }
+
+    .checkpoint-hint {
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--accent);
+    }
+
+    .next-steps {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+    }
+
+    .next-steps h3 {
+      font-family: 'Syne', sans-serif;
+      color: #fff;
+      margin-bottom: 16px;
+    }
+
+    .next-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      border-radius: 10px;
+      padding: 18px 22px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .next-card:hover {
+      background: rgba(88, 166, 255, 0.18);
+    }
+
+    .next-label {
+      font-size: 11px;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 4px;
+    }
+
+    .next-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .next-arrow {
+      font-size: 24px;
+      color: var(--accent);
+    }
+
+    .pitfall-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .pitfall {
+      display: flex;
+      gap: 14px;
+      padding: 16px 18px;
+      background: rgba(239, 68, 68, 0.06);
+      border: 1px solid rgba(239, 68, 68, 0.18);
+      border-radius: 8px;
+    }
+
+    .pitfall-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .pitfall-text h4 {
+      color: #f87171;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .pitfall-text p {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .glossary {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .glossary-item {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 16px;
+      padding: 12px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .glossary-term {
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 13px;
+      align-self: center;
+    }
+
+    .glossary-def {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .workflow-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin: 16px 0;
+    }
+
+    .workflow-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 14px;
+      font-weight: 600;
+    }
+
+    @media (max-width: 640px) {
+      .top-nav {
+        padding: 10px 16px;
+      }
+
+      .analogy-mapping {
+        grid-template-columns: 1fr;
+      }
+
+      .glossary-item {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
-  <link rel="stylesheet" href="../assets/css/lesson.css">
 </head>
 
 <body>
-
   <div class="progress-bar-wrap">
-    <div class="progress-bar-fill"></div>
+    <div class="progress-bar-fill" id="progress"></div>
   </div>
 
   <nav class="top-nav">
     <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
     <div class="nav-center">
       <a href="html-04-animacoes-efeitos.html" class="nav-prev">← Anterior</a>
-      <div class="nav-position"><span class="track">🐙 GitHub</span> · Aula 11 / 50</div>
+      <div class="nav-position">
+        <span class="track">🐙 GitHub</span> · Aula 11 / 50
+      </div>
       <a href="js-01-core-dom.html" class="nav-next">Próxima →</a>
     </div>
   </nav>
 
   <div class="page">
 
-    <!-- HERO -->
+    <!-- ══════════════════════════════════════════
+         HERO
+    ══════════════════════════════════════════ -->
     <div class="hero">
-      <div class="hero-eyebrow"><span>🐙 GitHub · 03 · Prioridade 2</span><span class="hero-badge">Aula 11</span></div>
-      <h1>GitHub — Colaboração &amp; Pull Requests</h1>
+      <div class="hero-eyebrow">
+        <span>🐙 GitHub</span>
+        <span class="hero-badge">Aula 11</span>
+      </div>
+      <h1>GitHub — Colaboração & Pull Requests</h1>
       <div class="hero-meta">
-        <span>⏱ ~45 min de leitura</span>
+        <span>⏱ ~90 min de leitura</span>
         <span>🎯 Iniciante → Intermediário</span>
         <span>🔧 Hands-on incluído</span>
       </div>
       <div class="hero-tags">
-        <span class="tag">remote</span><span class="tag">push / pull</span><span class="tag">fetch</span>
-        <span class="tag">fork</span><span class="tag">clone</span><span class="tag">pull request</span>
-        <span class="tag">code review</span><span class="tag">merge</span><span class="tag">issues</span>
-        <span class="tag">README.md</span><span class="tag">GitHub Projects</span>
+        <span class="tag accent">Remote & Push/Pull</span>
+        <span class="tag accent">Pull Requests</span>
+        <span class="tag accent">Issues & Projects</span>
+        <span class="tag accent">README & Docs</span>
+        <span class="tag">Branching</span>
+        <span class="tag">Code Review</span>
+        <span class="tag">Open Source</span>
       </div>
     </div>
 
-    <!-- ════════════════════════════════════════════════
-       1. POR QUE ISSO IMPORTA
-  ════════════════════════════════════════════════ -->
+    <!-- ══════════════════════════════════════════
+         POR QUE IMPORTA
+    ══════════════════════════════════════════ -->
     <div class="section">
-      <div class="section-label">// motivação</div>
+      <div class="section-label">01 — Motivação</div>
       <h2>Por que isso importa?</h2>
       <p>
-        Até agora, todo o seu Git viveu dentro da sua máquina. Isso é suficiente para você trabalhar sozinho — mas
-        <strong>programar profissionalmente é um esporte coletivo</strong>. Times de dezenas (ou centenas) de
-        engenheiros precisam trabalhar no mesmo código ao mesmo tempo, sem pisarem uns nos pés dos outros, sem perderem
-        trabalho, sem introduzirem bugs silenciosos no código de outra pessoa.
+        Git no computador local é poderoso. Git + GitHub é onde a mágica da colaboração acontece. Praticamente
+        todo projeto de software profissional hoje — startups, big tech, projetos open source — usa o modelo de
+        Pull Requests para revisar, discutir e integrar código. Saber navegar nesse fluxo é o que separa
+        alguém que "usa Git" de alguém que trabalha em equipe de verdade.
       </p>
-      <p>
-        O GitHub é a infraestrutura social que torna isso possível. Ele hospeda repositórios remotos na nuvem, mas o que
-        o torna especial é o conjunto de ferramentas de <strong>colaboração</strong>: Pull Requests para propor e
-        revisar mudanças de forma estruturada, Issues para rastrear problemas e ideias, Projects para organizar o
-        trabalho visualmente. É aqui que o código ganha contexto, conversa, justificativa e história permanente.
-      </p>
-      <p>
-        Não saber usar Pull Requests é, no mercado atual, como saber escrever mas não saber usar e-mail. É o mecanismo
-        de entrega de código em praticamente 100% das empresas de tecnologia do mundo. Vamos dominar isso de forma
-        profunda.
-      </p>
-      <div class="callout callout-info">
-        <div class="callout-title">💼 Como times sênior usam isso no dia a dia</div>
-        <p>
-          Em uma empresa como Nubank, Stripe ou Google, <strong>nenhum código vai para produção sem um Pull Request
-            aprovado</strong> por pelo menos um colega. O PR não é burocracia — é o ponto de encontro entre quem
-          escreveu e quem vai manter. O revisor pergunta "por que você fez assim?", o autor explica, ambos aprendem. É a
-          forma mais eficiente de disseminar conhecimento de arquitetura no time. Times maduros têm regras como: PR com
-          mais de 400 linhas não passa (deve ser quebrado em partes menores), revisão deve acontecer em menos de 24h, e
-          todo PR deve ter testes passando. Essas convenções são o que separa engenharia séria de amadorismo.
-        </p>
+      <div class="grid-2">
+        <div class="card-mini">
+          <div>🚫</div>
+          <h4>Sem esse conhecimento</h4>
+          <p>Você edita código diretamente na main, quebra o projeto de todos, e não tem como revisar mudanças antes de
+            integrar.</p>
+        </div>
+        <div class="card-mini">
+          <div>✅</div>
+          <h4>Com esse conhecimento</h4>
+          <p>Você propõe mudanças isoladas em branches, recebe feedback via PR, e contribui para qualquer projeto open
+            source do mundo.</p>
+        </div>
+      </div>
+      <div class="callout callout-info" style="margin-top: 20px;">
+        <div class="callout-title">💡 Contexto Sênior</div>
+        Um engenheiro sênior hoje <strong>nunca</strong> faz commit diretamente na branch principal de um projeto
+        compartilhado.
+        O fluxo de Pull Request + Code Review é o padrão da indústria — é assim que Google, Meta, Netflix e qualquer
+        startup séria trabalha.
       </div>
     </div>
 
-    <!-- ════════════════════════════════════════════════
-       2. ANALOGIA
-  ════════════════════════════════════════════════ -->
+    <!-- ══════════════════════════════════════════
+         ANALOGIA
+    ══════════════════════════════════════════ -->
     <div class="section">
-      <div class="section-label">// analogia</div>
-      <h2>Antes do código: uma analogia</h2>
+      <div class="section-label">02 — Analogia</div>
+      <h2>O Manuscrito da Editora</h2>
       <div class="analogy-card">
-        <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
+        <div class="analogy-label">🎭 Analogia do Mundo Real</div>
         <div class="analogy-text">
-          Imagine uma <strong>grande editora de livros</strong>. Existe um único manuscrito oficial guardado no cofre
-          central da editora — essa é a versão definitiva que vai para impressão e distribuição. Nenhum editor mexe
-          diretamente nesse original.
-          <br><br>
-          Quando um autor quer contribuir com um capítulo novo, ele <strong>solicita uma cópia do manuscrito para levar
-            para casa</strong> e trabalhar. Em casa, com suas canetas e anotações, ele trabalha em seus próprios
-          rascunhos. Quando termina, ele não simplesmente substitui o original — ele <strong>entrega à editora uma
-            proposta formal e documentada</strong>: "aqui estão as alterações que fiz, no capítulo 3, pelas razões X e
-          Y, e aqui está como testar se está correto."
-          <br><br>
-          A editora então convoca uma <strong>reunião de revisão</strong> com outros autores e editores. Eles leem a
-          proposta, fazem perguntas, sugerem ajustes, e só depois de um consenso coletivo, as alterações são
-          incorporadas ao manuscrito oficial. Se alguém identificar um problema no original antes disso, deixa um
-          <strong>bilhete descritivo na mesa da editora</strong> descrevendo o problema com todos os detalhes. O quadro
-          na parede da editora que mostra o status de cada capítulo? Isso é o GitHub Projects.
+          Imagine que você é um autor contribuindo para uma enciclopédia colaborativa impressa. Você não pode
+          simplesmente arrancar páginas do livro e reescrever. Em vez disso: você faz uma <strong>cópia do
+            capítulo</strong>
+          (branch), escreve suas alterações, e envia o rascunho para o editor-chefe (Pull Request). O editor
+          revisa linha por linha, faz comentários, pede ajustes. Quando todos aprovam, o texto é incorporado ao
+          livro oficial (merge). Issues são os bilhetinhos de "Alguém deveria atualizar essa seção". O README
+          é a capa e sumário do livro — a primeira coisa que qualquer leitor vê.
         </div>
         <div class="analogy-mapping">
-          <span class="analogy-real">Manuscrito oficial no cofre</span>
-          <span class="analogy-arrow">→</span>
-          <span class="analogy-tech">branch `main` no GitHub</span>
-
-          <span class="analogy-real">Pegar cópia para trabalhar em casa</span>
-          <span class="analogy-arrow">→</span>
-          <span class="analogy-tech">git clone / fork</span>
-
-          <span class="analogy-real">Proposta formal de alteração</span>
-          <span class="analogy-arrow">→</span>
-          <span class="analogy-tech">Pull Request</span>
-
-          <span class="analogy-real">Reunião de revisão com a equipe</span>
-          <span class="analogy-arrow">→</span>
-          <span class="analogy-tech">Code Review</span>
-
-          <span class="analogy-real">Incorporar ao manuscrito oficial</span>
-          <span class="analogy-arrow">→</span>
-          <span class="analogy-tech">Merge no main</span>
-
-          <span class="analogy-real">Bilhete descritivo de problema</span>
-          <span class="analogy-arrow">→</span>
-          <span class="analogy-tech">Issue</span>
-
-          <span class="analogy-real">Quadro de status dos capítulos</span>
-          <span class="analogy-arrow">→</span>
-          <span class="analogy-tech">GitHub Projects</span>
+          <div class="analogy-real">📋 Cópia do capítulo</div>
+          <div class="analogy-tech">🌿 Feature branch</div>
+          <div class="analogy-real">📨 Rascunho enviado ao editor</div>
+          <div class="analogy-tech">🔀 Pull Request</div>
+          <div class="analogy-real">✏️ Comentários do editor</div>
+          <div class="analogy-tech">💬 Code Review</div>
+          <div class="analogy-real">📖 Incorporado ao livro</div>
+          <div class="analogy-tech">✅ Merge na main</div>
+          <div class="analogy-real">📌 Bilhetinho "precisa atualizar"</div>
+          <div class="analogy-tech">🐛 Issue</div>
+          <div class="analogy-real">🗂️ Quadro de tarefas da equipe</div>
+          <div class="analogy-tech">📊 GitHub Projects</div>
         </div>
       </div>
     </div>
 
-    <!-- ════════════════════════════════════════════════
-       3. REPOSITÓRIO REMOTO
-  ════════════════════════════════════════════════ -->
+    <!-- ══════════════════════════════════════════
+         CONCEITO CENTRAL — Remote
+    ══════════════════════════════════════════ -->
     <div class="section">
-      <div class="section-label">// conceito</div>
-      <h2>Parte 1 — Repositório Remoto: local vs nuvem</h2>
-
+      <div class="section-label">03 — Conceito Central</div>
+      <h2>Remote, Push & Pull</h2>
       <p>
-        Nas aulas anteriores, seu repositório Git existia <strong>apenas no seu computador</strong> — isso é chamado de
-        <em>repositório local</em>. O GitHub hospeda uma segunda cópia desse mesmo repositório em servidores na nuvem.
-        Essa cópia na nuvem é chamada de <strong>remote</strong> (repositório remoto).
-      </p>
-      <p>
-        Você pode ter quantos remotes quiser apontando para lugares diferentes. Por convenção universal, o remote
-        principal (o do GitHub) recebe o apelido <code>origin</code>. Quando você trabalha em contribuições open source,
-        costuma ter dois: <code>origin</code> (seu fork) e <code>upstream</code> (o repositório original). Veremos isso
-        em detalhes.
+        Git é um sistema distribuído: cada desenvolvedor tem uma cópia completa do repositório. O GitHub é
+        apenas um repositório <em>remoto</em> — um servidor central que serve como ponto de encontro entre
+        todos. A comunicação acontece por dois comandos fundamentais:
       </p>
 
-      <div class="mermaid-wrap">
-        <div class="mermaid-label">// fluxo completo: local ↔ GitHub</div>
-        <pre class="mermaid">
-sequenceDiagram
-    participant WD as 💻 Working Directory
-    participant SA as 📦 Staging Area
-    participant LR as 🏠 Repo Local
-    participant RR as ☁️ GitHub (Remote)
-
-    Note over WD,RR: Enviando seu trabalho para o GitHub
-    WD->>SA: git add .
-    SA->>LR: git commit -m "mensagem"
-    LR->>RR: git push origin main
-
-    Note over WD,RR: Recebendo trabalho do time
-    RR->>LR: git fetch origin
-    LR->>WD: git merge origin/main
-    Note over WD,RR: Ou o atalho equivalente:
-    RR->>WD: git pull origin main
-      </pre>
-      </div>
-
-      <h3>Push, Pull e Fetch — a diferença exata</h3>
-      <p>
-        Estes três comandos são a base da sincronização. A confusão entre eles é a causa de 80% dos problemas que
-        iniciantes enfrentam com o Git remoto. Veja a tabela abaixo e guarde para sempre:
-      </p>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Comando</th>
-              <th>Direção</th>
-              <th>O que faz exatamente</th>
-              <th>Quando usar</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>git push</code></td>
-              <td>Local → Remote</td>
-              <td>Envia seus commits locais para o GitHub. O remote fica atualizado com o que você tem localmente.</td>
-              <td>Após fazer commits que deseja compartilhar com o time</td>
-            </tr>
-            <tr>
-              <td><code>git fetch</code></td>
-              <td>Remote → Local (seguro)</td>
-              <td>Baixa as mudanças do GitHub <strong>sem tocar no seu código</strong>. Atualiza apenas o rastreamento
-                interno (<code>origin/main</code>) do que existe no remote.</td>
-              <td>Quando quer ver o que o time fez sem arriscar conflitos agora</td>
-            </tr>
-            <tr>
-              <td><code>git pull</code></td>
-              <td>Remote → Local (direto)</td>
-              <td>Equivale a <code>git fetch</code> + <code>git merge</code> em um único comando. Baixa E integra ao seu
-                branch atual.</td>
-              <td>Para atualizar seu código com o trabalho mais recente do time</td>
-            </tr>
-            <tr>
-              <td><code>git clone</code></td>
-              <td>Remote → Local (novo)</td>
-              <td>Cria uma cópia completa de um repositório remoto na sua máquina, incluindo todo o histórico de commits
-                desde o início.</td>
-              <td>Primeira vez que você baixa um projeto</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Por que <code>git pull</code> pode criar problemas (e como evitar)</div>
-        <p>
-          <code>git pull</code> faz <code>fetch + merge</code>. Se você tem commits locais que divergem do remote (ou
-          seja, tanto você quanto seu colega fizeram commits desde a última sincronização), o merge pode criar um
-          <strong>merge commit desnecessário</strong> — um nó extra no histórico que não representa trabalho real, só
-          uma sincronização técnica. Em um projeto ativo isso polui o histórico rapidamente.
-        </p>
-        <p style="margin-top:.75rem;">
-          A alternativa mais limpa é <code>git pull --rebase</code>, que coloca seus commits locais <em>sobre</em> o que
-          veio do remote, mantendo o histórico como uma linha reta. Times experientes configuram isso como padrão
-          global:
-        </p>
-        <pre
-          style="margin-top:.75rem;background:#0d1117;padding:.75rem 1rem;border-radius:6px;font-size:.84rem;color:#a5d6ff;font-family:monospace;line-height:1.6;">git config --global pull.rebase true</pre>
-      </div>
-
-      <h3>O que é <code>origin</code> afinal?</h3>
-      <p>
-        Quando você conecta seu repositório local ao GitHub, o Git precisa de um <strong>apelido (alias)</strong> para
-        referenciar esse endereço remoto. Por convenção universal, esse apelido é chamado <code>origin</code>. Não tem
-        nada de mágico — você poderia chamar de <code>github</code>, <code>nuvem</code>, ou qualquer palavra. Mas
-        <code>origin</code> é o padrão que todo repositório do planeta usa, então seguir essa convenção evita confusão
-        para qualquer pessoa que leia seu código.
-      </p>
-      <p>Você pode ver todos os remotes configurados a qualquer momento:</p>
-      <div class="code-wrap">
-        <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span></div>
-        <pre><code class="language-bash">git remote -v
-# origin  https://github.com/seu-usuario/seu-repo.git (fetch)
-# origin  https://github.com/seu-usuario/seu-repo.git (push)
-
-# Em um fork com upstream configurado:
-# origin    https://github.com/SEU-USUARIO/repo.git (fetch)
-# origin    https://github.com/SEU-USUARIO/repo.git (push)
-# upstream  https://github.com/DONO-ORIGINAL/repo.git (fetch)
-# upstream  https://github.com/DONO-ORIGINAL/repo.git (push)</code></pre>
-      </div>
-    </div>
-
-    <!-- ════════════════════════════════════════════════
-       4. CLONE vs FORK
-  ════════════════════════════════════════════════ -->
-    <div class="section">
-      <div class="section-label">// conceito</div>
-      <h2>Parte 2 — Clone vs Fork: qual a diferença real?</h2>
-      <p>
-        Esta é umas das confusões mais frequentes entre quem está começando. Clone e Fork têm nomes parecidos e produzem
-        resultados parecidos — uma cópia do repositório — mas funcionam em contextos completamente diferentes e têm
-        implicações muito distintas.
-      </p>
-
-      <div class="concept-grid">
-        <div class="concept-card">
-          <div class="concept-icon">📥</div>
-          <div class="concept-title">git clone</div>
-          <div class="concept-desc">
-            Copia um repositório do GitHub (ou de qualquer URL Git) para a sua máquina local. O "dono" do repositório no
-            GitHub não muda — você só cria uma cópia local para trabalhar. Usado quando você <strong>tem permissão de
-              escrita</strong> no repositório (você mesmo criou, ou é membro do time com acesso).
-          </div>
+      <div class="grid-2" style="margin: 20px 0;">
+        <div class="card-mini">
+          <div style="font-size: 24px;">⬆️</div>
+          <h4>git push</h4>
+          <p>Envia seus commits locais para o repositório remoto. Você "empurra" seu trabalho para o servidor.</p>
         </div>
-        <div class="concept-card">
-          <div class="concept-icon">🍴</div>
-          <div class="concept-title">Fork (botão no GitHub)</div>
-          <div class="concept-desc">
-            Cria uma <strong>cópia independente e completa</strong> do repositório dentro da sua conta GitHub, na nuvem.
-            A cópia é inteiramente sua — você pode fazer o que quiser nela sem afetar o original. Usado quando quer
-            contribuir para projetos <strong>aos quais não tem acesso de escrita</strong> (projetos open source, repos
-            de outras pessoas).
-          </div>
+        <div class="card-mini">
+          <div style="font-size: 24px;">⬇️</div>
+          <h4>git pull</h4>
+          <p>Busca os commits do remoto e integra na sua branch local. Você "puxa" o trabalho dos colegas.</p>
         </div>
       </div>
 
       <div class="mermaid-wrap">
-        <div class="mermaid-label">// clone vs fork — onde cada um vive</div>
-        <pre class="mermaid">
-graph TB
-    subgraph GH["☁️ GitHub (nuvem)"]
-      direction LR
-      OR["📁 dono/projeto\n(repositório original)"]
-      FK["📁 voce/projeto\n(fork — cópia sua no GitHub)"]
-    end
-    subgraph LOCAL["💻 Sua Máquina (local)"]
-      LC["📁 /home/voce/projeto\n(clone local)"]
-    end
-
-    OR -- "1. Fork\n(botão Fork no GitHub)" --> FK
-    FK -- "2. git clone\n(baixa para máquina)" --> LC
-    LC -- "3. git push origin\n(envia commits)" --> FK
-    FK -- "4. Pull Request\n(proposta para o original)" --> OR
-
-    style OR fill:#1e1e2e,stroke:#58a6ff,color:#e8e8f0
-    style FK fill:#1a2030,stroke:#10b981,color:#e8e8f0
-    style LC fill:#1e1e2e,stroke:#58a6ff,color:#e8e8f0
-      </pre>
+        <div class="mermaid-label">📊 Diagrama — Fluxo Remote + Branch + PR</div>
+        <div class="mermaid">
+          flowchart LR
+          subgraph Local["💻 Máquina Local"]
+          A[main local] -->|git checkout -b| B[feature/login]
+          B -->|commits| B
+          end
+          subgraph Remote["☁️ GitHub"]
+          C[main remota]
+          D[feature/login remota]
+          D -->|Pull Request| E{Code Review}
+          E -->|Aprovado| C
+          end
+          B -->|git push origin| D
+          C -->|git pull| A
+        </div>
       </div>
+
+      <h3>Configurando um Remote</h3>
+      <p>Quando você cria um repo no GitHub e quer conectar sua pasta local, os passos são:</p>
+      <div class="code-label">shell</div>
+      <pre><code class="language-bash"># Ver os remotes configurados
+git remote -v
+
+# Adicionar o GitHub como remote "origin"
+git remote add origin https://github.com/seu-usuario/meu-projeto.git
+
+# Enviar sua branch main pela primeira vez
+git push -u origin main
+# A flag -u define o "upstream" — próximos pushes serão apenas: git push
+
+# Clonar um repositório existente (já configura o remote automaticamente)
+git clone https://github.com/outro-usuario/projeto.git</code></pre>
 
       <div class="callout callout-info">
-        <div class="callout-title">💡 O fluxo canônico de open source</div>
-        <p>
-          <strong>Fork → Clone do fork → Criar branch → Commits → Push para o fork → Pull Request para o
-            original.</strong>
-        </p>
-        <p style="margin-top:.5rem;">
-          Esse é o caminho exato que qualquer contribuição para projetos como React, Vue, Python, Linux, VS Code ou
-          Django percorre. Quando você entender e dominar esse fluxo, o ecossistema inteiro de open source se abre para
-          você. Você pode contribuir com qualquer projeto do mundo, mesmo sem ser convidado.
-        </p>
+        <div class="callout-title">💡 origin é apenas um nome</div>
+        "origin" é a convenção — é o apelido padrão para o seu remote principal. Você poderia chamar de "github" ou
+        "servidor".
+        Projetos open source geralmente têm "origin" como seu fork e "upstream" como o repo original.
       </div>
     </div>
 
-    <!-- ════════════════════════════════════════════════
-       5. PULL REQUESTS
-  ════════════════════════════════════════════════ -->
+    <!-- ══════════════════════════════════════════
+         CONCEITO — PULL REQUESTS
+    ══════════════════════════════════════════ -->
     <div class="section">
-      <div class="section-label">// conceito central</div>
-      <h2>Parte 3 — Pull Requests: o coração da colaboração</h2>
-
+      <div class="section-label">04 — Pull Requests</div>
+      <h2>O Coração da Colaboração</h2>
       <p>
-        Um <strong>Pull Request (PR)</strong> é uma proposta formal e documentada de mudança no código. Ao abrir um PR,
-        você está dizendo: "Eu fiz estas alterações, neste branch, por estas razões — por favor, revisem, comentem, e se
-        concordarem, incorporem ao main." O nome vem historicamente da ideia de pedir para o dono do repositório
-        <em>fazer um pull</em> das suas mudanças para dentro do projeto dele.
+        Um Pull Request (PR) é uma proposta formal de integrar mudanças de uma branch para outra. Mais do que
+        um mecanismo técnico, é uma conversa: o autor explica o que fez e por quê, e os revisores analisam,
+        questionam e aprovam. É onde o conhecimento técnico da equipe é compartilhado e a qualidade do código
+        é mantida.
       </p>
 
-      <h3>Anatomia de um Pull Request de qualidade</h3>
-      <div class="concept-grid">
-        <div class="concept-card">
-          <div class="concept-icon">📝</div>
-          <div class="concept-title">1. Título preciso</div>
-          <div class="concept-desc">
-            Curto, ativo e descritivo. "feat: adiciona validação de CPF no cadastro" — não "atualização" ou "fix stuff".
-            O título é o que aparece no histórico para sempre.
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Criar uma branch para a feature</div>
+            <div class="step-desc">Nunca trabalhe diretamente na main. Toda mudança vive em sua própria branch.</div>
+            <pre><code class="language-bash">git checkout -b feature/adicionar-login
+# ou em versões mais recentes:
+git switch -c feature/adicionar-login</code></pre>
           </div>
         </div>
-        <div class="concept-card">
-          <div class="concept-icon">📋</div>
-          <div class="concept-title">2. Descrição com contexto</div>
-          <div class="concept-desc">
-            O <em>porquê</em> da mudança: qual problema resolve, qual abordagem foi escolhida, quais alternativas foram
-            consideradas e descartadas. Sem esse contexto, o revisor vai perguntar tudo isso.
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Desenvolver e commitar</div>
+            <div class="step-desc">Faça seus commits com mensagens claras e descritivas.</div>
+            <pre><code class="language-bash">git add .
+git commit -m "feat: adicionar formulário de login com validação"
+# Convenção: feat, fix, docs, style, refactor, test, chore</code></pre>
           </div>
         </div>
-        <div class="concept-card">
-          <div class="concept-icon">🔗</div>
-          <div class="concept-title">3. Issue relacionada</div>
-          <div class="concept-desc">
-            <code>Closes #42</code> na descrição liga o PR a uma Issue. Quando o PR for mergeado, a Issue fecha
-            automaticamente. Cria trilha auditável: "esse bug existia → esse PR resolveu."
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Enviar a branch para o GitHub</div>
+            <div class="step-desc">O GitHub vai sugerir criar um PR assim que você fizer push de uma branch nova.</div>
+            <pre><code class="language-bash">git push origin feature/adicionar-login</code></pre>
           </div>
         </div>
-        <div class="concept-card">
-          <div class="concept-icon">🧪</div>
-          <div class="concept-title">4. Como testar</div>
-          <div class="concept-desc">
-            Passo a passo para o revisor verificar que a mudança funciona. "Acesse /checkout com carrinho cheio → espere
-            carregar → veja que não trava mais."
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Abrir o Pull Request no GitHub</div>
+            <div class="step-desc">Preencha um título claro, descrição do que foi feito, screenshots se tiver UI, e
+              adicione revisores.</div>
           </div>
         </div>
-        <div class="concept-card">
-          <div class="concept-icon">📸</div>
-          <div class="concept-title">5. Screenshots (quando visual)</div>
-          <div class="concept-desc">
-            Para mudanças de interface, um antes/depois visual comunica em segundos o que parágrafos não conseguem.
-            Parte obrigatória em times de produto.
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Code Review & Ajustes</div>
+            <div class="step-desc">Revisores comentam linha por linha. Você responde, faz ajustes e faz novos commits na
+              mesma branch — o PR atualiza automaticamente.</div>
           </div>
         </div>
-        <div class="concept-card">
-          <div class="concept-icon">✅</div>
-          <div class="concept-title">6. Checklist de PR</div>
-          <div class="concept-desc">
-            Times profissionais têm templates com perguntas: testes passam? documentação atualizada? não há breaking
-            changes? variáveis de ambiente documentadas?
+        <div class="step">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <div class="step-title">Merge & limpeza</div>
+            <div class="step-desc">Após aprovação, o PR é mesclado. A branch pode ser deletada no GitHub e localmente.
+            </div>
+            <pre><code class="language-bash"># Atualizar sua main local
+git checkout main
+git pull origin main
+
+# Deletar a branch local que já foi mergeada
+git branch -d feature/adicionar-login</code></pre>
           </div>
         </div>
       </div>
 
-      <h3>O ciclo de vida completo de um PR</h3>
-      <div class="mermaid-wrap">
-        <div class="mermaid-label">// estados possíveis de um pull request</div>
-        <pre class="mermaid">
-stateDiagram-v2
-    [*] --> Draft : Criado como rascunho\n(ainda trabalhando)
-    Draft --> Open : "Ready for review"\n(pronto para revisão)
-    Open --> ChangesRequested : Revisor pede ajustes\n(Changes requested)
-    ChangesRequested --> Open : Autor faz commits\nde ajuste e pede\nnova revisão
-    Open --> Approved : Revisor aprova ✅\n(Approved)
-    Approved --> Merged : Merge feito no main 🎉
-    Open --> Closed : PR cancelado\nou descartado ❌
-    Merged --> [*]
-    Closed --> [*]
-      </pre>
-      </div>
-
-      <h3>Como fazer um code review de qualidade</h3>
-      <p>
-        Revisar código é uma habilidade que a maioria dos tutoriais ignora completamente — mas é tão importante quanto
-        escrever código. Uma boa revisão pode prevenir bugs em produção, melhorar a arquitetura e distribuir
-        conhecimento no time. Uma revisão ruim é pior que não revisar, porque gera atrito sem valor.
-      </p>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>❌ Comentário que não agrega</th>
-              <th>✅ Comentário que agrega valor</th>
-              <th>Por que a diferença importa</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>"Isso está errado"</td>
-              <td>"Essa abordagem pode causar N+1 queries no banco. Sugiro usar <code>select_related('user')</code> aqui
-                para buscar tudo em uma query só. Referência: Django docs seção QuerySet."</td>
-              <td>Explica o problema, propõe solução, indica onde aprender mais</td>
-            </tr>
-            <tr>
-              <td>"Não gostei desse nome de variável"</td>
-              <td>"O nome <code>d</code> não comunica intenção. Considerando o contexto, <code>user_data</code> ou
-                <code>response_payload</code> seria mais legível para quem mantiver isso daqui a 6 meses."
-              </td>
-              <td>Específico, contextualizado e orientado ao futuro</td>
-            </tr>
-            <tr>
-              <td>"Código feio"</td>
-              <td>"Nit: poderia usar list comprehension aqui — <code>[x*2 for x in items]</code>. Fica mais idiomático
-                em Python. (Não bloqueante, muda só se concordar)"</td>
-              <td>Marca como "nit" (não bloqueante), sugere concretamente, respeita a autonomia do autor</td>
-            </tr>
-            <tr>
-              <td>"Por que você fez assim???"</td>
-              <td>"Curiosidade técnica: você considerou usar <code>useCallback</code> aqui para evitar re-renders? Ou
-                tem algum motivo específico para não usar? Pode ser que eu esteja perdendo contexto."</td>
-              <td>Pergunta com curiosidade genuína, abre diálogo, reconhece que pode estar errado</td>
-            </tr>
-            <tr>
-              <td>"Não aprovado"</td>
-              <td>"Não vou aprovar ainda por conta do item 2 acima (N+1 query). Os outros pontos são nits e não
-                bloqueantes. Quando esse for resolvido, aprovo."</td>
-              <td>Deixa claro o que bloqueia vs o que é sugestão, facilita a comunicação</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="callout callout-success">
-        <div class="callout-title">✅ A regra de ouro do code review</div>
-        <p>
-          Você está revisando o <strong>código</strong>, não avaliando a <strong>pessoa</strong>. "Esse trecho pode ser
-          simplificado porque..." é completamente diferente de "você fez errado". Times de alta performance tratam PRs
-          como conversas técnicas entre pares com o mesmo objetivo: código melhor. Não como avaliação de performance ou
-          prova de superioridade técnica.
-        </p>
-      </div>
-
-      <h3>Os três tipos de merge: qual escolher?</h3>
-      <p>Quando um PR é aprovado, o GitHub oferece três formas de integrar as mudanças ao main. Cada uma tem
-        consequências no histórico do repositório:</p>
+      <h3>Tipos de Merge</h3>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
               <th>Tipo</th>
-              <th>O que faz ao histórico</th>
+              <th>Comportamento</th>
               <th>Quando usar</th>
+              <th>Histórico</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><strong>Merge commit</strong></td>
-              <td>Preserva TODOS os commits do branch + adiciona um commit de merge. O histórico mostra que houve um
-                branch e quando ele foi integrado.</td>
-              <td>Features grandes onde a narrativa de desenvolvimento tem valor histórico. Times que querem
-                rastreabilidade total.</td>
+              <td><strong>Merge Commit</strong></td>
+              <td>Cria um commit de merge explícito</td>
+              <td>Features grandes, manter contexto completo</td>
+              <td><span class="badge badge-blue">Preserva tudo</span></td>
             </tr>
             <tr>
-              <td><strong>Squash and merge ✅</strong></td>
-              <td>Comprime TODOS os commits do branch em um único commit no main. O histórico do main fica limpo e cada
-                PR aparece como um único commit bem descrito.</td>
-              <td>Recomendado para a maioria dos casos. Ideal quando o branch tem commits "wip", "fix typo", "teste" que
-                poluiriam o histórico principal.</td>
+              <td><strong>Squash & Merge</strong></td>
+              <td>Comprime todos commits da branch em 1</td>
+              <td>Muitos commits "WIP", histórico limpo na main</td>
+              <td><span class="badge badge-yellow">Comprimido</span></td>
             </tr>
             <tr>
-              <td><strong>Rebase and merge</strong></td>
-              <td>Coloca os commits do branch linearmente no main sem criar merge commit. Histórico linear mas preserva
-                commits individuais.</td>
-              <td>Quando todos os commits do branch são bem escritos e têm valor individual. Exige disciplina no
-                processo de desenvolvimento.</td>
+              <td><strong>Rebase & Merge</strong></td>
+              <td>Reaplica commits linearmente, sem commit de merge</td>
+              <td>Projetos que exigem histórico linear</td>
+              <td><span class="badge badge-green">Linear</span></td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- ════════════════════════════════════════════════
-       6. ISSUES & PROJECTS
-  ════════════════════════════════════════════════ -->
+    <!-- ══════════════════════════════════════════
+         CONCEITO — ISSUES & PROJECTS
+    ══════════════════════════════════════════ -->
     <div class="section">
-      <div class="section-label">// gestão do trabalho</div>
-      <h2>Parte 4 — Issues &amp; GitHub Projects</h2>
-
-      <h3>O que é uma Issue?</h3>
+      <div class="section-label">05 — Issues & Projects</div>
+      <h2>Organização & Gestão de Tarefas</h2>
       <p>
-        Uma <strong>Issue</strong> é o sistema de rastreamento de trabalho nativo do GitHub. Qualquer pessoa (com as
-        permissões certas) pode abrir uma Issue para reportar três tipos de situações:
-      </p>
-      <ul>
-        <li><strong>Bug report:</strong> "A página de checkout trava quando o usuário tem mais de 100 produtos no
-          carrinho"</li>
-        <li><strong>Feature request:</strong> "Seria muito útil ter filtro por data de criação na listagem de pedidos"
-        </li>
-        <li><strong>Tarefa técnica:</strong> "Migrar autenticação de JWT para OAuth 2.0 — débito técnico identificado"
-        </li>
-      </ul>
-      <p>
-        Issues têm <strong>Labels</strong> para categorizar (bug, enhancement, documentation, wontfix),
-        <strong>Assignees</strong> para atribuir responsáveis, <strong>Milestones</strong> para associar a metas do
-        produto, e integração com PRs via palavras-chave mágicas.
-      </p>
-      <p>
-        Quando um PR usa <code>Closes #42</code>, <code>Fixes #42</code> ou <code>Resolves #42</code> na descrição e é
-        mergeado no main, a Issue #42 fecha automaticamente. Isso cria um rastro auditável e permanente: "esse problema
-        foi reportado na Issue → esse PR específico o resolveu → esses commits foram as mudanças".
+        GitHub não é só versionamento de código — é uma plataforma completa de gestão de projetos.
+        Issues e Projects formam o sistema de rastreamento de tarefas, bugs e features que mantém equipes alinhadas.
       </p>
 
-      <h3>Como escrever uma Issue útil</h3>
-      <div class="code-wrap">
-        <div class="code-header"><span class="code-filename">template de bug report — README.md</span><span
-            class="code-lang">markdown</span></div>
-        <pre><code class="language-markdown">## 🐛 Descrição do Bug
-A página de checkout retorna erro 500 quando o usuário
-tem mais de 100 itens no carrinho.
+      <h3>Issues — O Rastreador de Tudo</h3>
+      <p>
+        Uma Issue é a unidade básica de trabalho no GitHub. Pode ser um bug report, uma feature request, uma
+        discussão técnica, ou uma tarefa. Qualquer pessoa pode abrir uma Issue em um projeto público.
+      </p>
 
-## Passos para Reproduzir
-1. Fazer login como usuário com mais de 100 itens no carrinho
-2. Navegar para /checkout
-3. Aguardar o carregamento da página
+      <div class="workflow-box">
+        <div class="workflow-title">📋 Anatomia de uma boa Issue</div>
+        <pre><code class="language-markdown">## Bug: Botão de login não funciona no Firefox
 
-## Comportamento Esperado
-A página carrega normalmente, exibindo os itens com paginação
-de 20 por página.
+**Descrição**
+Ao clicar em "Entrar", nada acontece. O console mostra um erro de CORS.
 
-## Comportamento Atual
-Erro 500 no servidor. Console do browser exibe:
-"Maximum call stack size exceeded" em checkout.js:342
+**Passos para reproduzir**
+1. Abrir o site no Firefox 120
+2. Preencher email e senha válidos
+3. Clicar em "Entrar"
 
-## Contexto do Ambiente
-- Browser: Chrome 121 / Firefox 122
-- Sistema operacional: macOS 14.2 / Ubuntu 22.04
-- Versão do aplicativo: v2.3.1 (commit a1b2c3d)
+**Comportamento esperado**
+Usuário deve ser redirecionado para /dashboard
 
-## Logs Relevantes
-```
-[ERROR] checkout.js:342 - Maximum call stack size exceeded
-  at buildCartTree (checkout.js:342)
-  at buildCartTree (checkout.js:347)  ← recursão infinita
-```
+**Comportamento atual**
+Nada acontece. Console: "CORS policy blocked"
 
-## Screenshots
-[Inserir captura de tela aqui]
+**Screenshots**
+[imagem do console aqui]
 
-## Possível Causa
-Suspeito que a função buildCartTree entra em recursão
-infinita quando há itens com categorias circulares no banco.</code></pre>
+**Ambiente**
+- OS: Windows 11
+- Browser: Firefox 120.0
+- Node: 18.17.0</code></pre>
       </div>
 
-      <h3>GitHub Projects — quadro kanban integrado ao código</h3>
-      <p>
-        O GitHub Projects é uma ferramenta de gestão visual integrada diretamente ao repositório. Permite organizar
-        Issues e PRs em colunas customizáveis: <strong>Backlog → Em Andamento → Em Revisão → Bloqueado →
-          Concluído</strong>. É o equivalente gratuito e nativo do Trello ou Jira para times de desenvolvimento.
-      </p>
-
-      <div class="highlight-bar">
-        <div class="highlight-bar-icon">💡</div>
-        <div class="highlight-bar-text">
-          <strong>Por que usar Projects em vez de Trello ou Notion?</strong> Porque Issues do GitHub têm contexto de
-          código embutido — você pode clicar em uma tarefa no kanban e ver exatamente qual PR a resolveu, quais commits
-          foram feitos, quem revisou, quando foi mergeado, e qual código mudou. Essa rastreabilidade bidirecional
-          (tarefa ↔ código) é impossível quando o gerenciamento fica em ferramentas separadas do repositório.
-        </div>
-      </div>
-    </div>
-
-    <!-- ════════════════════════════════════════════════
-       7. README
-  ════════════════════════════════════════════════ -->
-    <div class="section">
-      <div class="section-label">// documentação</div>
-      <h2>Parte 5 — README.md: a porta de entrada do seu projeto</h2>
-
-      <p>
-        O <code>README.md</code> é o arquivo exibido automaticamente na página inicial do repositório no GitHub. É a
-        <strong>primeira coisa que qualquer pessoa vê</strong>: um recrutador avaliando seu portfólio, um colega
-        recém-chegado ao time, um usuário querendo instalar a ferramenta, um potencial contribuidor open source. Um
-        README ausente ou mal escrito faz projetos bons parecerem ruins ou abandonados.
-      </p>
-      <p>
-        A extensão <code>.md</code> significa Markdown — uma linguagem de marcação simples onde <code>#</code> vira
-        título, <code>**texto**</code> vira negrito, `` `código` `` vira código inline, e blocos com três backticks
-        viram blocos de código coloridos. GitHub renderiza Markdown automaticamente.
-      </p>
-
-      <h3>Estrutura de um README profissional</h3>
-      <div class="code-wrap">
-        <div class="code-header"><span class="code-filename">README.md — template completo</span><span
-            class="code-lang">markdown</span></div>
-        <pre><code class="language-markdown"># 🚀 Nome do Projeto
-
-> Uma frase direta e impactante descrevendo o que o projeto faz
-> e qual problema ele resolve.
-
-<!-- Badges: shields.io gera esses automaticamente -->
-![status](https://img.shields.io/badge/status-ativo-brightgreen)
-![versão](https://img.shields.io/badge/versão-2.3.1-blue)
-![licença](https://img.shields.io/badge/licença-MIT-green)
-![testes](https://img.shields.io/badge/testes-passando-brightgreen)
-
-## 📖 Sobre o Projeto
-
-2-3 parágrafos explicando o problema que existia antes do projeto,
-como o projeto resolve esse problema, e qual é o resultado para
-o usuário final. Escreva para um ser humano, não para um compilador.
-
-## ✨ Funcionalidades
-
-- ✅ Autenticação com Google OAuth 2.0
-- ✅ Dashboard com métricas em tempo real via WebSocket
-- ✅ Exportação para PDF e Excel
-- 🚧 App mobile (em desenvolvimento — previsão: Q2 2024)
-- 📋 Integração com Slack (planejado)
-
-## 🛠️ Tecnologias Utilizadas
-
-**Frontend:** React 18, TypeScript, Tailwind CSS, Zustand
-**Backend:** FastAPI, Python 3.12, SQLAlchemy, Celery
-**Banco de dados:** PostgreSQL 16, Redis 7
-**Infraestrutura:** Docker, GitHub Actions, AWS ECS, Terraform
-
-## 🚀 Como Rodar Localmente
-
-### Pré-requisitos
-
-- Node.js 20+ ([download](https://nodejs.org))
-- Python 3.12+ ([download](https://python.org))
-- Docker e Docker Compose ([download](https://docker.com))
-
-### Instalação passo a passo
-
-```bash
-# 1. Clone o repositório
-git clone https://github.com/seu-usuario/meu-projeto.git
-cd meu-projeto
-
-# 2. Configure as variáveis de ambiente
-cp .env.example .env
-# Abra o .env e preencha com suas credenciais
-
-# 3. Suba o banco de dados e dependências
-docker compose up -d db redis
-
-# 4. Instale dependências do backend
-cd backend
-pip install -r requirements.txt
-
-# 5. Execute as migrations do banco
-alembic upgrade head
-
-# 6. Instale dependências do frontend
-cd ../frontend
-npm install
-
-# 7. Inicie os servidores de desenvolvimento
-# Terminal 1 — backend
-cd backend && uvicorn main:app --reload
-
-# Terminal 2 — frontend
-cd frontend && npm run dev
-```
-
-**Acesse:**
-- Frontend: http://localhost:3000
-- API + Docs: http://localhost:8000/docs
-- Admin: http://localhost:8000/admin
-
-## 🗺️ Roadmap
-
-Veja nosso [Projeto no GitHub](https://github.com/seu-usuario/projeto/projects/1)
-para acompanhar o que está em andamento.
-
-## 🤝 Como Contribuir
-
-1. Faça um Fork do repositório
-2. Crie seu branch: `git switch -c feature/minha-feature`
-3. Commite suas mudanças: `git commit -m 'feat: adiciona minha feature'`
-4. Faça push: `git push origin feature/minha-feature`
-5. Abra um Pull Request
-
-Leia o [CONTRIBUTING.md](CONTRIBUTING.md) para diretrizes detalhadas.
-
-## 📄 Licença
-
-Distribuído sob a licença MIT. Veja [LICENSE](LICENSE) para detalhes.
-
-## 👤 Autor &amp; Contato
-
-**Seu Nome** · [@seu-usuario](https://github.com/seu-usuario)
-· [LinkedIn](https://linkedin.com/in/seu-perfil)</code></pre>
-      </div>
-    </div>
-
-    <!-- ════════════════════════════════════════════════
-       8. HANDS-ON
-  ════════════════════════════════════════════════ -->
-    <div class="section">
-      <div class="section-label">// prática</div>
-      <h2>Mãos na massa — Fluxo completo de colaboração</h2>
-      <p>
-        Vamos percorrer o fluxo real de trabalho em um time. Você vai criar um repositório, conectar ao GitHub,
-        trabalhar em um branch de feature, abrir um Pull Request, incorporar feedback e fazer o merge — exatamente como
-        é feito em empresas reais.
-      </p>
-
-      <div class="steps">
-
-        <div class="step">
-          <div class="step-num">1</div>
-          <div class="step-body">
-            <div class="step-title">Criar o repositório no GitHub e conectar ao local</div>
-            <div class="step-desc">No GitHub.com: botão "+" → "New repository" → nome: <code>projeto-colaborativo</code>
-              → <strong>NÃO marque</strong> "Initialize with README" (você já tem o repo local com commits) → Create
-              repository. O GitHub vai mostrar exatamente os comandos abaixo.</div>
-            <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
-              </div>
-              <pre><code class="language-bash"># Estando dentro do diretório do projeto com commits existentes:
-
-# Registra o GitHub como remote com apelido "origin"
-git remote add origin https://github.com/SEU-USUARIO/projeto-colaborativo.git
-
-# Renomeia o branch atual para "main" (padrão moderno — antes era "master")
-git branch -M main
-
-# Primeiro push: envia o histórico local + configura rastreamento (-u)
-git push -u origin main
-
-# A flag -u (--set-upstream) faz com que daqui em diante
-# "git push" e "git pull" sem argumentos já saibam que
-# devem usar "origin main". Só precisa do -u na PRIMEIRA vez.
-
-# Confirma que funcionou:
-git remote -v
-# origin  https://github.com/SEU-USUARIO/projeto-colaborativo.git (fetch)
-# origin  https://github.com/SEU-USUARIO/projeto-colaborativo.git (push)</code></pre>
-            </div>
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="step-num">2</div>
-          <div class="step-body">
-            <div class="step-title">Criar branch de feature e trabalhar nele</div>
-            <div class="step-desc"><strong>Regra fundamental de times profissionais:</strong> <em>nunca commite
-                diretamente no main</em>. Sempre crie um branch dedicado para cada feature, bugfix ou tarefa. Isso
-              mantém o main sempre estável e pronto para deploy.</div>
-            <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
-              </div>
-              <pre><code class="language-bash"># Cria e muda para o branch de feature (sintaxe moderna)
-git switch -c feature/pagina-sobre-nos
-
-# Equivalente mais antigo (ainda funciona):
-# git checkout -b feature/pagina-sobre-nos
-
-# Confirme que mudou de branch:
-git branch
-# * feature/pagina-sobre-nos    ← o asterisco indica o branch atual
-#   main
-
-# Faça as mudanças nos arquivos...
-# (crie/edite arquivos normalmente)
-
-# Commita com mensagens descritivas no padrão Conventional Commits:
-git add sobre.html
-git commit -m "feat: cria estrutura HTML da página Sobre Nós"
-
-git add sobre.css
-git commit -m "style: adiciona estilos da página Sobre Nós"
-
-git add sobre.js
-git commit -m "feat: adiciona animação de entrada na seção de equipe"
-
-# Publica o branch no GitHub pela primeira vez:
-git push -u origin feature/pagina-sobre-nos
-
-# ✅ Agora o branch existe tanto local quanto no GitHub
-# O GitHub vai mostrar um banner sugerindo abrir um PR</code></pre>
-            </div>
-            <div class="callout callout-info">
-              <div class="callout-title">💡 Convenção de nomenclatura de branches</div>
-              <p>Times profissionais usam prefixos para organizar e categorizar branches de forma visual:</p>
-              <ul style="margin-top:.5rem;">
-                <li><code>feature/nome-descritivo</code> — nova funcionalidade</li>
-                <li><code>fix/descricao-do-bug</code> — correção de bug em desenvolvimento</li>
-                <li><code>hotfix/problema-critico</code> — correção urgente que afeta produção agora</li>
-                <li><code>chore/o-que-faz</code> — manutenção técnica: deps, configs, refactoring sem mudança de
-                  comportamento</li>
-                <li><code>docs/o-que-documenta</code> — apenas documentação, sem mudança de código</li>
-                <li><code>test/o-que-testa</code> — adição ou correção de testes</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="step-num">3</div>
-          <div class="step-body">
-            <div class="step-title">Abrir o Pull Request no GitHub</div>
-            <div class="step-desc">Após o push, o GitHub geralmente exibe um banner amarelo "Compare &amp; pull
-              request". Clique nele. Se não aparecer, vá na aba "Pull requests" → "New pull request".</div>
-            <p style="color:var(--muted);font-size:.9rem;margin-bottom:.75rem;">Configure os campos do PR:</p>
-            <ul style="color:#c8c8d8;padding-left:1.4rem;margin-bottom:1rem;font-size:.9rem;">
-              <li><strong>Base:</strong> <code>main</code> (destino — onde o código vai entrar)</li>
-              <li><strong>Compare:</strong> <code>feature/pagina-sobre-nos</code> (origem — o que você fez)</li>
-              <li><strong>Título:</strong> <code>feat: adiciona página Sobre Nós com seção de equipe</code></li>
-              <li><strong>Reviewers:</strong> adicione colegas que devem revisar</li>
-              <li><strong>Labels:</strong> <code>enhancement</code>, <code>frontend</code></li>
-              <li><strong>Linked issues:</strong> conecte à Issue correspondente</li>
-            </ul>
-            <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">descrição de PR — exemplo real e completo</span><span
-                  class="code-lang">markdown</span></div>
-              <pre><code class="language-markdown">## O que esse PR implementa?
-
-Cria a página "Sobre Nós" com três seções: missão da empresa,
-história, e cards da equipe com foto, nome e cargo.
-
-## Motivação
-
-A Issue #31 identificou que 40% dos visitantes clicam no link
-"Sobre" que aparece no footer, mas a página retornava 404.
-Isso prejudicava a credibilidade da empresa com novos clientes.
-
-## Mudanças técnicas
-
-- `sobre.html`: Estrutura HTML semântica com `&lt;main&gt;`, `&lt;section&gt;`, `&lt;article&gt;`
-- `sobre.css`: Grid layout responsivo para os cards da equipe
-- `sobre.js`: Intersection Observer API para animação de entrada (respeita prefers-reduced-motion)
-- `nav.html`: Adicionado link para /sobre no menu de navegação
-
-## Como testar
-
-1. Abrir `index.html` no browser
-2. Clicar em "Sobre" no menu de navegação → deve abrir sobre.html
-3. Rolar a página → cards da equipe devem aparecer com animação suave
-4. Testar em mobile (320px) → grid deve virar coluna única
-5. Testar com "Reduce Motion" ativado no sistema → animação não deve tocar
-
-## Screenshots
-
-| Antes | Depois |
-|-------|--------|
-| Erro 404 | [inserir screenshot] |
-
-## Notas para o revisor
-
-Os cards de equipe usam dados hardcoded por ora. A Issue #35
-vai integrar com a API quando o backend estiver pronto.
-
-Closes #31</code></pre>
-            </div>
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="step-num">4</div>
-          <div class="step-body">
-            <div class="step-title">Incorporar feedback do revisor</div>
-            <div class="step-desc">O revisor pediu ajustes? É parte normal do processo — não é crítica pessoal. Você
-              simplesmente faz commits adicionais no mesmo branch. O PR é atualizado automaticamente no GitHub sem
-              precisar abrir outro.</div>
-            <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal</span><span class="code-lang">bash</span>
-              </div>
-              <pre><code class="language-bash"># Você ainda está no branch feature/pagina-sobre-nos
-# (ou volte com: git switch feature/pagina-sobre-nos)
-
-# Faz os ajustes solicitados nos arquivos...
-
-# Commita os ajustes
-git add sobre.css sobre.js
-git commit -m "fix: corrige grid de cards em viewport 768px conforme review"
-
-# Push — o PR no GitHub é atualizado automaticamente
-git push
-
-# No GitHub: após o push, clique em "Re-request review"
-# ao lado do nome do revisor para notificá-lo que os
-# ajustes foram feitos e está pronto para nova revisão.
-
-# Você pode adicionar um comentário no PR também:
-# "Corrigi o grid no breakpoint de 768px. Também aproveitei
-# para extrair os valores de gap para variáveis CSS como
-# você sugeriu. Obrigado pelo feedback!"</code></pre>
-            </div>
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="step-num">5</div>
-          <div class="step-body">
-            <div class="step-title">Fazer o merge e limpar os branches</div>
-            <div class="step-desc">PR aprovado! No GitHub, selecione "Squash and merge" (para manter o histórico do main
-              limpo) e confirme. Depois faça a limpeza local e remota.</div>
-            <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal — após o merge no GitHub</span><span
-                  class="code-lang">bash</span></div>
-              <pre><code class="language-bash"># 1. Volta para o main e atualiza com o commit do merge
-git switch main
-git pull
-
-# 2. Verifica que o commit do PR aparece no histórico
-git log --oneline -5
-# a1b2c3d feat: adiciona página Sobre Nós com seção de equipe (#34)
-# e4f5g6h feat: adiciona formulário de contato (#28)
-# ...
-
-# 3. Deleta o branch local — já cumpriu sua missão
-git branch -d feature/pagina-sobre-nos
-# O -d (--delete) só funciona em branches já mergeados
-# Se quiser forçar a deleção: git branch -D feature/pagina-sobre-nos
-
-# 4. Deleta o branch do GitHub também
-# (o GitHub sugere isso com um botão após o merge)
-git push origin --delete feature/pagina-sobre-nos
-
-# ✅ O repositório está limpo e o main está atualizado
-# Pronto para começar o próximo branch de feature</code></pre>
-            </div>
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="step-num">6</div>
-          <div class="step-body">
-            <div class="step-title">Fluxo open source: fork + PR para repositório de outra pessoa</div>
-            <div class="step-desc">Este é o fluxo para contribuir com qualquer projeto público do qual você não é
-              membro. Vamos simular uma contribuição real.</div>
-            <div class="code-wrap">
-              <div class="code-header"><span class="code-filename">terminal — fluxo completo open source</span><span
-                  class="code-lang">bash</span></div>
-              <pre><code class="language-bash"># ── ETAPA 1: Fork ─────────────────────────────────────────────
-# No GitHub: acesse o repositório → clique "Fork" (canto superior direito)
-# Isso cria: github.com/SEU-USUARIO/repo-original
-# (cópia completa e independente na sua conta)
-
-# ── ETAPA 2: Clone do SEU fork (não do original!) ─────────────
-git clone https://github.com/SEU-USUARIO/repo-original.git
-cd repo-original
-
-# ── ETAPA 3: Configurar upstream ──────────────────────────────
-# Adiciona o repositório ORIGINAL como remote "upstream"
-# Convenção: origin = seu fork | upstream = repositório original
-git remote add upstream https://github.com/DONO-ORIGINAL/repo-original.git
-
-# Confirma:
-git remote -v
-# origin    https://github.com/SEU-USUARIO/repo-original.git (fetch)
-# origin    https://github.com/SEU-USUARIO/repo-original.git (push)
-# upstream  https://github.com/DONO-ORIGINAL/repo-original.git (fetch)
-# upstream  https://github.com/DONO-ORIGINAL/repo-original.git (push)
-
-# ── ETAPA 4: Branch, commits, push para o fork ────────────────
-git switch -c fix/corrige-typo-documentacao
-
-# ... edita o arquivo com o typo ...
-
-git add docs/instalacao.md
-git commit -m "docs: corrige typo na seção de instalação do Linux"
-git push -u origin fix/corrige-typo-documentacao
-
-# ── ETAPA 5: Abrir PR no GitHub ───────────────────────────────
-# GitHub detecta o push e sugere abrir PR
-# Base: DONO-ORIGINAL/repo-original:main  (destino)
-# Compare: SEU-USUARIO/repo-original:fix/corrige-typo-documentacao
-
-# ── ETAPA 6: Manter fork sincronizado com o original ──────────
-# Faça isso regularmente para não ficar desatualizado:
-git fetch upstream
-git switch main
-git merge upstream/main  # integra o que o projeto original avançou
-git push origin main     # atualiza seu fork no GitHub também</code></pre>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ════════════════════════════════════════════════
-       9. CONFLITOS
-  ════════════════════════════════════════════════ -->
-    <div class="section">
-      <div class="section-label">// resolução de conflitos</div>
-      <h2>Parte 6 — Conflitos de Merge: quando dois branches mudam a mesma linha</h2>
-
-      <p>
-        Um <strong>conflito de merge</strong> acontece quando dois branches diferentes modificaram a <strong>mesma linha
-          do mesmo arquivo</strong>. O Git coloca os dois numa situação e diz: "não sei qual versão você quer — preciso
-        que um humano decida." Isso não é um erro do Git, nem do desenvolvedor — é uma situação esperada e completamente
-        normal em qualquer time que trabalha em paralelo.
-      </p>
-      <p>
-        O GitHub exibe "This branch has conflicts that must be resolved" quando um PR tem conflito. Você pode resolver
-        pelo editor visual do GitHub (conveniente para conflitos simples de 1-2 linhas) ou localmente no seu editor de
-        código (recomendado para conflitos mais complexos que envolvem lógica).
-      </p>
-
-      <h3>Resolvendo conflitos localmente — o processo completo</h3>
-      <div class="code-wrap">
-        <div class="code-header"><span class="code-filename">terminal — passos 1 e 2</span><span
-            class="code-lang">bash</span></div>
-        <pre><code class="language-bash"># Situação: seu branch de feature está atrasado em relação ao main
-# que avançou com commits de outros PRs
-
-# Atualiza o rastreamento do main sem tocar no seu código
-git fetch origin
-
-# Rebasa seu branch SOBRE o main atualizado
-# (coloca seus commits depois dos novos commits do main)
-git rebase origin/main
-
-# O Git vai processar commit a commit e parar onde há conflito:
-# CONFLICT (content): Merge conflict in src/usuarios.js
-# error: could not apply a1b2c3d... feat: adiciona validação de CPF
-# hint: Resolve all conflicts manually, mark them as resolved with
-# hint: "git add/rm <conflicted_files>", then run "git rebase --continue".</code></pre>
-      </div>
-
-      <p>Abra o arquivo conflitado no seu editor. O Git inseriu marcações especiais que mostram as duas versões:</p>
-
-      <div class="diff-wrap">
-        <div class="diff-header">src/usuarios.js — arquivo em estado de conflito</div>
-        <div class="diff-content">
-          <span class="diff-ctx">function validarCadastro(dados) {</span>
-          <span class="diff-ctx"> if (!dados.email) return false;</span>
-          <span class="diff-del">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD ← o que existe no main (após rebase)</span>
-          <span class="diff-del"> if (!dados.telefone) return false;</span>
-          <span class="diff-del"> return dados.email.includes('@');</span>
-          <span class="diff-del">======= ← separador</span>
-          <span class="diff-add"> if (!dados.cpf || dados.cpf.length !== 11) return false;</span>
-          <span class="diff-add"> const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;</span>
-          <span class="diff-add"> return regex.test(dados.email);</span>
-          <span class="diff-add">&gt;&gt;&gt;&gt;&gt;&gt;&gt; a1b2c3d ← seus commits (a feature que você está
-            fazendo)</span>
-          <span class="diff-ctx">}</span>
-        </div>
-      </div>
-
-      <p>
-        Você precisa <strong>decidir qual versão fica</strong> (ou criar uma terceira que combina o melhor dos dois) e
-        <strong>remover completamente</strong> as marcações <code>&lt;&lt;&lt;</code>, <code>===</code> e
-        <code>&gt;&gt;&gt;</code>. O arquivo deve ficar como código válido:
-      </p>
-
-      <div class="code-wrap">
-        <div class="code-header"><span class="code-filename">src/usuarios.js — após resolução manual</span><span
-            class="code-lang">javascript</span></div>
-        <pre><code class="language-javascript">function validarCadastro(dados) {
-  if (!dados.email) return false;
-
-  // Mantém a validação de telefone do main (necessária para o formulário)
-  if (!dados.telefone) return false;
-
-  // Incorpora a validação de CPF da feature (era o objetivo do PR)
-  if (!dados.cpf || dados.cpf.length !== 11) return false;
-
-  // Usa a regex mais robusta da feature em vez da verificação simples do main
-  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return regex.test(dados.email);
-}</code></pre>
-      </div>
-
-      <div class="code-wrap">
-        <div class="code-header"><span class="code-filename">terminal — continuando após resolver</span><span
-            class="code-lang">bash</span></div>
-        <pre><code class="language-bash"># Marca o arquivo como resolvido (staging)
-git add src/usuarios.js
-
-# Continua o rebase — processa o próximo commit
-git rebase --continue
-# Se pedir mensagem de commit: pode manter a original ou editar
-
-# Se houver mais conflitos em outros arquivos: repita o processo
-# Se quiser CANCELAR e voltar ao estado anterior:
-# git rebase --abort
-
-# Quando o rebase terminar sem mais conflitos:
-# Force-push — necessário porque o rebase reescreveu o histórico do branch
-git push --force-with-lease origin feature/sua-feature
-
-# --force-with-lease é mais seguro que --force puro:
-# ele FALHA se alguém fizer push no branch entre o seu fetch e o seu push
-# prevenindo que você sobrescreva acidentalmente o trabalho de outra pessoa</code></pre>
-      </div>
-
-      <div class="callout callout-danger">
-        <div class="callout-title">🚨 NUNCA use --force em branches compartilhados ou em main</div>
-        <p>
-          <code>git push --force</code> reescreve o histórico remoto. Se outra pessoa estiver trabalhando no mesmo
-          branch e você fizer force-push, você destrói os commits dela sem aviso. Use <code>--force</code>
-          <strong>somente</strong> em branches que são exclusivamente seus (seu branch de feature onde você é o único
-          desenvolvedor). E mesmo assim, prefira sempre <code>--force-with-lease</code>.
-        </p>
-      </div>
-    </div>
-
-    <!-- ════════════════════════════════════════════════
-       10. REFERÊNCIA RÁPIDA
-  ════════════════════════════════════════════════ -->
-    <div class="section">
-      <div class="section-label">// referência</div>
-      <h2>Referência rápida — comandos de colaboração</h2>
+      <h3>Labels, Milestones & Assignments</h3>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>Situação</th>
-              <th>Comando</th>
-              <th>Notas</th>
+              <th>Recurso</th>
+              <th>Para que serve</th>
+              <th>Exemplo</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>Conectar repo local ao GitHub</td>
-              <td><code>git remote add origin URL</code></td>
-              <td>Faz uma vez por repositório</td>
+              <td><strong>Labels</strong></td>
+              <td>Categorizar Issues e PRs</td>
+              <td><code>bug</code>, <code>enhancement</code>, <code>good first issue</code>, <code>help wanted</code>
+              </td>
             </tr>
             <tr>
-              <td>Primeiro push de um branch novo</td>
-              <td><code>git push -u origin nome-branch</code></td>
-              <td>O <code>-u</code> configura rastreamento upstream</td>
+              <td><strong>Milestones</strong></td>
+              <td>Agrupar Issues por objetivo/versão</td>
+              <td>"v1.0 Launch", "Sprint 3", "Q1 2024"</td>
             </tr>
             <tr>
-              <td>Push subsequente (mesmo branch)</td>
-              <td><code>git push</code></td>
-              <td>Só funciona após o <code>-u</code></td>
+              <td><strong>Assignees</strong></td>
+              <td>Responsável pela Issue/PR</td>
+              <td>@usuario</td>
             </tr>
             <tr>
-              <td>Atualizar com trabalho do time</td>
-              <td><code>git pull --rebase</code></td>
-              <td>Mantém histórico linear</td>
+              <td><strong>Linked PRs</strong></td>
+              <td>Conectar PR à Issue (fecha automaticamente)</td>
+              <td><code>Closes #42</code> na descrição do PR</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>GitHub Projects — Kanban Nativo</h3>
+      <p>
+        GitHub Projects é um quadro kanban integrado ao repositório. Issues e PRs viram cards que você move
+        entre colunas. É mais simples que Jira, mas suficiente para projetos pequenos e médios.
+      </p>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">📊 Fluxo típico de um GitHub Project</div>
+        <div class="mermaid">
+          kanban
+          Backlog
+          id1[Issue: Criar tela de perfil]
+          id2[Issue: Integrar API de pagamento]
+          Em Progresso
+          id3[Issue: Bug no login Firefox]
+          Em Review
+          id4[PR: Adicionar autenticação OAuth]
+          Concluído
+          id5[PR: Setup inicial do projeto]
+        </div>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Pro tip — Fechando Issues com commits</div>
+        Você pode fechar Issues automaticamente referenciando-as em commit messages ou na descrição do PR:
+        <code>Fixes #42</code>, <code>Closes #15</code>, <code>Resolves #8</code>.
+        Quando o PR for mergeado na main, a Issue fecha sozinha.
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         CONCEITO — README & DOCS
+    ══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">06 — README & Docs</div>
+      <h2>A Porta de Entrada do Projeto</h2>
+      <p>
+        O README.md é o primeiro arquivo que qualquer visitante vê no repositório. É a diferença entre
+        um projeto que as pessoas entendem e contribuem, e um projeto que ninguém sabe como usar.
+        Um bom README vale mais do que código perfeito sem explicação.
+      </p>
+
+      <div class="workflow-box">
+        <div class="workflow-title">📄 Estrutura de um README profissional</div>
+        <pre><code class="language-markdown"># 🚀 Nome do Projeto
+
+> Uma linha descrevendo o que o projeto faz.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Node.js](https://img.shields.io/badge/Node-18+-green.svg)](package.json)
+
+## 📋 Sobre
+
+Explicação em 2-3 parágrafos: o que é, qual problema resolve, quem usa.
+
+## ⚡ Instalação rápida
+
+```bash
+git clone https://github.com/usuario/projeto.git
+cd projeto
+npm install
+npm run dev
+```
+
+## 🗂️ Estrutura do Projeto
+
+```
+src/
+├── components/    # Componentes reutilizáveis
+├── pages/         # Rotas da aplicação
+└── utils/         # Funções utilitárias
+```
+
+## 🤝 Como Contribuir
+
+1. Fork este repositório
+2. Crie uma branch: `git checkout -b minha-feature`
+3. Commit suas mudanças: `git commit -m 'feat: adicionar algo'`
+4. Push: `git push origin minha-feature`
+5. Abra um Pull Request
+
+## 📄 Licença
+
+MIT — veja [LICENSE](LICENSE) para detalhes.</code></pre>
+      </div>
+
+      <h3>Outros arquivos de documentação importantes</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Arquivo</th>
+              <th>Para que serve</th>
+              <th>Obrigatório?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>README.md</code></td>
+              <td>Página principal do projeto</td>
+              <td><span class="badge badge-green">Sempre</span></td>
             </tr>
             <tr>
-              <td>Ver o que mudou no remote</td>
-              <td><code>git fetch origin</code></td>
-              <td>Não toca no código local</td>
+              <td><code>CONTRIBUTING.md</code></td>
+              <td>Guia para contribuidores — como fazer PRs, padrões de código</td>
+              <td><span class="badge badge-yellow">Open Source</span></td>
             </tr>
             <tr>
-              <td>Criar e entrar em branch</td>
-              <td><code>git switch -c feature/nome</code></td>
-              <td>Sintaxe moderna (Git 2.23+)</td>
+              <td><code>CODE_OF_CONDUCT.md</code></td>
+              <td>Regras de convivência da comunidade</td>
+              <td><span class="badge badge-yellow">Open Source</span></td>
             </tr>
             <tr>
-              <td>Ver branches remotos</td>
-              <td><code>git branch -r</code></td>
-              <td>Lista o que existe no GitHub</td>
+              <td><code>CHANGELOG.md</code></td>
+              <td>Histórico de mudanças por versão</td>
+              <td><span class="badge badge-blue">Recomendado</span></td>
             </tr>
             <tr>
-              <td>Baixar branch remoto localmente</td>
-              <td><code>git switch -t origin/nome</code></td>
-              <td>Rastreamento automático</td>
+              <td><code>.github/ISSUE_TEMPLATE/</code></td>
+              <td>Templates para padronizar abertura de Issues</td>
+              <td><span class="badge badge-blue">Recomendado</span></td>
             </tr>
             <tr>
-              <td>Deletar branch local (mergeado)</td>
-              <td><code>git branch -d nome</code></td>
-              <td>Falha se não mergeado (seguro)</td>
-            </tr>
-            <tr>
-              <td>Deletar branch local (forçado)</td>
-              <td><code>git branch -D nome</code></td>
-              <td>Use com cuidado</td>
-            </tr>
-            <tr>
-              <td>Deletar branch do GitHub</td>
-              <td><code>git push origin --delete nome</code></td>
-              <td>Ou clique no botão após o merge</td>
-            </tr>
-            <tr>
-              <td>Ver URL dos remotes</td>
-              <td><code>git remote -v</code></td>
-              <td>Mostra origin, upstream etc.</td>
-            </tr>
-            <tr>
-              <td>Atualizar fork com o upstream</td>
-              <td><code>git fetch upstream &amp;&amp; git merge upstream/main</code></td>
-              <td>Sincroniza com o projeto original</td>
-            </tr>
-            <tr>
-              <td>Verificar estado atual completo</td>
-              <td><code>git status</code></td>
-              <td>Mostra branch atual + diferenças</td>
-            </tr>
-            <tr>
-              <td>Ver histórico resumido</td>
-              <td><code>git log --oneline --graph -10</code></td>
-              <td>Mostra os últimos 10 commits</td>
+              <td><code>.github/PULL_REQUEST_TEMPLATE.md</code></td>
+              <td>Template automático para descrição de PRs</td>
+              <td><span class="badge badge-blue">Recomendado</span></td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- ════════════════════════════════════════════════
-       11. VÍDEOS
-  ════════════════════════════════════════════════ -->
+    <!-- ══════════════════════════════════════════
+         TABELA COMPARATIVA
+    ══════════════════════════════════════════ -->
     <div class="section">
-      <div class="section-label">// curadoria</div>
-      <h2>Referências em vídeo</h2>
-      <p>Vídeos complementares — curadoria de links a definir:</p>
-      <div class="videos-grid">
-        <a class="video-card" href="https://www.youtube.com/@RafaellaBallerini" target="_blank">
-          <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title">Como Contribuir em Projetos Open Source | Rafaella Ballerini</div>
-            <div class="video-channel">Rafaella Ballerini · ~15 min (PT-BR)</div>
-            <div class="video-why">Por que assistir: Tutorial completo em português mostrando o fluxo de fork, clone, PR
-              e boas práticas no GitHub. Mão na massa.</div>
-          </div>
-        </a>
-        <a class="video-card" href="https://www.youtube.com/@Fireship" target="_blank">
-          <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title">Pull Requests in 100 Seconds</div>
-            <div class="video-channel">Fireship · ~2 min (EN)</div>
-            <div class="video-why">Por que assistir: Resumo ultradenso do conceito de PR em menos de 2 minutos. Ótimo
-              para fixação rápida da teoria abordada nesta aula.</div>
-          </div>
-        </a>
-        <a class="video-card" href="https://www.youtube.com/@TechWorldwithNana" target="_blank">
-          <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title">Git Tutorial for Beginners: Learn Git in 1 Hour</div>
-            <div class="video-channel">TechWorld with Nana · ~1h 8min (EN)</div>
-            <div class="video-why">Por que assistir: Nana explica push, pull, fetch e conflitos com diagramas visuais
-              excepcionais. A partir dos 40m ela aborda colaboração.</div>
-          </div>
-        </a>
-        <a class="video-card" href="https://www.youtube.com/@CursoemVideo" target="_blank">
-          <div class="video-thumb">▶</div>
-          <div>
-            <div class="video-title">Git e GitHub - Aula 07: Trabalhando com Repositórios Remotos</div>
-            <div class="video-channel">Curso em Vídeo (Gustavo Guanabara) · ~45 min (PT-BR)</div>
-            <div class="video-why">Por que assistir: Gustavo cobre fork e contribuição open source em português com a
-              didática clássica e infalível de sempre.</div>
-          </div>
-        </a>
+      <div class="section-label">07 — Comparativo</div>
+      <h2>Fluxos de Trabalho com Git</h2>
+      <p>Existem diferentes estratégias de branching que equipes adotam. Cada uma tem prós e contras:</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Workflow</th>
+              <th>Ideal para</th>
+              <th>Vantagem</th>
+              <th>Desvantagem</th>
+              <th>Complexidade</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>GitHub Flow</strong></td>
+              <td>Deploy contínuo, SaaS</td>
+              <td>Simples: branch → PR → merge → deploy</td>
+              <td>Não gerencia múltiplas versões</td>
+              <td><span class="badge badge-green">Baixa</span></td>
+            </tr>
+            <tr>
+              <td><strong>Git Flow</strong></td>
+              <td>Apps com releases versionados</td>
+              <td>Separa develop, release, hotfix</td>
+              <td>Muitas branches, complexo</td>
+              <td><span class="badge badge-red">Alta</span></td>
+            </tr>
+            <tr>
+              <td><strong>Trunk Based</strong></td>
+              <td>Times grandes, feature flags</td>
+              <td>Integração contínua real, poucos conflitos</td>
+              <td>Exige disciplina e feature flags</td>
+              <td><span class="badge badge-yellow">Média</span></td>
+            </tr>
+            <tr>
+              <td><strong>Forking</strong></td>
+              <td>Open source, contribuições externas</td>
+              <td>Qualquer um pode contribuir sem acesso direto</td>
+              <td>Sincronização com upstream é manual</td>
+              <td><span class="badge badge-yellow">Média</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Pro tip</div>
+        Para 90% dos projetos pessoais e startups, <strong>GitHub Flow</strong> é perfeito. É o que você vai usar.
+        Git Flow ficou popular nos anos 2010 mas é considerado excessivamente complexo para a maioria dos casos hoje.
       </div>
     </div>
 
-    <!-- CHECKPOINT -->
-    <div class="checkpoint">
-      <div class="checkpoint-label">// desafio</div>
-      <h3>🏁 Checkpoint — valide seu aprendizado</h3>
-      <p>
-        Você vai executar o fluxo completo de colaboração profissional: criar um repositório público no GitHub com
-        documentação de qualidade, trabalhar em branches de feature, abrir um Pull Request bem documentado, e fazer o
-        merge corretamente. Se tiver um amigo aprendendo também, façam PRs um para o repositório do outro — o
-        aprendizado é exponencial.
+    <!-- ══════════════════════════════════════════
+         HANDS-ON
+    ══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">08 — Hands-on</div>
+      <h2>Seu Primeiro PR: Passo a Passo</h2>
+      <p>Vamos simular o fluxo completo de colaboração: você vai criar um repo, fazer uma branch, abrir um PR e mergear.
       </p>
-      <ul>
-        <li>✓ <strong>Repositório público criado</strong> no GitHub com <code>README.md</code> profissional contendo:
-          título com badge de status, descrição clara do projeto fictício, seção "Como Rodar" com pelo menos 3 comandos
-          comentados, lista de tecnologias e seção de contribuição</li>
-        <li>✓ <strong>Clone local realizado</strong> — <code>git remote -v</code> mostra <code>origin</code> apontando
-          para o GitHub</li>
-        <li>✓ <strong>Issue criada</strong> com título descritivo, descrição com contexto (bug report ou feature
-          request) e ao menos uma label aplicada</li>
-        <li>✓ <strong>Branch <code>feature/adiciona-secao-faq</code> criado</strong> com pelo menos 3 commits de
-          trabalho — mensagens seguindo Conventional Commits (<code>feat:</code>, <code>style:</code>,
-          <code>docs:</code> etc.)
-        </li>
-        <li>✓ <strong>Pull Request aberto</strong> com: título no padrão Conventional Commits, descrição explicando o
-          quê e o porquê, seção "Como testar", referência <code>Closes #N</code> para a Issue criada, e pelo menos uma
-          label</li>
-        <li>✓ <strong>Commit adicional feito no branch</strong> (simule um ajuste de feedback), publicado com
-          <code>git push</code>, e o PR mostra o commit automaticamente
-        </li>
-        <li>✓ <strong>Merge realizado</strong> com "Squash and merge" no GitHub, branch deletado no GitHub, e
-          localmente: <code>git switch main && git pull && git branch -d feature/adiciona-secao-faq</code></li>
-        <li>✓ <strong>Fork realizado</strong> em qualquer repositório público de um colega ou projeto real, clone do
-          fork feito localmente, e upstream configurado com <code>git remote add upstream URL-do-original</code></li>
-      </ul>
-      <div class="checkpoint-hint">
-        💬 Dica: Para o item do Fork, escolha um repositório real de código aberto que você usa ou admira — pode ser um
-        tema de CSS, uma biblioteca JavaScript pequena, ou um projeto de um colega. Tente encontrar genuinamente um typo
-        no README ou documentação para corrigir. Abrir seu primeiro PR para um projeto real (mesmo que seja um typo) é
-        um marco que nenhum tutorial substitui. Muitos engenheiros sênior ainda lembram do seu primeiro PR aceito em um
-        projeto de outro.
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Criar um repositório no GitHub</div>
+            <div class="step-desc">Acesse github.com → "New repository" → Nome: <code>meu-primeiro-pr</code> → Marque
+              "Add a README file" → Create repository.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Clonar o repositório localmente</div>
+            <pre><code class="language-bash">git clone https://github.com/SEU-USUARIO/meu-primeiro-pr.git
+cd meu-primeiro-pr</code></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Criar uma branch de feature</div>
+            <pre><code class="language-bash">git checkout -b feature/adicionar-sobre</code></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Editar o README e fazer commit</div>
+            <div class="step-desc">Abra o README.md no VS Code e adicione uma seção "## Sobre mim". Salve o arquivo.
+            </div>
+            <pre><code class="language-bash">git add README.md
+git commit -m "docs: adicionar seção sobre mim no README"</code></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Enviar a branch para o GitHub</div>
+            <pre><code class="language-bash">git push origin feature/adicionar-sobre</code></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <div class="step-title">Abrir o Pull Request</div>
+            <div class="step-desc">O GitHub mostrará um banner amarelo "Compare & pull request". Clique nele. Preencha o
+              título e descrição. Clique em "Create pull request".</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">7</div>
+          <div class="step-body">
+            <div class="step-title">Mergear o PR</div>
+            <div class="step-desc">Como é seu próprio repo, você pode aprovar e mergear. Clique em "Merge pull request"
+              → "Confirm merge". Pronto!</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">8</div>
+          <div class="step-body">
+            <div class="step-title">Sincronizar localmente e limpar</div>
+            <pre><code class="language-bash">git checkout main
+git pull origin main
+git branch -d feature/adicionar-sobre</code></pre>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- PRÓXIMA AULA -->
-    <a href="js-01-core-dom.html" class="next-lesson">
-      <div>
-        <div class="next-label">Próxima aula →</div>
-        <div class="next-title">⚡ JavaScript — Core &amp; DOM</div>
-      </div>
-      <div class="next-arrow">→</div>
-    </a>
+    <!-- ══════════════════════════════════════════
+         CÓDIGO COMENTADO
+    ══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">09 — Código Comentado</div>
+      <h2>Fluxo Completo com Fork (Open Source)</h2>
+      <p>
+        Para contribuir com projetos de terceiros (onde você não tem acesso de escrita), o fluxo é levemente diferente:
+        você faz um <strong>fork</strong> (cópia do repo na sua conta), trabalha nele, e abre um PR de volta para o
+        original.
+      </p>
+      <div class="code-label">shell — fluxo completo de fork contribution</div>
+      <pre><code class="language-bash"># 1. Fork pelo GitHub (botão "Fork" no repo original)
+# O repo aparece em: github.com/SEU-USUARIO/repo-original
 
-    <!-- FOOTER -->
-    <div class="footer">
-      <span>🐙 GitHub · Aula 11 / 50</span>
-      <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+# 2. Clonar seu fork
+git clone https://github.com/SEU-USUARIO/repo-original.git
+cd repo-original
+
+# 3. Adicionar o repo original como "upstream"
+# (para poder sincronizar atualizações futuras)
+git remote add upstream https://github.com/DONO-ORIGINAL/repo-original.git
+
+# Verificar: deve mostrar origin (seu fork) e upstream (original)
+git remote -v
+
+# 4. Criar branch de feature
+git checkout -b fix/corrigir-typo-readme
+
+# 5. Fazer as mudanças...
+# 6. Commit
+git add .
+git commit -m "fix: corrigir typo na seção de instalação"
+
+# 7. Push para SEU fork (não para o upstream!)
+git push origin fix/corrigir-typo-readme
+
+# 8. Abrir PR no GitHub: do seu fork → repo original
+# GitHub detecta automaticamente e sugere o PR cross-repo
+
+# ----- MANUTENÇÃO DO FORK -----
+# Manter seu fork atualizado com o original:
+git fetch upstream          # busca atualizações do repo original
+git checkout main
+git merge upstream/main     # integra na sua main local
+git push origin main        # atualiza seu fork no GitHub</code></pre>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Nunca commite direto na main do seu fork</div>
+        Mesmo sendo "seu" repo, trabalhar em branches facilita muito quando você quiser sincronizar com o upstream
+        e abrir múltiplos PRs. Commits diretos na main do fork criam conflitos difíceis de resolver.
+      </div>
     </div>
 
-  </div>
+    <!-- ══════════════════════════════════════════
+         ARMADILHAS
+    ══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">10 — Pitfalls</div>
+      <h2>⚠️ Erros Comuns de Iniciantes</h2>
+      <div class="pitfall-list">
+        <div class="pitfall">
+          <div class="pitfall-icon">💥</div>
+          <div class="pitfall-text">
+            <h4>Trabalhar direto na main e fazer push forçado</h4>
+            <p><code>git push --force</code> na main de um repo compartilhado é capaz de apagar o trabalho de toda a
+              equipe. Nunca force-push em branches compartilhadas. Configure "Branch protection rules" no GitHub para
+              bloquear isso.</p>
+          </div>
+        </div>
+        <div class="pitfall">
+          <div class="pitfall-icon">😵</div>
+          <div class="pitfall-text">
+            <h4>PR gigante com 50 arquivos alterados</h4>
+            <p>PRs grandes são difíceis de revisar. O ideal é PRs pequenos e focados. Se sua feature é grande, quebre em
+              PRs menores e sequenciais. A regra de ouro: se o revisor precisar de mais de 20 minutos para entender, o
+              PR é grande demais.</p>
+          </div>
+        </div>
+        <div class="pitfall">
+          <div class="pitfall-icon">🙈</div>
+          <div class="pitfall-text">
+            <h4>Commitar credenciais e secrets no repositório</h4>
+            <p>API keys, senhas, tokens nunca devem ir para o Git. Use um arquivo <code>.env</code> (e adicione ao
+              <code>.gitignore</code>) para variáveis sensíveis. Se você commitou acidentalmente, a chave está
+              comprometida — rote imediatamente.</p>
+          </div>
+        </div>
+        <div class="pitfall">
+          <div class="pitfall-icon">🔀</div>
+          <div class="pitfall-text">
+            <h4>Branch desatualizada por semanas</h4>
+            <p>Branches que ficam muito tempo sem sincronizar com a main acumulam conflitos. Faça
+              <code>git pull origin main</code> ou <code>git rebase main</code> na sua feature branch regularmente (pelo
+              menos a cada 1-2 dias em projetos ativos).</p>
+          </div>
+        </div>
+        <div class="pitfall">
+          <div class="pitfall-icon">📝</div>
+          <div class="pitfall-text">
+            <h4>Mensagens de commit sem significado</h4>
+            <p>"fix", "update", "mudanças" não ajudam ninguém no futuro. Use o padrão Conventional Commits:
+              <code>feat:</code>, <code>fix:</code>, <code>docs:</code>, <code>refactor:</code>. Boas mensagens de
+              commit são documentação.</p>
+          </div>
+        </div>
+      </div>
+    </div>
 
+    <!-- ══════════════════════════════════════════
+         VÍDEOS
+    ══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">11 — Curadoria</div>
+      <h2>Vídeos para Assistir</h2>
+      <div class="video-grid">
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">GitHub Pull Request in 100 Seconds</div>
+            <div class="video-channel">Fireship · ~2 min</div>
+            <div class="video-why">Por que assistir: Visão geral ultra-rápida do conceito de PR. Perfeito como primeiro
+              contato antes de se aprofundar.</div>
+            <a href="https://www.youtube.com/watch?v=8lGpZkjnkt4" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Git and GitHub for Beginners - Crash Course</div>
+            <div class="video-channel">freeCodeCamp · ~1h</div>
+            <div class="video-why">Por que assistir: Cobre o fluxo completo de clone, branch, PR e merge de forma
+              hands-on. O melhor vídeo prático para iniciantes no assunto.</div>
+            <a href="https://www.youtube.com/watch?v=RGOj5yH7evk" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">GitHub Issues & Projects — Project Management</div>
+            <div class="video-channel">Traversy Media · ~25 min</div>
+            <div class="video-why">Por que assistir: Demonstra na prática como usar Issues, Labels, Milestones e GitHub
+              Projects para organizar um projeto real.</div>
+            <a href="https://www.youtube.com/watch?v=idZyqNIrt84" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">How to Write a Good README</div>
+            <div class="video-channel">Coding Garden · ~20 min</div>
+            <div class="video-why">Por que assistir: Mostra como escrever um README que impressiona recrutadores e atrai
+              contribuidores. Inclui badges, estrutura e exemplos reais.</div>
+            <a href="https://www.youtube.com/watch?v=E6NO0rgFub4" target="_blank">Assistir →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         GLOSSÁRIO
+    ══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">12 — Glossário</div>
+      <h2>Termos da Aula</h2>
+      <div class="glossary">
+        <div class="glossary-item">
+          <div class="glossary-term">remote</div>
+          <div class="glossary-def">Repositório Git hospedado em um servidor (GitHub, GitLab, etc.). É o ponto de
+            sincronização entre colaboradores.</div>
+        </div>
+        <div class="glossary-item">
+          <div class="glossary-term">origin</div>
+          <div class="glossary-def">Apelido padrão para o remote principal. Configurado automaticamente quando você
+            clona um repo.</div>
+        </div>
+        <div class="glossary-item">
+          <div class="glossary-term">upstream</div>
+          <div class="glossary-def">Convenção para o remote do repositório original do qual você fez fork.</div>
+        </div>
+        <div class="glossary-item">
+          <div class="glossary-term">Pull Request (PR)</div>
+          <div class="glossary-def">Proposta formal de integrar mudanças de uma branch para outra. Inclui discussão,
+            code review e aprovação.</div>
+        </div>
+        <div class="glossary-item">
+          <div class="glossary-term">fork</div>
+          <div class="glossary-def">Cópia completa de um repositório na sua conta GitHub. Permite contribuir sem ter
+            acesso de escrita ao original.</div>
+        </div>
+        <div class="glossary-item">
+          <div class="glossary-term">merge</div>
+          <div class="glossary-def">Integração das mudanças de uma branch em outra. Pode ser feito via Merge Commit,
+            Squash ou Rebase.</div>
+        </div>
+        <div class="glossary-item">
+          <div class="glossary-term">Issue</div>
+          <div class="glossary-def">Unidade de trabalho no GitHub: bug report, feature request ou discussão técnica
+            rastreável.</div>
+        </div>
+        <div class="glossary-item">
+          <div class="glossary-term">Conventional Commits</div>
+          <div class="glossary-def">Padrão de mensagens de commit: <code>tipo: descrição</code>. Exemplos:
+            <code>feat:</code>, <code>fix:</code>, <code>docs:</code>.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         CHECKPOINT
+    ══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">13 — Desafio</div>
+      <div class="checkpoint">
+        <h3>🏁 Checkpoint — Colaboração Real</h3>
+        <p>
+          Vamos simular um fluxo de colaboração completo. Você vai criar um projeto com Issues, trabalhar em branches
+          e abrir PRs como faria em um time real.
+        </p>
+        <ul>
+          <li>Crie um repositório público chamado <code>portfolio-site</code> com README</li>
+          <li>Abra 3 Issues: "Criar página inicial", "Adicionar seção de projetos", "Escrever seção de contato"</li>
+          <li>Crie Labels customizados: <code>feature</code> e <code>content</code></li>
+          <li>Para cada Issue, crie uma branch (<code>feature/home</code>, etc.), faça pelo menos 1 commit, e abra um PR
+            com a mensagem <code>Closes #[número da issue]</code></li>
+          <li>Mergee os 3 PRs e verifique que as Issues fecharam automaticamente</li>
+          <li>Atualize o README com uma seção "Como contribuir" seguindo o padrão da aula</li>
+        </ul>
+        <div class="checkpoint-hint">
+          💬 Dica: No GitHub, vá em Settings → Branches → Add branch protection rule para a main.
+          Ative "Require a pull request before merging" — isso simula um ambiente de equipe real onde
+          ninguém pode commitar direto na main.
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         PRÓXIMOS PASSOS
+    ══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-label">14 — Próximos Passos</div>
+      <h2>O que vem a seguir?</h2>
+      <div class="next-steps">
+        <h3>Você dominou o fluxo de colaboração no GitHub 🎉</h3>
+        <p style="color: var(--muted); margin-bottom: 20px;">
+          Agora é hora de entrar no JavaScript — a linguagem que dá vida ao frontend e ao backend.
+          Na próxima aula você vai aprender os fundamentos da linguagem e como interagir com o DOM.
+        </p>
+        <a href="js-01-core-dom.html" class="next-card">
+          <div>
+            <div class="next-label">⚡ JavaScript · Aula 12</div>
+            <div class="next-title">JavaScript — Core & DOM</div>
+          </div>
+          <div class="next-arrow">→</div>
+        </a>
+      </div>
+    </div>
+
+  </div><!-- /.page -->
 
   <script>
-    // Initialize syntax highlighting
-    document.addEventListener('DOMContentLoaded', () => {
-      hljs.highlightAll();
-    });
-
-    // Initialize Mermaid
-    mermaid.initialize({
-      startOnLoad: true,
-      theme: 'dark',
-      themeVariables: {
-        primaryColor: '#58a6ff',
-        primaryTextColor: '#e8e8f0',
-        primaryBorderColor: 'rgba(88,166,255,0.35)',
-        lineColor: '#8585a8',
-        background: '#111118',
-        mainBkg: '#16161f',
-        nodeBorder: '#58a6ff'
-      }
-    });
-
-    // Scroll progress indicator
+    // Progress bar
     window.addEventListener('scroll', () => {
       const scrollTop = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = (scrollTop / docHeight) * 100;
-      const progressFill = document.querySelector('.progress-bar-fill');
-      if (progressFill) progressFill.style.width = progress + '%';
+      const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      document.getElementById('progress').style.width = pct + '%';
+    });
+
+    // Highlight.js
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.hljs) {
+        document.querySelectorAll('pre code').forEach(block => {
+          hljs.highlightElement(block);
+        });
+      }
+      if (window.mermaid) {
+        mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+      }
     });
   </script>
 </body>

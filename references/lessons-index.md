@@ -40,8 +40,8 @@ Todos os HTMLs ficam em `outputs/aulas/` com o nome exato da coluna **Arquivo**.
 
 | ID | Status | Trilha | Título da Aula | Cards agrupados | Arquivo |
 |---|---|---|---|---|---|
-| `07-PY-03` | `[x]` | 🐍 Python | Python — Coleções & Arquivos | Coleções · Arquivos · Tratamento de erros | `py-03-colecoes-arquivos.html` |
-| `08-PY-04` | `[x]` | 🐍 Python | Python — POO na Prática | POO · Módulos & pacotes · Decorators & closures | `py-04-poo.html` |
+| `07-PY-03` | `[x]` | 🐍 Python | Python — Estruturas de Dados | Coleções · Arquivos · Tratamento de erros | `py-03-estruturas-dados.html` |
+| `08-PY-04` | `[x]` | 🐍 Python | Python — Orientação a Objetos | POO · Módulos & pacotes · Decorators & closures | `py-04-orientacao-objetos.html` |
 | `09-HTML-03` | `[x]` | 🌐 HTML/CSS | CSS — Responsivo & Moderno | Responsividade · Custom Properties · Cascade avançado | `html-03-responsivo-moderno.html` |
 | `10-HTML-04` | `[x]` | 🌐 HTML/CSS | CSS — Animações, Tipografia & Efeitos | Animações & Transições · Typography · Transforms & 3D · Gradients & filters | `html-04-animacoes-efeitos.html` |
 | `11-GH-03` | `[x]` | 🐙 GitHub | GitHub — Colaboração & Pull Requests | Remote & Push/Pull · Pull Requests · Issues & Projects · README & Docs | `gh-03-colaboracao-prs.html` |

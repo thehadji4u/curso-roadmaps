@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS — Responsivo & Moderno · Aula 08</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+    :root { --bg:#0a0a0f;--surface:#111118;--surface2:#16161f;--border:#1e1e2e;--text:#e8e8f0;--muted:#8585a8;--accent:#ef4444;--accent-dim:rgba(239,68,68,0.15);--accent-border:rgba(239,68,68,0.3);--success:#10b981;--warn:#f59e0b;--danger:#ef4444;--info:#06b6d4; }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:15px;line-height:1.7}
+    .progress-bar-wrap{position:fixed;top:0;left:0;right:0;height:3px;background:var(--border);z-index:100}
+    .progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),#f87171);width:0%;transition:width 0.1s}
+    .top-nav{position:sticky;top:3px;background:rgba(10,10,15,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;z-index:99}
+    .nav-back{color:var(--muted);text-decoration:none;font-size:12px;letter-spacing:0.05em;padding:6px 14px;border:1px solid var(--border);border-radius:6px;transition:all 0.2s}
+    .nav-back:hover{color:var(--text);border-color:rgba(255,255,255,0.15);background:rgba(255,255,255,0.04)}
+    .nav-center{display:flex;align-items:center;gap:10px}
+    .nav-prev,.nav-next{display:flex;align-items:center;gap:6px;text-decoration:none;color:var(--muted);font-size:12px;letter-spacing:0.05em;padding:6px 14px;border:1px solid var(--border);border-radius:6px;background:transparent;transition:all 0.2s}
+    .nav-prev:hover,.nav-next:hover{color:var(--text);border-color:rgba(239,68,68,0.4);background:rgba(239,68,68,0.08)}
+    .nav-position{font-size:11px;color:var(--muted);letter-spacing:0.08em}
+    .nav-position .track{color:var(--accent)}
+    .page{max-width:860px;margin:0 auto;padding:60px 32px 120px}
+    .hero{padding:60px 0 40px;border-bottom:1px solid var(--border);margin-bottom:60px}
+    .hero-eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:20px;font-size:12px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase}
+    .hero-badge{background:var(--accent-dim);border:1px solid var(--accent-border);color:var(--accent);padding:3px 10px;border-radius:4px;font-size:10px}
+    h1{font-family:'Syne',sans-serif;font-size:clamp(28px,5vw,44px);font-weight:800;line-height:1.15;margin-bottom:20px}
+    h1 span{color:var(--accent)}
+    .hero-meta{display:flex;gap:20px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:20px}
+    .hero-tags{display:flex;gap:8px;flex-wrap:wrap}
+    .tag{background:var(--surface2);border:1px solid var(--border);color:var(--muted);padding:4px 10px;border-radius:4px;font-size:11px;letter-spacing:0.04em}
+    .section{margin-bottom:64px}
+    .section-label{font-size:10px;color:var(--accent);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:12px;opacity:0.8}
+    h2{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;margin-bottom:20px;color:var(--text)}
+    h3{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:14px}
+    h4{font-family:'Syne',sans-serif;font-size:15px;font-weight:600;margin-bottom:8px}
+    p{color:#c8c8d8;margin-bottom:16px}
+    strong{color:var(--text)}
+    code{background:var(--surface2);border:1px solid var(--border);padding:2px 6px;border-radius:4px;font-size:13px;color:#f87171}
+    .callout{border-radius:8px;padding:18px 22px;margin:24px 0;border-left:3px solid}
+    .callout-title{font-size:12px;font-weight:600;letter-spacing:0.06em;margin-bottom:8px;text-transform:uppercase}
+    .callout-info{background:rgba(6,182,212,0.08);border-color:var(--info)}
+    .callout-info .callout-title{color:var(--info)}
+    .callout-warn{background:rgba(245,158,11,0.08);border-color:var(--warn)}
+    .callout-warn .callout-title{color:var(--warn)}
+    .callout-tip{background:rgba(239,68,68,0.08);border-color:var(--accent)}
+    .callout-tip .callout-title{color:var(--accent)}
+    .callout-check{background:rgba(16,185,129,0.08);border-color:var(--success)}
+    .callout-check .callout-title{color:var(--success)}
+    .analogy-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;position:relative;overflow:hidden}
+    .analogy-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),transparent)}
+    .analogy-label{font-size:10px;color:var(--accent);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:16px}
+    .analogy-text{color:#c8c8d8;margin-bottom:20px;font-size:15px}
+    .analogy-mapping{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .analogy-real,.analogy-tech{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:13px}
+    .analogy-real{color:var(--warn)}
+    .analogy-tech{color:var(--accent)}
+    .mermaid-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;margin:24px 0}
+    .mermaid-label{font-size:10px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:16px}
+    .table-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border)}
+    table{width:100%;border-collapse:collapse}
+    th{background:var(--surface2);color:var(--accent);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;padding:12px 16px;text-align:left;border-bottom:1px solid var(--border)}
+    td{padding:12px 16px;border-bottom:1px solid var(--border);color:#c8c8d8;font-size:13px;vertical-align:top}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:rgba(255,255,255,0.02)}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .card-mini{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px}
+    .card-mini:hover{border-color:var(--accent-border)}
+    .pillar-badge{display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;margin-bottom:10px;letter-spacing:0.06em}
+    .steps{display:flex;flex-direction:column;gap:16px}
+    .step{display:flex;gap:20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px}
+    .step-num{width:32px;height:32px;min-width:32px;background:var(--accent-dim);border:1px solid var(--accent-border);color:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+    .step-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:6px}
+    .step-desc{font-size:13px;color:var(--muted);margin-bottom:12px}
+    .code-wrap{background:#0d1117;border:1px solid #30363d;border-radius:10px;overflow:hidden;margin:16px 0}
+    .code-header{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:#161b22;border-bottom:1px solid #30363d}
+    .code-filename{font-size:12px;color:#8b949e}
+    .code-lang{font-size:10px;color:#ef4444;letter-spacing:0.1em;text-transform:uppercase;background:rgba(239,68,68,0.1);padding:2px 8px;border-radius:4px}
+    pre{margin:0}
+    pre code{font-family:'JetBrains Mono',monospace!important;font-size:13px;line-height:1.6}
+    .videos-grid{display:flex;flex-direction:column;gap:14px}
+    .video-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;display:flex;gap:20px;text-decoration:none;color:inherit;transition:all 0.2s}
+    .video-card:hover{border-color:var(--accent-border);background:var(--surface2)}
+    .video-thumb{width:52px;height:52px;min-width:52px;background:var(--accent-dim);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--accent)}
+    .video-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px}
+    .video-channel{font-size:12px;color:var(--muted);margin-bottom:6px}
+    .video-why{font-size:12px;color:#c8c8d8;margin-bottom:8px}
+    .video-watch{font-size:11px;color:var(--accent);letter-spacing:0.06em}
+    .checkpoint{background:linear-gradient(135deg,rgba(239,68,68,0.1),rgba(16,185,129,0.08));border:1px solid var(--accent-border);border-radius:12px;padding:32px;margin:60px 0}
+    .checkpoint-label{font-size:10px;color:var(--accent);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:12px}
+    .checkpoint h3{font-family:'Syne',sans-serif;font-size:20px;margin-bottom:14px}
+    .checkpoint ul{list-style:none;display:flex;flex-direction:column;gap:8px;margin:16px 0}
+    .checkpoint li{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:#c8c8d8}
+    .checkpoint li::before{content:'✦';color:var(--accent);margin-top:1px}
+    .checkpoint-hint{margin-top:20px;padding:14px 18px;background:rgba(255,255,255,0.04);border-radius:8px;font-size:13px;color:var(--muted)}
+    .next-lesson{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px 28px;text-decoration:none;color:inherit;transition:all 0.2s;margin-bottom:60px}
+    .next-lesson:hover{border-color:var(--accent-border);background:var(--surface2)}
+    .next-label{font-size:11px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px}
+    .next-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--text)}
+    .next-arrow{font-size:28px;color:var(--accent)}
+    .footer{border-top:1px solid var(--border);padding-top:32px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted)}
+    .footer a{color:var(--muted);text-decoration:none}
+    .footer a:hover{color:var(--accent)}
+    ul li{color:#c8c8d8;margin-bottom:6px}
+    /* Demo responsivo */
+    .demo-box{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;text-align:center;font-size:12px;color:var(--muted)}
+    @media(max-width:600px){.page{padding:40px 18px 80px}.grid-2,.grid-3{grid-template-columns:1fr}.top-nav{padding:12px 18px}.analogy-mapping{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<div class="progress-bar-wrap"><div class="progress-bar-fill"></div></div>
+
+<nav class="top-nav">
+  <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+  <div class="nav-center">
+    <a href="py-04-poo.html" class="nav-prev">← Anterior</a>
+    <div class="nav-position"><span class="track">🌐 HTML/CSS</span> · Aula 08 / 50</div>
+    <a href="html-04-animacoes-efeitos.html" class="nav-next">Próxima →</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <span>🌐 HTML/CSS</span>
+      <span class="hero-badge">Aula 08</span>
+    </div>
+    <h1>CSS <span>Responsivo</span> & Moderno</h1>
+    <div class="hero-meta">
+      <span>⏱ 30–40 min de leitura</span>
+      <span>🎯 Intermediário</span>
+      <span>🔧 Hands-on incluído</span>
+    </div>
+    <div class="hero-tags">
+      <span class="tag">@media query</span>
+      <span class="tag">clamp()</span>
+      <span class="tag">custom properties</span>
+      <span class="tag">container queries</span>
+      <span class="tag">:is() :where()</span>
+      <span class="tag">mobile-first</span>
+      <span class="tag">fluid typography</span>
+    </div>
+  </div>
+
+  <!-- 1. POR QUE IMPORTA -->
+  <div class="section">
+    <div class="section-label">// motivação</div>
+    <h2>Por que isso importa?</h2>
+    <p>
+      Mais de <strong>60% do tráfego web global vem de dispositivos móveis</strong>. Um site bonito no desktop que quebra no celular é um produto ruim. CSS moderno — com <code>clamp()</code>, custom properties e container queries — permite criar layouts que se adaptam <em>fluidamente</em> sem media queries excessivas.
+    </p>
+    <p>
+      Além disso, Custom Properties (variáveis CSS) transformam a manutenção de design systems: altere uma variável e todo o tema muda. É o que frameworks como Tailwind, MUI e Radix UI fazem internamente.
+    </p>
+    <div class="callout callout-info">
+      <div class="callout-title">💼 Por que um engenheiro sênior usa isso hoje</div>
+      <p style="margin:0">Design systems modernos (Linear, Vercel, Stripe) são construídos com CSS custom properties para tokens de design. Container queries substituem media queries baseadas na tela por queries baseadas no componente — mudança de paradigma que permite componentes verdadeiramente reutilizáveis. <code>clamp()</code> elimina breakpoints manuais para tipografia e espaçamento. <strong>Isso é o CSS de 2025.</strong></p>
+    </div>
+  </div>
+
+  <!-- 2. ANALOGIA -->
+  <div class="section">
+    <div class="section-label">// analogia</div>
+    <h2>Antes do código: uma analogia</h2>
+    <div class="analogy-card">
+      <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
+      <div class="analogy-text">
+        Pense em um <strong>arquiteto que projeta um espaço multiuso</strong>. Em vez de construir paredes fixas, ele usa <em>divisórias móveis</em> que se adaptam ao espaço disponível. O design base funciona para uma sala pequena, e as divisórias se reorganizam quando o espaço cresce. As <em>cores e materiais</em> são definidos uma vez em um catálogo central — troca o catálogo, troca tudo. Media queries são as <em>instruções de reorganização</em> para cada tamanho de sala.
+      </div>
+      <div class="analogy-mapping">
+        <span class="analogy-real">Divisórias móveis</span>
+        <span class="analogy-tech">→ Layout fluido / flexível</span>
+        <span class="analogy-real">Catálogo central de materiais</span>
+        <span class="analogy-tech">→ CSS Custom Properties</span>
+        <span class="analogy-real">Instruções por tamanho de sala</span>
+        <span class="analogy-tech">→ @media queries</span>
+        <span class="analogy-real">Sala pequena como base</span>
+        <span class="analogy-tech">→ Mobile-first design</span>
+        <span class="analogy-real">Espaço que se ajusta automaticamente</span>
+        <span class="analogy-tech">→ clamp() / fluid typography</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. CONCEITO CENTRAL -->
+  <div class="section">
+    <div class="section-label">// conceito</div>
+    <h2>Mobile-first: a estratégia correta</h2>
+    <p>Mobile-first significa escrever o CSS base para telas pequenas e usar <code>min-width</code> para <em>expandir</em> o layout — não o contrário. Isso resulta em CSS mais limpo, menor e performático:</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label">// fluxo mobile-first</div>
+      <div class="mermaid">
+flowchart LR
+    A[CSS Base\nMobile 320px] -->|min-width: 640px| B[Tablet\nLayoutAjustado]
+    B -->|min-width: 1024px| C[Desktop\nLayoutCompleto]
+    C -->|min-width: 1440px| D[Wide\nLayoutÉpico]
+
+    style A fill:#1e1e2e,stroke:#ef4444,color:#f87171
+    style B fill:#16161f,stroke:#f59e0b,color:#fbbf24
+    style C fill:#16161f,stroke:#10b981,color:#34d399
+    style D fill:#16161f,stroke:#06b6d4,color:#22d3ee
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:24px">
+      <div class="card-mini">
+        <span class="pillar-badge" style="background:rgba(239,68,68,0.2);color:#f87171;">Custom Props</span>
+        <h4>Variáveis CSS nativas</h4>
+        <p>Diferente das variáveis Sass, Custom Properties são dinâmicas — podem ser alteradas com JavaScript em tempo real, e herdam através do DOM.</p>
+      </div>
+      <div class="card-mini">
+        <span class="pillar-badge" style="background:rgba(16,185,129,0.2);color:#34d399;">clamp()</span>
+        <h4>Valores fluidos sem breakpoints</h4>
+        <p><code>clamp(min, ideal, max)</code> cria valores que crescem proporcionalmente entre um mínimo e máximo. Adeus, media queries para tipografia!</p>
+      </div>
+      <div class="card-mini">
+        <span class="pillar-badge" style="background:rgba(245,158,11,0.2);color:#fbbf24;">Container Queries</span>
+        <h4>Responsividade por componente</h4>
+        <p>Enquanto media queries respondem à viewport, container queries respondem ao tamanho do container pai — perfeito para componentes reutilizáveis.</p>
+      </div>
+      <div class="card-mini">
+        <span class="pillar-badge" style="background:rgba(6,182,212,0.2);color:#22d3ee;">:is() :where()</span>
+        <h4>Seletores modernos</h4>
+        <p>Agrupam seletores com especificidade inteligente. <code>:is()</code> mantém a especificidade mais alta do grupo; <code>:where()</code> sempre tem especificidade zero.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. TABELA COMPARATIVA -->
+  <div class="section">
+    <div class="section-label">// comparação</div>
+    <h2>Media Queries vs Container Queries</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Característica</th><th>@media query</th><th>@container query</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Responde a</strong></td><td>Tamanho da viewport (janela)</td><td>Tamanho do container pai</td></tr>
+          <tr><td><strong>Caso de uso ideal</strong></td><td>Layout macro da página</td><td>Componentes reutilizáveis</td></tr>
+          <tr><td><strong>Suporte browsers</strong></td><td>100% — universal</td><td>~95% — Chrome 105+, Firefox 110+</td></tr>
+          <tr><td><strong>Exemplo</strong></td><td><code>@media (min-width: 768px)</code></td><td><code>@container (min-width: 400px)</code></td></tr>
+          <tr><td><strong>Limitação</strong></td><td>Não sabe do contexto do componente</td><td>Requer <code>container-type</code> no pai</td></tr>
+          <tr><td><strong>Melhor para</strong></td><td>Header, footer, grid da página</td><td>Card, sidebar, widget, componente isolado</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:24px">
+      <h3>Unidades modernas de referência</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Unidade</th><th>Significa</th><th>Uso típico</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>rem</code></td><td>Relativo ao root (html) font-size</td><td>Tipografia, espaçamento — base sempre 16px</td></tr>
+            <tr><td><code>em</code></td><td>Relativo ao font-size do elemento pai</td><td>Padding/margin proporcional ao texto</td></tr>
+            <tr><td><code>vw / vh</code></td><td>% da viewport width / height</td><td>Seções fullscreen, tipografia fluida</td></tr>
+            <tr><td><code>dvh</code></td><td>Dynamic viewport height</td><td>Mobile — considera a barra de endereço recolhível</td></tr>
+            <tr><td><code>ch</code></td><td>Largura do caractere "0"</td><td>Limitar largura de texto (60–75ch é ideal)</td></tr>
+            <tr><td><code>cqi / cqb</code></td><td>% do container inline / block</td><td>Tipografia responsiva ao container</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. HANDS-ON -->
+  <div class="section">
+    <div class="section-label">// prática</div>
+    <h2>Mãos na massa</h2>
+    <p>Crie um arquivo <code>responsivo.html</code> e construa um design system responsivo do zero:</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Configure o design system com Custom Properties</div>
+          <div class="step-desc">Tokens de design centralizados — base para temas claro/escuro:</div>
+          <div class="code-wrap">
+            <div class="code-header"><span class="code-filename">style.css</span><span class="code-lang">css</span></div>
+            <pre><code class="language-css">/* ── Tokens de design ─────────────────────────── */
+:root {
+  /* Cores */
+  --color-bg: #ffffff;
+  --color-surface: #f8fafc;
+  --color-text: #0f172a;
+  --color-muted: #64748b;
+  --color-accent: #6366f1;
+  --color-accent-hover: #4f46e5;
+  --color-border: #e2e8f0;
+
+  /* Tipografia fluida */
+  --text-sm: clamp(0.8rem, 0.17vw + 0.76rem, 0.89rem);
+  --text-base: clamp(1rem, 0.34vw + 0.91rem, 1.19rem);
+  --text-lg: clamp(1.25rem, 0.61vw + 1.1rem, 1.58rem);
+  --text-xl: clamp(1.56rem, 1vw + 1.31rem, 2.11rem);
+  --text-2xl: clamp(1.95rem, 1.56vw + 1.56rem, 2.81rem);
+  --text-3xl: clamp(2.44rem, 2.38vw + 1.85rem, 3.75rem);
+
+  /* Espaçamento fluido */
+  --space-xs: clamp(0.25rem, 0.5vw, 0.5rem);
+  --space-sm: clamp(0.5rem, 1vw, 1rem);
+  --space-md: clamp(1rem, 2vw, 2rem);
+  --space-lg: clamp(1.5rem, 3vw, 3rem);
+  --space-xl: clamp(2rem, 5vw, 5rem);
+
+  /* Layout */
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+
+  /* Bordas */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+}
+
+/* Tema escuro automático */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #0f172a;
+    --color-surface: #1e293b;
+    --color-text: #f1f5f9;
+    --color-muted: #94a3b8;
+    --color-border: #334155;
+  }
+}</code></pre>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Layout mobile-first com Grid</div>
+          <div class="step-desc">Comece com 1 coluna, expanda progressivamente:</div>
+          <div class="code-wrap">
+            <div class="code-header"><span class="code-filename">style.css</span><span class="code-lang">css</span></div>
+            <pre><code class="language-css">/* ── Reset e base ─────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; }
+body { font-family: system-ui, sans-serif; font-size: var(--text-base); color: var(--color-text); background: var(--color-bg); line-height: 1.6; }
+
+/* ── Container ────────────────────────────────── */
+.container { width: 100%; max-width: var(--container-xl); margin-inline: auto; padding-inline: var(--space-md); }
+
+/* ── Grid responsivo — Mobile-first ─────────────── */
+.grid {
+  display: grid;
+  gap: var(--space-md);
+  grid-template-columns: 1fr; /* mobile: 1 coluna */
+}
+
+@media (min-width: 640px) {
+  .grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (min-width: 1280px) {
+  .grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* ── Auto-responsive sem media queries ─────────── */
+.grid-auto {
+  display: grid;
+  gap: var(--space-md);
+  /* auto-fill: quantas colunas couberem com min 280px */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}</code></pre>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Container Queries — componente inteligente</div>
+          <div class="step-desc">O card se adapta ao seu container, não à viewport:</div>
+          <div class="code-wrap">
+            <div class="code-header"><span class="code-filename">style.css</span><span class="code-lang">css</span></div>
+            <pre><code class="language-css">/* ── Container Queries ────────────────────────── */
+
+/* 1. Defina o container no pai */
+.card-wrapper {
+  container-type: inline-size;
+  container-name: card;
+}
+
+/* 2. Escreva regras para o componente filho */
+.card {
+  display: grid;
+  grid-template-columns: 1fr; /* empilhado por padrão */
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+/* Quando o CARD tiver +400px, vai lado a lado */
+@container card (min-width: 400px) {
+  .card {
+    grid-template-columns: 120px 1fr;
+    align-items: center;
+  }
+}
+
+/* Tipografia que responde ao container */
+@container card (min-width: 600px) {
+  .card-title { font-size: var(--text-xl); }
+}</code></pre>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Tipografia fluida com clamp()</div>
+          <div class="step-desc">Sem breakpoints, o texto cresce proporcionalmente:</div>
+          <div class="code-wrap">
+            <div class="code-header"><span class="code-filename">style.css</span><span class="code-lang">css</span></div>
+            <pre><code class="language-css">/* ── Tipografia fluida ─────────────────────────── */
+
+/* clamp(MÍNIMO, VALOR-FLUIDO, MÁXIMO) */
+/* O valor fluido cresce com a viewport */
+
+h1 {
+  /* 28px → 56px entre 320px e 1280px de viewport */
+  font-size: clamp(1.75rem, 4vw + 0.5rem, 3.5rem);
+  line-height: 1.1;
+}
+
+h2 { font-size: clamp(1.25rem, 2.5vw + 0.5rem, 2rem); }
+p  { font-size: clamp(1rem, 1vw + 0.5rem, 1.125rem); }
+
+/* Largura do texto — sempre legível */
+.prose {
+  max-width: 65ch; /* 65 caracteres — legibilidade ideal */
+}
+
+/* Espaçamento fluido */
+.section {
+  padding-block: clamp(3rem, 8vw, 8rem);
+}
+
+/* ── Seletores modernos ────────────────────────── */
+
+/* :is() — substitui lista repetitiva */
+:is(h1, h2, h3, h4, h5, h6) {
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* :where() — especificidade ZERO, fácil de sobrescrever */
+:where(ul, ol) { padding-left: 1.5rem; }
+
+/* :has() — o selector pai CSS */
+.form-group:has(input:invalid) label { color: #ef4444; }</code></pre>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <div class="step-title">Toggle de tema claro/escuro com CSS puro</div>
+          <div class="code-wrap">
+            <div class="code-header"><span class="code-filename">style.css + index.html</span><span class="code-lang">css</span></div>
+            <pre><code class="language-css">/* Tema escuro via classe no :root */
+:root[data-theme="dark"] {
+  --color-bg: #0f172a;
+  --color-surface: #1e293b;
+  --color-text: #f1f5f9;
+  --color-muted: #94a3b8;
+  --color-border: #334155;
+}
+
+/* Transição suave entre temas */
+*, *::before, *::after {
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}</code></pre>
+            <pre><code class="language-javascript">// Toggling com JavaScript
+const btn = document.querySelector('#theme-toggle');
+btn.addEventListener('click', () => {
+  const current = document.documentElement.getAttribute('data-theme');
+  document.documentElement.setAttribute(
+    'data-theme', current === 'dark' ? 'light' : 'dark'
+  );
+});</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. CÓDIGO COMPLETO -->
+  <div class="section">
+    <div class="section-label">// código</div>
+    <h2>Exemplo completo: Landing page responsiva</h2>
+    <p>HTML + CSS completo usando todas as técnicas da aula:</p>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-filename">landing.html</span><span class="code-lang">html</span></div>
+      <pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="pt-BR" data-theme="light"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Landing Responsiva&lt;/title&gt;
+  &lt;style&gt;
+    :root {
+      --bg: #fff; --text: #0f172a; --accent: #6366f1;
+      --border: #e2e8f0; --surface: #f8fafc;
+    }
+    :root[data-theme="dark"] {
+      --bg: #0f172a; --text: #f1f5f9;
+      --border: #334155; --surface: #1e293b;
+    }
+
+    body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); }
+
+    /* Hero — Mobile-first */
+    .hero {
+      padding: clamp(3rem, 10vw, 8rem) 1rem;
+      text-align: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 6vw + 0.5rem, 4rem); }
+
+    /* Grid de features */
+    .features {
+      display: grid;
+      gap: 1.5rem;
+      padding: clamp(2rem, 5vw, 5rem) 1rem;
+      max-width: 1200px;
+      margin-inline: auto;
+      /* Auto-responsive: colunas de mínimo 280px */
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+
+    /* Card com container query */
+    .card-wrapper { container-type: inline-size; }
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem;
+    }
+    @container (min-width: 350px) {
+      .card { display: grid; grid-template-columns: 48px 1fr; gap: 1rem; align-items: start; }
+    }
+
+    /* Navegação responsiva */
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem clamp(1rem, 3vw, 3rem);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-links { display: none; gap: 2rem; }
+    @media (min-width: 768px) { .nav-links { display: flex; } }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;nav&gt;
+    &lt;strong&gt;Marca&lt;/strong&gt;
+    &lt;div class="nav-links"&gt;
+      &lt;a href="#"&gt;Produto&lt;/a&gt;
+      &lt;a href="#"&gt;Preços&lt;/a&gt;
+      &lt;a href="#"&gt;Blog&lt;/a&gt;
+    &lt;/div&gt;
+    &lt;button onclick="toggleTheme()"&gt;🌙&lt;/button&gt;
+  &lt;/nav&gt;
+
+  &lt;section class="hero"&gt;
+    &lt;h1&gt;Título que escala com a tela&lt;/h1&gt;
+    &lt;p style="max-width:60ch;margin-inline:auto"&gt;Descrição com largura limitada para legibilidade.&lt;/p&gt;
+  &lt;/section&gt;
+
+  &lt;div class="features"&gt;
+    &lt;div class="card-wrapper"&gt;
+      &lt;div class="card"&gt;
+        &lt;div&gt;⚡&lt;/div&gt;
+        &lt;div&gt;&lt;h3&gt;Rápido&lt;/h3&gt;&lt;p&gt;Performance otimizada.&lt;/p&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;!-- Repita para mais cards --&gt;
+  &lt;/div&gt;
+
+  &lt;script&gt;
+    function toggleTheme() {
+      const t = document.documentElement.getAttribute('data-theme');
+      document.documentElement.setAttribute('data-theme', t === 'dark' ? 'light' : 'dark');
+    }
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </div>
+  </div>
+
+  <!-- 7. PITFALLS -->
+  <div class="section">
+    <div class="section-label">// armadilhas</div>
+    <h2>Erros comuns em CSS responsivo</h2>
+    <div class="callout callout-warn">
+      <div class="callout-title">⚠️ Usar px em vez de rem para tipografia</div>
+      <p>Pixels ignoram as preferências de acessibilidade do usuário. Se o usuário definiu 18px como tamanho padrão no browser, <code>16px</code> ignora isso; <code>1rem</code> respeita. Use <code>rem</code> para texto e espaçamento, <code>px</code> só para bordas e sombras.</p>
+    </div>
+    <div class="callout callout-warn">
+      <div class="callout-title">⚠️ Desktop-first (max-width) gera CSS mais difícil de manter</div>
+      <p>Media queries com <code>max-width</code> (desktop-first) adicionam exceções ao código base. Mobile-first com <code>min-width</code> <em>progride</em> naturalmente — é mais fácil adicionar do que sobrescrever.</p>
+    </div>
+    <div class="callout callout-warn">
+      <div class="callout-title">⚠️ Usar vh no mobile sem dvh</div>
+      <p>Em mobile, <code>100vh</code> inclui a barra de endereço, causando overflow. Use <code>100dvh</code> (dynamic viewport height) para elementos fullscreen no mobile. Suporte: ~95% dos browsers modernos.</p>
+    </div>
+  </div>
+
+  <!-- 8. VÍDEOS -->
+  <div class="section">
+    <div class="section-label">// curadoria</div>
+    <h2>Referências em vídeo</h2>
+    <div class="videos-grid">
+      <a class="video-card" href="https://www.youtube.com/watch?v=p0bGHP-PXD4" target="_blank">
+        <div class="video-thumb">▶</div>
+        <div>
+          <div class="video-title">Build a Responsive Website with CSS Grid — Kevin Powell</div>
+          <div class="video-channel">Kevin Powell · ~1h</div>
+          <div class="video-why">Por que assistir: Kevin Powell é O especialista em CSS moderno. Este tutorial mostra responsive grid do zero com mobile-first.</div>
+          <span class="video-watch">Assistir →</span>
+        </div>
+      </a>
+      <a class="video-card" href="https://www.youtube.com/watch?v=cBGfHGDpHpo" target="_blank">
+        <div class="video-thumb">▶</div>
+        <div>
+          <div class="video-title">CSS Custom Properties — tudo que você precisa saber</div>
+          <div class="video-channel">Kevin Powell · ~22 min</div>
+          <div class="video-why">Por que assistir: Diferença entre custom properties e variáveis Sass, herança, fallbacks e uso com JavaScript.</div>
+          <span class="video-watch">Assistir →</span>
+        </div>
+      </a>
+      <a class="video-card" href="https://www.youtube.com/watch?v=rrLAg7xNERA" target="_blank">
+        <div class="video-thumb">▶</div>
+        <div>
+          <div class="video-title">clamp() e tipografia fluida explicados</div>
+          <div class="video-channel">Kevin Powell · ~14 min</div>
+          <div class="video-why">Por que assistir: Como calcular valores de clamp() para tipografia fluida — com a ferramenta clamp calculator.</div>
+          <span class="video-watch">Assistir →</span>
+        </div>
+      </a>
+      <a class="video-card" href="https://www.youtube.com/watch?v=OqoL7kz1J2k" target="_blank">
+        <div class="video-thumb">▶</div>
+        <div>
+          <div class="video-title">Container Queries — o futuro do CSS responsivo</div>
+          <div class="video-channel">Fireship · ~8 min</div>
+          <div class="video-why">Por que assistir: Explica container queries em 8 minutos com comparação direta a media queries e exemplos práticos.</div>
+          <span class="video-watch">Assistir →</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- CHECKPOINT -->
+  <div class="checkpoint">
+    <div class="checkpoint-label">// desafio</div>
+    <h3>🏁 Checkpoint — valide seu aprendizado</h3>
+    <p>Crie uma <strong>landing page responsiva completa</strong> usando apenas CSS moderno (sem frameworks):</p>
+    <ul>
+      <li>Defina pelo menos 10 custom properties para cores, tipografia e espaçamento</li>
+      <li>Implemente tipografia 100% fluida com <code>clamp()</code> — sem media queries para font-size</li>
+      <li>Use <code>auto-fill / auto-fit + minmax()</code> para pelo menos um grid que não precise de media queries</li>
+      <li>Adicione pelo menos uma Container Query em um componente card</li>
+      <li>Implemente toggle de tema claro/escuro modificando as custom properties</li>
+      <li>Teste no celular — garanta que não há overflow horizontal e que o texto é legível</li>
+    </ul>
+    <div class="checkpoint-hint">💬 Dica: use o site <a href="https://clamp.font-size.app" target="_blank" style="color:var(--accent)">clamp.font-size.app</a> para calcular valores de clamp() com precisão. Para testar responsividade, use o DevTools do Chrome em modo Device — teste em 320px, 768px e 1440px.</div>
+  </div>
+
+  <!-- PRÓXIMA AULA -->
+  <a href="html-04-animacoes-efeitos.html" class="next-lesson">
+    <div>
+      <div class="next-label">Próxima aula →</div>
+      <div class="next-title">CSS — Animações, Tipografia & Efeitos</div>
+    </div>
+    <div class="next-arrow">→</div>
+  </a>
+
+  <div class="footer">
+    <span>🌐 HTML/CSS · Aula 08 / 50</span>
+    <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+  </div>
+
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+  mermaid.initialize({ startOnLoad: true, theme: 'dark', themeVariables: { primaryColor: '#ef4444', primaryTextColor: '#e8e8f0', primaryBorderColor: 'rgba(239,68,68,0.3)', lineColor: '#8585a8', background: '#111118', mainBkg: '#16161f' } });
+  window.addEventListener('scroll', () => {
+    const progress = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+    document.querySelector('.progress-bar-fill').style.width = progress + '%';
+  });
+</script>
+
+</body>
+</html>
