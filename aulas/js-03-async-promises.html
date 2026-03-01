@@ -1,0 +1,1973 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JavaScript — Async: Event Loop, Promises & Fetch · Aula 14</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs {
+      display: block;
+      overflow-x: auto;
+      padding: 1em
+    }
+
+    code.hljs {
+      padding: 3px 5px
+    }
+
+    .hljs {
+      color: #c9d1d9;
+      background: #0d1117
+    }
+
+    .hljs-doctag,
+    .hljs-keyword,
+    .hljs-meta .hljs-keyword,
+    .hljs-template-tag,
+    .hljs-template-variable,
+    .hljs-type,
+    .hljs-variable.language_ {
+      color: #ff7b72
+    }
+
+    .hljs-title,
+    .hljs-title.class_,
+    .hljs-title.class_.inherited__,
+    .hljs-title.function_ {
+      color: #d2a8ff
+    }
+
+    .hljs-attr,
+    .hljs-attribute,
+    .hljs-literal,
+    .hljs-meta,
+    .hljs-number,
+    .hljs-operator,
+    .hljs-variable,
+    .hljs-selector-attr,
+    .hljs-selector-class,
+    .hljs-selector-id {
+      color: #79c0ff
+    }
+
+    .hljs-regexp,
+    .hljs-string,
+    .hljs-meta .hljs-string {
+      color: #a5d6ff
+    }
+
+    .hljs-built_in,
+    .hljs-symbol {
+      color: #ffa657
+    }
+
+    .hljs-comment,
+    .hljs-code,
+    .hljs-formula {
+      color: #8b949e
+    }
+
+    .hljs-name,
+    .hljs-quote,
+    .hljs-selector-tag,
+    .hljs-selector-pseudo {
+      color: #7ee787
+    }
+
+    .hljs-subst {
+      color: #c9d1d9
+    }
+
+    .hljs-section {
+      color: #1f6feb;
+      font-weight: 700
+    }
+
+    .hljs-bullet {
+      color: #f2cc60
+    }
+
+    .hljs-emphasis {
+      color: #c9d1d9;
+      font-style: italic
+    }
+
+    .hljs-strong {
+      color: #c9d1d9;
+      font-weight: 700
+    }
+
+    .hljs-addition {
+      color: #aff5b4;
+      background-color: #033a16
+    }
+
+    .hljs-deletion {
+      color: #ffdcd7;
+      background-color: #67060c
+    }
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #f59e0b;
+      --accent-dim: rgba(245, 158, 11, 0.10);
+      --accent-border: rgba(245, 158, 11, 0.30);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    .progress-bar-wrap {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--border);
+      z-index: 1000;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #fbbf24);
+      width: 0%;
+      transition: width 0.1s;
+    }
+
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 32px;
+      background: rgba(10, 10, 15, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-back {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .nav-back:hover {
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-position {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+
+    .nav-position .track {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .nav-prev,
+    .nav-next {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: transparent;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .nav-prev:hover,
+    .nav-next:hover {
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .nav-prev.disabled {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    .nav-next {
+      border-color: var(--accent-border);
+      color: var(--accent);
+    }
+
+    .nav-next:hover {
+      background: var(--accent-dim);
+      color: #fbbf24;
+    }
+
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 48px 24px 96px;
+    }
+
+    .hero {
+      padding: 52px 0 40px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 56px;
+    }
+
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .hero-badge {
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #fff 40%, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    .tag.accent {
+      background: var(--accent-dim);
+      border-color: var(--accent-border);
+      color: var(--accent);
+    }
+
+    .section {
+      margin-bottom: 64px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .section h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+
+    .section h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 32px 0 14px;
+      color: #fff;
+    }
+
+    .section p {
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .callout {
+      border-radius: 8px;
+      padding: 18px 20px;
+      margin: 20px 0;
+      border-left: 3px solid;
+    }
+
+    .callout-title {
+      font-weight: 700;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+
+    .callout-info {
+      background: rgba(6, 182, 212, 0.08);
+      border-color: var(--info);
+    }
+
+    .callout-info .callout-title {
+      color: var(--info);
+    }
+
+    .callout-warn {
+      background: rgba(245, 158, 11, 0.08);
+      border-color: var(--warn);
+    }
+
+    .callout-warn .callout-title {
+      color: var(--warn);
+    }
+
+    .callout-tip {
+      background: rgba(16, 185, 129, 0.08);
+      border-color: var(--success);
+    }
+
+    .callout-tip .callout-title {
+      color: var(--success);
+    }
+
+    .callout-danger {
+      background: rgba(239, 68, 68, 0.08);
+      border-color: var(--danger);
+    }
+
+    .callout-danger .callout-title {
+      color: var(--danger);
+    }
+
+    .analogy-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .analogy-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+
+    .analogy-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+
+    .analogy-text {
+      font-size: 15px;
+      color: var(--text);
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+
+    .analogy-mapping {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 24px;
+    }
+
+    .analogy-real {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .analogy-tech {
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--accent);
+    }
+
+    .mermaid-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 20px;
+      margin: 24px 0;
+      overflow: auto;
+    }
+
+    .mermaid-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin: 16px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead tr {
+      border-bottom: 2px solid var(--accent-border);
+    }
+
+    thead th {
+      text-align: left;
+      padding: 10px 14px;
+      color: var(--accent);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    tbody tr:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    tbody td {
+      padding: 11px 14px;
+      color: var(--text);
+      vertical-align: top;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .badge-green {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+    }
+
+    .badge-red {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+    }
+
+    .badge-yellow {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+    }
+
+    .badge-blue {
+      background: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .step {
+      display: flex;
+      gap: 18px;
+      padding: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .step-num {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .step-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .step-title {
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .step-desc {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    pre {
+      background: #0d1117 !important;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 12px 0;
+      font-size: 13px;
+    }
+
+    pre code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .code-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 10px 16px 0;
+    }
+
+    code:not(.hljs) {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid var(--border);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: #79c0ff;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 640px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card-mini {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      transition: border-color 0.2s;
+    }
+
+    .card-mini:hover {
+      border-color: var(--accent-border);
+    }
+
+    .card-mini h4 {
+      color: #fff;
+      font-size: 14px;
+      margin: 8px 0 6px;
+    }
+
+    .card-mini p {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .compare-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 16px 0;
+    }
+
+    @media (max-width: 600px) {
+      .compare-split {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .compare-old {
+      background: rgba(239, 68, 68, 0.05);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .compare-new {
+      background: rgba(16, 185, 129, 0.05);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .compare-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .compare-old .compare-label {
+      color: #f87171;
+    }
+
+    .compare-new .compare-label {
+      color: #34d399;
+    }
+
+    .video-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .video-card {
+      display: flex;
+      gap: 16px;
+      padding: 18px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      transition: border-color 0.2s;
+    }
+
+    .video-card:hover {
+      border-color: var(--accent-border);
+    }
+
+    .video-thumb {
+      flex-shrink: 0;
+      width: 56px;
+      height: 56px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: var(--accent);
+    }
+
+    .video-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .video-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .video-channel {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .video-why {
+      font-size: 12px;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .video-info a {
+      font-size: 12px;
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .video-info a:hover {
+      text-decoration: underline;
+    }
+
+    .checkpoint {
+      background: var(--surface);
+      border: 1px solid var(--accent-border);
+      border-radius: 12px;
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .checkpoint::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+
+    .checkpoint h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 14px;
+    }
+
+    .checkpoint p {
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+
+    .checkpoint ul {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .checkpoint ul li {
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .checkpoint-hint {
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--accent);
+    }
+
+    .next-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .next-card-info .next-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .next-card-info h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .next-card-info p {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .next-btn {
+      flex-shrink: 0;
+      text-decoration: none;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .next-btn:hover {
+      background: rgba(245, 158, 11, 0.2);
+    }
+
+    .pitfall-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .pitfall {
+      background: rgba(239, 68, 68, 0.05);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 8px;
+      padding: 16px 20px;
+    }
+
+    .pitfall-title {
+      color: #f87171;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .pitfall p {
+      color: var(--text);
+      font-size: 13px;
+      margin: 0;
+    }
+
+    /* Event Loop Visualizer */
+    .loop-diagram {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin: 24px 0;
+    }
+
+    .loop-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+      text-align: center;
+    }
+
+    .loop-box-title {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .loop-stack {
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 4px;
+      min-height: 80px;
+      justify-content: flex-start;
+    }
+
+    .loop-frame {
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      border-radius: 4px;
+      padding: 5px 10px;
+      font-size: 11px;
+      color: var(--accent);
+      text-align: left;
+    }
+
+    .loop-frame.web {
+      background: rgba(6, 182, 212, 0.1);
+      border-color: rgba(6, 182, 212, 0.3);
+      color: var(--info);
+    }
+
+    .loop-frame.cb {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: rgba(16, 185, 129, 0.3);
+      color: var(--success);
+    }
+
+    .promise-states {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    .promise-state {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .promise-state-icon {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .promise-state-name {
+      font-weight: 700;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .promise-state-desc {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .state-pending .promise-state-name { color: var(--warn); }
+    .state-fulfilled .promise-state-name { color: var(--success); }
+    .state-rejected .promise-state-name { color: var(--danger); }
+
+    @media (max-width: 768px) {
+      .top-nav { padding: 10px 16px; }
+      .next-card { flex-direction: column; align-items: flex-start; }
+      .loop-diagram { grid-template-columns: 1fr; }
+      .promise-states { grid-template-columns: 1fr; }
+    }
+  
+    /* NEXT CARD STANDARDIZATION */
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+</style>
+</head>
+
+<body>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar"></div>
+  </div>
+
+  <!-- NAV -->
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="js-02-objetos-es6.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">⚡ JavaScript</span> · Aula 14 / 50
+      </div>
+      <a href="py-05-http-bibliotecas.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>⚡ JavaScript</span>
+        <span class="hero-badge">Aula 14</span>
+      </div>
+      <h1>Async: Event Loop, Promises & Fetch</h1>
+      <div class="hero-meta">
+        <span>⏱ ~90 min de leitura</span>
+        <span>🎯 Intermediário</span>
+        <span>📁 Nenhum setup necessário</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">Event Loop</span>
+        <span class="tag accent">Promises</span>
+        <span class="tag accent">Async/Await</span>
+        <span class="tag accent">Fetch API</span>
+        <span class="tag">Concorrência</span>
+        <span class="tag">Callbacks</span>
+        <span class="tag">Error Handling</span>
+        <span class="tag">REST APIs</span>
+      </div>
+    </div>
+
+    <!-- 1. POR QUE IMPORTA -->
+    <section class="section">
+      <div class="section-label">// POR QUE ISSO IMPORTA?</div>
+      <h2>O segredo por trás de toda aplicação moderna</h2>
+      <p>
+        Toda aplicação web que você usa depende de código assíncrono. Quando o Twitter carrega seu feed, quando o Google Maps busca rotas, quando o Spotify faz streaming de músicas — tudo isso acontece sem travar a interface. Isso só é possível porque JavaScript tem um modelo de concorrência muito específico: o <strong>Event Loop</strong>.
+      </p>
+      <p>
+        Sem entender assincronicidade, você não consegue escrever código que consome APIs externas, que lida com banco de dados, que faz upload de arquivos ou que reage a eventos do usuário de forma eficiente. É literalmente a base de <em>qualquer</em> backend Node.js e de qualquer frontend que faz requisições HTTP.
+      </p>
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Por que um engenheiro sênior se importa</div>
+        <p style="margin:0">Um senior JS dev pensa em termos de <code>Promise chains</code>, <code>async/await</code>, paralelismo com <code>Promise.all()</code> e gerenciamento cuidadoso de erros. Código síncrono bloqueante em um servidor Node.js é um bug de performance gravíssimo — pode derrubar o servidor inteiro sob carga.</p>
+      </div>
+    </section>
+
+    <!-- 2. ANALOGIA -->
+    <section class="section">
+      <div class="section-label">// ANALOGIA DO MUNDO REAL</div>
+      <h2>O Garçom do Restaurante</h2>
+      <div class="analogy-card">
+        <div class="analogy-label">🍽️ Analogia</div>
+        <div class="analogy-text">
+          Imagine um restaurante com um único garçom. Se ele fosse <strong>síncrono</strong>, funcionaria assim: pega o pedido da mesa 1, vai à cozinha, fica parado esperando o prato ficar pronto (bloqueando), volta, entrega, aí pega o pedido da mesa 2. O restaurante inteiro ficaria travado esperando cada prato.
+          <br><br>
+          Na vida real, o garçom é <strong>assíncrono</strong>: pega o pedido da mesa 1, <em>entrega o pedido à cozinha</em> e volta para atender a mesa 2. Quando a cozinha avisa que o prato está pronto (um <em>callback</em>), ele vai buscar e entrega. Um único garçom atende todo o restaurante com eficiência máxima.
+          <br><br>
+          O garçom é o <strong>Event Loop</strong>. A cozinha são as <strong>Web APIs</strong> (timers, fetch, I/O). Os pedidos na fila são a <strong>Callback Queue</strong>.
+        </div>
+        <div class="analogy-mapping">
+          <div class="analogy-real">🧑 O garçom (único)</div>
+          <div class="analogy-tech">⚡ Event Loop (single thread)</div>
+          <div class="analogy-real">📋 Pegar pedido</div>
+          <div class="analogy-tech">📝 Executar código síncrono</div>
+          <div class="analogy-real">👨‍🍳 Cozinha processando</div>
+          <div class="analogy-tech">🌐 Web APIs (fetch, timer)</div>
+          <div class="analogy-real">🔔 Cozinha avisa "pronto!"</div>
+          <div class="analogy-tech">✅ Promise resolve / callback</div>
+          <div class="analogy-real">📋 Fila de pedidos prontos</div>
+          <div class="analogy-tech">🗂 Callback / Microtask Queue</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. CONCEITO: EVENT LOOP -->
+    <section class="section">
+      <div class="section-label">// CONCEITO CENTRAL</div>
+      <h2>O Event Loop em detalhe</h2>
+      <p>
+        JavaScript é <strong>single-threaded</strong> — executa uma coisa de cada vez em uma única <em>Call Stack</em>. Mas o ambiente (browser ou Node.js) tem <strong>Web APIs</strong> que rodam em threads separadas do OS. O Event Loop é o mecanismo que coordena tudo isso.
+      </p>
+
+      <div class="loop-diagram">
+        <div class="loop-box">
+          <div class="loop-box-title">🗃 Call Stack</div>
+          <div class="loop-stack">
+            <div class="loop-frame">main()</div>
+            <div class="loop-frame">fetchUser()</div>
+            <div class="loop-frame">JSON.parse()</div>
+          </div>
+          <div style="margin-top:10px;font-size:11px;color:var(--muted)">Execução síncrona<br>LIFO — last in, first out</div>
+        </div>
+        <div class="loop-box">
+          <div class="loop-box-title">🌐 Web APIs</div>
+          <div class="loop-stack">
+            <div class="loop-frame web">setTimeout(3s)</div>
+            <div class="loop-frame web">fetch(url)</div>
+          </div>
+          <div style="margin-top:10px;font-size:11px;color:var(--muted)">Processamento externo<br>Não bloqueia a thread</div>
+        </div>
+        <div class="loop-box">
+          <div class="loop-box-title">📬 Queues</div>
+          <div class="loop-stack">
+            <div class="loop-frame cb" style="font-size:10px">Microtask: resolve(data)</div>
+            <div class="loop-frame" style="font-size:10px;opacity:0.6">Macrotask: callback()</div>
+          </div>
+          <div style="margin-top:10px;font-size:11px;color:var(--muted)">Microtasks têm prioridade<br>sobre macrotasks</div>
+        </div>
+      </div>
+
+      <div class="callout callout-info">
+        <div class="callout-title">💡 Microtasks vs Macrotasks</div>
+        <p style="margin:0"><strong>Microtask Queue</strong> (alta prioridade): Promises (<code>.then()</code>), <code>queueMicrotask()</code>, <code>MutationObserver</code>.<br>
+        <strong>Macrotask Queue</strong> (normal): <code>setTimeout</code>, <code>setInterval</code>, eventos do DOM, I/O callbacks. O Event Loop sempre esvazia toda a Microtask Queue antes de pegar a próxima Macrotask.</p>
+      </div>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">Diagrama — Fluxo do Event Loop</div>
+        <div class="mermaid">
+sequenceDiagram
+    participant CS as Call Stack
+    participant WA as Web APIs
+    participant MQ as Microtask Queue
+    participant CQ as Callback Queue
+    participant EL as Event Loop
+
+    CS->>WA: fetch('/api/users') — delega
+    CS->>CS: Continua código síncrono
+    WA-->>MQ: resposta chegou → Promise resolve
+    CS->>CS: Call Stack fica vazia
+    EL->>MQ: Verifica Microtasks
+    MQ-->>CS: Executa .then(callback)
+    EL->>CQ: Verifica Macrotasks (se MQ vazia)
+        </div>
+      </div>
+
+      <h3>A ordem de execução na prática</h3>
+      <div class="code-label">javascript — ordem de execução</div>
+      <pre><code class="language-javascript">console.log('1 — síncrono');
+
+setTimeout(() => console.log('4 — macrotask (setTimeout)'), 0);
+
+Promise.resolve()
+  .then(() => console.log('3 — microtask (Promise)'));
+
+console.log('2 — síncrono');
+
+// Output:
+// 1 — síncrono
+// 2 — síncrono
+// 3 — microtask (Promise)    ← microtask antes do setTimeout!
+// 4 — macrotask (setTimeout)</code></pre>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Atenção ao "zero delay"</div>
+        <p style="margin:0"><code>setTimeout(fn, 0)</code> não significa "execute agora". Significa "execute assim que a Call Stack estiver vazia E todas as microtasks tiverem sido processadas". O delay mínimo real no browser é ~4ms.</p>
+      </div>
+    </section>
+
+    <!-- 4. PROMISES -->
+    <section class="section">
+      <div class="section-label">// PROMISES</div>
+      <h2>Promises: valores do futuro</h2>
+      <p>
+        Uma <strong>Promise</strong> é um objeto que representa a eventual conclusão (ou falha) de uma operação assíncrona. Em vez de passar um callback para dentro de uma função, você recebe um objeto Promise e registra o que fazer quando ele resolver.
+      </p>
+
+      <div class="promise-states">
+        <div class="promise-state state-pending">
+          <div class="promise-state-icon">⏳</div>
+          <div class="promise-state-name">Pending</div>
+          <div class="promise-state-desc">Estado inicial. A operação ainda está em andamento.</div>
+        </div>
+        <div class="promise-state state-fulfilled">
+          <div class="promise-state-icon">✅</div>
+          <div class="promise-state-name">Fulfilled</div>
+          <div class="promise-state-desc">A operação completou com sucesso. Tem um valor.</div>
+        </div>
+        <div class="promise-state state-rejected">
+          <div class="promise-state-icon">❌</div>
+          <div class="promise-state-name">Rejected</div>
+          <div class="promise-state-desc">A operação falhou. Tem uma razão (Error).</div>
+        </div>
+      </div>
+
+      <h3>Criando e consumindo Promises</h3>
+      <div class="code-label">javascript — promises básicas</div>
+      <pre><code class="language-javascript">// ─── Criando uma Promise ───────────────────────────────────────────────
+const minhaPromise = new Promise((resolve, reject) => {
+  const sucesso = Math.random() > 0.5;
+  
+  setTimeout(() => {
+    if (sucesso) {
+      resolve({ nome: 'Maria', idade: 30 });  // → fulfilled
+    } else {
+      reject(new Error('Algo deu errado'));     // → rejected
+    }
+  }, 1000);
+});
+
+// ─── Consumindo com .then() / .catch() / .finally() ───────────────────
+minhaPromise
+  .then(usuario => {
+    console.log('Usuário:', usuario.nome);   // executa se fulfilled
+    return usuario.nome.toUpperCase();        // pode retornar outro valor
+  })
+  .then(nomeUpper => {
+    console.log('Maiúsculo:', nomeUpper);     // chaining!
+  })
+  .catch(erro => {
+    console.error('Erro:', erro.message);    // executa se rejected
+  })
+  .finally(() => {
+    console.log('Sempre executa — limpar loading spinner');
+  });</code></pre>
+
+      <h3>Combinadores de Promises — poder real</h3>
+      <div class="code-label">javascript — Promise.all, allSettled, race, any</div>
+      <pre><code class="language-javascript">const p1 = fetch('/api/users');
+const p2 = fetch('/api/products');
+const p3 = fetch('/api/orders');
+
+// ─── Promise.all ── falha fast: se UMA rejeitar, todas falham ─────────
+const [users, products, orders] = await Promise.all([p1, p2, p3]);
+// Paralelismo real! 3 requisições simultâneas, não sequenciais.
+
+// ─── Promise.allSettled ── aguarda TODAS, independente do resultado ───
+const results = await Promise.allSettled([p1, p2, p3]);
+results.forEach(result => {
+  if (result.status === 'fulfilled') {
+    console.log('✅', result.value);
+  } else {
+    console.log('❌', result.reason);
+  }
+});
+
+// ─── Promise.race ── vence a primeira que resolver ou rejeitar ────────
+const winner = await Promise.race([
+  fetch('/api/server-1'),
+  fetch('/api/server-2'),  // fallback mais rápido ganha
+]);
+
+// ─── Promise.any ── vence a primeira que RESOLVER (ignora rejeições) ──
+const firstSuccess = await Promise.any([
+  fetch('/api/primary'),
+  fetch('/api/backup-1'),
+  fetch('/api/backup-2'),
+]);</code></pre>
+    </section>
+
+    <!-- 5. ASYNC/AWAIT -->
+    <section class="section">
+      <div class="section-label">// ASYNC/AWAIT</div>
+      <h2>Async/Await: Promises com cara de código síncrono</h2>
+      <p>
+        <code>async/await</code> é açúcar sintático sobre Promises — por baixo dos panos, é exatamente a mesma coisa. A vantagem é legibilidade: o código parece síncrono mas é completamente assíncrono.
+      </p>
+
+      <div class="compare-split">
+        <div class="compare-old">
+          <div class="compare-label">❌ Com .then() — difícil de ler</div>
+          <pre><code class="language-javascript">function buscarDados() {
+  return fetch('/api/users')
+    .then(res => res.json())
+    .then(users => {
+      return fetch(`/api/orders/${users[0].id}`)
+        .then(res => res.json())
+        .then(orders => {
+          return { users, orders };
+        });
+    })
+    .catch(err => {
+      console.error(err);
+    });
+}</code></pre>
+        </div>
+        <div class="compare-new">
+          <div class="compare-label">✅ Com async/await — limpo!</div>
+          <pre><code class="language-javascript">async function buscarDados() {
+  try {
+    const res1 = await fetch('/api/users');
+    const users = await res1.json();
+
+    const res2 = await fetch(
+      `/api/orders/${users[0].id}`
+    );
+    const orders = await res2.json();
+
+    return { users, orders };
+  } catch (err) {
+    console.error(err);
+  }
+}</code></pre>
+        </div>
+      </div>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Armadilha: await sequencial vs paralelo</div>
+        <p style="margin:0">
+          <code>await</code> dentro de um loop <code>for</code> executa cada await <em>sequencialmente</em> — o próximo só começa quando o anterior terminar. Para paralelismo, use <code>Promise.all()</code>.
+        </p>
+      </div>
+
+      <div class="code-label">javascript — sequencial vs paralelo</div>
+      <pre><code class="language-javascript">// ❌ Sequencial — demora 3s (1s + 1s + 1s)
+async function lento() {
+  const a = await buscar(1);  // espera 1s
+  const b = await buscar(2);  // espera 1s
+  const c = await buscar(3);  // espera 1s
+  return [a, b, c];
+}
+
+// ✅ Paralelo — demora ~1s (todas simultâneas)
+async function rapido() {
+  const [a, b, c] = await Promise.all([
+    buscar(1),
+    buscar(2),
+    buscar(3),
+  ]);
+  return [a, b, c];
+}
+
+// ✅ Inicializar promises antes, await depois
+async function tambemRapido() {
+  const pA = buscar(1);  // inicia sem await
+  const pB = buscar(2);  // inicia sem await
+  const pC = buscar(3);  // inicia sem await
+  return [await pA, await pB, await pC];  // aguarda todas
+}</code></pre>
+    </section>
+
+    <!-- 6. FETCH API -->
+    <section class="section">
+      <div class="section-label">// FETCH API</div>
+      <h2>Fetch API: consumindo REST APIs</h2>
+      <p>
+        A <strong>Fetch API</strong> é a forma moderna de fazer requisições HTTP no JavaScript. Ela substitui o antigo <code>XMLHttpRequest</code> com uma interface baseada em Promises muito mais limpa.
+      </p>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ fetch() não rejeita em erros HTTP 4xx/5xx!</div>
+        <p style="margin:0">Isso é a armadilha mais comum. <code>fetch()</code> só rejeita em falhas de rede (sem conexão, CORS bloqueado). Para erros HTTP como 404 ou 500, você precisa checar <code>response.ok</code> ou <code>response.status</code> manualmente.</p>
+      </div>
+
+      <div class="code-label">javascript — fetch completo e robusto</div>
+      <pre><code class="language-javascript">// ─── GET request ──────────────────────────────────────────────────────
+async function buscarUsuarios() {
+  const response = await fetch('https://jsonplaceholder.typicode.com/users');
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  
+  const data = await response.json();
+  return data;
+}
+
+// ─── POST request com body ────────────────────────────────────────────
+async function criarPost(titulo, corpo) {
+  const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${TOKEN}`,
+    },
+    body: JSON.stringify({
+      title: titulo,
+      body: corpo,
+      userId: 1,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    throw new Error(errorData?.message ?? `Erro ${response.status}`);
+  }
+
+  return response.json();
+}
+
+// ─── Padrão wrapper reutilizável ──────────────────────────────────────
+async function api(endpoint, options = {}) {
+  const BASE_URL = 'https://api.meusite.com/v1';
+  
+  const response = await fetch(`${BASE_URL}${endpoint}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+    ...options,
+  });
+
+  if (!response.ok) {
+    throw new Error(`API Error: ${response.status} ${response.statusText}`);
+  }
+
+  // Lidar com responses sem body (204 No Content)
+  const contentType = response.headers.get('content-type');
+  if (contentType?.includes('application/json')) {
+    return response.json();
+  }
+  return null;
+}
+
+// Uso:
+const user = await api('/users/42');
+await api('/users/42', { method: 'DELETE' });</code></pre>
+
+      <h3>AbortController — cancelando requisições</h3>
+      <div class="code-label">javascript — abortar fetch em andamento</div>
+      <pre><code class="language-javascript">// Útil para: timeout manual, cancelar ao desmontar componente React,
+// cancelar busca quando usuário digita nova query
+
+async function buscarComTimeout(url, timeoutMs = 5000) {
+  const controller = new AbortController();
+  
+  // Cancela automaticamente após o timeout
+  const timeoutId = setTimeout(
+    () => controller.abort(),
+    timeoutMs
+  );
+
+  try {
+    const response = await fetch(url, {
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    return response.json();
+  } catch (err) {
+    if (err.name === 'AbortError') {
+      throw new Error('Requisição cancelada por timeout');
+    }
+    throw err;
+  }
+}
+
+// Cancelando manualmente (ex: React useEffect cleanup)
+let controller;
+
+function buscar(query) {
+  if (controller) controller.abort();  // cancela busca anterior
+  controller = new AbortController();
+  
+  return fetch(`/api/search?q=${query}`, {
+    signal: controller.signal,
+  });
+}</code></pre>
+    </section>
+
+    <!-- 7. COMPARATIVA -->
+    <section class="section">
+      <div class="section-label">// TABELA COMPARATIVA</div>
+      <h2>Evolução do código assíncrono em JS</h2>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Abordagem</th>
+              <th>Era</th>
+              <th>Prós</th>
+              <th>Contras</th>
+              <th>Uso hoje</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Callbacks</strong></td>
+              <td><span class="badge badge-red">ES3</span></td>
+              <td>Simples, funciona em qualquer lugar</td>
+              <td>Callback hell, difícil de encadear erros</td>
+              <td><span class="badge badge-yellow">Event handlers</span></td>
+            </tr>
+            <tr>
+              <td><strong>Promises</strong></td>
+              <td><span class="badge badge-yellow">ES6 2015</span></td>
+              <td>Encadeável, .catch() centralizado, combinadores poderosos</td>
+              <td>Ainda verboso para lógica complexa</td>
+              <td><span class="badge badge-green">Base de tudo</span></td>
+            </tr>
+            <tr>
+              <td><strong>Async/Await</strong></td>
+              <td><span class="badge badge-green">ES8 2017</span></td>
+              <td>Legível, debugging fácil, try/catch natural</td>
+              <td>Precisa de cuidado com paralelismo</td>
+              <td><span class="badge badge-green">Padrão atual</span></td>
+            </tr>
+            <tr>
+              <td><strong>Generators</strong></td>
+              <td><span class="badge badge-blue">ES6 2015</span></td>
+              <td>Controle fino, cancelável nativamente</td>
+              <td>Complexo, verboso demais</td>
+              <td><span class="badge badge-yellow">Redux Saga</span></td>
+            </tr>
+            <tr>
+              <td><strong>Observable (RxJS)</strong></td>
+              <td><span class="badge badge-blue">lib</span></td>
+              <td>Ideal para streams de eventos, cancelável, poderoso</td>
+              <td>Curva de aprendizado alta</td>
+              <td><span class="badge badge-yellow">Angular / streams</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Promise combinators: qual usar quando?</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Combinador</th>
+              <th>Quando usar</th>
+              <th>Falha se</th>
+              <th>Resultado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>Promise.all()</code></td>
+              <td>Todas devem ter sucesso</td>
+              <td>Qualquer uma rejeita</td>
+              <td>Array dos resultados</td>
+            </tr>
+            <tr>
+              <td><code>Promise.allSettled()</code></td>
+              <td>Quer resultado de todas</td>
+              <td>Nunca rejeita</td>
+              <td>Array com status + valor/erro</td>
+            </tr>
+            <tr>
+              <td><code>Promise.race()</code></td>
+              <td>Timeout ou múltiplas fontes</td>
+              <td>A mais rápida rejeitar</td>
+              <td>Valor da mais rápida</td>
+            </tr>
+            <tr>
+              <td><code>Promise.any()</code></td>
+              <td>Fallback, múltiplos servidores</td>
+              <td>Todas rejeitam (AggregateError)</td>
+              <td>Primeiro que resolver</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 8. HANDS-ON -->
+    <section class="section">
+      <div class="section-label">// HANDS-ON: PASSO A PASSO</div>
+      <h2>Consumindo uma API pública na prática</h2>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Abra o console do navegador</div>
+            <div class="step-desc">Pressione F12 → aba "Console". Vamos testar direto no browser, sem precisar de nenhum setup.</div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Faça seu primeiro fetch</div>
+            <div class="step-desc">Cole e execute no console:</div>
+            <pre><code class="language-javascript">const res = await fetch('https://jsonplaceholder.typicode.com/posts/1');
+const post = await res.json();
+console.log(post);</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Busque múltiplos recursos em paralelo</div>
+            <div class="step-desc">Experimente o poder do Promise.all():</div>
+            <pre><code class="language-javascript">const [users, posts] = await Promise.all([
+  fetch('https://jsonplaceholder.typicode.com/users').then(r => r.json()),
+  fetch('https://jsonplaceholder.typicode.com/posts').then(r => r.json()),
+]);
+
+console.log(`${users.length} usuários, ${posts.length} posts`);</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Trate erros corretamente</div>
+            <div class="step-desc">Teste buscando um endpoint que não existe (404) e veja como o fetch não rejeita:</div>
+            <pre><code class="language-javascript">// Sem verificar response.ok — bug silencioso!
+const res1 = await fetch('https://jsonplaceholder.typicode.com/posts/9999');
+console.log('status:', res1.status);   // 404
+console.log('ok:', res1.ok);           // false — mas não jogou erro!
+
+// Com verificação correta
+async function buscar(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Erro HTTP: ${res.status}`);
+  return res.json();
+}
+
+try {
+  const post = await buscar('https://jsonplaceholder.typicode.com/posts/9999');
+} catch (err) {
+  console.error('Capturado:', err.message);  // Erro HTTP: 404
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Crie seu mini cliente de API</div>
+            <div class="step-desc">Um wrapper reutilizável que você pode levar para qualquer projeto:</div>
+            <pre><code class="language-javascript">const JSONPlaceholder = {
+  BASE: 'https://jsonplaceholder.typicode.com',
+  
+  async get(path) {
+    const res = await fetch(this.BASE + path);
+    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+    return res.json();
+  },
+
+  async post(path, body) {
+    const res = await fetch(this.BASE + path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+    return res.json();
+  }
+};
+
+// Uso
+const user = await JSONPlaceholder.get('/users/1');
+console.log(user.name);  // Leanne Graham
+
+const newPost = await JSONPlaceholder.post('/posts', {
+  title: 'Testando async/await',
+  body: 'Funcionou!',
+  userId: 1,
+});
+console.log(newPost.id);  // 101</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. CÓDIGO COMPLETO -->
+    <section class="section">
+      <div class="section-label">// CÓDIGO COMPLETO</div>
+      <h2>Dashboard de dados assíncrono</h2>
+      <p>Exemplo real: uma função que busca dados de múltiplas fontes com tratamento de erro robusto, loading state e cancelamento.</p>
+
+      <div class="code-label">javascript — dashboard.js — exemplo completo e comentado</div>
+      <pre><code class="language-javascript">// ─── dashboard.js — Exemplo completo de async/await ──────────────────
+
+const API = 'https://jsonplaceholder.typicode.com';
+
+// ─── 1. Utilitário de fetch robusto ───────────────────────────────────
+async function apiFetch(path, signal) {
+  const response = await fetch(`${API}${path}`, { signal });
+  
+  if (!response.ok) {
+    // Tenta parsear mensagem de erro da API, senão usa status
+    const errorBody = await response.json().catch(() => null);
+    throw new Error(
+      errorBody?.message ?? `HTTP ${response.status}: ${path}`
+    );
+  }
+  
+  return response.json();
+}
+
+// ─── 2. Funções de domínio ────────────────────────────────────────────
+async function buscarUsuario(id, signal) {
+  return apiFetch(`/users/${id}`, signal);
+}
+
+async function buscarPostsDoUsuario(userId, signal) {
+  return apiFetch(`/posts?userId=${userId}`, signal);
+}
+
+async function buscarTodosOsAlbuns(signal) {
+  return apiFetch('/albums', signal);
+}
+
+// ─── 3. Função principal — paralelismo inteligente ────────────────────
+async function carregarDashboard(userId) {
+  // AbortController para cancelar tudo de uma vez se necessário
+  const controller = new AbortController();
+  const { signal } = controller;
+
+  // Timeout de 10 segundos
+  const timeoutId = setTimeout(() => controller.abort(), 10_000);
+
+  try {
+    // Busca usuário primeiro (precisamos do ID para os posts)
+    const usuario = await buscarUsuario(userId, signal);
+    
+    // Agora busca posts e albums em paralelo!
+    const [posts, albums] = await Promise.all([
+      buscarPostsDoUsuario(usuario.id, signal),
+      buscarTodosOsAlbuns(signal),
+    ]);
+
+    // Filtra apenas albums desse usuário
+    const albumsDoUsuario = albums.filter(a => a.userId === usuario.id);
+
+    clearTimeout(timeoutId);
+    
+    return {
+      usuario,
+      posts: posts.slice(0, 5),     // top 5 posts
+      albums: albumsDoUsuario,
+      carregadoEm: new Date().toISOString(),
+    };
+
+  } catch (err) {
+    clearTimeout(timeoutId);
+    
+    if (err.name === 'AbortError') {
+      throw new Error('Dashboard timeout: operação cancelada após 10s');
+    }
+    throw err; // re-throw para quem chamou lidar
+  }
+}
+
+// ─── 4. Executando com tratamento de erro no ponto de chamada ─────────
+async function main() {
+  console.log('🔄 Carregando dashboard...');
+
+  try {
+    const dashboard = await carregarDashboard(1);
+    
+    console.log(`✅ Dashboard carregado!`);
+    console.log(`👤 ${dashboard.usuario.name} (${dashboard.usuario.email})`);
+    console.log(`📝 ${dashboard.posts.length} posts recentes`);
+    console.log(`📷 ${dashboard.albums.length} albums`);
+    console.log(`⏰ ${dashboard.carregadoEm}`);
+    
+  } catch (err) {
+    console.error('❌ Falha ao carregar dashboard:', err.message);
+    // Na UI: mostrar mensagem de erro amigável, botão "Tentar novamente"
+  }
+}
+
+main();</code></pre>
+    </section>
+
+    <!-- 10. PITFALLS -->
+    <section class="section">
+      <div class="section-label">// ARMADILHAS COMUNS</div>
+      <h2>⚠️ Erros que todo dev já cometeu</h2>
+
+      <div class="pitfall-list">
+        <div class="pitfall">
+          <div class="pitfall-title">🪤 Esquecer de tratar erros HTTP do fetch()</div>
+          <p><code>fetch()</code> só rejeita em falhas de rede. Um 404 ou 500 chega como resposta "normal". Sempre cheque <code>response.ok</code> ou <code>response.status</code> e jogue um erro manualmente.</p>
+        </div>
+
+        <div class="pitfall">
+          <div class="pitfall-title">🪤 await sequencial em loop — o "await em for of"</div>
+          <p><code>for (const id of ids) { const data = await fetch(...) }</code> executa cada fetch um de cada vez. Use <code>Promise.all(ids.map(id => fetch(...)))</code> para paralelismo real. A diferença pode ser 10x no tempo de execução.</p>
+        </div>
+
+        <div class="pitfall">
+          <div class="pitfall-title">🪤 .forEach() com async — callbacks perdidas</div>
+          <p><code>array.forEach(async (item) => { ... })</code> não aguarda as promises! forEach ignora o retorno de cada iteração. Use <code>for...of</code> ou <code>Promise.all(array.map(async ...))</code>.</p>
+        </div>
+
+        <div class="pitfall">
+          <div class="pitfall-title">🪤 Promise não tratada — UnhandledPromiseRejection</div>
+          <p>Uma Promise rejeitada sem <code>.catch()</code> ou <code>try/catch</code> gera um warning (ou crash em Node.js). Sempre trate rejeições, especialmente em top-level async code.</p>
+        </div>
+
+        <div class="pitfall">
+          <div class="pitfall-title">🪤 Race condition — múltiplas requisições sem controle</div>
+          <p>Em um campo de busca, se o usuário digitar rápido e você fizer fetch a cada keypress, a última digitada pode chegar antes de uma intermediária, exibindo resultados errados. Sempre use AbortController para cancelar a requisição anterior.</p>
+        </div>
+
+        <div class="pitfall">
+          <div class="pitfall-title">🪤 async function em event handler sem try/catch</div>
+          <p>Um erro dentro de <code>button.addEventListener('click', async () => { ... })</code> sem try/catch vai "sumir" silenciosamente. Sempre envolva em try/catch ou adicione .catch() na chamada.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11. DIAGRAMA ARQUITETURA -->
+    <section class="section">
+      <div class="section-label">// DIAGRAMA DE ARQUITETURA</div>
+      <h2>Fluxo completo de uma requisição assíncrona</h2>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">Diagrama — Promise lifecycle e error handling</div>
+        <div class="mermaid">
+flowchart TD
+    A[Código chama async function] --> B{await fetch}
+    B -->|Delega à Web API| C[Network request em background]
+    B -->|JS continua| D[Próximas linhas síncronas]
+    C -->|Resposta chegou| E{response.ok?}
+    E -->|true| F[await response.json]
+    E -->|false| G[throw new Error - HTTP status]
+    F --> H[Dados disponíveis]
+    G --> I[catch bloco]
+    H --> J[Processamento / render]
+    I --> K[Tratar erro / feedback UI]
+
+    style A fill:#1e1e2e,color:#e8e8f0,stroke:#f59e0b
+    style H fill:#033a16,color:#aff5b4,stroke:#10b981
+    style G fill:#67060c,color:#ffdcd7,stroke:#ef4444
+    style I fill:#67060c,color:#ffdcd7,stroke:#ef4444
+        </div>
+      </div>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">Diagrama — Promise.all vs sequencial</div>
+        <div class="mermaid">
+gantt
+    title Tempo de execução (cada req = 1s)
+    dateFormat X
+    axisFormat %Ls
+
+    section Sequencial (3s total)
+    Req 1: 0, 1000
+    Req 2: 1000, 2000
+    Req 3: 2000, 3000
+
+    section Promise.all (1s total)
+    Req 1: 0, 1000
+    Req 2: 0, 1000
+    Req 3: 0, 1000
+        </div>
+      </div>
+    </section>
+
+    <!-- 12. VÍDEOS -->
+    <section class="section">
+      <div class="section-label">// CURADORIA DE VÍDEOS</div>
+      <h2>Recursos essenciais para aprofundar</h2>
+
+      <div class="video-grid">
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">JavaScript Promises In 10 Minutes</div>
+            <div class="video-channel">Web Dev Simplified · ~10 min</div>
+            <div class="video-why">Por que assistir: Explicação visual direta ao ponto de Promise states, chaining e .catch(). Ideal para quem quer solidificar o conceito antes de pular para async/await.</div>
+            <a href="https://www.youtube.com/watch?v=DHvZLI7Db8E" target="_blank">Assistir →</a>
+          </div>
+        </div>
+
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">What the heck is the event loop anyway?</div>
+            <div class="video-channel">Philip Roberts · JSConf EU · ~26 min</div>
+            <div class="video-why">Por que assistir: A talk mais famosa sobre Event Loop — com visualizador ao vivo mostrando Call Stack, Web APIs e Callback Queue em tempo real. Clássico absoluto, obrigatório.</div>
+            <a href="https://www.youtube.com/watch?v=8aGhZQkoFbQ" target="_blank">Assistir →</a>
+          </div>
+        </div>
+
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Async JS Crash Course — Callbacks, Promises, Async Await</div>
+            <div class="video-channel">Traversy Media · ~25 min</div>
+            <div class="video-why">Por que assistir: Percorre toda a evolução do código assíncrono em JS — de callbacks ao async/await — com exemplos práticos hands-on. Ótimo para ver a progressão histórica e entender por que cada padrão existe.</div>
+            <a href="https://www.youtube.com/watch?v=PoRJizFvM7s" target="_blank">Assistir →</a>
+          </div>
+        </div>
+
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">JavaScript Fetch API — Complete Guide</div>
+            <div class="video-channel">Web Dev Simplified · ~20 min</div>
+            <div class="video-why">Por que assistir: Cobre Fetch API do zero ao avançado: GET, POST, headers, error handling, AbortController. Exatamente o que você precisa para consumir APIs REST na prática.</div>
+            <a href="https://www.youtube.com/watch?v=cuEtnrL9-H0" target="_blank">Assistir →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 13. CHECKPOINT -->
+    <section class="section">
+      <div class="checkpoint">
+        <h3>🏁 Checkpoint — Desafio Final</h3>
+        <p>
+          Construa um <strong>mini dashboard de GitHub</strong> que busca dados de um usuário público e exibe informações consolidadas.
+        </p>
+        <ul>
+          <li>✦ Busque <code>https://api.github.com/users/{username}</code> para dados do perfil</li>
+          <li>✦ Busque <code>https://api.github.com/users/{username}/repos</code> para os repositórios</li>
+          <li>✦ Faça as duas requisições <strong>em paralelo</strong> com <code>Promise.all()</code></li>
+          <li>✦ Exiba: nome, bio, número de repos públicos, top 5 repos por stars</li>
+          <li>✦ Trate erros: usuário não encontrado (404) deve mostrar mensagem amigável</li>
+          <li>✦ Implemente AbortController com timeout de 8 segundos</li>
+          <li>✦ Bonus: adicione cache simples usando um objeto JS para evitar re-fetch</li>
+        </ul>
+        <div class="checkpoint-hint">
+          💬 Dica: Teste com <code>octocat</code>, <code>torvalds</code> ou <code>gaearon</code> como usernames. A GitHub API pública tem rate limiting — se receber 403, espere 1 minuto. Para o cache, use um Map: <code>const cache = new Map()</code> e cheque <code>cache.has(username)</code> antes de fazer o fetch.
+        </div>
+      </div>
+    </section>
+
+    <!-- 14. PRÓXIMOS PASSOS -->
+    <section class="section">
+      <div class="section-label">// próxima aula</div>
+      <h2>O que vem a seguir?</h2>
+      <p>Agora que você domina async em JS, veremos como Python lida com requisições HTTP usando <code>requests</code>, manipulação de arquivos com <code>pathlib</code>, datas com <code>datetime</code> e expressões regulares.</p>
+      <a href="py-05-http-bibliotecas.html" class="next-card">
+        <div>
+          <div class="next-card-label">Próxima Aula • 🐍 Python</div>
+          <div class="next-card-title">Python — HTTP, APIs & Bibliotecas Essenciais</div>
+        </div>
+        <div class="next-arrow">→</div>
+      </a>
+    </section>
+
+  </div><!-- /page -->
+
+  <script>
+    // Syntax highlighting
+    hljs.highlightAll();
+
+    // Mermaid
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+
+    // Progress bar
+    function updateProgress() {
+      const scrollTop = window.scrollY;
+      const docHeight = document.body.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      document.getElementById('progressBar').style.width = progress + '%';
+    }
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    updateProgress();
+  </script>
+</body>
+
+</html>

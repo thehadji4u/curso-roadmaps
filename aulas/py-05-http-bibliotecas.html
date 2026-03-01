@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Python — HTTP, APIs & Bibliotecas Essenciais · Aula 15</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #3b82f6;
+      --accent-dim: rgba(59,130,246,0.15);
+      --accent-border: rgba(59,130,246,0.35);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #60a5fa); width: 0%; transition: width 0.1s; }
+
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; cursor: default; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #60a5fa; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.08); border-color: var(--success); }
+    .callout-tip .callout-title { color: var(--success); }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(59,130,246,0.2); color: #60a5fa; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+    .pillar-badge { font-size: 11px; padding: 3px 10px; border-radius: 4px; font-weight: 600; }
+
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-info a { font-size: 12px; color: var(--accent); text-decoration: none; }
+    .video-info a:hover { text-decoration: underline; }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(96,165,250,0.04)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(59,130,246,0.06); border-radius: 6px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; }
+
+    .glossary-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .glossary-term { color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+    .glossary-def { color: var(--muted); font-size: 13px; }
+
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #60a5fa; }
+
+    .terminal { background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .terminal-bar { background: #1a1a1a; padding: 8px 14px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ef4444; } .dot-yellow { background: #f59e0b; } .dot-green { background: #10b981; }
+    .terminal-title { font-size: 11px; color: #555; margin-left: 6px; }
+    .terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; }
+    .t-prompt { color: #10b981; } .t-cmd { color: #e8e8f0; } .t-out { color: #8585a8; } .t-comment { color: #444; font-style: italic; }
+
+    /* HTTP cycle visual */
+    .http-cycle { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; margin: 24px 0; }
+    .http-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; text-align: center; }
+    .http-box-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 6px; }
+    .http-box-sub { color: var(--muted); font-size: 12px; }
+    .http-arrow { color: var(--accent); font-size: 24px; text-align: center; }
+    .http-arrow-label { font-size: 10px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+
+    /* Status code bands */
+    .status-band { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
+    .status-chip { padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+    .s-2xx { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+    .s-3xx { background: rgba(6,182,212,0.15); color: #22d3ee; border: 1px solid rgba(6,182,212,0.3); }
+    .s-4xx { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+    .s-5xx { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+
+    /* Library cards */
+    .lib-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 640px) { .lib-cards { grid-template-columns: 1fr; } .http-cycle { grid-template-columns: 1fr; } }
+    .lib-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .lib-card:hover { border-color: var(--accent-border); }
+    .lib-name { font-size: 16px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .lib-install { font-size: 11px; color: var(--muted); margin-bottom: 10px; font-family: 'JetBrains Mono', monospace; }
+    .lib-desc { font-size: 13px; color: var(--text); line-height: 1.6; }
+  
+    /* NEXT CARD STANDARDIZATION */
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+</style>
+</head>
+<body>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar"></div>
+  </div>
+
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="js-03-async-promises.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">🐍 Python</span> · Aula 15 / 50
+      </div>
+      <a href="gh-04-git-avancado.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>🐍 Python</span>
+        <span class="hero-badge">Aula 15</span>
+      </div>
+      <h1>Python — HTTP, APIs & Bibliotecas Essenciais</h1>
+      <div class="hero-meta">
+        <span>⏱ ~50 min de leitura</span>
+        <span>🎯 Intermediário</span>
+        <span>🔧 Hands-on incluído</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">requests</span>
+        <span class="tag accent">pathlib</span>
+        <span class="tag accent">datetime</span>
+        <span class="tag accent">regex</span>
+        <span class="tag">HTTP</span>
+        <span class="tag">REST API</span>
+        <span class="tag">JSON</span>
+        <span class="tag">os</span>
+        <span class="tag">re</span>
+      </div>
+    </div>
+
+    <!-- 1. POR QUE IMPORTA -->
+    <div class="section">
+      <div class="section-label">// motivação</div>
+      <h2>Por que isso importa?</h2>
+      <p>
+        Um desenvolvedor Python profissional passa boa parte do tempo fazendo três coisas: <strong>conversar com APIs externas</strong>, <strong>manipular arquivos e caminhos no sistema</strong>, e <strong>processar textos e datas</strong>. Essas quatro bibliotecas — <code>requests</code>, <code>pathlib</code>, <code>datetime</code> e <code>re</code> — cobrem exatamente isso.
+      </p>
+      <p>
+        Entender HTTP não é opcional. Todo sistema moderno se comunica via HTTP — seja integrando com um pagamento, consumindo dados de uma bolsa de valores, ou chamando uma IA. Python torna essa comunicação trivial, mas saber o que está acontecendo por baixo é o que separa quem conserta bugs rapidamente de quem fica perdido horas.
+      </p>
+      <div class="callout callout-info">
+        <div class="callout-title">💼 Por que um engenheiro sênior domina essas libs</div>
+        Sêniors sabem qual biblioteca usar para cada contexto e por quê. Eles não usam <code>requests</code> onde precisam de async (usam <code>httpx</code> ou <code>aiohttp</code>), não concatenam strings para construir paths (usam <code>pathlib</code>), e não parsam datas com regex (usam <code>datetime</code>). Conhecer bem o stdlib e as libs de fato do Python evita reescrever código e reduz bugs em produção.
+      </div>
+    </div>
+
+    <!-- 2. ANALOGIA -->
+    <div class="section">
+      <div class="section-label">// analogia</div>
+      <h2>Antes do código: uma analogia</h2>
+      <div class="analogy-card">
+        <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
+        <div class="analogy-text">
+          Pense num <strong>restaurante com serviço de entrega</strong>. Você (cliente) faz um <em>pedido</em> (HTTP Request) para o restaurante (servidor/API). O pedido contém o endereço (URL), o que você quer (endpoint + parâmetros), e às vezes um cartão de fidelidade para identificação (API key no header). O restaurante processa e te manda a comida de volta (HTTP Response) com um código de status — "Pronto! ✅" (200), "Não temos esse prato ❌" (404), ou "Cozinha pegando fogo 🔥" (500).
+          <br><br>
+          O <code>requests</code> é o garçom que faz tudo isso pra você sem você precisar ligar diretamente para a cozinha.
+        </div>
+        <div class="analogy-mapping">
+          <span class="analogy-real">📞 Você ligando para o restaurante</span>
+          <span class="analogy-tech">→ HTTP Request (GET, POST...)</span>
+          <span class="analogy-real">📋 O endereço e o pedido específico</span>
+          <span class="analogy-tech">→ URL + Endpoint + Params</span>
+          <span class="analogy-real">🪪 Cartão de fidelidade</span>
+          <span class="analogy-tech">→ API Key / Authorization Header</span>
+          <span class="analogy-real">🛵 Entregador com a comida + nota</span>
+          <span class="analogy-tech">→ HTTP Response + JSON body</span>
+          <span class="analogy-real">"Pronto!" / "Esgotado" / "Fechado"</span>
+          <span class="analogy-tech">→ Status Code (200 / 404 / 503)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. CONCEITO HTTP -->
+    <div class="section">
+      <div class="section-label">// conceito 1</div>
+      <h2>HTTP em 5 minutos</h2>
+      <p>
+        HTTP (HyperText Transfer Protocol) é o protocolo de comunicação da web. É um protocolo <strong>request-response</strong> sem estado — cada requisição é independente, o servidor não lembra de você entre chamadas (por isso existem tokens e cookies).
+      </p>
+
+      <div class="http-cycle">
+        <div class="http-box">
+          <div class="http-box-title">🖥️ Cliente</div>
+          <div class="http-box-sub">Seu script Python<br>navegador, app mobile</div>
+        </div>
+        <div style="text-align:center;">
+          <div class="http-arrow">→<br>←</div>
+          <div class="http-arrow-label">Request / Response<br>via TCP/IP</div>
+        </div>
+        <div class="http-box">
+          <div class="http-box-title">🏢 Servidor / API</div>
+          <div class="http-box-sub">Processa a requisição<br>retorna dados (JSON, HTML...)</div>
+        </div>
+      </div>
+
+      <h3>Métodos HTTP — o verbo da ação</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Método</th><th>Ação</th><th>Body?</th><th>Idempotente?</th><th>Exemplo</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge badge-green">GET</span></td>
+              <td>Buscar / ler dados</td>
+              <td>Não</td>
+              <td>✅ Sim</td>
+              <td>Listar usuários</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-blue">POST</span></td>
+              <td>Criar recurso</td>
+              <td>Sim</td>
+              <td>❌ Não</td>
+              <td>Criar pedido</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-yellow">PUT</span></td>
+              <td>Substituir recurso completo</td>
+              <td>Sim</td>
+              <td>✅ Sim</td>
+              <td>Atualizar perfil</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-yellow">PATCH</span></td>
+              <td>Atualizar parcialmente</td>
+              <td>Sim</td>
+              <td>Depende</td>
+              <td>Mudar só o email</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-red">DELETE</span></td>
+              <td>Remover recurso</td>
+              <td>Opcional</td>
+              <td>✅ Sim</td>
+              <td>Deletar conta</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Status Codes — o retorno da operação</h3>
+      <div class="status-band">
+        <span class="status-chip s-2xx">2xx — Sucesso</span>
+        <span class="status-chip s-3xx">3xx — Redirecionamento</span>
+        <span class="status-chip s-4xx">4xx — Erro do cliente</span>
+        <span class="status-chip s-5xx">5xx — Erro do servidor</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Código</th><th>Significado</th><th>Quando aparece</th></tr></thead>
+          <tbody>
+            <tr><td><code>200 OK</code></td><td>Tudo certo</td><td>GET bem-sucedido</td></tr>
+            <tr><td><code>201 Created</code></td><td>Recurso criado</td><td>POST bem-sucedido</td></tr>
+            <tr><td><code>204 No Content</code></td><td>OK sem body</td><td>DELETE bem-sucedido</td></tr>
+            <tr><td><code>400 Bad Request</code></td><td>Requisição inválida</td><td>Parâmetro faltando/errado</td></tr>
+            <tr><td><code>401 Unauthorized</code></td><td>Não autenticado</td><td>Token ausente ou expirado</td></tr>
+            <tr><td><code>403 Forbidden</code></td><td>Sem permissão</td><td>Token válido, mas sem acesso</td></tr>
+            <tr><td><code>404 Not Found</code></td><td>Recurso inexistente</td><td>ID errado na URL</td></tr>
+            <tr><td><code>429 Too Many Requests</code></td><td>Rate limit atingido</td><td>Muitas chamadas em pouco tempo</td></tr>
+            <tr><td><code>500 Internal Server Error</code></td><td>Erro no servidor</td><td>Bug no backend</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Anatomia de uma URL de API</h3>
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// estrutura de URL</div>
+        <div class="mermaid">
+flowchart LR
+  A["https://"] --> B["api.github.com"]
+  B --> C["/repos"]
+  C --> D["/python"]
+  D --> E["/cpython"]
+  E --> F["?per_page=10"]
+  style A fill:#1e1e2e,color:#60a5fa,stroke:#3b82f6
+  style B fill:#1e1e2e,color:#ffa657,stroke:#3b82f6
+  style C fill:#1e1e2e,color:#7ee787,stroke:#3b82f6
+  style D fill:#1e1e2e,color:#7ee787,stroke:#3b82f6
+  style E fill:#1e1e2e,color:#7ee787,stroke:#3b82f6
+  style F fill:#1e1e2e,color:#a5d6ff,stroke:#3b82f6
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-top:12px;">
+          <span style="color:#60a5fa;">https://</span> — protocolo ·
+          <span style="color:#ffa657;">api.github.com</span> — host ·
+          <span style="color:#7ee787;">/repos/python/cpython</span> — path/recurso ·
+          <span style="color:#a5d6ff;">?per_page=10</span> — query params
+        </p>
+      </div>
+    </div>
+
+    <!-- 4. REQUESTS -->
+    <div class="section">
+      <div class="section-label">// biblioteca 1</div>
+      <h2>requests — HTTP para humanos</h2>
+      <p>
+        <code>requests</code> é a biblioteca HTTP mais popular do Python e uma das mais baixadas do mundo. Ela abstrai toda a complexidade do protocolo e oferece uma API limpa e intuitiva. Seu slogan oficial é <em>"HTTP for Humans"</em> — e é exatamente isso.
+      </p>
+
+      <div class="callout callout-info">
+        <div class="callout-title">💡 Não é stdlib!</div>
+        <code>requests</code> não vem com o Python. É necessário instalar: <code>pip install requests</code>. Para projetos com async, prefira <code>httpx</code> (mesma API, suporta async/await).
+      </div>
+
+      <h3>GET — buscando dados</h3>
+      <div class="code-label">// requests — GET básico com a API pública do GitHub</div>
+      <pre><code class="language-python">import requests
+
+# GET simples — busca informações do repositório cpython
+url = "https://api.github.com/repos/python/cpython"
+response = requests.get(url)
+
+# Verificar status
+print(response.status_code)      # 200
+print(response.headers["Content-Type"])  # application/json; charset=utf-8
+
+# Converter o body JSON para dict Python — requests faz isso automaticamente
+data = response.json()
+print(data["full_name"])         # python/cpython
+print(data["stargazers_count"])  # estrelas do repo
+print(data["open_issues_count"]) # issues abertas
+</code></pre>
+
+      <h3>GET com parâmetros e headers</h3>
+      <div class="code-label">// params e headers — busca paginada com autenticação</div>
+      <pre><code class="language-python">import requests
+import os
+
+# Parâmetros de query — requests monta a URL automaticamente
+params = {
+    "q": "language:python stars:>10000",  # query de busca
+    "sort": "stars",
+    "per_page": 5,
+    "page": 1,
+}
+
+# Headers com autenticação via token (nunca hardcode o token!)
+headers = {
+    "Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}",
+    "Accept": "application/vnd.github.v3+json",
+    "X-GitHub-Api-Version": "2022-11-28",
+}
+
+response = requests.get(
+    "https://api.github.com/search/repositories",
+    params=params,
+    headers=headers,
+    timeout=10,  # ← SEMPRE defina timeout! Sem isso, pode pendurar para sempre
+)
+
+# Verificação de erro explícita
+response.raise_for_status()  # lança HTTPError se status >= 400
+
+repos = response.json()["items"]
+for repo in repos:
+    print(f"{repo['full_name']:45} ⭐ {repo['stargazers_count']:,}")
+</code></pre>
+
+      <h3>POST — enviando dados (JSON)</h3>
+      <div class="code-label">// POST com JSON body</div>
+      <pre><code class="language-python">import requests
+
+# Payload que será enviado como JSON no body da requisição
+payload = {
+    "title": "Bug encontrado na aula 15",
+    "body": "Descrição detalhada do bug...",
+    "labels": ["bug", "documentation"],
+}
+
+response = requests.post(
+    "https://api.github.com/repos/meu-usuario/meu-repo/issues",
+    json=payload,       # requests serializa para JSON e seta Content-Type automaticamente
+    headers={"Authorization": "Bearer TOKEN"},
+)
+
+if response.status_code == 201:
+    issue = response.json()
+    print(f"Issue criada: #{issue['number']} — {issue['html_url']}")
+else:
+    print(f"Erro {response.status_code}: {response.text}")
+</code></pre>
+
+      <h3>Session — reuso de conexão e headers</h3>
+      <div class="code-label">// Session — eficiente para múltiplas requisições ao mesmo host</div>
+      <pre><code class="language-python">import requests
+
+# Session mantém headers, cookies e reutiliza conexão TCP (mais performático)
+with requests.Session() as session:
+    session.headers.update({
+        "Authorization": "Bearer TOKEN",
+        "User-Agent": "MeuApp/1.0",
+    })
+    
+    # Todas as requisições herdam os headers da session
+    users = session.get("https://api.exemplo.com/users").json()
+    products = session.get("https://api.exemplo.com/products").json()
+    orders = session.get("https://api.exemplo.com/orders").json()
+    
+    # Session fecha automaticamente ao sair do with
+
+# Sem session: 3 handshakes TCP + 3x os headers
+# Com session: 1 handshake TCP reutilizado + headers configurados uma vez
+</code></pre>
+
+      <h3>Tratamento robusto de erros</h3>
+      <div class="code-label">// error handling — padrão de produção</div>
+      <pre><code class="language-python">import requests
+from requests.exceptions import Timeout, ConnectionError, HTTPError
+
+def buscar_usuario(user_id: int) -> dict | None:
+    """Busca usuário com tratamento completo de erros."""
+    try:
+        response = requests.get(
+            f"https://api.exemplo.com/users/{user_id}",
+            timeout=(3.05, 27),  # (connect timeout, read timeout)
+        )
+        response.raise_for_status()
+        return response.json()
+    
+    except Timeout:
+        print(f"Timeout buscando usuário {user_id}")
+        return None
+    
+    except ConnectionError:
+        print("Sem conexão com o servidor")
+        return None
+    
+    except HTTPError as e:
+        status = e.response.status_code
+        if status == 404:
+            print(f"Usuário {user_id} não encontrado")
+        elif status == 429:
+            print("Rate limit atingido — tente novamente em breve")
+        else:
+            print(f"Erro HTTP {status}: {e.response.text}")
+        return None
+    
+    except ValueError:
+        print("Resposta não é JSON válido")
+        return None
+</code></pre>
+    </div>
+
+    <!-- 5. PATHLIB -->
+    <div class="section">
+      <div class="section-label">// biblioteca 2</div>
+      <h2>pathlib — caminhos de arquivo orientados a objeto</h2>
+      <p>
+        Antes do <code>pathlib</code> (Python 3.4+), manipular caminhos de arquivo era um pesadelo de concatenação de strings com <code>os.path</code>. Hoje, <code>pathlib.Path</code> oferece uma API orientada a objeto, legível e que funciona igual no Windows, Linux e macOS.
+      </p>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Evite os.path.join em código novo</div>
+        <code>os.path.join("pasta", "arquivo.txt")</code> funciona, mas é verboso e menos elegante. Em código novo, use sempre <code>pathlib.Path</code>. Reserve <code>os</code> para variáveis de ambiente e operações de sistema.
+      </div>
+
+      <div class="code-label">// pathlib — operações essenciais</div>
+      <pre><code class="language-python">from pathlib import Path
+
+# Criando objetos Path
+p = Path(".")               # diretório atual
+home = Path.home()          # /home/usuario no Linux, C:\Users\... no Windows
+projeto = Path("/projetos/meu-app")
+
+# Navegação — o operador / funciona como separador de caminho
+config = projeto / "config" / "settings.json"
+print(config)               # /projetos/meu-app/config/settings.json
+print(config.parent)        # /projetos/meu-app/config
+print(config.name)          # settings.json
+print(config.stem)          # settings  (sem extensão)
+print(config.suffix)        # .json
+print(config.suffixes)      # ['.json'] (ou ['.tar', '.gz'])
+
+# Verificações
+print(config.exists())      # True ou False
+print(config.is_file())     # True se é arquivo
+print(config.is_dir())      # True se é diretório
+
+# Criação de diretórios
+output = Path("output/reports/2025")
+output.mkdir(parents=True, exist_ok=True)  # cria toda a árvore, não falha se já existe
+
+# Leitura e escrita — clean API
+texto = config.read_text(encoding="utf-8")
+config.write_text('{"debug": true}', encoding="utf-8")
+
+# Bytes
+binario = Path("imagem.png").read_bytes()
+
+# Listagem de arquivos
+pasta = Path("src")
+for arquivo in pasta.glob("**/*.py"):  # recursivo
+    print(arquivo.relative_to(pasta))
+
+# Apenas arquivos diretos (sem subpastas)
+csvs = list(Path("data").glob("*.csv"))
+print(f"Encontrados {len(csvs)} arquivos CSV")
+
+# Renomear e mover
+old = Path("relatorio_v1.pdf")
+new = old.rename(old.parent / "relatorio_v2.pdf")
+
+# Informações do arquivo
+stat = config.stat()
+print(f"Tamanho: {stat.st_size:,} bytes")
+print(f"Modificado: {stat.st_mtime}")
+
+# Resolução de path relativo → absoluto
+relativo = Path("../dados/arquivo.csv")
+absoluto = relativo.resolve()
+print(absoluto)  # /caminho/completo/e/real
+</code></pre>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Pro tip — __file__ + pathlib</div>
+        Use <code>Path(__file__).parent</code> para obter o diretório do arquivo atual. Isso torna caminhos relativos ao projeto robustos independente de onde você roda o script:
+        <br><code>BASE_DIR = Path(__file__).parent.parent  # raiz do projeto</code>
+      </div>
+    </div>
+
+    <!-- 6. DATETIME -->
+    <div class="section">
+      <div class="section-label">// biblioteca 3</div>
+      <h2>datetime — manipulação de datas e horários</h2>
+      <p>
+        Datas são traiçoeiras. Fusos horários, horário de verão, formatos diferentes por país — é fácil introduzir bugs sérios sem perceber. O módulo <code>datetime</code> da stdlib resolve a maioria dos casos, e para casos avançados, a biblioteca <code>arrow</code> ou <code>pendulum</code> complementa.
+      </p>
+
+      <div class="code-label">// datetime — do básico ao avançado</div>
+      <pre><code class="language-python">from datetime import datetime, date, timedelta, timezone
+
+# Agora — sem fuso (naive) vs com fuso (aware)
+agora_naive = datetime.now()                          # local, sem info de fuso
+agora_utc = datetime.now(tz=timezone.utc)             # UTC explícito — use SEMPRE em produção
+print(agora_utc.isoformat())  # 2025-03-15T14:30:00+00:00
+
+# Apenas a data de hoje
+hoje = date.today()
+print(hoje)              # 2025-03-15
+print(hoje.year)         # 2025
+print(hoje.month)        # 3
+print(hoje.day)          # 15
+print(hoje.weekday())    # 0=Segunda ... 6=Domingo
+
+# Criando datas específicas
+nascimento = date(1990, 7, 23)
+reuniao = datetime(2025, 12, 31, 23, 59, 0, tzinfo=timezone.utc)
+
+# Aritmética de datas com timedelta
+daqui_30_dias = hoje + timedelta(days=30)
+semana_passada = hoje - timedelta(weeks=1)
+prazo = datetime(2025, 12, 31) - datetime.now()
+print(f"Faltam {prazo.days} dias para o fim do ano")
+
+# Formatação — strftime (datetime → string)
+print(agora_utc.strftime("%d/%m/%Y %H:%M"))     # 15/03/2025 14:30
+print(agora_utc.strftime("%A, %B %d, %Y"))      # Saturday, March 15, 2025
+print(agora_utc.strftime("%Y%m%d_%H%M%S"))      # 20250315_143000 — bom para nomes de arquivo
+
+# Parsing — strptime (string → datetime)
+data_str = "15/03/2025 14:30:00"
+dt = datetime.strptime(data_str, "%d/%m/%Y %H:%M:%S")
+print(dt)  # 2025-03-15 14:30:00
+
+# ISO 8601 — formato de APIs (fromisoformat)
+iso_str = "2025-03-15T14:30:00+00:00"
+dt_iso = datetime.fromisoformat(iso_str)  # Python 3.7+
+print(dt_iso.tzinfo)  # UTC+00:00
+
+# Conversão de timestamp Unix
+timestamp = 1741968000
+dt_from_ts = datetime.fromtimestamp(timestamp, tz=timezone.utc)
+print(dt_from_ts)
+
+# Diferença entre datas
+delta = date(2025, 12, 31) - date.today()
+print(f"{delta.days} dias para o ano acabar")
+</code></pre>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// formatos de data e quando usar cada um</div>
+        <div class="mermaid">
+graph TD
+  A[Preciso de uma data] --> B{Onde vai ser usado?}
+  B --> C[Armazenar em DB / API] --> D["ISO 8601<br>2025-03-15T14:30:00Z<br>.isoformat()"]
+  B --> E[Exibir pro usuário] --> F["Localizado<br>15/03/2025<br>.strftime('%d/%m/%Y')"]
+  B --> G[Nome de arquivo] --> H["Compacto<br>20250315_143000<br>.strftime('%Y%m%d_%H%M%S')"]
+  B --> I[Cálculo / comparação] --> J["datetime object<br>nunca string!"]
+  style D fill:#1e1e2e,color:#7ee787,stroke:#3b82f6
+  style F fill:#1e1e2e,color:#ffa657,stroke:#3b82f6
+  style H fill:#1e1e2e,color:#a5d6ff,stroke:#3b82f6
+  style J fill:#1e1e2e,color:#ff7b72,stroke:#3b82f6
+        </div>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Pitfall: datetime naive vs aware</div>
+        <p>Misturar datetimes com e sem fuso horário causa <code>TypeError</code> em comparações. Regra de ouro: <strong>sempre use UTC internamente</strong> e converta apenas na exibição ao usuário.</p>
+        <pre style="margin-top:10px;"><code class="language-python"># ❌ ERRADO — comparação explode com TypeError
+dt_naive = datetime.now()
+dt_aware = datetime.now(tz=timezone.utc)
+# dt_naive < dt_aware  → TypeError!
+
+# ✅ CORRETO — tudo em UTC
+dt_utc1 = datetime.now(tz=timezone.utc)
+dt_utc2 = datetime(2025, 12, 31, tzinfo=timezone.utc)
+print(dt_utc1 < dt_utc2)  # True ou False, sem erro
+</code></pre>
+      </div>
+    </div>
+
+    <!-- 7. REGEX -->
+    <div class="section">
+      <div class="section-label">// biblioteca 4</div>
+      <h2>re — Expressões Regulares</h2>
+      <p>
+        Expressões regulares (regex) são uma mini-linguagem para <strong>encontrar padrões em texto</strong>. São incrivelmente poderosas para validação, extração e transformação de strings. O módulo <code>re</code> faz parte da stdlib do Python.
+      </p>
+      <p>
+        A curva de aprendizado existe, mas o investimento vale: regex aparece em logs, parsing de dados, web scraping, validação de formulários e muito mais.
+      </p>
+
+      <h3>Conceitos básicos de regex</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Padrão</th><th>Significado</th><th>Exemplo</th></tr></thead>
+          <tbody>
+            <tr><td><code>.</code></td><td>Qualquer caractere (exceto newline)</td><td><code>a.c</code> → "abc", "a1c"</td></tr>
+            <tr><td><code>\d</code></td><td>Dígito [0-9]</td><td><code>\d+</code> → "123", "42"</td></tr>
+            <tr><td><code>\w</code></td><td>Palavra [a-zA-Z0-9_]</td><td><code>\w+</code> → "hello_world"</td></tr>
+            <tr><td><code>\s</code></td><td>Espaço em branco</td><td><code>\s+</code> → " ", "\t"</td></tr>
+            <tr><td><code>^</code></td><td>Início da string</td><td><code>^https</code> → começa com https</td></tr>
+            <tr><td><code>$</code></td><td>Fim da string</td><td><code>\.py$</code> → termina com .py</td></tr>
+            <tr><td><code>*</code></td><td>0 ou mais repetições</td><td><code>a*</code> → "", "a", "aaa"</td></tr>
+            <tr><td><code>+</code></td><td>1 ou mais repetições</td><td><code>a+</code> → "a", "aaa"</td></tr>
+            <tr><td><code>?</code></td><td>0 ou 1 (opcional)</td><td><code>colou?r</code> → "color", "colour"</td></tr>
+            <tr><td><code>{n,m}</code></td><td>Entre n e m repetições</td><td><code>\d{4,6}</code> → "1234", "12345"</td></tr>
+            <tr><td><code>[abc]</code></td><td>Um dos caracteres</td><td><code>[aeiou]</code> → vogais</td></tr>
+            <tr><td><code>(grupo)</code></td><td>Grupo de captura</td><td><code>(\d{4})-(\d{2})</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Funções principais do módulo re</h3>
+      <div class="code-label">// re — do básico ao prático</div>
+      <pre><code class="language-python">import re
+
+texto = "Email: joao@exemplo.com, maria@empresa.org — Data: 2025-03-15"
+
+# re.search — encontra a PRIMEIRA ocorrência (retorna Match ou None)
+match = re.search(r"\d{4}-\d{2}-\d{2}", texto)
+if match:
+    print(match.group())      # 2025-03-15
+    print(match.start())      # posição inicial
+    print(match.end())        # posição final
+
+# re.findall — encontra TODAS as ocorrências (retorna lista de strings)
+emails = re.findall(r"[\w.+-]+@[\w-]+\.[a-zA-Z]{2,}", texto)
+print(emails)  # ['joao@exemplo.com', 'maria@empresa.org']
+
+# re.match — verifica APENAS o início da string
+padrao_cpf = r"^\d{3}\.\d{3}\.\d{3}-\d{2}$"
+print(bool(re.match(padrao_cpf, "123.456.789-09")))   # True
+print(bool(re.match(padrao_cpf, "abc.456.789-09")))   # False
+
+# re.sub — substituição
+resultado = re.sub(r"\s+", " ", "texto   com   espaços   extras")
+print(resultado)  # "texto com espaços extras"
+
+# Mascarar dados sensíveis
+log = "Usuário 12345 transferiu R$1500 para conta 67890"
+log_seguro = re.sub(r"\b\d{5}\b", "XXXXX", log)
+print(log_seguro)  # "Usuário XXXXX transferiu R$1500 para conta XXXXX"
+
+# re.compile — compila o padrão para reutilização (mais eficiente em loops)
+email_pattern = re.compile(r"[\w.+-]+@[\w-]+\.[a-zA-Z]{2,}", re.IGNORECASE)
+
+emails_encontrados = []
+for linha in open("contatos.txt"):
+    emails_encontrados.extend(email_pattern.findall(linha))
+
+# Grupos de captura — extrair partes específicas
+log_entry = "2025-03-15 14:30:22 ERROR app.py:42 — Connection timeout"
+padrao_log = re.compile(
+    r"(?P<date>\d{4}-\d{2}-\d{2})\s"
+    r"(?P<time>\d{2}:\d{2}:\d{2})\s"
+    r"(?P<level>\w+)\s"
+    r"(?P<file>[\w.]+):(?P<line>\d+)"
+)
+m = padrao_log.match(log_entry)
+if m:
+    print(m.group("date"))   # 2025-03-15
+    print(m.group("level"))  # ERROR
+    print(m.group("line"))   # 42
+    print(m.groupdict())     # dict com todos os grupos nomeados
+</code></pre>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Pro tip — use sempre raw strings r""</div>
+        Escreva padrões como <code>r"\d+"</code> em vez de <code>"\\d+"</code>. A raw string evita que o Python interprete a barra invertida antes que chegue ao regex. Sem o <code>r</code>, você precisaria escrever <code>"\\\\d+"</code> para representar <code>\\d</code>.
+      </div>
+    </div>
+
+    <!-- 8. INTEGRANDO TUDO -->
+    <div class="section">
+      <div class="section-label">// projeto integrador</div>
+      <h2>Projeto Prático: Coletor de Dados de APIs</h2>
+      <p>
+        Vamos unir todas as bibliotecas num projeto real: um script que busca repositórios Python populares via API do GitHub, filtra com regex, manipula datas e salva os resultados em arquivo usando pathlib.
+      </p>
+
+      <div class="code-label">// projeto completo — github_collector.py</div>
+      <pre><code class="language-python">"""
+github_collector.py
+Coleta repositórios Python populares, filtra e salva em JSON.
+"""
+import re
+import json
+import requests
+from pathlib import Path
+from datetime import datetime, timezone
+
+
+# ── Configuração ─────────────────────────────────────────────────────────────
+
+OUTPUT_DIR = Path(__file__).parent / "output"
+OUTPUT_DIR.mkdir(exist_ok=True)
+
+API_BASE = "https://api.github.com"
+PATTERN_VALID_REPO = re.compile(r"^[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+$")
+
+
+# ── Funções ───────────────────────────────────────────────────────────────────
+
+def buscar_repos_python(max_repos: int = 20) -> list[dict]:
+    """Busca os repositórios Python mais populares via GitHub API."""
+    params = {
+        "q": "language:python stars:>5000",
+        "sort": "stars",
+        "order": "desc",
+        "per_page": min(max_repos, 30),
+    }
+    headers = {"Accept": "application/vnd.github.v3+json"}
+
+    try:
+        resp = requests.get(
+            f"{API_BASE}/search/repositories",
+            params=params,
+            headers=headers,
+            timeout=15,
+        )
+        resp.raise_for_status()
+        return resp.json().get("items", [])
+
+    except requests.RequestException as e:
+        print(f"Erro na API: {e}")
+        return []
+
+
+def processar_repo(repo: dict) -> dict | None:
+    """Extrai e processa dados relevantes de um repositório."""
+    nome = repo.get("full_name", "")
+
+    # Filtra com regex — nome deve ter formato "dono/repo"
+    if not PATTERN_VALID_REPO.match(nome):
+        return None
+
+    # Parsing de data ISO 8601 para datetime aware
+    criado_str = repo.get("created_at", "")
+    atualizado_str = repo.get("updated_at", "")
+
+    try:
+        criado = datetime.fromisoformat(criado_str.replace("Z", "+00:00"))
+        atualizado = datetime.fromisoformat(atualizado_str.replace("Z", "+00:00"))
+        agora = datetime.now(tz=timezone.utc)
+        
+        dias_sem_update = (agora - atualizado).days
+        idade_anos = (agora - criado).days / 365
+    except ValueError:
+        return None
+
+    return {
+        "nome": nome,
+        "descricao": (repo.get("description") or "")[:200],
+        "estrelas": repo.get("stargazers_count", 0),
+        "forks": repo.get("forks_count", 0),
+        "linguagem": repo.get("language", ""),
+        "criado_em": criado.strftime("%d/%m/%Y"),
+        "atualizado_em": atualizado.strftime("%d/%m/%Y"),
+        "dias_sem_atualizacao": dias_sem_update,
+        "idade_anos": round(idade_anos, 1),
+        "ativo": dias_sem_update < 180,  # menos de 6 meses sem update
+        "url": repo.get("html_url", ""),
+    }
+
+
+def salvar_resultados(repos: list[dict]) -> Path:
+    """Salva os repositórios processados em JSON com timestamp no nome."""
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    arquivo = OUTPUT_DIR / f"repos_python_{timestamp}.json"
+
+    dados = {
+        "gerado_em": datetime.now(tz=timezone.utc).isoformat(),
+        "total": len(repos),
+        "repositorios": repos,
+    }
+
+    arquivo.write_text(
+        json.dumps(dados, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    return arquivo
+
+
+# ── Main ──────────────────────────────────────────────────────────────────────
+
+def main():
+    print("🔍 Buscando repositórios Python populares...")
+    repos_raw = buscar_repos_python(max_repos=20)
+    print(f"   Encontrados: {len(repos_raw)} repositórios")
+
+    print("⚙️  Processando e filtrando...")
+    repos = [r for repo in repos_raw if (r := processar_repo(repo))]
+    
+    # Filtra apenas repos ativos
+    ativos = [r for r in repos if r["ativo"]]
+    print(f"   Ativos (< 6 meses): {len(ativos)}/{len(repos)}")
+
+    if repos:
+        arquivo = salvar_resultados(repos)
+        print(f"✅ Salvo em: {arquivo.relative_to(Path.cwd())}")
+
+        print("\n📊 Top 5 por estrelas:")
+        for i, repo in enumerate(sorted(repos, key=lambda x: x["estrelas"], reverse=True)[:5], 1):
+            status = "✅" if repo["ativo"] else "💤"
+            print(f"  {i}. {status} {repo['nome']:45} ⭐ {repo['estrelas']:,}")
+
+if __name__ == "__main__":
+    main()
+</code></pre>
+
+      <div class="terminal">
+        <div class="terminal-bar">
+          <span class="dot dot-red"></span>
+          <span class="dot dot-yellow"></span>
+          <span class="dot dot-green"></span>
+          <span class="terminal-title">bash</span>
+        </div>
+        <div class="terminal-body">
+          <span class="t-prompt">$ </span><span class="t-cmd">pip install requests</span><br>
+          <span class="t-out">Successfully installed requests-2.32.3</span><br>
+          <span class="t-prompt">$ </span><span class="t-cmd">python github_collector.py</span><br>
+          <span class="t-out">🔍 Buscando repositórios Python populares...</span><br>
+          <span class="t-out">   Encontrados: 20 repositórios</span><br>
+          <span class="t-out">⚙️  Processando e filtrando...</span><br>
+          <span class="t-out">   Ativos (&lt; 6 meses): 17/20</span><br>
+          <span class="t-out">✅ Salvo em: output/repos_python_20250315_143022.json</span><br>
+          <br>
+          <span class="t-out">📊 Top 5 por estrelas:</span><br>
+          <span class="t-out">  1. ✅ public-apis/public-apis                   ⭐ 320,450</span><br>
+          <span class="t-out">  2. ✅ TheAlgorithms/Python                      ⭐ 195,230</span><br>
+          <span class="t-out">  3. ✅ django/django                              ⭐ 80,120</span><br>
+          <span class="t-out">  4. ✅ pallets/flask                              ⭐ 68,500</span><br>
+          <span class="t-out">  5. 💤 kennethreitz/requests                     ⭐ 52,300</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9. TABELA COMPARATIVA -->
+    <div class="section">
+      <div class="section-label">// comparativo</div>
+      <h2>Quando usar cada ferramenta</h2>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tarefa</th><th>Solução Certa</th><th>Evitar</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>HTTP sincrônico simples</td>
+              <td><code>requests</code></td>
+              <td><code>urllib</code> (verboso demais)</td>
+            </tr>
+            <tr>
+              <td>HTTP assíncrono</td>
+              <td><code>httpx</code> ou <code>aiohttp</code></td>
+              <td><code>requests</code> (bloqueia o event loop)</td>
+            </tr>
+            <tr>
+              <td>Caminhos de arquivo</td>
+              <td><code>pathlib.Path</code></td>
+              <td><code>os.path.join</code> + strings</td>
+            </tr>
+            <tr>
+              <td>Variáveis de ambiente</td>
+              <td><code>os.environ</code></td>
+              <td>Hardcoding de valores</td>
+            </tr>
+            <tr>
+              <td>Datas e horários</td>
+              <td><code>datetime</code> + <code>timezone.utc</code></td>
+              <td>Strings e timestamps sem fuso</td>
+            </tr>
+            <tr>
+              <td>Datas com fusos complexos</td>
+              <td><code>pendulum</code> ou <code>arrow</code></td>
+              <td><code>datetime</code> puro (limitado)</td>
+            </tr>
+            <tr>
+              <td>Busca/extração em texto</td>
+              <td><code>re</code> com <code>compile()</code></td>
+              <td>Parsing manual com <code>split</code></td>
+            </tr>
+            <tr>
+              <td>Parse de HTML</td>
+              <td><code>beautifulsoup4</code></td>
+              <td><code>re</code> em HTML (armadilha!)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Nunca use regex para parsear HTML</div>
+        HTML não é uma linguagem regular — regex não consegue lidar com aninhamento de tags. Use <code>BeautifulSoup</code> ou <code>lxml</code> para parsing de HTML/XML.
+      </div>
+    </div>
+
+    <!-- 10. HANDS-ON -->
+    <div class="section">
+      <div class="section-label">// hands-on</div>
+      <h2>Passo a Passo — Rodando na sua máquina</h2>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Instale a dependência</div>
+            <div class="step-desc">requests não vem com o Python. Instale com pip (de preferência dentro de um venv).</div>
+            <div class="terminal">
+              <div class="terminal-bar"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span><span class="terminal-title">bash</span></div>
+              <div class="terminal-body">
+                <span class="t-prompt">$ </span><span class="t-cmd">python -m venv .venv && source .venv/bin/activate</span><br>
+                <span class="t-prompt">(.venv) $ </span><span class="t-cmd">pip install requests</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Teste a API pública sem auth</div>
+            <div class="step-desc">A API do GitHub permite até 60 requisições/hora sem autenticação. Perfeito para testar.</div>
+            <div class="terminal">
+              <div class="terminal-bar"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span><span class="terminal-title">python interativo</span></div>
+              <div class="terminal-body">
+                <span class="t-prompt">>>> </span><span class="t-cmd">import requests</span><br>
+                <span class="t-prompt">>>> </span><span class="t-cmd">r = requests.get("https://api.github.com")</span><br>
+                <span class="t-prompt">>>> </span><span class="t-cmd">r.status_code</span><br>
+                <span class="t-out">200</span><br>
+                <span class="t-prompt">>>> </span><span class="t-cmd">r.json()["current_user_url"]</span><br>
+                <span class="t-out">'https://api.github.com/user'</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Crie o script github_collector.py</div>
+            <div class="step-desc">Cole o código da seção "Projeto Prático" acima em um arquivo chamado <code>github_collector.py</code>.</div>
+            <div class="terminal">
+              <div class="terminal-bar"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span><span class="terminal-title">bash</span></div>
+              <div class="terminal-body">
+                <span class="t-prompt">$ </span><span class="t-cmd">python github_collector.py</span><br>
+                <span class="t-out">🔍 Buscando repositórios Python populares...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Inspecione o output</div>
+            <div class="step-desc">O script cria uma pasta <code>output/</code> com um JSON timestampado. Abra e explore os dados.</div>
+            <div class="terminal">
+              <div class="terminal-bar"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span><span class="terminal-title">bash</span></div>
+              <div class="terminal-body">
+                <span class="t-prompt">$ </span><span class="t-cmd">ls output/</span><br>
+                <span class="t-out">repos_python_20250315_143022.json</span><br>
+                <span class="t-prompt">$ </span><span class="t-cmd">cat output/*.json | python -m json.tool | head -30</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Explore as outras libs no REPL</div>
+            <div class="step-desc">Teste pathlib, datetime e regex interativamente para fixar o aprendizado.</div>
+            <div class="terminal">
+              <div class="terminal-bar"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span><span class="terminal-title">python REPL</span></div>
+              <div class="terminal-body">
+                <span class="t-prompt">>>> </span><span class="t-cmd">from pathlib import Path; list(Path(".").glob("*.py"))</span><br>
+                <span class="t-prompt">>>> </span><span class="t-cmd">from datetime import datetime, timezone; datetime.now(tz=timezone.utc).isoformat()</span><br>
+                <span class="t-prompt">>>> </span><span class="t-cmd">import re; re.findall(r"\d+", "abc 123 def 456")</span><br>
+                <span class="t-out">['123', '456']</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 11. PITFALLS -->
+    <div class="section">
+      <div class="section-label">// armadilhas</div>
+      <h2>⚠️ Armadilhas Comuns</h2>
+
+      <div class="pitfall">
+        <div class="pitfall-title">❌ Não definir timeout nas requisições</div>
+        <p>Sem <code>timeout</code>, uma requisição pode ficar pendurada infinitamente. Em produção, isso pode travar seu serviço inteiro.</p>
+        <pre><code class="language-python"># ❌ Sem timeout — perigo!
+requests.get("https://api.lenta.com/endpoint")
+
+# ✅ Sempre com timeout
+requests.get("https://api.lenta.com/endpoint", timeout=10)
+requests.get("https://api.lenta.com/endpoint", timeout=(3.05, 27))  # connect, read
+</code></pre>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">❌ API keys hardcoded no código</div>
+        <p>Nunca coloque tokens diretamente no código. Use variáveis de ambiente ou arquivos <code>.env</code> com python-dotenv.</p>
+        <pre><code class="language-python"># ❌ NUNCA faça isso — o token vai para o git!
+headers = {"Authorization": "Bearer ghp_abc123seu_token_aqui"}
+
+# ✅ Correto — token em variável de ambiente
+import os
+headers = {"Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}"}
+# No terminal: export GITHUB_TOKEN="ghp_..."
+</code></pre>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">❌ Ignorar o status code</div>
+        <p>Chamar <code>.json()</code> sem verificar o status pode dar erros confusos se a resposta for um HTML de erro.</p>
+        <pre><code class="language-python"># ❌ Pode explodir com JSONDecodeError
+data = requests.get(url).json()
+
+# ✅ Verificar antes ou usar raise_for_status()
+resp = requests.get(url)
+resp.raise_for_status()  # lança HTTPError se 4xx ou 5xx
+data = resp.json()
+</code></pre>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">❌ Construir paths com f-strings ou + em strings</div>
+        <p>Concatenar caminhos com strings quebra no Windows (separador diferente) e é difícil de manter.</p>
+        <pre><code class="language-python"># ❌ Quebra no Windows
+path = base_dir + "/output/" + filename
+
+# ✅ Cross-platform e legível
+from pathlib import Path
+path = Path(base_dir) / "output" / filename
+</code></pre>
+      </div>
+    </div>
+
+    <!-- 12. VÍDEOS -->
+    <div class="section">
+      <div class="section-label">// curadoria</div>
+      <h2>Vídeos Recomendados</h2>
+      <div class="video-grid">
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Python Requests Tutorial — Complete Guide</div>
+            <div class="video-channel">Corey Schafer · ~1h</div>
+            <div class="video-why">Por que assistir: Cobre GET, POST, sessions, autenticação e tratamento de erros de forma sistemática. Referência definitiva para requests.</div>
+            <a href="https://www.youtube.com/watch?v=tb8gHvYlCFs" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Python Regex Tutorial — Corey Schafer</div>
+            <div class="video-channel">Corey Schafer · ~53 min</div>
+            <div class="video-why">Por que assistir: Explica regex de forma progressiva com exemplos práticos em Python. O melhor recurso para quem está começando com expressões regulares.</div>
+            <a href="https://www.youtube.com/watch?v=K8L6KVGG-7o" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Python pathlib — The Best Way to Handle Files</div>
+            <div class="video-channel">ArjanCodes · ~15 min</div>
+            <div class="video-why">Por que assistir: Demonstração prática comparando os.path vs pathlib com exemplos reais. Vai te convencer a nunca mais usar os.path.join.</div>
+            <a href="https://www.youtube.com/watch?v=UcKkmwaOZTg" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">APIs for Beginners — How to use an API</div>
+            <div class="video-channel">freeCodeCamp · ~2h</div>
+            <div class="video-why">Por que assistir: Visão completa de APIs REST com exemplos reais. Cobre autenticação, paginação, rate limiting e boas práticas de integração.</div>
+            <a href="https://www.youtube.com/watch?v=GZvSYJDk-us" target="_blank">Assistir →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 13. GLOSSÁRIO -->
+    <div class="section">
+      <div class="section-label">// referência</div>
+      <h2>Glossário</h2>
+      <div class="glossary-item">
+        <div class="glossary-term">REST API</div>
+        <div class="glossary-def">Representational State Transfer — estilo arquitetural para APIs baseado em HTTP. Usa URLs para identificar recursos e verbos HTTP para ações.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Endpoint</div>
+        <div class="glossary-def">URL específica de uma API que corresponde a um recurso ou operação. Ex: <code>/api/v1/users/42</code></div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Rate Limiting</div>
+        <div class="glossary-def">Limite de requisições por unidade de tempo imposto pela API para evitar abuso. Ex: 60 req/hora sem autenticação no GitHub.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Idempotente</div>
+        <div class="glossary-def">Operação que produz o mesmo resultado independente de quantas vezes é executada. GET e DELETE são idempotentes; POST geralmente não é.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Datetime aware vs naive</div>
+        <div class="glossary-def">Aware: datetime com informação de fuso horário (<code>tzinfo</code>). Naive: sem fuso. Misturar os dois causa <code>TypeError</code>.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Grupo de captura</div>
+        <div class="glossary-def">Em regex, <code>(padrão)</code> cria um grupo cujo conteúdo pode ser extraído com <code>.group(n)</code>. Grupos nomeados usam <code>(?P&lt;nome&gt;padrão)</code>.</div>
+      </div>
+    </div>
+
+    <!-- 14. CHECKPOINT -->
+    <div class="section">
+      <div class="section-label">// desafio</div>
+      <div class="checkpoint">
+        <h3>🏁 Checkpoint — Seu Desafio</h3>
+        <p>
+          Construa um <strong>dashboard de APIs públicas</strong>: um script Python que consulta 2 APIs públicas, processa os dados e salva um relatório consolidado.
+        </p>
+        <ul>
+          <li>Use <code>requests</code> para consumir a API <code>https://api.coindesk.com/v1/bpi/currentprice.json</code> (preço do Bitcoin) e <code>https://api.open-meteo.com/v1/forecast?latitude=-23.55&longitude=-46.63&current_weather=true</code> (clima em São Paulo)</li>
+          <li>Use <code>datetime</code> para registrar quando os dados foram coletados e formatar as timestamps da resposta</li>
+          <li>Use <code>re</code> para validar que os valores numéricos retornados são válidos (só dígitos e ponto)</li>
+          <li>Use <code>pathlib</code> para salvar o relatório em <code>output/dashboard_{data}.json</code></li>
+          <li>Adicione tratamento de erro para quando qualquer API falhar (o script não pode crashar)</li>
+        </ul>
+        <div class="checkpoint-hint">💬 Dica: use <code>json.dumps(dados, indent=2, ensure_ascii=False)</code> para um JSON legível. E lembre-se: sempre <code>raise_for_status()</code> antes de <code>.json()</code>.</div>
+      </div>
+    </div>
+
+    <!-- 15. PRÓXIMOS PASSOS -->
+    <div class="section">
+      <div class="section-label">// próxima aula</div>
+      <h2>O que vem a seguir?</h2>
+      <p>
+        Você agora sabe consumir APIs, manipular arquivos, trabalhar com datas e usar expressões regulares. Na próxima aula, mergulhamos no Git avançado — onde você aprenderá as técnicas que separam desenvolvedores sêniors de juniores no controle de versão.
+      </p>
+      <a href="gh-04-git-avancado.html" class="next-card">
+        <div>
+          <div class="next-card-label">Próxima Aula · 🐙 GitHub</div>
+          <div class="next-card-title">Git Avançado — Rebase, Tags & Estratégias</div>
+        </div>
+        <div class="next-arrow">→</div>
+      </a>
+    </div>
+
+  </div><!-- /.page -->
+
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+    document.addEventListener('DOMContentLoaded', () => {
+      hljs.highlightAll();
+    });
+
+    // Progress bar
+    const bar = document.getElementById('progressBar');
+    window.addEventListener('scroll', () => {
+      const scrolled = window.scrollY;
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+      bar.style.width = (scrolled / total * 100) + '%';
+    });
+  </script>
+</body>
+</html>

@@ -182,7 +182,14 @@
     .state-cmd { font-size: 11px; color: var(--accent); font-family: 'JetBrains Mono', monospace; }
     .state-desc { font-size: 11px; color: var(--muted); margin-top: 4px; }
     @media (max-width: 640px) { .state-machine { grid-template-columns: 1fr 1fr; } .state-box::after { display: none; } }
-  </style>
+  
+    /* NEXT CARD STANDARDIZATION */
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+</style>
 </head>
 <body>
 
@@ -229,7 +236,7 @@
 
     <!-- 1. POR QUE IMPORTA -->
     <div class="section">
-      <div class="section-label">// motivação</div>
+      <div class="section-label">// MOTIVAÇÃO</div>
       <h2>Por que isso importa?</h2>
       <p>
         Git é a habilidade mais transversal da engenharia de software moderna. Não importa se você trabalha com frontend, backend, dados ou DevOps — <strong>todo time usa Git</strong>. É o sistema que permite que dezenas de pessoas trabalhem no mesmo projeto simultaneamente, sem destruir o trabalho uma da outra.
@@ -245,7 +252,7 @@
 
     <!-- 2. ANALOGIA -->
     <div class="section">
-      <div class="section-label">// analogia</div>
+      <div class="section-label">// ANALOGIA</div>
       <h2>Antes do código: uma analogia</h2>
       <div class="analogy-card">
         <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
@@ -269,7 +276,7 @@
 
     <!-- 3. O QUE É GIT -->
     <div class="section">
-      <div class="section-label">// conceito 1</div>
+      <div class="section-label">// CONCEITO 1</div>
       <h2>Git vs GitHub — não confunda</h2>
       <p>
         Essa confusão é universal entre iniciantes. São coisas completamente diferentes:
@@ -296,7 +303,7 @@
 
     <!-- 4. INSTALAÇÃO E CONFIG -->
     <div class="section">
-      <div class="section-label">// conceito 2</div>
+      <div class="section-label">// CONCEITO 2</div>
       <h2>Instalação & Configuração</h2>
 
       <div class="steps">
@@ -358,7 +365,7 @@
 
     <!-- 5. AS TRÊS ÁREAS -->
     <div class="section">
-      <div class="section-label">// conceito 3</div>
+      <div class="section-label">// CONCEITO 3</div>
       <h2>As três áreas do Git</h2>
       <p>
         Entender as três áreas é o insight mais importante desta aula. Todo arquivo em um repositório Git está em um desses três estados — e compreender as transições entre eles elimina a maioria das confusões de iniciantes.
@@ -411,7 +418,7 @@ stateDiagram-v2
 
     <!-- 6. COMANDOS CORE -->
     <div class="section">
-      <div class="section-label">// conceito 4</div>
+      <div class="section-label">// CONCEITO 4</div>
       <h2>Comandos core — do init ao commit</h2>
 
       <div class="code-label">// fluxo completo comentado</div>
@@ -507,7 +514,7 @@ Closes #142"
 
     <!-- 7. GITIGNORE -->
     <div class="section">
-      <div class="section-label">// conceito 5</div>
+      <div class="section-label">// CONCEITO 5</div>
       <h2>.gitignore — o que nunca deve ir para o repo</h2>
       <p>
         O arquivo <code>.gitignore</code> lista padrões de arquivos e pastas que o Git deve ignorar completamente. Deve ser criado <strong>antes do primeiro commit</strong> e commitado junto com o projeto.
@@ -582,7 +589,7 @@ htmlcov/
 
     <!-- HANDS-ON -->
     <div class="section">
-      <div class="section-label">// prática</div>
+      <div class="section-label">// PRÁTICA</div>
       <h2>Mãos na massa — Do zero ao histórico</h2>
 
       <div class="steps">
@@ -741,7 +748,7 @@ git show HEAD~1            # o commit anterior ao atual
 
     <!-- ARMADILHAS -->
     <div class="section">
-      <div class="section-label">// pitfalls</div>
+      <div class="section-label">// PITFALLS</div>
       <h2>⚠️ Armadilhas Comuns</h2>
 
       <div class="pitfall">
@@ -772,7 +779,7 @@ git show HEAD~1            # o commit anterior ao atual
 
     <!-- TABELA DE REFERÊNCIA -->
     <div class="section">
-      <div class="section-label">// referência</div>
+      <div class="section-label">// REFERÊNCIA</div>
       <h2>Comandos desta aula — cheat sheet</h2>
       <div class="table-wrap">
         <table>
@@ -799,7 +806,7 @@ git show HEAD~1            # o commit anterior ao atual
 
     <!-- VÍDEOS -->
     <div class="section">
-      <div class="section-label">// curadoria</div>
+      <div class="section-label">// CURADORIA</div>
       <h2>Vídeos Recomendados</h2>
       <div class="video-grid">
         <div class="video-card">
@@ -843,7 +850,7 @@ git show HEAD~1            # o commit anterior ao atual
 
     <!-- GLOSSÁRIO -->
     <div class="section">
-      <div class="section-label">// glossário</div>
+      <div class="section-label">// GLOSSÁRIO</div>
       <h2>Termos desta Aula</h2>
       <div class="glossary-item">
         <div class="glossary-term">Repositório (repo)</div>
@@ -895,15 +902,15 @@ git show HEAD~1            # o commit anterior ao atual
 
     <!-- PRÓXIMOS PASSOS -->
     <div class="section">
-      <div class="section-label">// próximos passos</div>
+      <div class="section-label">// próxima aula</div>
       <h2>O que vem a seguir?</h2>
       <p style="margin-bottom:20px;">Com o fluxo básico de commits dominado, estamos prontos para o conceito mais poderoso do Git: branches. Elas permitem desenvolver features em paralelo sem interferir no código principal — o coração do desenvolvimento colaborativo.</p>
-      <a href="gh-02-branches-merge.html" class="next-card">
+            <a href="gh-02-branches-merge.html" class="next-card">
         <div>
-          <div class="next-card-label">Próxima aula · 🐙 GitHub</div>
+          <div class="next-card-label">Próxima Aula • 🐙 GitHub</div>
           <div class="next-card-title">Git — Branches, Merge & Conflitos</div>
         </div>
-        <span class="next-arrow">→</span>
+        <div class="next-arrow">→</div>
       </a>
     </div>
 

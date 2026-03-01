@@ -1,0 +1,2154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JavaScript — Objetos, Arrays & ES6+ · Aula 13</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs {
+      display: block;
+      overflow-x: auto;
+      padding: 1em
+    }
+
+    code.hljs {
+      padding: 3px 5px
+    }
+
+    .hljs {
+      color: #c9d1d9;
+      background: #0d1117
+    }
+
+    .hljs-doctag,
+    .hljs-keyword,
+    .hljs-meta .hljs-keyword,
+    .hljs-template-tag,
+    .hljs-template-variable,
+    .hljs-type,
+    .hljs-variable.language_ {
+      color: #ff7b72
+    }
+
+    .hljs-title,
+    .hljs-title.class_,
+    .hljs-title.class_.inherited__,
+    .hljs-title.function_ {
+      color: #d2a8ff
+    }
+
+    .hljs-attr,
+    .hljs-attribute,
+    .hljs-literal,
+    .hljs-meta,
+    .hljs-number,
+    .hljs-operator,
+    .hljs-variable,
+    .hljs-selector-attr,
+    .hljs-selector-class,
+    .hljs-selector-id {
+      color: #79c0ff
+    }
+
+    .hljs-regexp,
+    .hljs-string,
+    .hljs-meta .hljs-string {
+      color: #a5d6ff
+    }
+
+    .hljs-built_in,
+    .hljs-symbol {
+      color: #ffa657
+    }
+
+    .hljs-comment,
+    .hljs-code,
+    .hljs-formula {
+      color: #8b949e
+    }
+
+    .hljs-name,
+    .hljs-quote,
+    .hljs-selector-tag,
+    .hljs-selector-pseudo {
+      color: #7ee787
+    }
+
+    .hljs-subst {
+      color: #c9d1d9
+    }
+
+    .hljs-section {
+      color: #1f6feb;
+      font-weight: 700
+    }
+
+    .hljs-bullet {
+      color: #f2cc60
+    }
+
+    .hljs-emphasis {
+      color: #c9d1d9;
+      font-style: italic
+    }
+
+    .hljs-strong {
+      color: #c9d1d9;
+      font-weight: 700
+    }
+
+    .hljs-addition {
+      color: #aff5b4;
+      background-color: #033a16
+    }
+
+    .hljs-deletion {
+      color: #ffdcd7;
+      background-color: #67060c
+    }
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #f59e0b;
+      --accent-dim: rgba(245, 158, 11, 0.10);
+      --accent-border: rgba(245, 158, 11, 0.30);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    .progress-bar-wrap {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--border);
+      z-index: 1000;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #fbbf24);
+      width: 0%;
+      transition: width 0.1s;
+    }
+
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 32px;
+      background: rgba(10, 10, 15, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-back {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .nav-back:hover {
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-position {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+
+    .nav-position .track {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .nav-prev,
+    .nav-next {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: transparent;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .nav-prev:hover,
+    .nav-next:hover {
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .nav-prev.disabled {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    .nav-next {
+      border-color: var(--accent-border);
+      color: var(--accent);
+    }
+
+    .nav-next:hover {
+      background: var(--accent-dim);
+      color: #fbbf24;
+    }
+
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 48px 24px 96px;
+    }
+
+    .hero {
+      padding: 52px 0 40px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 56px;
+    }
+
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .hero-badge {
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #fff 40%, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    .tag.accent {
+      background: var(--accent-dim);
+      border-color: var(--accent-border);
+      color: var(--accent);
+    }
+
+    .section {
+      margin-bottom: 64px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .section h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+
+    .section h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 32px 0 14px;
+      color: #fff;
+    }
+
+    .section p {
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .callout {
+      border-radius: 8px;
+      padding: 18px 20px;
+      margin: 20px 0;
+      border-left: 3px solid;
+    }
+
+    .callout-title {
+      font-weight: 700;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+
+    .callout-info {
+      background: rgba(6, 182, 212, 0.08);
+      border-color: var(--info);
+    }
+
+    .callout-info .callout-title {
+      color: var(--info);
+    }
+
+    .callout-warn {
+      background: rgba(245, 158, 11, 0.08);
+      border-color: var(--warn);
+    }
+
+    .callout-warn .callout-title {
+      color: var(--warn);
+    }
+
+    .callout-tip {
+      background: rgba(16, 185, 129, 0.08);
+      border-color: var(--success);
+    }
+
+    .callout-tip .callout-title {
+      color: var(--success);
+    }
+
+    .callout-danger {
+      background: rgba(239, 68, 68, 0.08);
+      border-color: var(--danger);
+    }
+
+    .callout-danger .callout-title {
+      color: var(--danger);
+    }
+
+    .analogy-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .analogy-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+
+    .analogy-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+
+    .analogy-text {
+      font-size: 15px;
+      color: var(--text);
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+
+    .analogy-mapping {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 24px;
+    }
+
+    .analogy-real {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .analogy-tech {
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--accent);
+    }
+
+    .mermaid-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 20px;
+      margin: 24px 0;
+      overflow: auto;
+    }
+
+    .mermaid-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin: 16px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead tr {
+      border-bottom: 2px solid var(--accent-border);
+    }
+
+    thead th {
+      text-align: left;
+      padding: 10px 14px;
+      color: var(--accent);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    tbody tr:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    tbody td {
+      padding: 11px 14px;
+      color: var(--text);
+      vertical-align: top;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .badge-green {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+    }
+
+    .badge-red {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+    }
+
+    .badge-yellow {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+    }
+
+    .badge-blue {
+      background: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .step {
+      display: flex;
+      gap: 18px;
+      padding: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .step-num {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .step-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .step-title {
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .step-desc {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    pre {
+      background: #0d1117 !important;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 12px 0;
+      font-size: 13px;
+    }
+
+    pre code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .code-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 10px 16px 0;
+    }
+
+    code:not(.hljs) {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid var(--border);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: #79c0ff;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 640px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card-mini {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      transition: border-color 0.2s;
+    }
+
+    .card-mini:hover {
+      border-color: var(--accent-border);
+    }
+
+    .card-mini h4 {
+      color: #fff;
+      font-size: 14px;
+      margin: 8px 0 6px;
+    }
+
+    .card-mini p {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .compare-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 16px 0;
+    }
+
+    @media (max-width: 600px) {
+      .compare-split {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .compare-old {
+      background: rgba(239, 68, 68, 0.05);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .compare-new {
+      background: rgba(16, 185, 129, 0.05);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .compare-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .compare-old .compare-label {
+      color: #f87171;
+    }
+
+    .compare-new .compare-label {
+      color: #34d399;
+    }
+
+    .video-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .video-card {
+      display: flex;
+      gap: 16px;
+      padding: 18px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      transition: border-color 0.2s;
+    }
+
+    .video-card:hover {
+      border-color: var(--accent-border);
+    }
+
+    .video-thumb {
+      flex-shrink: 0;
+      width: 56px;
+      height: 56px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: var(--accent);
+    }
+
+    .video-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .video-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .video-channel {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .video-why {
+      font-size: 12px;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .video-info a {
+      font-size: 12px;
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .video-info a:hover {
+      text-decoration: underline;
+    }
+
+    .checkpoint {
+      background: var(--surface);
+      border: 1px solid var(--accent-border);
+      border-radius: 12px;
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .checkpoint::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+
+    .checkpoint h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 14px;
+    }
+
+    .checkpoint p {
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+
+    .checkpoint ul {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .checkpoint ul li {
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .checkpoint-hint {
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--accent);
+    }
+
+    .next-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .next-card-info .next-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .next-card-info h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .next-card-info p {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .next-btn {
+      flex-shrink: 0;
+      text-decoration: none;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .next-btn:hover {
+      background: rgba(245, 158, 11, 0.2);
+    }
+
+    .pitfall-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .pitfall {
+      background: rgba(239, 68, 68, 0.05);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 8px;
+      padding: 16px 20px;
+    }
+
+    .pitfall-title {
+      color: #f87171;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .pitfall p {
+      color: var(--text);
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .proto-chain {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin: 20px 0;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .proto-node {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .proto-node:last-child {
+      border-bottom: none;
+    }
+
+    .proto-arrow {
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .proto-name {
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 13px;
+      min-width: 140px;
+    }
+
+    .proto-desc {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .es6-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .es6-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      transition: border-color 0.2s;
+    }
+
+    .es6-card:hover {
+      border-color: var(--accent-border);
+    }
+
+    .es6-tag {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .es6-name {
+      font-weight: 700;
+      color: #fff;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .es6-desc {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 768px) {
+      .top-nav {
+        padding: 10px 16px;
+      }
+
+      .next-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  
+    /* NEXT CARD STANDARDIZATION */
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+</style>
+</head>
+
+<body>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar"></div>
+  </div>
+
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="js-01-core-dom.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">⚡ JavaScript</span> · Aula 13 / 50
+      </div>
+      <a href="js-03-async-promises.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- ═══════════════════════════════════════ HERO ═══════════════════════════════════════ -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>⚡ JavaScript</span>
+        <span class="hero-badge">Aula 13</span>
+      </div>
+      <h1>Objetos, Arrays & ES6+</h1>
+      <div class="hero-meta">
+        <span>⏱ ~90 min de leitura</span>
+        <span>🎯 Intermediário</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">Objetos & Arrays</span>
+        <span class="tag">Prototype Chain</span>
+        <span class="tag">ES6 Modules</span>
+        <span class="tag">Classes</span>
+        <span class="tag">Destructuring</span>
+        <span class="tag">Spread / Rest</span>
+        <span class="tag">Map · Filter · Reduce</span>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════ POR QUE IMPORTA ═══════════════════════════════════════ -->
+    <section class="section">
+      <div class="section-label">// POR QUE ISSO IMPORTA?</div>
+      <h2>O coração de qualquer aplicação real</h2>
+      <p>Toda aplicação JavaScript manipula dados — e dados em JS vivem em <strong>objetos</strong> e
+        <strong>arrays</strong>. Uma API REST retorna JSON (objetos). Um carrinho de e-commerce é um array de objetos.
+        Um estado de React é um objeto. Se você não dominar essas estruturas, vai travar exatamente onde o trabalho fica
+        sério.
+      </p>
+      <p>O ES6+ (ES2015 em diante) transformou completamente como escrevemos JavaScript. Arrow functions, destructuring,
+        modules, classes — hoje esses recursos são obrigatórios para qualquer código profissional. Engenheiros sêniores
+        usam essas features em 100% do código que escrevem no dia a dia.</p>
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Contexto sênior</div>
+        <div>Saber manipular arrays com <code>map</code>, <code>filter</code> e <code>reduce</code> é uma das
+          habilidades mais testadas em entrevistas técnicas de front e back-end. Dominar objetos e o prototype chain é o
+          que separa quem "usa" JavaScript de quem "entende" JavaScript.</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ ANALOGIA ═══════════════════════════════════════ -->
+    <section class="section">
+      <div class="section-label">// ANALOGIA DO MUNDO REAL</div>
+      <h2>Antes do código: o arquivo de fichas de uma biblioteca</h2>
+      <div class="analogy-card">
+        <div class="analogy-label">🏛️ Analogia</div>
+        <div class="analogy-text">
+          Imagine uma biblioteca antiga com um <strong>fichário de fichas</strong>.<br><br>
+          Cada <strong>ficha</strong> é um <em>objeto</em> — ela tem campos: título, autor, ano, ISBN. Você acessa o
+          campo pelo nome (<code>ficha.titulo</code>).<br><br>
+          Uma <strong>gaveta do fichário</strong> é um <em>array</em> — uma lista ordenada de fichas. Você pega a
+          terceira ficha pelo índice (<code>gaveta[2]</code>).<br><br>
+          O <strong>prototype chain</strong> é como a hierarquia de categorias: toda ficha de "Romance" herda as regras
+          gerais de "Livro", que herda de "Publicação". Se uma regra não está na ficha, a biblioteca sobe na hierarquia
+          até encontrar.
+        </div>
+        <div class="analogy-mapping">
+          <div class="analogy-real">Ficha de livro</div>
+          <div class="analogy-tech">Object</div>
+          <div class="analogy-real">Gaveta do fichário</div>
+          <div class="analogy-tech">Array</div>
+          <div class="analogy-real">Hierarquia de categorias</div>
+          <div class="analogy-tech">Prototype Chain</div>
+          <div class="analogy-real">Modelo padrão de ficha</div>
+          <div class="analogy-tech">Class / Constructor</div>
+          <div class="analogy-real">Seção separada da biblioteca</div>
+          <div class="analogy-tech">ES6 Module</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ OBJETOS ═══════════════════════════════════════ -->
+    <section class="section">
+      <div class="section-label">// OBJETOS</div>
+      <h2>Objetos: chave → valor</h2>
+      <p>Um objeto JavaScript é uma coleção de pares <strong>chave: valor</strong>. As chaves são strings (ou Symbols),
+        os valores podem ser qualquer tipo — inclusive funções (que chamamos de <em>métodos</em>).</p>
+
+      <div class="code-label">javascript — criando e acessando objetos</div>
+      <pre><code class="language-javascript">// Notação literal — a forma mais comum
+const usuario = {
+  nome: 'Ana Silva',
+  idade: 28,
+  ativo: true,
+  endereco: {              // objeto aninhado
+    cidade: 'São Paulo',
+    uf: 'SP'
+  },
+  saudar() {               // método (shorthand ES6)
+    return `Olá, sou ${this.nome}`;
+  }
+};
+
+// Duas formas de acessar propriedades
+console.log(usuario.nome);          // 'Ana Silva'   — dot notation
+console.log(usuario['nome']);       // 'Ana Silva'   — bracket notation (útil com variáveis)
+
+// Adicionando e removendo propriedades
+usuario.email = 'ana@email.com';    // adiciona
+delete usuario.ativo;               // remove
+
+// Verificar se propriedade existe
+console.log('nome' in usuario);     // true
+console.log(usuario.hasOwnProperty('email')); // true</code></pre>
+
+      <h3>Destructuring de objetos</h3>
+      <p>Destructuring é a forma ES6 de extrair valores de objetos (e arrays) em variáveis de uma vez só. Elimina muito
+        código repetitivo.</p>
+
+      <div class="code-label">javascript — destructuring</div>
+      <pre><code class="language-javascript">const usuario = { nome: 'Ana', idade: 28, cidade: 'SP' };
+
+// Sem destructuring (verbose)
+const nome = usuario.nome;
+const idade = usuario.idade;
+
+// Com destructuring (ES6)
+const { nome, idade } = usuario;
+
+// Renomeando ao extrair
+const { nome: nomeCompleto, cidade: uf } = usuario;
+// nomeCompleto = 'Ana', uf = 'SP'
+
+// Valor padrão se a propriedade não existir
+const { nome, role = 'user' } = usuario;
+// role = 'user' (porque não existe no objeto)
+
+// Destructuring em parâmetros de função — muito comum em React!
+function exibir({ nome, idade }) {
+  return `${nome} tem ${idade} anos`;
+}
+exibir(usuario); // 'Ana tem 28 anos'
+
+// Spread para copiar/mesclar objetos
+const extra = { cargo: 'Dev', seniority: 'Sr' };
+const completo = { ...usuario, ...extra };
+// { nome, idade, cidade, cargo, seniority }</code></pre>
+
+      <div class="callout callout-info">
+        <div class="callout-title">💡 Spread vs Object.assign</div>
+        <div>O spread <code>{...obj}</code> faz uma cópia <em>shallow</em> (rasa) do objeto — propriedades de objetos
+          aninhados ainda apontam para a mesma referência. Para clones profundos use <code>structuredClone(obj)</code>
+          (nativo moderno) ou <code>JSON.parse(JSON.stringify(obj))</code>.</div>
+      </div>
+
+      <h3>Métodos úteis de Object</h3>
+      <div class="code-label">javascript — Object methods</div>
+      <pre><code class="language-javascript">const produto = { nome: 'Notebook', preco: 3500, estoque: 12 };
+
+// Listar chaves, valores e entradas
+Object.keys(produto);    // ['nome', 'preco', 'estoque']
+Object.values(produto);  // ['Notebook', 3500, 12]
+Object.entries(produto); // [['nome','Notebook'], ['preco',3500], ['estoque',12]]
+
+// Iterar com entries (pattern muito usado)
+Object.entries(produto).forEach(([chave, valor]) => {
+  console.log(`${chave}: ${valor}`);
+});
+
+// Construir objeto a partir de entries
+const produtoNovo = Object.fromEntries(
+  Object.entries(produto).filter(([, v]) => typeof v === 'number')
+);
+// { preco: 3500, estoque: 12 }
+
+// Congelar (imutabilidade rasa)
+const config = Object.freeze({ apiUrl: 'https://api.exemplo.com' });
+config.apiUrl = 'outro'; // silenciosamente ignorado (ou erro em strict mode)</code></pre>
+    </section>
+
+    <!-- ═══════════════════════════════════════ ARRAYS ═══════════════════════════════════════ -->
+    <section class="section">
+      <div class="section-label">// ARRAYS</div>
+      <h2>Arrays: listas + transformações funcionais</h2>
+      <p>Arrays são listas ordenadas de qualquer tipo de valor. Mas o que torna os arrays JS poderosos são os
+        <strong>métodos de ordem superior</strong> (higher-order functions): <code>map</code>, <code>filter</code>,
+        <code>reduce</code>, <code>find</code>, <code>some</code>, <code>every</code>. Eles recebem funções como
+        argumento e são a base do estilo funcional em JS.
+      </p>
+
+      <div class="code-label">javascript — o trio essencial: map / filter / reduce</div>
+      <pre><code class="language-javascript">const produtos = [
+  { nome: 'Notebook', preco: 3500, ativo: true },
+  { nome: 'Mouse', preco: 150, ativo: true },
+  { nome: 'Monitor', preco: 1800, ativo: false },
+  { nome: 'Teclado', preco: 280, ativo: true },
+];
+
+// MAP — transforma cada elemento, retorna novo array do mesmo tamanho
+const nomes = produtos.map(p => p.nome);
+// ['Notebook', 'Mouse', 'Monitor', 'Teclado']
+
+const comDesconto = produtos.map(p => ({
+  ...p,
+  precoFinal: p.preco * 0.9  // 10% desconto
+}));
+
+// FILTER — filtra por condição, retorna novo array menor (ou igual)
+const ativos = produtos.filter(p => p.ativo);
+// [Notebook, Mouse, Teclado]
+
+const baratos = produtos.filter(p => p.preco < 500);
+// [Mouse, Teclado]
+
+// REDUCE — acumula valor único a partir do array
+const totalEstoque = produtos.reduce((acc, p) => acc + p.preco, 0);
+// 5730
+
+// Encadeamento — legível e poderoso
+const totalAtivos = produtos
+  .filter(p => p.ativo)          // só ativos
+  .map(p => p.preco)             // pega preços
+  .reduce((acc, preco) => acc + preco, 0); // soma
+// 3930</code></pre>
+
+      <h3>Outros métodos fundamentais</h3>
+      <div class="code-label">javascript — find, some, every, flat, flatMap</div>
+      <pre><code class="language-javascript">const nums = [1, 2, 3, 4, 5, 6];
+
+// FIND — retorna o primeiro elemento que satisfaz a condição
+const primeiroMaiorQue3 = nums.find(n => n > 3); // 4
+
+// FINDINDEX — índice do primeiro que satisfaz
+const idx = nums.findIndex(n => n > 3); // 3
+
+// SOME — true se ALGUM satisfaz
+nums.some(n => n > 5); // true
+
+// EVERY — true se TODOS satisfazem
+nums.every(n => n > 0); // true
+nums.every(n => n > 3); // false
+
+// FLAT — achata arrays aninhados
+const nested = [1, [2, 3], [4, [5, 6]]];
+nested.flat();    // [1, 2, 3, 4, [5, 6]]  — 1 nível
+nested.flat(2);   // [1, 2, 3, 4, 5, 6]   — 2 níveis
+nested.flat(Infinity); // achata tudo
+
+// FLATMAP — map + flat(1) em um passo
+const phrases = ['hello world', 'foo bar'];
+phrases.flatMap(s => s.split(' ')); // ['hello', 'world', 'foo', 'bar']
+
+// Destructuring de arrays
+const [primeiro, segundo, ...resto] = nums;
+// primeiro=1, segundo=2, resto=[3,4,5,6]
+
+// Spread para concatenar
+const a = [1, 2, 3];
+const b = [4, 5, 6];
+const c = [...a, ...b]; // [1,2,3,4,5,6]</code></pre>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">📊 Diagrama — Map, Filter, Reduce</div>
+        <div class="mermaid">
+          flowchart LR
+          A["Array original\n[1, 2, 3, 4, 5]"] --> B["MAP\nx => x * 2"]
+          B --> C["[2, 4, 6, 8, 10]"]
+
+          A --> D["FILTER\nx => x % 2 === 0"]
+          D --> E["[2, 4]"]
+
+          A --> F["REDUCE\nacc + x, 0"]
+          F --> G["15"]
+
+          style A fill:#1e1e2e,stroke:#f59e0b
+          style C fill:#1e1e2e,stroke:#10b981
+          style E fill:#1e1e2e,stroke:#10b981
+          style G fill:#1e1e2e,stroke:#10b981
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Método</th>
+              <th>Retorna</th>
+              <th>Muta o original?</th>
+              <th>Uso principal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>map</code></td>
+              <td>Novo array (mesmo tamanho)</td>
+              <td><span class="badge badge-green">Não</span></td>
+              <td>Transformar cada elemento</td>
+            </tr>
+            <tr>
+              <td><code>filter</code></td>
+              <td>Novo array (menor ou igual)</td>
+              <td><span class="badge badge-green">Não</span></td>
+              <td>Filtrar por condição</td>
+            </tr>
+            <tr>
+              <td><code>reduce</code></td>
+              <td>Valor único (qualquer tipo)</td>
+              <td><span class="badge badge-green">Não</span></td>
+              <td>Agregar / acumular</td>
+            </tr>
+            <tr>
+              <td><code>find</code></td>
+              <td>Primeiro elemento ou <code>undefined</code></td>
+              <td><span class="badge badge-green">Não</span></td>
+              <td>Buscar elemento</td>
+            </tr>
+            <tr>
+              <td><code>forEach</code></td>
+              <td><code>undefined</code></td>
+              <td><span class="badge badge-green">Não</span></td>
+              <td>Efeito colateral por item</td>
+            </tr>
+            <tr>
+              <td><code>push/pop</code></td>
+              <td>Novo tamanho / elemento</td>
+              <td><span class="badge badge-red">Sim</span></td>
+              <td>Adicionar/remover no fim</td>
+            </tr>
+            <tr>
+              <td><code>splice</code></td>
+              <td>Elementos removidos</td>
+              <td><span class="badge badge-red">Sim</span></td>
+              <td>Inserir/remover em posição</td>
+            </tr>
+            <tr>
+              <td><code>sort</code></td>
+              <td>Mesmo array ordenado</td>
+              <td><span class="badge badge-red">Sim</span></td>
+              <td>Ordenar (cuidado!)</td>
+            </tr>
+            <tr>
+              <td><code>slice</code></td>
+              <td>Novo subarray</td>
+              <td><span class="badge badge-green">Não</span></td>
+              <td>Copiar fatia</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ PROTOTYPE CHAIN ═══════════════════════════════════════ -->
+    <section class="section">
+      <div class="section-label">// PROTOTYPE CHAIN</div>
+      <h2>Como a herança funciona por baixo dos panos</h2>
+      <p>Todo objeto em JavaScript tem uma propriedade interna chamada <code>[[Prototype]]</code> que aponta para outro
+        objeto (ou <code>null</code>). Quando você acessa uma propriedade que não existe no objeto, o motor JS sobe essa
+        cadeia procurando — isso é o <strong>prototype chain</strong>.</p>
+
+      <div class="proto-chain">
+        <div class="proto-node">
+          <span class="proto-arrow">①</span>
+          <span class="proto-name">cachorro (instância)</span>
+          <span class="proto-desc">nome: 'Rex', raça: 'Lab' — propriedades próprias</span>
+        </div>
+        <div class="proto-node">
+          <span class="proto-arrow">↑ [[Prototype]]</span>
+          <span class="proto-name">Cachorro.prototype</span>
+          <span class="proto-desc">latir(), correr() — métodos compartilhados</span>
+        </div>
+        <div class="proto-node">
+          <span class="proto-arrow">↑ [[Prototype]]</span>
+          <span class="proto-name">Object.prototype</span>
+          <span class="proto-desc">toString(), hasOwnProperty(), valueOf()</span>
+        </div>
+        <div class="proto-node">
+          <span class="proto-arrow">↑ [[Prototype]]</span>
+          <span class="proto-name">null</span>
+          <span class="proto-desc">fim da cadeia — propriedade não encontrada → undefined</span>
+        </div>
+      </div>
+
+      <div class="code-label">javascript — prototype chain na prática</div>
+      <pre><code class="language-javascript">// Função construtora (pré-ES6 — ainda muito comum em código legado)
+function Animal(nome, tipo) {
+  this.nome = nome;   // propriedade própria
+  this.tipo = tipo;
+}
+
+// Método no prototype — compartilhado por TODAS as instâncias (eficiente!)
+Animal.prototype.descrever = function() {
+  return `${this.nome} é um ${this.tipo}`;
+};
+
+const gato = new Animal('Felix', 'gato');
+const cao = new Animal('Rex', 'cachorro');
+
+gato.descrever(); // 'Felix é um gato'
+
+// Verificar de onde vem a propriedade
+gato.hasOwnProperty('nome');     // true — é própria
+gato.hasOwnProperty('descrever'); // false — está no prototype
+
+// Object.create — herança explícita sem new
+const animal = { respirar() { return 'respirando...'; } };
+const peixe = Object.create(animal);
+peixe.nome = 'Nemo';
+peixe.respirar(); // 'respirando...' — vem do prototype
+
+// Inspecionar a cadeia
+Object.getPrototypeOf(peixe) === animal; // true</code></pre>
+    </section>
+
+    <!-- ═══════════════════════════════════════ CLASSES ═══════════════════════════════════════ -->
+    <section class="section">
+      <div class="section-label">// CLASSES (ES6)</div>
+      <h2>Classes: syntactic sugar sobre prototypes</h2>
+      <p>Classes ES6 são uma <strong>sintaxe mais limpa</strong> para criar funções construtoras e configurar o
+        prototype. Internamente, o mecanismo é exatamente o mesmo — prototypes. Classes <em>não</em> introduzem um
+        modelo de herança diferente.</p>
+
+      <div class="compare-split">
+        <div class="compare-old">
+          <div class="compare-label">ES5 — Função Construtora</div>
+          <pre style="margin:0;font-size:12px;"><code class="language-javascript">function Conta(dono, saldo) {
+  this.dono = dono;
+  this.saldo = saldo;
+}
+Conta.prototype.depositar = function(v) {
+  this.saldo += v;
+};
+Conta.prototype.ver = function() {
+  return `${this.dono}: R$${this.saldo}`;
+};
+var c = new Conta('Ana', 1000);</code></pre>
+        </div>
+        <div class="compare-new">
+          <div class="compare-label">ES6 — Class</div>
+          <pre style="margin:0;font-size:12px;"><code class="language-javascript">class Conta {
+  constructor(dono, saldo) {
+    this.dono = dono;
+    this.saldo = saldo;
+  }
+  depositar(valor) {
+    this.saldo += valor;
+  }
+  ver() {
+    return `${this.dono}: R$${this.saldo}`;
+  }
+}
+const c = new Conta('Ana', 1000);</code></pre>
+        </div>
+      </div>
+
+      <div class="code-label">javascript — herança com extends e campos privados</div>
+      <pre><code class="language-javascript">class Conta {
+  #saldo = 0; // campo privado (ES2022) — não acessível fora da classe
+
+  constructor(dono, saldoInicial = 0) {
+    this.dono = dono;
+    this.#saldo = saldoInicial;
+  }
+
+  depositar(valor) {
+    if (valor <= 0) throw new Error('Valor inválido');
+    this.#saldo += valor;
+    return this;  // permite encadeamento: conta.depositar(100).depositar(50)
+  }
+
+  get saldo() { return this.#saldo; }  // getter — acesso read-only
+
+  toString() {
+    return `[Conta] ${this.dono}: R$${this.#saldo}`;
+  }
+
+  static criar(dono) {  // factory method estático
+    return new Conta(dono);
+  }
+}
+
+// Herança
+class ContaPoupanca extends Conta {
+  #taxaJuros;
+
+  constructor(dono, saldo, taxa) {
+    super(dono, saldo);  // OBRIGATÓRIO chamar super() antes de usar this
+    this.#taxaJuros = taxa;
+  }
+
+  aplicarJuros() {
+    this.depositar(this.saldo * this.#taxaJuros);
+    return this;
+  }
+}
+
+const poupanca = new ContaPoupanca('Bob', 5000, 0.005);
+poupanca.aplicarJuros();
+console.log(poupanca.saldo); // 5025
+
+// Verificar hierarquia
+poupanca instanceof ContaPoupanca; // true
+poupanca instanceof Conta;          // true</code></pre>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">📊 Hierarquia de Classes</div>
+        <div class="mermaid">
+          classDiagram
+          class Conta {
+          -saldo: number
+          +dono: string
+          +depositar(valor)
+          +getSaldo()
+          +toString()
+          +criar(dono)$
+          }
+          class ContaPoupanca {
+          -taxaJuros: number
+          +aplicarJuros()
+          }
+          class ContaCorrente {
+          -limite: number
+          +sacar(valor)
+          }
+
+          Conta <|-- ContaPoupanca 
+          Conta <|-- ContaCorrente
+        </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ ES6 MODULES ═══════════════════════════════════════ -->
+    <section class="section">
+      <div class="section-label">// ES6 MODULES</div>
+      <h2>Modules: organizando código em arquivos</h2>
+      <p>Antes dos modules ES6, JavaScript não tinha sistema nativo de módulos — você dependia de soluções como CommonJS
+        (<code>require</code>) ou AMD. Com ES6, a linguagem ganhou <code>import</code> / <code>export</code> nativos,
+        que hoje são o padrão universal (navegador + Node.js + Deno).</p>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">📊 Diagrama — Sistema de Módulos</div>
+        <div class="mermaid">
+          flowchart TD
+          A["utils/math.js\nexport { soma, multiplica }"] --> C["app.js"]
+          B["utils/api.js\nexport default fetchUser\nexport { parseData }"] --> C
+          D["config.js\nexport const API_URL"] --> C
+          C --> E["bundle final (Vite/webpack)"]
+        </div>
+      </div>
+
+      <div class="code-label">javascript — exports e imports</div>
+      <pre><code class="language-javascript">// ──── utils/math.js ────
+// Named exports — pode ter vários
+export const PI = 3.14159;
+
+export function soma(a, b) {
+  return a + b;
+}
+
+export function multiplica(a, b) {
+  return a * b;
+}
+
+// ──── utils/api.js ────
+// Default export — só um por arquivo
+export default async function fetchUsuarios(url) {
+  const res = await fetch(url);
+  return res.json();
+}
+
+// Pode combinar default + named no mesmo arquivo
+export const BASE_URL = 'https://api.exemplo.com';
+
+
+// ──── app.js ────
+// Importar named exports
+import { soma, multiplica, PI } from './utils/math.js';
+
+// Importar default export (nome é livre)
+import buscarUsuarios from './utils/api.js';
+
+// Importar tudo como namespace
+import * as Math from './utils/math.js';
+Math.soma(2, 3); // 5
+
+// Renomear ao importar
+import { soma as somar } from './utils/math.js';
+
+// Re-exportar (útil em index.js de pasta)
+export { soma, multiplica } from './utils/math.js';
+
+
+// ──── Modules em HTML ────
+// &lt;script type="module" src="app.js"&gt;&lt;/script&gt;</code></pre>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>CommonJS (Node legado)</th>
+              <th>ES Modules (moderno)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Sintaxe</td>
+              <td><code>require() / module.exports</code></td>
+              <td><code>import / export</code></td>
+            </tr>
+            <tr>
+              <td>Carregamento</td>
+              <td>Síncrono</td>
+              <td>Assíncrono / estático</td>
+            </tr>
+            <tr>
+              <td>Tree shaking</td>
+              <td><span class="badge badge-red">Limitado</span></td>
+              <td><span class="badge badge-green">Nativo</span></td>
+            </tr>
+            <tr>
+              <td>Top-level await</td>
+              <td><span class="badge badge-red">Não</span></td>
+              <td><span class="badge badge-green">Sim</span></td>
+            </tr>
+            <tr>
+              <td>Suporte navegador</td>
+              <td><span class="badge badge-red">Não</span></td>
+              <td><span class="badge badge-green">Nativo</span></td>
+            </tr>
+            <tr>
+              <td>Node.js</td>
+              <td><span class="badge badge-green">Padrão histórico</span></td>
+              <td><span class="badge badge-green">Suportado (.mjs)</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ ES6+ FEATURES ═══════════════════════════════════════ -->
+    <section class="section">
+      <div class="section-label">// ES6+ FEATURES ESSENCIAIS</div>
+      <h2>O toolkit moderno do JavaScript</h2>
+
+      <div class="es6-grid">
+        <div class="es6-card">
+          <div class="es6-tag">ES6</div>
+          <div class="es6-name">Arrow Functions</div>
+          <div class="es6-desc">Sintaxe curta + <code>this</code> léxico (herda do escopo pai)</div>
+        </div>
+        <div class="es6-card">
+          <div class="es6-tag">ES6</div>
+          <div class="es6-name">Template Literals</div>
+          <div class="es6-desc">Strings com interpolação <code>`Olá ${nome}`</code> e multilinhas</div>
+        </div>
+        <div class="es6-card">
+          <div class="es6-tag">ES6</div>
+          <div class="es6-name">Destructuring</div>
+          <div class="es6-desc">Extrai valores de objetos/arrays em variáveis de forma elegante</div>
+        </div>
+        <div class="es6-card">
+          <div class="es6-tag">ES6</div>
+          <div class="es6-name">Spread / Rest</div>
+          <div class="es6-desc"><code>...</code> para expandir ou coletar valores</div>
+        </div>
+        <div class="es6-card">
+          <div class="es6-tag">ES6</div>
+          <div class="es6-name">Default Params</div>
+          <div class="es6-desc"><code>function f(x = 0)</code> — valor padrão se não passado</div>
+        </div>
+        <div class="es6-card">
+          <div class="es6-tag">ES6</div>
+          <div class="es6-name">Symbol</div>
+          <div class="es6-desc">Tipo primitivo único — útil como chaves de propriedade únicas</div>
+        </div>
+        <div class="es6-card">
+          <div class="es6-tag">ES6</div>
+          <div class="es6-name">Map / Set</div>
+          <div class="es6-desc">Coleções modernas com API própria e chaves de qualquer tipo</div>
+        </div>
+        <div class="es6-card">
+          <div class="es6-tag">ES2020</div>
+          <div class="es6-name">Optional Chaining</div>
+          <div class="es6-desc"><code>obj?.prop?.sub</code> — não quebra se intermediário for null</div>
+        </div>
+        <div class="es6-card">
+          <div class="es6-tag">ES2020</div>
+          <div class="es6-name">Nullish Coalescing</div>
+          <div class="es6-desc"><code>valor ?? 'padrão'</code> — só usa padrão se null/undefined</div>
+        </div>
+        <div class="es6-card">
+          <div class="es6-tag">ES2021</div>
+          <div class="es6-name">Logical Assignment</div>
+          <div class="es6-desc"><code>a ??= b</code>, <code>a ||= b</code>, <code>a &&= b</code></div>
+        </div>
+        <div class="es6-card">
+          <div class="es6-tag">ES2022</div>
+          <div class="es6-name">Private Fields</div>
+          <div class="es6-desc"><code>#campo</code> — privacidade real nas classes</div>
+        </div>
+        <div class="es6-card">
+          <div class="es6-tag">ES2023</div>
+          <div class="es6-name">Array.toSorted/toReversed</div>
+          <div class="es6-desc">Versões imutáveis de sort/reverse — retornam novo array</div>
+        </div>
+      </div>
+
+      <div class="code-label">javascript — features essenciais no dia a dia</div>
+      <pre><code class="language-javascript">// ── Optional Chaining (?.) ──
+const usuario = { perfil: { cidade: 'SP' } };
+const cidade = usuario?.perfil?.cidade;     // 'SP'
+const pais   = usuario?.endereco?.pais;     // undefined (não quebra!)
+const tel    = usuario?.contatos?.[0]?.tel; // undefined
+
+// ── Nullish Coalescing (??) ──
+// ?? só usa o padrão se o valor for null ou undefined
+// (diferente de || que também considera 0, '', false como falsy)
+const nome = usuario.nome ?? 'Anônimo';
+const qtd  = 0 ?? 10;  // 0  (zero é válido!)
+const qtd2 = 0 || 10;  // 10 (zero é falsy para ||)
+
+// ── Map e Set ──
+// Set — coleção sem duplicatas
+const tags = new Set(['js', 'node', 'js', 'react']);
+tags.size; // 3 (js duplicado removido)
+tags.has('node'); // true
+tags.add('ts'); tags.delete('node');
+[...tags]; // converter de volta para array
+
+// Map — chave pode ser qualquer tipo
+const cache = new Map();
+const chave = { id: 1 };
+cache.set(chave, { dados: 'resultado' });
+cache.get(chave); // { dados: 'resultado' }
+cache.size; // 1
+
+for (const [k, v] of cache) {
+  console.log(k, v);
+}
+
+// ── WeakMap / WeakRef ── (memória gerenciada automaticamente)
+const wm = new WeakMap(); // chaves devem ser objetos, não impede GC</code></pre>
+    </section>
+
+    <!-- ═══════════════════════════════════════ HANDS-ON ═══════════════════════════════════════ -->
+    <section class="section">
+      <div class="section-label">// HANDS-ON</div>
+      <h2>Passo a passo: construindo um sistema de produtos</h2>
+      <p>Vamos criar um pequeno sistema que exercita tudo que aprendemos: classes, arrays funcionais, modules e ES6+.
+        Você pode rodar no <strong>Node.js</strong> ou diretamente no console do navegador.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Crie a estrutura de arquivos</div>
+            <div class="step-desc">Crie uma pasta <code>loja/</code> com os arquivos abaixo:</div>
+            <pre><code class="language-bash">mkdir loja && cd loja
+touch produto.js estoque.js main.js
+# Abra no VS Code:
+code .</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">produto.js — Classe Produto</div>
+            <pre><code class="language-javascript">// produto.js
+export class Produto {
+  #preco;
+
+  constructor(nome, preco, categoria) {
+    this.nome = nome;
+    this.#preco = preco;
+    this.categoria = categoria;
+    this.id = crypto.randomUUID(); // UUID nativo (Node 19+ / browsers)
+  }
+
+  get preco() { return this.#preco; }
+
+  aplicarDesconto(percentual) {
+    if (percentual < 0 || percentual > 100) {
+      throw new RangeError('Desconto deve ser entre 0 e 100');
+    }
+    this.#preco = +(this.#preco * (1 - percentual / 100)).toFixed(2);
+    return this;
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      nome: this.nome,
+      preco: this.#preco,
+      categoria: this.categoria
+    };
+  }
+
+  toString() {
+    return `[${this.categoria}] ${this.nome} — R$${this.#preco}`;
+  }
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">estoque.js — Gerenciamento com arrays funcionais</div>
+            <pre><code class="language-javascript">// estoque.js
+export class Estoque {
+  #produtos = [];
+
+  adicionar(produto) {
+    this.#produtos.push(produto);
+    return this;
+  }
+
+  // Busca com optional chaining
+  buscarPorNome(termo) {
+    const t = termo.toLowerCase();
+    return this.#produtos.filter(p =>
+      p.nome.toLowerCase().includes(t)
+    );
+  }
+
+  porCategoria(cat) {
+    return this.#produtos.filter(p =>
+      p.categoria.toLowerCase() === cat.toLowerCase()
+    );
+  }
+
+  // Relatório com reduce
+  resumo() {
+    return this.#produtos.reduce((acc, p) => {
+      const cat = p.categoria;
+      acc[cat] ??= { total: 0, quantidade: 0 }; // nullish assignment
+      acc[cat].total += p.preco;
+      acc[cat].quantidade += 1;
+      return acc;
+    }, {});
+  }
+
+  maisBaratos(n = 5) {
+    return [...this.#produtos]
+      .toSorted((a, b) => a.preco - b.preco)  // ES2023 — não muta original
+      .slice(0, n);
+  }
+
+  get total() {
+    return this.#produtos.reduce((s, p) => s + p.preco, 0);
+  }
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">main.js — Juntando tudo</div>
+            <pre><code class="language-javascript">// main.js
+import { Produto } from './produto.js';
+import { Estoque } from './estoque.js';
+
+const estoque = new Estoque();
+
+// Usando encadeamento (method chaining)
+estoque
+  .adicionar(new Produto('Notebook Pro', 3500, 'Eletrônicos'))
+  .adicionar(new Produto('Mouse Gamer', 250, 'Periféricos'))
+  .adicionar(new Produto('Teclado Mecânico', 480, 'Periféricos'))
+  .adicionar(new Produto('Monitor 4K', 2800, 'Eletrônicos'))
+  .adicionar(new Produto('Headset', 390, 'Periféricos'));
+
+// Aplicar desconto em todos os eletrônicos
+estoque.porCategoria('Eletrônicos')
+  .forEach(p => p.aplicarDesconto(10));
+
+// Relatório por categoria
+const resumo = estoque.resumo();
+Object.entries(resumo).forEach(([cat, dados]) => {
+  console.log(`${cat}: ${dados.quantidade} produtos, total R$${dados.total.toFixed(2)}`);
+});
+
+// Top 3 mais baratos
+console.log('\nTop 3 mais baratos:');
+estoque.maisBaratos(3).forEach(p => console.log(` ${p}`));
+
+console.log(`\nTotal em estoque: R$${estoque.total.toFixed(2)}`);
+</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Executar com Node.js</div>
+            <div class="step-desc">Adicione <code>"type": "module"</code> no package.json ou use extensão
+              <code>.mjs</code>:
+            </div>
+            <pre><code class="language-bash"># Criar package.json mínimo
+echo '{"type":"module"}' > package.json
+
+# Executar
+node main.js</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ PITFALLS ═══════════════════════════════════════ -->
+    <section class="section">
+      <div class="section-label">// ARMADILHAS COMUNS</div>
+      <h2>⚠️ Erros que todo dev comete no começo</h2>
+      <div class="pitfall-list">
+
+        <div class="pitfall">
+          <div class="pitfall-title">1. Mutar arrays dentro do map/filter</div>
+          <p>Os métodos funcionais como <code>map</code> e <code>filter</code> devem ser <em>puros</em>. Não mute o
+            objeto original dentro deles — crie um novo com spread ou <code>Object.assign</code>.</p>
+          <pre><code class="language-javascript">// ❌ Errado — muta o objeto original
+const novos = produtos.map(p => {
+  p.preco *= 0.9; // modifica o original!
+  return p;
+});
+
+// ✅ Correto — cria novo objeto
+const novos = produtos.map(p => ({ ...p, preco: p.preco * 0.9 }));</code></pre>
+        </div>
+
+        <div class="pitfall">
+          <div class="pitfall-title">2. sort() muta e ordena como string por padrão</div>
+          <p><code>Array.sort()</code> muta o array original E, sem comparador, ordena lexicograficamente (como string).
+            <code>[10, 9, 2].sort()</code> retorna <code>[10, 2, 9]</code> — não o que você espera.
+          </p>
+          <pre><code class="language-javascript">// ❌ Perigoso — muta o original e ordem errada
+[10, 9, 2].sort(); // [10, 2, 9]
+
+// ✅ Correto — comparador numérico + não muta (ES2023)
+[10, 9, 2].toSorted((a, b) => a - b); // [2, 9, 10]
+
+// Ou copiar antes de ordenar
+[...[10, 9, 2]].sort((a, b) => a - b);</code></pre>
+        </div>
+
+        <div class="pitfall">
+          <div class="pitfall-title">3. this em arrow functions dentro de classes</div>
+          <p>Arrow functions não têm <code>this</code> próprio — herdam do escopo léxico. Isso é útil em callbacks mas
+            pode confundir em métodos de objetos.</p>
+          <pre><code class="language-javascript">class Timer {
+  constructor() { this.segundos = 0; }
+
+  // ❌ Não funciona — this dentro do callback será undefined (strict) ou window
+  iniciarErrado() {
+    setInterval(function() {
+      this.segundos++; // ❌ this errado!
+    }, 1000);
+  }
+
+  // ✅ Arrow function herda this do método
+  iniciar() {
+    setInterval(() => {
+      this.segundos++; // ✅ this é a instância
+    }, 1000);
+  }
+}</code></pre>
+        </div>
+
+        <div class="pitfall">
+          <div class="pitfall-title">4. Referência vs. valor em objetos e arrays</div>
+          <p>Objetos e arrays são passados por <em>referência</em>. Copiar com <code>=</code> não cria um novo objeto —
+            cria outro apontador para o mesmo lugar na memória.</p>
+          <pre><code class="language-javascript">const a = { x: 1 };
+const b = a;         // b aponta para o MESMO objeto
+b.x = 99;
+console.log(a.x);    // 99 — a também mudou!
+
+// ✅ Cópia rasa
+const c = { ...a };  // ou Object.assign({}, a)
+// ✅ Cópia profunda
+const d = structuredClone(a); // nativo e seguro</code></pre>
+        </div>
+
+        <div class="pitfall">
+          <div class="pitfall-title">5. Esquecer super() em subclasses</div>
+          <p>Em uma subclasse ES6, você DEVE chamar <code>super()</code> antes de usar <code>this</code> no constructor.
+            Caso contrário, um <code>ReferenceError</code> é lançado.</p>
+          <pre><code class="language-javascript">class Animal { constructor(nome) { this.nome = nome; } }
+
+class Gato extends Animal {
+  constructor(nome, cor) {
+    // this.cor = cor; // ❌ ReferenceError: Must call super before accessing 'this'
+    super(nome);     // ✅ chamar super primeiro
+    this.cor = cor;
+  }
+}</code></pre>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ VÍDEOS ═══════════════════════════════════════ -->
+    <section class="section">
+      <div class="section-label">// CURADORIA DE VÍDEOS</div>
+      <h2>Para fixar com os melhores do YouTube</h2>
+      <div class="video-grid">
+
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">JavaScript Prototype Chain — Explained Visually</div>
+            <div class="video-channel">Fireship · ~8 min</div>
+            <div class="video-why">Por que assistir: Fireship explica o prototype chain com animações perfeitas. Você
+              vai entender de uma vez por todas como a herança JS funciona por baixo — essencial antes de classes.</div>
+            <a href="https://www.youtube.com/watch?v=wstwjQ1yqWQ" target="_blank">Assistir →</a>
+          </div>
+        </div>
+
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">JavaScript Array Methods — map, filter, reduce</div>
+            <div class="video-channel">Traversy Media · ~22 min</div>
+            <div class="video-why">Por que assistir: Brad Traversy cobre os métodos funcionais com exemplos práticos de
+              uma lista de produtos — exatamente o contexto que você usa no trabalho real.</div>
+            <a href="https://www.youtube.com/watch?v=rRgD1yVwIvE" target="_blank">Assistir →</a>
+          </div>
+        </div>
+
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">JavaScript ES6+ Modern Features in 12 Minutes</div>
+            <div class="video-channel">Fireship · ~12 min</div>
+            <div class="video-why">Por que assistir: Um tour rápido e visual por todas as features ES6+ que você vai
+              usar no dia a dia. Ótimo para referência rápida depois de estudar cada conceito.</div>
+            <a href="https://www.youtube.com/watch?v=NCwa_xi0Uuc" target="_blank">Assistir →</a>
+          </div>
+        </div>
+
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">JavaScript Modules — A Beginner's Guide</div>
+            <div class="video-channel">Academind · ~30 min</div>
+            <div class="video-why">Por que assistir: Cobre ES Modules do zero com exemplos reais de import/export, a
+              diferença de CommonJS e como usar modules em projetos Node e browser.</div>
+            <a href="https://www.youtube.com/watch?v=_3oSWwapPKQ" target="_blank">Assistir →</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ CHECKPOINT ═══════════════════════════════════════ -->
+    <section class="section">
+      <div class="section-label">// CHECKPOINT</div>
+      <div class="checkpoint">
+        <h3>🏁 Desafio: Mini-sistema de playlist musical</h3>
+        <p>Crie um sistema modular de playlists em JavaScript puro, exercitando classes, arrays funcionais e ES6
+          modules.</p>
+        <ul>
+          <li>✦ Crie uma classe <code>Musica</code> com campos privados (título, artista, duração em segundos, gênero)
+          </li>
+          <li>✦ Crie uma classe <code>Playlist</code> com array interno e métodos: <code>adicionar</code>,
+            <code>remover(titulo)</code>, <code>filtrarPorGenero(genero)</code>
+          </li>
+          <li>✦ Implemente <code>duracao total</code> como getter que usa <code>reduce</code></li>
+          <li>✦ Implemente <code>ordenarPorDuracao()</code> sem mutar o array interno (use <code>toSorted</code> ou
+            spread)</li>
+          <li>✦ Separe em módulos: <code>musica.js</code>, <code>playlist.js</code>, <code>main.js</code></li>
+          <li>✦ No main.js, use destructuring ao importar e optional chaining ao acessar dados</li>
+        </ul>
+        <div class="checkpoint-hint">💬 Dica: comece pelos modelos de dados (Musica) antes da lógica (Playlist). Use o
+          console do navegador ou Node.js com <code>"type": "module"</code> no package.json para testar.</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="callout callout-info" style="margin-top:24px;">
+        <div class="callout-title">💡 Antes de avançar, verifique se você consegue:</div>
+        <div>
+          Criar um objeto com propriedades, métodos e spread · Usar map/filter/reduce em um array de dados reais ·
+          Explicar o que é prototype chain e como a herança funciona ·
+          Criar uma classe com campos privados, getter e herança via <code>extends</code> ·
+          Criar dois arquivos <code>.js</code> com import/export e executar no Node.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ PRÓXIMOS PASSOS ═══════════════════════════════════════ -->
+    <section class="section">
+      <div class="section-label">// próxima aula</div>
+      <h2>O que vem a seguir?</h2>
+      <p>
+        Com o domínio de <strong>Classes e Herança</strong>, seu código agora possui estrutura e semântica profissional. 
+        O desafio agora é o <strong>tempo</strong>: em aplicações reais, o JS não espera o banco de dados responder. 
+        Vamos entender como o <em>Event Loop</em> gerencia execuções em segundo plano sem travar a interface do usuário.
+      </p>
+
+      <a href="js-03-async-promises.html" class="next-card">
+        <div>
+          <div class="next-card-label">Próxima Aula • ⚡ JavaScript</div>
+          <div class="next-card-title">JavaScript — Async & Promises</div>
+        </div>
+        <div class="next-arrow">→</div>
+      </a>
+    </section>
+
+  </div><!-- /page -->
+
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+
+    // Progress bar
+    window.addEventListener('scroll', () => {
+      const doc = document.documentElement;
+      const scrolled = doc.scrollTop;
+      const max = doc.scrollHeight - doc.clientHeight;
+      const pct = max > 0 ? (scrolled / max) * 100 : 0;
+      document.getElementById('progressBar').style.width = pct + '%';
+    });
+
+    // Syntax highlighting
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('pre code').forEach(el => {
+        hljs.highlightElement(el);
+      });
+    });
+  </script>
+
+</body>
+
+</html>

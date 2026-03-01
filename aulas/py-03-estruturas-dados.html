@@ -199,7 +199,14 @@
     .mem-box.set { border-color: rgba(16,185,129,0.5); color: #34d399; }
     .mem-box.tuple { border-color: rgba(6,182,212,0.5); color: #22d3ee; }
     .mem-arrow { color: var(--muted); }
-  </style>
+  
+    /* NEXT CARD STANDARDIZATION */
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+</style>
 </head>
 <body>
 
@@ -1062,15 +1069,15 @@ type(meu_conjunto)  # &lt;class 'set'&gt;
 
     <!-- ── PRÓXIMOS PASSOS ── -->
     <div class="section">
-      <div class="section-label">// próximos passos</div>
+      <div class="section-label">// próxima aula</div>
       <h2>O que vem a seguir?</h2>
       <p style="margin-bottom: 20px;">Com estruturas de dados dominadas, chegamos ao grande salto: <strong>Orientação a Objetos</strong>. Vamos criar nossas próprias estruturas de dados com comportamento — classes, objetos, herança e métodos especiais (dunder methods). É o que transforma scripts soltos em sistemas coesos e extensíveis.</p>
-      <a href="py-04-orientacao-objetos.html" class="next-card">
+            <a href="py-04-orientacao-objetos.html" class="next-card">
         <div>
-          <div class="next-card-label">Próxima aula · 🐍 Python</div>
-          <div class="next-card-title">Python — Orientação a Objetos</div>
+          <div class="next-card-label">Próxima Aula • 🐍 Python</div>
+          <div class="next-card-title">Orientação a Objetos</div>
         </div>
-        <span class="next-arrow">→</span>
+        <div class="next-arrow">→</div>
       </a>
     </div>
 

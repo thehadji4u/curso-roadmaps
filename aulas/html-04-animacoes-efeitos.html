@@ -1431,7 +1431,14 @@
       color: var(--accent);
       margin-top: 2px;
     }
-  </style>
+  
+    /* NEXT CARD STANDARDIZATION */
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+</style>
 </head>
 
 <body>
@@ -2452,21 +2459,24 @@ element.addEventListener('animationend', () => {
         <div class="pitfall-title">3. Esquecer animation-fill-mode: forwards</div>
         <p style="color:var(--muted);font-size:13px;">Você cria uma linda animação de fade-in, mas o elemento volta a
           ser invisível quando ela termina. A solução é <code>animation-fill-mode: forwards</code> — ou
-          <code>both</code> quando há um delay também.</p>
+          <code>both</code> quando há um delay também.
+        </p>
       </div>
 
       <div class="pitfall">
         <div class="pitfall-title">4. Não respeitar prefers-reduced-motion</div>
         <p style="color:var(--muted);font-size:13px;">Animar um site intensamente sem checar
           <code>prefers-reduced-motion: reduce</code> pode causar enjoo ou crises em usuários com sensibilidades
-          vestibulares. É uma questão de acessibilidade, não de preferência.</p>
+          vestibulares. É uma questão de acessibilidade, não de preferência.
+        </p>
       </div>
 
       <div class="pitfall">
         <div class="pitfall-title">5. Criar @keyframes duplicados com nomes diferentes</div>
         <p style="color:var(--muted);font-size:13px;">Quando o projeto cresce, é comum criar
           <code>@keyframes fadeIn</code>, <code>@keyframes fade-in</code>, <code>@keyframes entrada</code> fazendo a
-          mesma coisa. Use um sistema de nomes e crie keyframes reutilizáveis em um arquivo global.</p>
+          mesma coisa. Use um sistema de nomes e crie keyframes reutilizáveis em um arquivo global.
+        </p>
       </div>
     </div>
 
@@ -2591,16 +2601,16 @@ element.addEventListener('animationend', () => {
 
     <!-- ── PRÓXIMOS PASSOS ── -->
     <div class="section">
-      <div class="section-label">// próximos passos</div>
-      <h2>O que vem a seguir</h2>
+      <div class="section-label">// próxima aula</div>
+      <h2>O que vem a seguir?</h2>
       <p>
         Você agora tem o toolkit completo de CSS visual — responsividade, custom properties, animações, tipografia e
         efeitos. A próxima trilha é GitHub: a plataforma onde desenvolvedores colaboram e constroem software juntos.
         Vamos aprender sobre Remote & Push/Pull, Pull Requests, Issues e muito mais.
       </p>
-      <a href="gh-03-colaboracao-prs.html" class="next-card">
+            <a href="gh-03-colaboracao-prs.html" class="next-card">
         <div>
-          <div class="next-card-label">→ Próxima aula</div>
+          <div class="next-card-label">Próxima Aula • 🐙 GitHub</div>
           <div class="next-card-title">GitHub — Colaboração & Pull Requests</div>
         </div>
         <div class="next-arrow">→</div>

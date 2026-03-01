@@ -1014,7 +1014,14 @@
         grid-template-columns: 1fr;
       }
     }
-  </style>
+  
+    /* NEXT CARD STANDARDIZATION */
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+</style>
 </head>
 
 <body>
@@ -1059,7 +1066,7 @@
 
     <!-- ═══════════════════════════════════════════════════════ POR QUE IMPORTA -->
     <section class="section">
-      <div class="section-label">01 · Motivação</div>
+      <div class="section-label">// MOTIVAÇÃO</div>
       <h2>Por que JavaScript importa?</h2>
       <p>JavaScript é a <strong>única linguagem nativa dos browsers</strong>. Não existe alternativa: se você quer que
         uma página web pense, reaja e se transforme — é JavaScript. Mas vai além: com Node.js, JS roda no servidor. Com
@@ -1101,7 +1108,7 @@
 
     <!-- ═══════════════════════════════════════════════════════ ANALOGIA -->
     <section class="section">
-      <div class="section-label">02 · Analogia</div>
+      <div class="section-label">// ANALOGIA</div>
       <h2>O Arquiteto & o Pedreiro</h2>
 
       <div class="analogy-card">
@@ -1137,7 +1144,7 @@
 
     <!-- ═══════════════════════════════════════════════════════ TIPOS & VARIÁVEIS -->
     <section class="section">
-      <div class="section-label">03 · Conceito Central</div>
+      <div class="section-label">// CONCEITO CENTRAL</div>
       <h2>Tipos, Variáveis e o Motor JS</h2>
 
       <p>JavaScript é uma linguagem <strong>dinamicamente tipada</strong> — o tipo de uma variável é determinado em
@@ -1239,7 +1246,7 @@
 
     <!-- ═══════════════════════════════════════════════════════ FUNÇÕES -->
     <section class="section">
-      <div class="section-label">04 · Funções</div>
+      <div class="section-label">// FUNÇÕES</div>
       <h2>Funções — Cidadãos de Primeira Classe</h2>
 
       <p>Em JavaScript, funções são <strong>valores</strong> — podem ser passadas como argumentos, retornadas por outras
@@ -1341,7 +1348,7 @@ console.log(triplicar(5)); // 15
 
     <!-- ═══════════════════════════════════════════════════════ DOM -->
     <section class="section">
-      <div class="section-label">05 · DOM & Eventos</div>
+      <div class="section-label">// DOM & EVENTOS</div>
       <h2>O DOM — Sua Interface com o HTML</h2>
 
       <p>O DOM (Document Object Model) é a <strong>representação do HTML como uma árvore de objetos JavaScript</strong>.
@@ -1480,7 +1487,7 @@ lista.addEventListener('click', (e) => {
 
     <!-- ═══════════════════════════════════════════════════════ TABELA COMPARATIVA -->
     <section class="section">
-      <div class="section-label">06 · Comparativo</div>
+      <div class="section-label">// COMPARATIVO</div>
       <h2>Comparativo: Formas de Declarar & Tipos de Função</h2>
 
       <div class="table-wrap">
@@ -1582,7 +1589,7 @@ lista.addEventListener('click', (e) => {
 
     <!-- ═══════════════════════════════════════════════════════ HANDS-ON -->
     <section class="section">
-      <div class="section-label">07 · Hands-on</div>
+      <div class="section-label">// HANDS-ON</div>
       <h2>Passo a Passo: Todo App Vanilla JS</h2>
       <p>Vamos construir um Todo App completo usando apenas JavaScript puro — sem frameworks. Isso vai exercitar seleção
         de DOM, criação de elementos, eventos, closures e estado.</p>
@@ -1749,7 +1756,7 @@ todoApp.adicionarTarefa('Tarefa adicionada pelo console!');
 
     <!-- ═══════════════════════════════════════════════════════ CÓDIGO COMENTADO -->
     <section class="section">
-      <div class="section-label">08 · Código Comentado</div>
+      <div class="section-label">// CÓDIGO COMENTADO</div>
       <h2>Exemplo Completo: Buscador Dinâmico com Debounce</h2>
       <p>Vamos implementar um buscador que filtra uma lista em tempo real conforme o usuário digita — mas com debounce
         para não executar a busca a cada tecla pressionada (padrão usado em todos os apps profissionais).</p>
@@ -1845,7 +1852,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     <!-- ═══════════════════════════════════════════════════════ PITFALLS -->
     <section class="section">
-      <div class="section-label">09 · Armadilhas</div>
+      <div class="section-label">// ARMADILHAS</div>
       <h2>⚠️ Pitfalls — Erros Clássicos de Iniciante</h2>
 
       <div class="pitfall-list">
@@ -1859,18 +1866,21 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="pitfall-title">🪤 == vs === — coerção silenciosa</div>
           <p><code>0 == false</code> → <code>true</code>. <code>"5" == 5</code> → <code>true</code>. O operador
             <code>==</code> faz coerção de tipo. Sempre use <code>===</code> (igualdade estrita) — é o padrão da
-            comunidade. O <code>==</code> gera bugs difíceis de rastrear.</p>
+            comunidade. O <code>==</code> gera bugs difíceis de rastrear.
+          </p>
         </div>
         <div class="pitfall">
           <div class="pitfall-title">🪤 typeof null === "object" — bug histórico</div>
           <p>É uma falha de design que nunca foi corrigida por compatibilidade. Para checar se algo é null, use
-            <code>valor === null</code>, não <code>typeof valor === "object"</code>.</p>
+            <code>valor === null</code>, não <code>typeof valor === "object"</code>.
+          </p>
         </div>
         <div class="pitfall">
           <div class="pitfall-title">🪤 innerHTML com input do usuário — XSS</div>
           <p>Nunca faça <code>elemento.innerHTML = input.value</code>. Se o usuário digitar
             <code>&lt;script&gt;alert('hackeado')&lt;/script&gt;</code>, vai executar! Use <code>textContent</code> para
-            texto puro, ou sanitize o HTML antes.</p>
+            texto puro, ou sanitize o HTML antes.
+          </p>
         </div>
         <div class="pitfall">
           <div class="pitfall-title">🪤 this em arrow functions — sem binding próprio</div>
@@ -1882,14 +1892,15 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="pitfall-title">🪤 Esquecer de DOMContentLoaded</div>
           <p>Se você coloca o <code>&lt;script&gt;</code> no <code>&lt;head&gt;</code> e tenta selecionar elementos
             antes de a página carregar, vai obter <code>null</code>. Solução: coloque o script antes do
-            <code>&lt;/body&gt;</code> ou use <code>document.addEventListener('DOMContentLoaded', ...)</code>.</p>
+            <code>&lt;/body&gt;</code> ou use <code>document.addEventListener('DOMContentLoaded', ...)</code>.
+          </p>
         </div>
       </div>
     </section>
 
     <!-- ═══════════════════════════════════════════════════════ VÍDEOS -->
     <section class="section">
-      <div class="section-label">10 · Curadoria</div>
+      <div class="section-label">// CURADORIA</div>
       <h2>Vídeos Recomendados</h2>
 
       <div class="video-grid">
@@ -1941,7 +1952,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     <!-- ═══════════════════════════════════════════════════════ CHECKPOINT -->
     <section class="section">
-      <div class="section-label">11 · Checkpoint</div>
+      <div class="section-label">// CHECKPOINT</div>
 
       <div class="checkpoint">
         <h3>🏁 Desafio: Galeria Interativa com Filtros</h3>
@@ -1964,19 +1975,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     <!-- ═══════════════════════════════════════════════════════ PRÓXIMOS PASSOS -->
     <section class="section">
-      <div class="section-label">12 · Próximos Passos</div>
-      <h2>O que vem a seguir</h2>
+      <div class="section-label">// próxima aula</div>
+      <h2>O que vem a seguir?</h2>
       <p>Agora que você domina os fundamentos do JS e sabe manipular o DOM, o próximo passo é mergulhar nos tipos mais
         complexos: objetos, arrays, prototype chain e todas as features modernas do ES6+.</p>
 
-      <div class="next-card">
-        <div class="next-card-info">
-          <div class="next-label">Aula 13 · JavaScript</div>
-          <h3>Objetos, Arrays & ES6+</h3>
-          <p>Prototype chain · Destructuring · Spread/Rest · Módulos ES6 · Classes</p>
+      <a href="js-02-objetos-es6.html" class="next-card">
+        <div>
+          <div class="next-card-label">Próxima Aula • ⚡ JavaScript</div>
+          <div class="next-card-title">JavaScript — Objetos & ES6</div>
         </div>
-        <a href="js-02-objetos-es6.html" class="next-btn">Próxima aula →</a>
-      </div>
+        <div class="next-arrow">→</div>
+      </a>
     </section>
 
   </div><!-- /page -->

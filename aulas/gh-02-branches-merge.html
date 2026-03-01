@@ -187,7 +187,14 @@
     .conflict-theirs { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); padding: 10px 14px; }
     .conflict-theirs .marker { color: #f87171; font-weight: 700; }
     .conflict-line { color: var(--text); }
-  </style>
+  
+    /* NEXT CARD STANDARDIZATION */
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+</style>
 </head>
 <body>
 
@@ -234,7 +241,7 @@
 
     <!-- 1. POR QUE IMPORTA -->
     <div class="section">
-      <div class="section-label">// motivação</div>
+      <div class="section-label">// MOTIVAÇÃO</div>
       <h2>Por que isso importa?</h2>
       <p>
         Branches são o coração do desenvolvimento colaborativo. Elas permitem que você (e seu time) trabalhem em múltiplas funcionalidades ao mesmo tempo — sem nunca tocar no código estável em produção. É o que possibilita que 50 engenheiros trabalhem no mesmo repositório simultaneamente, cada um em sua própria linha do tempo de código.
@@ -250,7 +257,7 @@
 
     <!-- 2. ANALOGIA -->
     <div class="section">
-      <div class="section-label">// analogia</div>
+      <div class="section-label">// ANALOGIA</div>
       <h2>Antes do código: uma analogia</h2>
       <div class="analogy-card">
         <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
@@ -274,7 +281,7 @@
 
     <!-- 3. O QUE É UMA BRANCH -->
     <div class="section">
-      <div class="section-label">// conceito 1</div>
+      <div class="section-label">// CONCEITO 1</div>
       <h2>O que é uma branch — internamente</h2>
       <p>
         Uma branch no Git é simplesmente um <strong>ponteiro leve para um commit</strong>. Nada mais. Não é uma cópia dos arquivos — é apenas um arquivo de texto com o hash de um commit. Isso torna branches em Git incrivelmente baratas e rápidas de criar.
@@ -312,7 +319,7 @@ gitGraph
 
     <!-- 4. COMANDOS DE BRANCH -->
     <div class="section">
-      <div class="section-label">// conceito 2</div>
+      <div class="section-label">// CONCEITO 2</div>
       <h2>Criando e navegando em branches</h2>
 
       <div class="code-label">// tudo sobre branches — do básico ao avançado</div>
@@ -366,7 +373,7 @@ git branch --no-merged             # branches ainda não mergeadas
 
     <!-- 5. MERGE -->
     <div class="section">
-      <div class="section-label">// conceito 3</div>
+      <div class="section-label">// CONCEITO 3</div>
       <h2>Merge — unindo históricos</h2>
       <p>
         Merge integra o histórico de uma branch em outra. Existem dois tipos principais, e o Git escolhe automaticamente o mais adequado — mas é importante entender a diferença.
@@ -441,7 +448,7 @@ git log main..feature/x --oneline # commits que serão mergeados
 
     <!-- 6. CONFLITOS -->
     <div class="section">
-      <div class="section-label">// conceito 4</div>
+      <div class="section-label">// CONCEITO 4</div>
       <h2>Conflitos de Merge — entendendo e resolvendo</h2>
       <p>
         Um conflito acontece quando duas branches modificam <strong>exatamente as mesmas linhas</strong> de um arquivo, e o Git não consegue decidir automaticamente qual versão é a correta. Ele para e pede que <em>você</em> decida.
@@ -533,7 +540,7 @@ git merge --abort              # volta ao estado antes do merge
 
     <!-- 7. REBASE -->
     <div class="section">
-      <div class="section-label">// conceito 5</div>
+      <div class="section-label">// CONCEITO 5</div>
       <h2>Rebase — histórico linear e limpo</h2>
       <p>
         <code>git rebase</code> é uma alternativa ao merge que <strong>reescreve o histórico</strong> para manter uma linha do tempo linear. Em vez de criar um merge commit, ele "replanta" os commits da feature branch no topo da branch de destino — como se você tivesse começado a trabalhar na feature a partir do estado mais recente do <code>main</code>.
@@ -599,7 +606,7 @@ git rebase --abort        # cancela e volta ao estado original
 
     <!-- 8. STASH E RESET -->
     <div class="section">
-      <div class="section-label">// conceito 6</div>
+      <div class="section-label">// CONCEITO 6</div>
       <h2>Stash & Reset — ferramentas de salvamento</h2>
 
       <h3>git stash — guardar trabalho temporariamente</h3>
@@ -698,7 +705,7 @@ git revert HEAD~3..HEAD --no-commit  # reverte tudo de uma vez, sem commitar ain
 
     <!-- HANDS-ON -->
     <div class="section">
-      <div class="section-label">// prática</div>
+      <div class="section-label">// PRÁTICA</div>
       <h2>Mãos na massa — Simulando um fluxo real de time</h2>
       <p>Vamos simular o desenvolvimento de duas features em paralelo, com merge e resolução de conflito deliberada.</p>
 
@@ -826,7 +833,7 @@ git log --oneline --graph --all
 
     <!-- ARMADILHAS -->
     <div class="section">
-      <div class="section-label">// pitfalls</div>
+      <div class="section-label">// PITFALLS</div>
       <h2>⚠️ Armadilhas Comuns</h2>
 
       <div class="pitfall">
@@ -857,7 +864,7 @@ git log --oneline --graph --all
 
     <!-- VÍDEOS -->
     <div class="section">
-      <div class="section-label">// curadoria</div>
+      <div class="section-label">// CURADORIA</div>
       <h2>Vídeos Recomendados</h2>
       <div class="video-grid">
         <div class="video-card">
@@ -901,7 +908,7 @@ git log --oneline --graph --all
 
     <!-- GLOSSÁRIO -->
     <div class="section">
-      <div class="section-label">// glossário</div>
+      <div class="section-label">// GLOSSÁRIO</div>
       <h2>Termos desta Aula</h2>
       <div class="glossary-item">
         <div class="glossary-term">Branch</div>
@@ -956,15 +963,15 @@ git log --oneline --graph --all
 
     <!-- PRÓXIMOS PASSOS -->
     <div class="section">
-      <div class="section-label">// próximos passos</div>
+      <div class="section-label">// próxima aula</div>
       <h2>O que vem a seguir?</h2>
       <p style="margin-bottom:20px;">Com branches e merge dominados, estamos prontos para conectar tudo ao GitHub — repositórios remotos, push, pull, fork e o fluxo de Pull Request que é o coração do desenvolvimento colaborativo moderno.</p>
-      <a href="html-01-semantico-estrutura.html" class="next-card">
+            <a href="html-01-semantico-estrutura.html" class="next-card">
         <div>
-          <div class="next-card-label">Próxima aula · 🌐 HTML/CSS</div>
-          <div class="next-card-title">HTML Semântico & Estrutura</div>
+          <div class="next-card-label">Próxima Aula • 🐙 GitHub</div>
+          <div class="next-card-title">GitHub — Colaboração & Pull Requests</div>
         </div>
-        <span class="next-arrow">→</span>
+        <div class="next-arrow">→</div>
       </a>
     </div>
 

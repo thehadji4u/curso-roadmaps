@@ -207,7 +207,14 @@
     .compare-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; font-weight: 600; }
     .compare-old .compare-label { color: #f87171; }
     .compare-new .compare-label { color: #34d399; }
-  </style>
+  
+    /* NEXT CARD STANDARDIZATION */
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+</style>
 </head>
 <body>
 
@@ -1109,15 +1116,15 @@ print(nome)           # "Ana Silva"
 
     <!-- ── PRÓXIMOS PASSOS ── -->
     <div class="section">
-      <div class="section-label">// próximos passos</div>
+      <div class="section-label">// próxima aula</div>
       <h2>O que vem a seguir?</h2>
       <p style="margin-bottom: 20px;">Com o ambiente configurado e os fundamentos de tipos, variáveis e strings sólidos, estamos prontos para dar vida à lógica — controle de fluxo, funções e list comprehensions. A próxima aula é onde o Python começa a mostrar seu poder real.</p>
-      <a href="py-02-logica-funcoes.html" class="next-card">
+            <a href="py-02-logica-funcoes.html" class="next-card">
         <div>
-          <div class="next-card-label">Próxima aula · 🐍 Python</div>
-          <div class="next-card-title">Python — Lógica & Funções</div>
+          <div class="next-card-label">Próxima Aula • 🐍 Python</div>
+          <div class="next-card-title">Lógica & Funções</div>
         </div>
-        <span class="next-arrow">→</span>
+        <div class="next-arrow">→</div>
       </a>
     </div>
 

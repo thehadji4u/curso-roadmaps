@@ -907,9 +907,17 @@
       border-radius: 50%;
     }
 
-    .dot-red { background: #ef4444; }
-    .dot-yellow { background: #f59e0b; }
-    .dot-green { background: #10b981; }
+    .dot-red {
+      background: #ef4444;
+    }
+
+    .dot-yellow {
+      background: #f59e0b;
+    }
+
+    .dot-green {
+      background: #10b981;
+    }
 
     .terminal-title {
       font-size: 11px;
@@ -924,10 +932,22 @@
       line-height: 2;
     }
 
-    .t-prompt { color: #f87171; }
-    .t-cmd { color: #e8e8f0; }
-    .t-out { color: #8585a8; }
-    .t-comment { color: #444; font-style: italic; }
+    .t-prompt {
+      color: #f87171;
+    }
+
+    .t-cmd {
+      color: #e8e8f0;
+    }
+
+    .t-out {
+      color: #8585a8;
+    }
+
+    .t-comment {
+      color: #444;
+      font-style: italic;
+    }
 
     /* CSS-specific: responsive preview boxes */
     .responsive-demo {
@@ -962,9 +982,20 @@
       border-color: var(--accent-border);
     }
 
-    .device-mobile { width: 80px; height: 140px; }
-    .device-tablet { width: 140px; height: 100px; }
-    .device-desktop { width: 280px; height: 80px; }
+    .device-mobile {
+      width: 80px;
+      height: 140px;
+    }
+
+    .device-tablet {
+      width: 140px;
+      height: 100px;
+    }
+
+    .device-desktop {
+      width: 280px;
+      height: 80px;
+    }
 
     .breakpoint-bar {
       display: flex;
@@ -982,16 +1013,35 @@
       font-size: 10px;
       font-weight: 700;
       letter-spacing: 0.05em;
-      color: rgba(0,0,0,0.7);
+      color: rgba(0, 0, 0, 0.7);
       padding: 0 8px;
       white-space: nowrap;
     }
 
-    .bp-mobile { background: #ef4444; flex: 1; }
-    .bp-sm { background: #f59e0b; flex: 1.5; }
-    .bp-md { background: #10b981; flex: 2; }
-    .bp-lg { background: #3b82f6; flex: 2.5; }
-    .bp-xl { background: #8b5cf6; flex: 2; }
+    .bp-mobile {
+      background: #ef4444;
+      flex: 1;
+    }
+
+    .bp-sm {
+      background: #f59e0b;
+      flex: 1.5;
+    }
+
+    .bp-md {
+      background: #10b981;
+      flex: 2;
+    }
+
+    .bp-lg {
+      background: #3b82f6;
+      flex: 2.5;
+    }
+
+    .bp-xl {
+      background: #8b5cf6;
+      flex: 2;
+    }
 
     .cascade-visual {
       display: flex;
@@ -1077,15 +1127,28 @@
     .pillar-card::before {
       content: '';
       position: absolute;
-      top: 0; left: 0; right: 0;
+      top: 0;
+      left: 0;
+      right: 0;
       height: 2px;
     }
 
-    .pillar-card:nth-child(1)::before { background: var(--accent); }
-    .pillar-card:nth-child(2)::before { background: var(--warn); }
-    .pillar-card:nth-child(3)::before { background: var(--success); }
+    .pillar-card:nth-child(1)::before {
+      background: var(--accent);
+    }
 
-    .pillar-icon { font-size: 24px; margin-bottom: 10px; }
+    .pillar-card:nth-child(2)::before {
+      background: var(--warn);
+    }
+
+    .pillar-card:nth-child(3)::before {
+      background: var(--success);
+    }
+
+    .pillar-icon {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
 
     .pillar-card h4 {
       font-family: 'Syne', sans-serif;
@@ -1100,7 +1163,14 @@
       color: var(--muted);
       margin: 0;
     }
-  </style>
+  
+    /* NEXT CARD STANDARDIZATION */
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+</style>
 </head>
 
 <body>
@@ -1151,17 +1221,23 @@
       <div class="section-label">// 01 — motivação</div>
       <h2>Por que isso importa?</h2>
       <p>
-        Em 2024, mais de 60% do tráfego web mundial vem de dispositivos móveis. Um layout que parece perfeito no seu monitor de 27" pode ser completamente inutilizável num celular. CSS responsivo não é mais um diferencial — é o <strong style="color:#fff">requisito mínimo de qualquer produto profissional</strong>.
+        Em 2024, mais de 60% do tráfego web mundial vem de dispositivos móveis. Um layout que parece perfeito no seu
+        monitor de 27" pode ser completamente inutilizável num celular. CSS responsivo não é mais um diferencial — é o
+        <strong style="color:#fff">requisito mínimo de qualquer produto profissional</strong>.
       </p>
       <p>
-        Mas responsividade vai além de media queries. Um engenheiro sênior hoje usa <strong style="color:#fff">CSS Custom Properties</strong> para criar sistemas de design escaláveis, entende a Cascade em profundidade para evitar especificidade wars, e domina técnicas modernas como <code>clamp()</code>, <code>container queries</code> e <code>@layer</code> que mudaram completamente como CSS é escrito.
+        Mas responsividade vai além de media queries. Um engenheiro sênior hoje usa <strong style="color:#fff">CSS
+          Custom Properties</strong> para criar sistemas de design escaláveis, entende a Cascade em profundidade para
+        evitar especificidade wars, e domina técnicas modernas como <code>clamp()</code>, <code>container queries</code>
+        e <code>@layer</code> que mudaram completamente como CSS é escrito.
       </p>
 
       <div class="grid-2" style="margin-top:24px;">
         <div class="card-mini">
           <div>📱</div>
           <h4>Mobile-first obrigatório</h4>
-          <p>Qualquer produto SaaS, e-commerce ou app precisa funcionar perfeitamente em qualquer tela. Media queries são a base.</p>
+          <p>Qualquer produto SaaS, e-commerce ou app precisa funcionar perfeitamente em qualquer tela. Media queries
+            são a base.</p>
         </div>
         <div class="card-mini">
           <div>🎨</div>
@@ -1171,12 +1247,14 @@
         <div class="card-mini">
           <div>⚡</div>
           <h4>CSS moderno elimina JS</h4>
-          <p>Container queries, <code>:has()</code>, <code>clamp()</code> eliminam lógica que antes precisava de JavaScript.</p>
+          <p>Container queries, <code>:has()</code>, <code>clamp()</code> eliminam lógica que antes precisava de
+            JavaScript.</p>
         </div>
         <div class="card-mini">
           <div>🔥</div>
           <h4>Cascade = poder e armadilha</h4>
-          <p>Entender a cascade evita anos de dor com <code>!important</code> e especificidade guerras em projetos reais.</p>
+          <p>Entender a cascade evita anos de dor com <code>!important</code> e especificidade guerras em projetos
+            reais.</p>
         </div>
       </div>
     </section>
@@ -1189,10 +1267,16 @@
       <div class="analogy-card">
         <div class="analogy-label">🏗️ Analogia</div>
         <p class="analogy-text">
-          Pense num <strong style="color:#fff">arquiteto projetando um espaço que precisa servir como escritório, sala de reunião e auditório</strong> — tudo no mesmo lugar, dependendo de quantas pessoas estão lá.
+          Pense num <strong style="color:#fff">arquiteto projetando um espaço que precisa servir como escritório, sala
+            de reunião e auditório</strong> — tudo no mesmo lugar, dependendo de quantas pessoas estão lá.
         </p>
         <p class="analogy-text">
-          O espaço tem <strong style="color:#fff">paredes retráteis</strong> (media queries) que se reposicionam automaticamente conforme o número de pessoas. Tem um <strong style="color:#fff">manual de identidade visual</strong> centralizado (CSS Custom Properties) que define todas as cores e fontes — quando o cliente muda a cor primária, você atualiza num só lugar e tudo se ajusta. E existe uma <strong style="color:#fff">hierarquia de decisão</strong> (Cascade) que determina qual regra prevalece quando há conflito: o cliente tem a última palavra, depois o arquiteto, depois a construtora.
+          O espaço tem <strong style="color:#fff">paredes retráteis</strong> (media queries) que se reposicionam
+          automaticamente conforme o número de pessoas. Tem um <strong style="color:#fff">manual de identidade
+            visual</strong> centralizado (CSS Custom Properties) que define todas as cores e fontes — quando o cliente
+          muda a cor primária, você atualiza num só lugar e tudo se ajusta. E existe uma <strong
+            style="color:#fff">hierarquia de decisão</strong> (Cascade) que determina qual regra prevalece quando há
+          conflito: o cliente tem a última palavra, depois o arquiteto, depois a construtora.
         </p>
         <div class="analogy-mapping">
           <div class="analogy-real">🏛️ Paredes retráteis do espaço</div>
@@ -1233,10 +1317,14 @@
       </div>
 
       <h3>Pilar 1: Responsividade — Mobile First</h3>
-      <p>A estratégia <strong style="color:#fff">mobile-first</strong> significa escrever o CSS base para telas pequenas e usar <code>min-width</code> para expandir conforme a tela cresce. É o oposto do legado <em>desktop-first</em> com <code>max-width</code>.</p>
+      <p>A estratégia <strong style="color:#fff">mobile-first</strong> significa escrever o CSS base para telas pequenas
+        e usar <code>min-width</code> para expandir conforme a tela cresce. É o oposto do legado <em>desktop-first</em>
+        com <code>max-width</code>.</p>
 
       <div class="breakpoint-bar">
-        <div class="bp-seg bp-mobile">< 640px<br>mobile</div>
+        <div class="bp-seg bp-mobile">
+          < 640px<br>mobile
+        </div>
         <div class="bp-seg bp-sm">640–768<br>sm</div>
         <div class="bp-seg bp-md">768–1024<br>md</div>
         <div class="bp-seg bp-lg">1024–1280<br>lg</div>
@@ -1277,7 +1365,8 @@
 
       <h3>Fluid Typography com clamp()</h3>
       <p>
-        A função <code>clamp(min, preferred, max)</code> cria valores que escalam fluidamente entre um mínimo e um máximo, eliminando a necessidade de múltiplas media queries apenas para tipografia.
+        A função <code>clamp(min, preferred, max)</code> cria valores que escalam fluidamente entre um mínimo e um
+        máximo, eliminando a necessidade de múltiplas media queries apenas para tipografia.
       </p>
 
       <div class="code-label">exemplo: tipografia fluida</div>
@@ -1294,12 +1383,15 @@ h1 { font-size: clamp(1.8rem, 4vw + 1rem, 3rem); }
 
       <div class="callout callout-info">
         <div class="callout-title">💡 Fórmula para clamp() responsivo</div>
-        <p>Use a fórmula <code>clamp(min, {multiplier}vw + {offset}rem, max)</code>. O multiplier controla a velocidade de crescimento. Para títulos: 4–6vw. Para textos: 1–2vw.</p>
+        <p>Use a fórmula <code>clamp(min, {multiplier}vw + {offset}rem, max)</code>. O multiplier controla a velocidade
+          de crescimento. Para títulos: 4–6vw. Para textos: 1–2vw.</p>
       </div>
 
       <h3>Pilar 2: CSS Custom Properties (Variáveis CSS)</h3>
       <p>
-        CSS Custom Properties são variáveis nativas do browser, declaradas com <code>--nome</code> e usadas com <code>var(--nome)</code>. Diferente de variáveis SASS/LESS, elas <strong style="color:#fff">existem em runtime</strong> e podem ser alteradas dinamicamente via JavaScript ou pela própria Cascade.
+        CSS Custom Properties são variáveis nativas do browser, declaradas com <code>--nome</code> e usadas com
+        <code>var(--nome)</code>. Diferente de variáveis SASS/LESS, elas <strong style="color:#fff">existem em
+          runtime</strong> e podem ser alteradas dinamicamente via JavaScript ou pela própria Cascade.
       </p>
 
       <div class="code-label">sistema de design com custom properties</div>
@@ -1368,12 +1460,15 @@ h1 { font-size: clamp(1.8rem, 4vw + 1rem, 3rem); }
 
       <div class="callout callout-tip">
         <div class="callout-title">🔥 Pro Tip: CSS Variables são herdadas pela Cascade</div>
-        <p>Ao contrário de variáveis SASS, CSS Custom Properties participam da herança. Um <code>--color-primary</code> definido num elemento pai é herdado por todos os filhos. Você pode sobrescrever localmente em qualquer escopo.</p>
+        <p>Ao contrário de variáveis SASS, CSS Custom Properties participam da herança. Um <code>--color-primary</code>
+          definido num elemento pai é herdado por todos os filhos. Você pode sobrescrever localmente em qualquer escopo.
+        </p>
       </div>
 
       <h3>Pilar 3: A Cascade Avançada</h3>
       <p>
-        A Cascade (cascata) é o algoritmo que o browser usa para determinar qual regra CSS prevalece quando há conflito. Em projetos grandes, não entender a cascade resulta em um caos de <code>!important</code> e especificidade wars.
+        A Cascade (cascata) é o algoritmo que o browser usa para determinar qual regra CSS prevalece quando há conflito.
+        Em projetos grandes, não entender a cascade resulta em um caos de <code>!important</code> e especificidade wars.
       </p>
 
       <div class="section-label" style="margin-top:20px;">ordem de prioridade (maior → menor)</div>
@@ -1406,7 +1501,8 @@ h1 { font-size: clamp(1.8rem, 4vw + 1rem, 3rem); }
           <div class="cascade-priority" style="background:rgba(16,185,129,0.2);color:#34d399;">4</div>
           <div>
             <strong style="color:#fff;">Regras do Autor (CSS normal)</strong>
-            <div style="font-size:12px;color:var(--muted);">Seu CSS sem !important — especificidade decide o vencedor</div>
+            <div style="font-size:12px;color:var(--muted);">Seu CSS sem !important — especificidade decide o vencedor
+            </div>
           </div>
         </div>
         <div class="cascade-arrow">↓</div>
@@ -1420,7 +1516,8 @@ h1 { font-size: clamp(1.8rem, 4vw + 1rem, 3rem); }
       </div>
 
       <h3>Especificidade — O Sistema de Pontuação</h3>
-      <p>Quando duas regras do mesmo nível da cascade se conflitam, a <strong style="color:#fff">especificidade</strong> decide qual vence. É calculada como três números separados: <code>(A, B, C)</code>.</p>
+      <p>Quando duas regras do mesmo nível da cascade se conflitam, a <strong style="color:#fff">especificidade</strong>
+        decide qual vence. É calculada como três números separados: <code>(A, B, C)</code>.</p>
 
       <div class="table-wrap">
         <table>
@@ -1487,7 +1584,9 @@ ul li { color: green; }
 
       <h3>@layer — O Futuro da Cascade</h3>
       <p>
-        <code>@layer</code> é uma feature moderna (2022+) que permite criar <strong style="color:#fff">camadas de cascade explícitas</strong>. Você define a ordem de prioridade no topo do arquivo e qualquer regra numa camada de menor prioridade nunca vence uma de maior prioridade — independente da especificidade.
+        <code>@layer</code> é uma feature moderna (2022+) que permite criar <strong style="color:#fff">camadas de
+          cascade explícitas</strong>. Você define a ordem de prioridade no topo do arquivo e qualquer regra numa camada
+        de menor prioridade nunca vence uma de maior prioridade — independente da especificidade.
       </p>
 
       <div class="code-label">@layer para design systems profissionais</div>
@@ -1527,7 +1626,9 @@ ul li { color: green; }
 
       <h3>Container Queries — Responsividade Contextual</h3>
       <p>
-        Media queries respondem ao <strong style="color:#fff">tamanho da viewport</strong>. Container queries respondem ao <strong style="color:#fff">tamanho do container pai</strong>. Isso resolve o problema clássico de componentes que precisam se adaptar dependendo de onde são usados.
+        Media queries respondem ao <strong style="color:#fff">tamanho da viewport</strong>. Container queries respondem
+        ao <strong style="color:#fff">tamanho do container pai</strong>. Isso resolve o problema clássico de componentes
+        que precisam se adaptar dependendo de onde são usados.
       </p>
 
       <div class="code-label">container queries em ação</div>
@@ -1564,23 +1665,25 @@ ul li { color: green; }
 
       <div class="callout callout-info">
         <div class="callout-title">💡 Container Queries vs Media Queries</div>
-        <p>Use <strong>media queries</strong> para layout global (header, grid, sidebar). Use <strong>container queries</strong> para componentes isolados que precisam se adaptar ao contexto onde são inseridos (cards, widgets, listas).</p>
+        <p>Use <strong>media queries</strong> para layout global (header, grid, sidebar). Use <strong>container
+            queries</strong> para componentes isolados que precisam se adaptar ao contexto onde são inseridos (cards,
+          widgets, listas).</p>
       </div>
 
       <h3>Mermaid: Fluxo do Algoritmo da Cascade</h3>
       <div class="mermaid-wrap">
         <div class="mermaid-label">Diagrama — Como o browser resolve conflitos de CSS</div>
         <div class="mermaid">
-flowchart TD
-    A["Múltiplas regras conflitantes"] --> B{Origem &amp; Importância?}
-    B -->|"!important user"| W1["✅ Vence — acessibilidade"]
-    B -->|"!important author"| W2["✅ Vence — evite!"]
-    B -->|"author normal"| C{Camada @layer?}
-    C -->|"Sim"| D["Camada mais alta na ordem vence"]
-    C -->|"Sem @layer"| E{Especificidade?}
-    E -->|"Maior especificidade"| W3["✅ Regra vence"]
-    E -->|"Igual"| F{"Ordem no arquivo?"}
-    F -->|"Última declarada"| W4["✅ Última vence"]
+          flowchart TD
+          A["Múltiplas regras conflitantes"] --> B{Origem &amp; Importância?}
+          B -->|"!important user"| W1["✅ Vence — acessibilidade"]
+          B -->|"!important author"| W2["✅ Vence — evite!"]
+          B -->|"author normal"| C{Camada @layer?}
+          C -->|"Sim"| D["Camada mais alta na ordem vence"]
+          C -->|"Sem @layer"| E{Especificidade?}
+          E -->|"Maior especificidade"| W3["✅ Regra vence"]
+          E -->|"Igual"| F{"Ordem no arquivo?"}
+          F -->|"Última declarada"| W4["✅ Última vence"]
         </div>
       </div>
     </section>
@@ -1646,7 +1749,8 @@ flowchart TD
     <section class="section">
       <div class="section-label">// 05 — hands-on</div>
       <h2>Hands-on: Passo a Passo</h2>
-      <p>Vamos construir uma <strong style="color:#fff">landing page responsiva</strong> com design system baseado em Custom Properties, tipografia fluida e layout mobile-first.</p>
+      <p>Vamos construir uma <strong style="color:#fff">landing page responsiva</strong> com design system baseado em
+        Custom Properties, tipografia fluida e layout mobile-first.</p>
 
       <div class="steps">
         <div class="step">
@@ -1664,7 +1768,8 @@ flowchart TD
               <div class="terminal-body">
                 <span class="t-prompt">$ </span><span class="t-cmd">mkdir css-responsivo && cd css-responsivo</span><br>
                 <span class="t-prompt">$ </span><span class="t-cmd">touch index.html styles.css</span><br>
-                <span class="t-prompt">$ </span><span class="t-cmd">code .</span><span class="t-comment"> # abre no VS Code</span>
+                <span class="t-prompt">$ </span><span class="t-cmd">code .</span><span class="t-comment"> # abre no VS
+                  Code</span>
               </div>
             </div>
           </div>
@@ -1837,7 +1942,9 @@ body {
             <div class="step-desc">Use o DevTools para simular dispositivos</div>
             <div class="callout callout-info">
               <div class="callout-title">💡 Chrome DevTools — Device Mode</div>
-              <p>Pressione <code>F12</code> → clique no ícone de celular no topo do DevTools → selecione dispositivos pré-definidos ou arraste a borda para testar qualquer tamanho. Valide nos breakpoints: 375px (iPhone), 768px (tablet), 1024px (laptop).</p>
+              <p>Pressione <code>F12</code> → clique no ícone de celular no topo do DevTools → selecione dispositivos
+                pré-definidos ou arraste a borda para testar qualquer tamanho. Valide nos breakpoints: 375px (iPhone),
+                768px (tablet), 1024px (laptop).</p>
             </div>
           </div>
         </div>
@@ -2178,17 +2285,23 @@ body {
 
       <div class="pitfall">
         <div class="pitfall-title">❌ Esquecer a meta viewport</div>
-        <p>Sem <code>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</code>, nenhuma media query funciona no mobile. O browser assume que a página tem 980px de largura e "encolhe" para caber na tela.</p>
+        <p>Sem <code>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</code>, nenhuma media
+          query funciona no mobile. O browser assume que a página tem 980px de largura e "encolhe" para caber na tela.
+        </p>
       </div>
 
       <div class="pitfall">
         <div class="pitfall-title">❌ Usar px fixo para tudo</div>
-        <p>Usar <code>font-size: 14px</code> ignora a preferência de tamanho do usuário no SO. Use <code>rem</code> para textos (relativo ao root), <code>em</code> para espaçamento interno de componentes, e <code>px</code> apenas para bordas finas (1px, 2px).</p>
+        <p>Usar <code>font-size: 14px</code> ignora a preferência de tamanho do usuário no SO. Use <code>rem</code> para
+          textos (relativo ao root), <code>em</code> para espaçamento interno de componentes, e <code>px</code> apenas
+          para bordas finas (1px, 2px).</p>
       </div>
 
       <div class="pitfall">
         <div class="pitfall-title">❌ !important como solução padrão</div>
-        <p>Cada <code>!important</code> que você usa gera a necessidade de mais <code>!important</code> no futuro. É um ciclo vicioso. Use <code>@layer</code> ou reestruture a especificidade em vez de usar <code>!important</code>.</p>
+        <p>Cada <code>!important</code> que você usa gera a necessidade de mais <code>!important</code> no futuro. É um
+          ciclo vicioso. Use <code>@layer</code> ou reestruture a especificidade em vez de usar <code>!important</code>.
+        </p>
         <pre><code class="language-css">/* ❌ Ruim: cascata de !important */
 .card { color: red !important; }
 .card.featured { color: blue !important; } /* não funciona! */
@@ -2200,7 +2313,8 @@ body {
 
       <div class="pitfall">
         <div class="pitfall-title">❌ CSS Custom Properties sem fallback</div>
-        <p>Em browsers antigos ou quando a variável não está definida, o valor é inválido. Sempre forneça um fallback no segundo argumento de <code>var()</code>.</p>
+        <p>Em browsers antigos ou quando a variável não está definida, o valor é inválido. Sempre forneça um fallback no
+          segundo argumento de <code>var()</code>.</p>
         <pre><code class="language-css">/* ❌ Quebra se --primary não estiver definida */
 color: var(--primary);
 
@@ -2210,7 +2324,8 @@ color: var(--primary, #ef4444);</code></pre>
 
       <div class="pitfall">
         <div class="pitfall-title">❌ Confundir container-type com display</div>
-        <p><code>container-type: inline-size</code> cria um contexto de containment mas <strong>não muda o display do elemento</strong>. Adicione ao wrapper, não diretamente no elemento que você quer estilizar.</p>
+        <p><code>container-type: inline-size</code> cria um contexto de containment mas <strong>não muda o display do
+            elemento</strong>. Adicione ao wrapper, não diretamente no elemento que você quer estilizar.</p>
       </div>
     </section>
 
@@ -2225,7 +2340,8 @@ color: var(--primary, #ef4444);</code></pre>
           <div class="video-info">
             <div class="video-title">CSS Custom Properties — A Complete Guide</div>
             <div class="video-channel">Kevin Powell · ~25 min</div>
-            <div class="video-why">Por que assistir: Kevin é o melhor professor de CSS da internet. Este vídeo cobre Custom Properties do básico ao avançado com casos de uso reais e temas dinâmicos.</div>
+            <div class="video-why">Por que assistir: Kevin é o melhor professor de CSS da internet. Este vídeo cobre
+              Custom Properties do básico ao avançado com casos de uso reais e temas dinâmicos.</div>
             <a href="https://www.youtube.com/watch?v=oZPR_78wCnY" target="_blank">Assistir →</a>
           </div>
         </div>
@@ -2235,7 +2351,9 @@ color: var(--primary, #ef4444);</code></pre>
           <div class="video-info">
             <div class="video-title">CSS Cascade Layers (@layer) Explained</div>
             <div class="video-channel">Kevin Powell · ~18 min</div>
-            <div class="video-why">Por que assistir: @layer é a feature mais importante do CSS moderno para organizar projetos grandes. Este vídeo mostra como aplicar em situações reais e eliminar !important para sempre.</div>
+            <div class="video-why">Por que assistir: @layer é a feature mais importante do CSS moderno para organizar
+              projetos grandes. Este vídeo mostra como aplicar em situações reais e eliminar !important para sempre.
+            </div>
             <a href="https://www.youtube.com/watch?v=GHVSTIGBOGQ" target="_blank">Assistir →</a>
           </div>
         </div>
@@ -2245,7 +2363,8 @@ color: var(--primary, #ef4444);</code></pre>
           <div class="video-info">
             <div class="video-title">Container Queries Are Amazing</div>
             <div class="video-channel">Fireship · ~8 min</div>
-            <div class="video-why">Por que assistir: Fireship explica container queries em menos de 10 minutos com exemplos visuais impactantes. Perfeito para entender rapidamente quando e por que usar.</div>
+            <div class="video-why">Por que assistir: Fireship explica container queries em menos de 10 minutos com
+              exemplos visuais impactantes. Perfeito para entender rapidamente quando e por que usar.</div>
             <a href="https://www.youtube.com/watch?v=rrLAg7xNERA" target="_blank">Assistir →</a>
           </div>
         </div>
@@ -2255,7 +2374,9 @@ color: var(--primary, #ef4444);</code></pre>
           <div class="video-info">
             <div class="video-title">clamp() is the best CSS function</div>
             <div class="video-channel">Kevin Powell · ~15 min</div>
-            <div class="video-why">Por que assistir: Uma demonstração prática de como clamp() elimina dezenas de media queries e cria tipografia realmente fluida. Inclui a ferramenta utilitária para calcular os parâmetros.</div>
+            <div class="video-why">Por que assistir: Uma demonstração prática de como clamp() elimina dezenas de media
+              queries e cria tipografia realmente fluida. Inclui a ferramenta utilitária para calcular os parâmetros.
+            </div>
             <a href="https://www.youtube.com/watch?v=U9VF-4euyRo" target="_blank">Assistir →</a>
           </div>
         </div>
@@ -2269,39 +2390,48 @@ color: var(--primary, #ef4444);</code></pre>
 
       <div class="glossary-item">
         <div class="glossary-term">Breakpoint</div>
-        <div class="glossary-def">Largura de tela específica onde o layout muda. Ex: 768px é o breakpoint padrão entre mobile e tablet na maioria dos frameworks.</div>
+        <div class="glossary-def">Largura de tela específica onde o layout muda. Ex: 768px é o breakpoint padrão entre
+          mobile e tablet na maioria dos frameworks.</div>
       </div>
       <div class="glossary-item">
         <div class="glossary-term">Mobile-First</div>
-        <div class="glossary-def">Estratégia de desenvolvimento onde o CSS base é escrito para mobile e incrementado com <code>min-width</code> media queries para telas maiores.</div>
+        <div class="glossary-def">Estratégia de desenvolvimento onde o CSS base é escrito para mobile e incrementado com
+          <code>min-width</code> media queries para telas maiores.</div>
       </div>
       <div class="glossary-item">
         <div class="glossary-term">CSS Custom Property (variável CSS)</div>
-        <div class="glossary-def">Variável nativa do CSS declarada com <code>--nome: valor</code> e usada com <code>var(--nome)</code>. Participa da cascade e herança, diferente de variáveis SASS.</div>
+        <div class="glossary-def">Variável nativa do CSS declarada com <code>--nome: valor</code> e usada com
+          <code>var(--nome)</code>. Participa da cascade e herança, diferente de variáveis SASS.</div>
       </div>
       <div class="glossary-item">
         <div class="glossary-term">Cascade</div>
-        <div class="glossary-def">Algoritmo do browser que determina qual regra CSS prevalece quando há conflito, baseado em: origem + importância → camada @layer → especificidade → ordem de declaração.</div>
+        <div class="glossary-def">Algoritmo do browser que determina qual regra CSS prevalece quando há conflito,
+          baseado em: origem + importância → camada @layer → especificidade → ordem de declaração.</div>
       </div>
       <div class="glossary-item">
         <div class="glossary-term">Especificidade</div>
-        <div class="glossary-def">Sistema de pontuação que determina qual seletor CSS "vence" um conflito. Calculado como (inline, IDs, classes, elementos) — ex: <code>#main .card a</code> = (0,1,1,1).</div>
+        <div class="glossary-def">Sistema de pontuação que determina qual seletor CSS "vence" um conflito. Calculado
+          como (inline, IDs, classes, elementos) — ex: <code>#main .card a</code> = (0,1,1,1).</div>
       </div>
       <div class="glossary-item">
         <div class="glossary-term">@layer</div>
-        <div class="glossary-def">Feature CSS que cria camadas de cascade explícitas. Regras numa camada de maior prioridade vencem as de menor, independente de especificidade.</div>
+        <div class="glossary-def">Feature CSS que cria camadas de cascade explícitas. Regras numa camada de maior
+          prioridade vencem as de menor, independente de especificidade.</div>
       </div>
       <div class="glossary-item">
         <div class="glossary-term">Container Query</div>
-        <div class="glossary-def">Query que dispara baseada no tamanho do container pai do elemento, não da viewport. Usa <code>container-type</code> no pai e <code>@container</code> nas regras.</div>
+        <div class="glossary-def">Query que dispara baseada no tamanho do container pai do elemento, não da viewport.
+          Usa <code>container-type</code> no pai e <code>@container</code> nas regras.</div>
       </div>
       <div class="glossary-item">
         <div class="glossary-term">clamp(min, preferred, max)</div>
-        <div class="glossary-def">Função CSS que retorna o valor "preferred" clampado entre "min" e "max". Ideal para tipografia fluida: <code>clamp(1rem, 2.5vw + 0.5rem, 2rem)</code>.</div>
+        <div class="glossary-def">Função CSS que retorna o valor "preferred" clampado entre "min" e "max". Ideal para
+          tipografia fluida: <code>clamp(1rem, 2.5vw + 0.5rem, 2rem)</code>.</div>
       </div>
       <div class="glossary-item">
         <div class="glossary-term">Fluid Typography</div>
-        <div class="glossary-def">Técnica onde os tamanhos de fonte crescem suavemente com a viewport usando <code>clamp()</code> ou <code>vw</code>, sem "saltos" em breakpoints.</div>
+        <div class="glossary-def">Técnica onde os tamanhos de fonte crescem suavemente com a viewport usando
+          <code>clamp()</code> ou <code>vw</code>, sem "saltos" em breakpoints.</div>
       </div>
     </section>
 
@@ -2311,36 +2441,41 @@ color: var(--primary, #ef4444);</code></pre>
       <div class="checkpoint">
         <h3>🏁 Checkpoint — Desafio Final</h3>
         <p>
-          Construa uma <strong>página de perfil pessoal/portfólio responsiva</strong> aplicando todas as técnicas da aula. A página deve ter: header com nav responsiva (mobile menu sem JS), seção hero, grid de projetos/skills com container queries, e dark mode automático.
+          Construa uma <strong>página de perfil pessoal/portfólio responsiva</strong> aplicando todas as técnicas da
+          aula. A página deve ter: header com nav responsiva (mobile menu sem JS), seção hero, grid de projetos/skills
+          com container queries, e dark mode automático.
         </p>
         <ul>
-          <li>Design System completo em <code>:root</code> com pelo menos 10 Custom Properties (cores, tipografia, espaçamento)</li>
+          <li>Design System completo em <code>:root</code> com pelo menos 10 Custom Properties (cores, tipografia,
+            espaçamento)</li>
           <li>Dark mode automático via <code>@media (prefers-color-scheme: dark)</code></li>
           <li>Tipografia fluida com <code>clamp()</code> para título, subtítulo e corpo</li>
-          <li>Layout mobile-first com pelo menos 2 breakpoints (<code>min-width: 640px</code> e <code>min-width: 1024px</code>)</li>
-          <li>Grid de cards usando Container Queries — layout vertical no mobile, horizontal quando o container tem espaço</li>
+          <li>Layout mobile-first com pelo menos 2 breakpoints (<code>min-width: 640px</code> e
+            <code>min-width: 1024px</code>)</li>
+          <li>Grid de cards usando Container Queries — layout vertical no mobile, horizontal quando o container tem
+            espaço</li>
           <li>CSS organizado com <code>@layer reset, base, layout, components, utilities</code></li>
           <li>Zero <code>!important</code> no código — use especificidade correta e @layer</li>
         </ul>
         <div class="checkpoint-hint">
-          💬 Dica: Comece pelo design system no <code>:root</code>, depois o reset em <code>@layer reset</code>, e vá construindo de fora para dentro (container → sections → components). Use o DevTools em 375px (iPhone SE), 768px (iPad) e 1440px (desktop) para validar.
+          💬 Dica: Comece pelo design system no <code>:root</code>, depois o reset em <code>@layer reset</code>, e vá
+          construindo de fora para dentro (container → sections → components). Use o DevTools em 375px (iPhone SE),
+          768px (iPad) e 1440px (desktop) para validar.
         </div>
       </div>
     </section>
 
     <!-- ═══════════════════════════════════════════ PRÓXIMOS PASSOS -->
     <section class="section">
-      <div class="section-label">// 11 — próximos passos</div>
-      <h2>O que vem a seguir</h2>
-      <p>Agora que você domina CSS responsivo e moderno, a próxima aula mergulha nas ferramentas visuais mais poderosas do CSS: animações, transformações 3D, tipografia avançada e filtros.</p>
+      <div class="section-label">// próxima aula</div>
+      <h2>O que vem a seguir?</h2>
+      <p>Agora que você domina CSS responsivo e moderno, a próxima aula mergulha nas ferramentas visuais mais poderosas
+        do CSS: animações, transformações 3D, tipografia avançada e filtros.</p>
 
-      <a href="html-04-animacoes-efeitos.html" class="next-card">
+            <a href="html-04-animacoes-efeitos.html" class="next-card">
         <div>
-          <div class="next-card-label">Aula 10 → HTML/CSS</div>
+          <div class="next-card-label">Próxima Aula • 🌐 HTML/CSS</div>
           <div class="next-card-title">CSS — Animações, Tipografia & Efeitos</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:4px;">
-            Animações & Transições · Typography · Transforms & 3D · Gradients & filters
-          </div>
         </div>
         <div class="next-arrow">→</div>
       </a>
@@ -2370,4 +2505,5 @@ color: var(--primary, #ef4444);</code></pre>
     }
   </script>
 </body>
+
 </html>

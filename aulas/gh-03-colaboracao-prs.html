@@ -976,7 +976,14 @@
         grid-template-columns: 1fr;
       }
     }
-  </style>
+  
+    /* NEXT CARD STANDARDIZATION */
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+</style>
 </head>
 
 <body>
@@ -1026,7 +1033,7 @@
          POR QUE IMPORTA
     ══════════════════════════════════════════ -->
     <div class="section">
-      <div class="section-label">01 — Motivação</div>
+      <div class="section-label">// MOTIVAÇÃO</div>
       <h2>Por que isso importa?</h2>
       <p>
         Git no computador local é poderoso. Git + GitHub é onde a mágica da colaboração acontece. Praticamente
@@ -1061,7 +1068,7 @@
          ANALOGIA
     ══════════════════════════════════════════ -->
     <div class="section">
-      <div class="section-label">02 — Analogia</div>
+      <div class="section-label">// ANALOGIA</div>
       <h2>O Manuscrito da Editora</h2>
       <div class="analogy-card">
         <div class="analogy-label">🎭 Analogia do Mundo Real</div>
@@ -1095,7 +1102,7 @@
          CONCEITO CENTRAL — Remote
     ══════════════════════════════════════════ -->
     <div class="section">
-      <div class="section-label">03 — Conceito Central</div>
+      <div class="section-label">// CONCEITO CENTRAL</div>
       <h2>Remote, Push & Pull</h2>
       <p>
         Git é um sistema distribuído: cada desenvolvedor tem uma cópia completa do repositório. O GitHub é
@@ -1163,7 +1170,7 @@ git clone https://github.com/outro-usuario/projeto.git</code></pre>
          CONCEITO — PULL REQUESTS
     ══════════════════════════════════════════ -->
     <div class="section">
-      <div class="section-label">04 — Pull Requests</div>
+      <div class="section-label">// PULL REQUESTS</div>
       <h2>O Coração da Colaboração</h2>
       <p>
         Um Pull Request (PR) é uma proposta formal de integrar mudanças de uma branch para outra. Mais do que
@@ -1272,7 +1279,7 @@ git branch -d feature/adicionar-login</code></pre>
          CONCEITO — ISSUES & PROJECTS
     ══════════════════════════════════════════ -->
     <div class="section">
-      <div class="section-label">05 — Issues & Projects</div>
+      <div class="section-label">// ISSUES & PROJECTS</div>
       <h2>Organização & Gestão de Tarefas</h2>
       <p>
         GitHub não é só versionamento de código — é uma plataforma completa de gestão de projetos.
@@ -1382,7 +1389,7 @@ Nada acontece. Console: "CORS policy blocked"
          CONCEITO — README & DOCS
     ══════════════════════════════════════════ -->
     <div class="section">
-      <div class="section-label">06 — README & Docs</div>
+      <div class="section-label">// README & DOCS</div>
       <h2>A Porta de Entrada do Projeto</h2>
       <p>
         O README.md é o primeiro arquivo que qualquer visitante vê no repositório. É a diferença entre
@@ -1484,7 +1491,7 @@ MIT — veja [LICENSE](LICENSE) para detalhes.</code></pre>
          TABELA COMPARATIVA
     ══════════════════════════════════════════ -->
     <div class="section">
-      <div class="section-label">07 — Comparativo</div>
+      <div class="section-label">// COMPARATIVO</div>
       <h2>Fluxos de Trabalho com Git</h2>
       <p>Existem diferentes estratégias de branching que equipes adotam. Cada uma tem prós e contras:</p>
       <div class="table-wrap">
@@ -1541,7 +1548,7 @@ MIT — veja [LICENSE](LICENSE) para detalhes.</code></pre>
          HANDS-ON
     ══════════════════════════════════════════ -->
     <div class="section">
-      <div class="section-label">08 — Hands-on</div>
+      <div class="section-label">// HANDS-ON</div>
       <h2>Seu Primeiro PR: Passo a Passo</h2>
       <p>Vamos simular o fluxo completo de colaboração: você vai criar um repo, fazer uma branch, abrir um PR e mergear.
       </p>
@@ -1619,7 +1626,7 @@ git branch -d feature/adicionar-sobre</code></pre>
          CÓDIGO COMENTADO
     ══════════════════════════════════════════ -->
     <div class="section">
-      <div class="section-label">09 — Código Comentado</div>
+      <div class="section-label">// CÓDIGO COMENTADO</div>
       <h2>Fluxo Completo com Fork (Open Source)</h2>
       <p>
         Para contribuir com projetos de terceiros (onde você não tem acesso de escrita), o fluxo é levemente diferente:
@@ -1673,7 +1680,7 @@ git push origin main        # atualiza seu fork no GitHub</code></pre>
          ARMADILHAS
     ══════════════════════════════════════════ -->
     <div class="section">
-      <div class="section-label">10 — Pitfalls</div>
+      <div class="section-label">// PITFALLS</div>
       <h2>⚠️ Erros Comuns de Iniciantes</h2>
       <div class="pitfall-list">
         <div class="pitfall">
@@ -1700,7 +1707,8 @@ git push origin main        # atualiza seu fork no GitHub</code></pre>
             <h4>Commitar credenciais e secrets no repositório</h4>
             <p>API keys, senhas, tokens nunca devem ir para o Git. Use um arquivo <code>.env</code> (e adicione ao
               <code>.gitignore</code>) para variáveis sensíveis. Se você commitou acidentalmente, a chave está
-              comprometida — rote imediatamente.</p>
+              comprometida — rote imediatamente.
+            </p>
           </div>
         </div>
         <div class="pitfall">
@@ -1709,7 +1717,8 @@ git push origin main        # atualiza seu fork no GitHub</code></pre>
             <h4>Branch desatualizada por semanas</h4>
             <p>Branches que ficam muito tempo sem sincronizar com a main acumulam conflitos. Faça
               <code>git pull origin main</code> ou <code>git rebase main</code> na sua feature branch regularmente (pelo
-              menos a cada 1-2 dias em projetos ativos).</p>
+              menos a cada 1-2 dias em projetos ativos).
+            </p>
           </div>
         </div>
         <div class="pitfall">
@@ -1718,7 +1727,8 @@ git push origin main        # atualiza seu fork no GitHub</code></pre>
             <h4>Mensagens de commit sem significado</h4>
             <p>"fix", "update", "mudanças" não ajudam ninguém no futuro. Use o padrão Conventional Commits:
               <code>feat:</code>, <code>fix:</code>, <code>docs:</code>, <code>refactor:</code>. Boas mensagens de
-              commit são documentação.</p>
+              commit são documentação.
+            </p>
           </div>
         </div>
       </div>
@@ -1728,7 +1738,7 @@ git push origin main        # atualiza seu fork no GitHub</code></pre>
          VÍDEOS
     ══════════════════════════════════════════ -->
     <div class="section">
-      <div class="section-label">11 — Curadoria</div>
+      <div class="section-label">// CURADORIA</div>
       <h2>Vídeos para Assistir</h2>
       <div class="video-grid">
         <div class="video-card">
@@ -1778,7 +1788,7 @@ git push origin main        # atualiza seu fork no GitHub</code></pre>
          GLOSSÁRIO
     ══════════════════════════════════════════ -->
     <div class="section">
-      <div class="section-label">12 — Glossário</div>
+      <div class="section-label">// GLOSSÁRIO</div>
       <h2>Termos da Aula</h2>
       <div class="glossary">
         <div class="glossary-item">
@@ -1818,7 +1828,8 @@ git push origin main        # atualiza seu fork no GitHub</code></pre>
         <div class="glossary-item">
           <div class="glossary-term">Conventional Commits</div>
           <div class="glossary-def">Padrão de mensagens de commit: <code>tipo: descrição</code>. Exemplos:
-            <code>feat:</code>, <code>fix:</code>, <code>docs:</code>.</div>
+            <code>feat:</code>, <code>fix:</code>, <code>docs:</code>.
+          </div>
         </div>
       </div>
     </div>
@@ -1827,7 +1838,7 @@ git push origin main        # atualiza seu fork no GitHub</code></pre>
          CHECKPOINT
     ══════════════════════════════════════════ -->
     <div class="section">
-      <div class="section-label">13 — Desafio</div>
+      <div class="section-label">// DESAFIO</div>
       <div class="checkpoint">
         <h3>🏁 Checkpoint — Colaboração Real</h3>
         <p>
@@ -1850,29 +1861,23 @@ git push origin main        # atualiza seu fork no GitHub</code></pre>
         </div>
       </div>
     </div>
-
     <!-- ══════════════════════════════════════════
          PRÓXIMOS PASSOS
     ══════════════════════════════════════════ -->
     <div class="section">
-      <div class="section-label">14 — Próximos Passos</div>
+      <div class="section-label">// próxima aula</div>
       <h2>O que vem a seguir?</h2>
-      <div class="next-steps">
-        <h3>Você dominou o fluxo de colaboração no GitHub 🎉</h3>
-        <p style="color: var(--muted); margin-bottom: 20px;">
-          Agora é hora de entrar no JavaScript — a linguagem que dá vida ao frontend e ao backend.
-          Na próxima aula você vai aprender os fundamentos da linguagem e como interagir com o DOM.
-        </p>
-        <a href="js-01-core-dom.html" class="next-card">
-          <div>
-            <div class="next-label">⚡ JavaScript · Aula 12</div>
-            <div class="next-title">JavaScript — Core & DOM</div>
-          </div>
-          <div class="next-arrow">→</div>
-        </a>
-      </div>
+      <p>Você dominou o fluxo de colaboração no GitHub! 🎉 Agora é hora de entrar no JavaScript — a linguagem que dá vida ao frontend e ao backend. Na próxima aula você aprenderá os fundamentos da linguagem, variáveis, funções e como interagir com o DOM.
+      </p>
+      <a href="js-01-core-dom.html" class="next-card">
+        <div>
+          <div class="next-card-label">Próxima Aula • ⚡ JavaScript</div>
+          <div class="next-card-title">JavaScript — Core & DOM</div>
+        </div>
+        <div class="next-arrow">→</div>
+      </a>
     </div>
-
+    
   </div><!-- /.page -->
 
   <script>

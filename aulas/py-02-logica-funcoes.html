@@ -189,7 +189,14 @@
     .scope-var { color: #fbbf24; margin: 4px 0; }
     .scope-var.local { color: #60a5fa; }
     .scope-var.inner { color: #34d399; }
-  </style>
+  
+    /* NEXT CARD STANDARDIZATION */
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+</style>
 </head>
 <body>
 
@@ -1297,15 +1304,15 @@ print(total + 1)   # TypeError: unsupported operand type(s): NoneType + int
 
     <!-- ── PRÓXIMOS PASSOS ── -->
     <div class="section">
-      <div class="section-label">// próximos passos</div>
+      <div class="section-label">// próxima aula</div>
       <h2>O que vem a seguir?</h2>
       <p style="margin-bottom: 20px;">Com lógica e funções no cinto, vamos mergulhar nas estruturas de dados nativas do Python — listas, dicionários, conjuntos e tuplas. Elas são a espinha dorsal de qualquer programa real e a base para entender pandas e bancos de dados mais à frente.</p>
-      <a href="py-03-estruturas-dados.html" class="next-card">
+            <a href="py-03-estruturas-dados.html" class="next-card">
         <div>
-          <div class="next-card-label">Próxima aula · 🐍 Python</div>
-          <div class="next-card-title">Python — Estruturas de Dados</div>
+          <div class="next-card-label">Próxima Aula • 🐍 Python</div>
+          <div class="next-card-title">Estruturas de Dados</div>
         </div>
-        <span class="next-arrow">→</span>
+        <div class="next-arrow">→</div>
       </a>
     </div>
 

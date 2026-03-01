@@ -55,9 +55,9 @@ Todos os HTMLs ficam em `outputs/aulas/` com o nome exato da coluna **Arquivo**.
 
 | ID | Status | Trilha | Título da Aula | Cards agrupados | Arquivo |
 |---|---|---|---|---|---|
-| `13-JS-02` | `[ ]` | ⚡ JavaScript | JavaScript — Objetos, Arrays & ES6+ | Objetos & arrays · Prototype chain · Modules · Classes | `js-02-objetos-es6.html` |
-| `14-JS-03` | `[ ]` | ⚡ JavaScript | JavaScript — Async: Event Loop, Promises & Fetch | Event Loop · Promises · Async/Await · Fetch API | `js-03-async-promises.html` |
-| `15-PY-05` | `[ ]` | 🐍 Python | Python — HTTP, APIs & Bibliotecas Essenciais | requests · pathlib/os · datetime · regex | `py-05-http-bibliotecas.html` |
+| `13-JS-02` | `[x]` | ⚡ JavaScript | JavaScript — Objetos, Arrays & ES6+ | Objetos & arrays · Prototype chain · Modules · Classes | `js-02-objetos-es6.html` |
+| `14-JS-03` | `[x]` | ⚡ JavaScript | JavaScript — Async: Event Loop, Promises & Fetch | Event Loop · Promises · Async/Await · Fetch API | `js-03-async-promises.html` |
+| `15-PY-05` | `[x]` | 🐍 Python | Python — HTTP, APIs & Bibliotecas Essenciais | requests · pathlib/os · datetime · regex | `py-05-http-bibliotecas.html` |
 | `16-GH-04` | `[ ]` | 🐙 GitHub | Git Avançado — Rebase, Tags & Estratégias | Rebase · Estratégias de branch · Tags · Releases | `gh-04-git-avancado.html` |
 | `17-DKR-01` | `[ ]` | 🐳 Docker | Docker — Conceitos, Imagens & Containers | Conceitos · Comandos core · Volumes | `dkr-01-conceitos-containers.html` |
 | `18-DKR-02` | `[ ]` | 🐳 Docker | Docker — Dockerfile & Boas Práticas | Dockerfile · Image optimization · Health checks · Segurança | `dkr-02-dockerfile.html` |

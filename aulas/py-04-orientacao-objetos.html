@@ -1101,7 +1101,14 @@
       color: var(--muted);
       margin: 0;
     }
-  </style>
+  
+    /* NEXT CARD STANDARDIZATION */
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+</style>
 </head>
 
 <body>
@@ -1422,7 +1429,9 @@ t.celsius = -300      # → ValueError: Temperatura abaixo do zero absoluto!
           +treinado: bool
           +falar() str
           }
-          Animal <|-- Cachorro Animal <|-- Gato Cachorro <|-- PastorAlemao </div>
+          Animal <|-- Cachorro 
+	  Animal <|-- Gato 
+          Cachorro <|-- PastorAlemao </div>
         </div>
 
         <div class="code-label">// herança.py — Animal, Cachorro, Gato com super()</div>
@@ -1886,7 +1895,8 @@ for f in equipe_ordenada:
             Pedido "1" --> "1..*" ItemPedido
             ItemPedido "1" --> "1" Produto
             Pedido "1" --> "1" Pagamento
-            Pagamento <|-- PagamentoCartao Pagamento <|-- PagamentoPix </div>
+            Pagamento <|-- PagamentoCartao 
+            Pagamento <|-- PagamentoPix </div>
           </div>
         </div>
 
@@ -2402,20 +2412,20 @@ def somar(a, b):
 
         <!-- ── PRÓXIMOS PASSOS ── -->
         <div class="section">
-          <div class="section-label">// próximos passos</div>
-          <h2>O que vem a seguir?</h2>
+          <div class="section-label">// próxima aula</div>
+      <h2>O que vem a seguir?</h2>
           <p style="margin-bottom: 20px;">Após dominar Orientação a Objetos em Python, faremos uma pausa no backend para
             aprofundar no front-end. Na próxima aula, você aprenderá a criar layouts fluidos e profissionais usando
             <strong>Responsividade</strong>, <strong>Custom Properties</strong> (variáveis CSS) e o poder avançado da
             cascata.
           </p>
-          <a href="html-03-responsivo-moderno.html" class="next-card">
-            <div>
-              <div class="next-card-label">Próxima aula · 🌐 HTML/CSS</div>
-              <div class="next-card-title">CSS — Responsivo &amp; Moderno</div>
-            </div>
-            <span class="next-arrow">→</span>
-          </a>
+                <a href="html-03-responsivo-moderno.html" class="next-card">
+        <div>
+          <div class="next-card-label">Próxima Aula • 🌐 HTML/CSS</div>
+          <div class="next-card-title">CSS — Responsivo & Moderno</div>
+        </div>
+        <div class="next-arrow">→</div>
+      </a>
         </div>
 
       </div>

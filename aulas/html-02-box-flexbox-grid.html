@@ -286,7 +286,14 @@
     .spec-fill { height: 100%; border-radius: 4px; }
     .spec-label { font-size: 13px; color: var(--text); min-width: 160px; }
     .spec-example { font-size: 12px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
-  </style>
+  
+    /* NEXT CARD STANDARDIZATION */
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+</style>
 </head>
 <body>
 
@@ -1478,15 +1485,15 @@ body {
 
     <!-- ── PRÓXIMOS PASSOS ── -->
     <div class="section">
-      <div class="section-label">// próximos passos</div>
+      <div class="section-label">// próxima aula</div>
       <h2>O que vem a seguir?</h2>
       <p style="margin-bottom:20px;">Com Box Model, Flexbox e Grid dominados, você tem a base completa de layout CSS. A próxima parada é Python — começaremos com instalação de ambiente, primeiros passos e os fundamentos da linguagem que vai turbinar seu backend e automações.</p>
-      <a href="py-01-ambiente-primeiros-passos.html" class="next-card">
+            <a href="py-01-ambiente-primeiros-passos.html" class="next-card">
         <div>
-          <div class="next-card-label">Próxima aula · 🐍 Python</div>
-          <div class="next-card-title">Python — Ambiente & Primeiros Passos</div>
+          <div class="next-card-label">Próxima Aula • 🐍 Python</div>
+          <div class="next-card-title">Ambiente & Primeiros Passos</div>
         </div>
-        <span class="next-arrow">→</span>
+        <div class="next-arrow">→</div>
       </a>
     </div>
 
