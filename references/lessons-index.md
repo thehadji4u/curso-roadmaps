@@ -45,7 +45,7 @@ Todos os HTMLs ficam em `outputs/aulas/` com o nome exato da coluna **Arquivo**.
 | `09-HTML-03` | `[x]` | 🌐 HTML/CSS | CSS — Responsivo & Moderno | Responsividade · Custom Properties · Cascade avançado | `html-03-responsivo-moderno.html` |
 | `10-HTML-04` | `[x]` | 🌐 HTML/CSS | CSS — Animações, Tipografia & Efeitos | Animações & Transições · Typography · Transforms & 3D · Gradients & filters | `html-04-animacoes-efeitos.html` |
 | `11-GH-03` | `[x]` | 🐙 GitHub | GitHub — Colaboração & Pull Requests | Remote & Push/Pull · Pull Requests · Issues & Projects · README & Docs | `gh-03-colaboracao-prs.html` |
-| `12-JS-01` | `[ ]` | ⚡ JavaScript | JavaScript — Core & DOM | Tipos & variáveis · Funções · DOM & eventos · Escopo & hoisting | `js-01-core-dom.html` |
+| `12-JS-01` | `[x]` | ⚡ JavaScript | JavaScript — Core & DOM | Tipos & variáveis · Funções · DOM & eventos · Escopo & hoisting | `js-01-core-dom.html` |
 
 ---
 
