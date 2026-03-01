@@ -7,13 +7,13 @@
   <title>HTML Semântico & Estrutura · HTML/CSS</title>
 
   <!-- Syntax highlighting — github-dark inlined (funciona offline) -->
-  
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 
-  
-<style>
+
+  <style>
     /* ─── TOKENS ────────────────────────────────────────────── */
     :root {
       --bg: #0a0a0f;
@@ -23,9 +23,12 @@
       --text: #e8e8f0;
       --muted: #8585a8;
 
-      --accent: #ef4444;       /* ex: #3b82f6 para Python */
-      --accent-dim: rgba(239, 68, 68, 0.1);     /* ex: rgba(59,130,246,0.15) */
-      --accent-border: rgba(239, 68, 68, 0.3); /* ex: rgba(59,130,246,0.3) */
+      --accent: #ef4444;
+      /* ex: #3b82f6 para Python */
+      --accent-dim: rgba(239, 68, 68, 0.1);
+      /* ex: rgba(59,130,246,0.15) */
+      --accent-border: rgba(239, 68, 68, 0.3);
+      /* ex: rgba(59,130,246,0.3) */
 
       /* Semantic colors */
       --success: #10b981;
@@ -60,7 +63,7 @@
     ══════════════════════════════════════════ -->
     <div class="hero">
       <div class="hero-eyebrow">
-        <span>🌐 HTML/CSS · Prioridade 1</span>
+        <span>🌐 HTML/CSS · 01 · Prioridade 1</span>
         <span class="hero-badge">Aula 03 — Base Universal</span>
       </div>
       <h1>HTML Semântico & Estrutura</h1>
@@ -112,6 +115,127 @@
       </div>
     </div>
 
+    <div class="section">
+      <div class="section-label">// 01.1 — fundamentos</div>
+      <h2>O que é HTML e como as tags funcionam?</h2>
+      <p>
+        O HTML (<em>HyperText Markup Language</em>) não é uma linguagem de programação, mas sim uma <strong>linguagem
+          de marcação</strong>.
+        Pense nela como o esqueleto ou a estrutura de uma página. Através de "tags", dizemos ao navegador o que é cada
+        pedaço de conteúdo.
+      </p>
+
+      <h3>Anatomia de uma Tag</h3>
+      <p>A maioria das tags HTML funciona como "containers" que envolvem um conteúdo:</p>
+
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-filename">exemplo-tag.html</span>
+          <span class="code-lang">html</span>
+        </div>
+        <pre><code class="language-html">&lt;tag&gt; Conteúdo aqui &lt;/tag&gt;
+   ↑        ↑          ↑
+Abertura Conteúdo  Fechamento (com /)</code></pre>
+      </div>
+
+      <h3>As Tags Essenciais do Dia a Dia</h3>
+      <p>Antes de organizar o site, você precisa conhecer as ferramentas básicas de escrita:</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Tag</th>
+              <th>Nome</th>
+              <th>Uso Principal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>&lt;h1&gt;</code> a <code>&lt;h6&gt;</code></td>
+              <td>Headings</td>
+              <td>Títulos e subtítulos (H1 é o mais importante).</td>
+            </tr>
+            <tr>
+              <td><code>&lt;p&gt;</code></td>
+              <td>Parágrafo</td>
+              <td>Para blocos de texto comum.</td>
+            </tr>
+            <tr>
+              <td><code>&lt;a href="..."&gt;</code></td>
+              <td>Âncora</td>
+              <td>Cria links para outras páginas ou arquivos.</td>
+            </tr>
+            <tr>
+              <td><code>&lt;ul&gt;</code> / <code>&lt;li&gt;</code></td>
+              <td>Lista</td>
+              <td>Listas com marcadores (bolinhas).</td>
+            </tr>
+            <tr>
+              <td><code>&lt;ol&gt;</code> / <code>&lt;li&gt;</code></td>
+              <td>Lista Ordenada</td>
+              <td>Listas numeradas (1, 2, 3...).</td>
+            </tr>
+            <tr>
+              <td><code>&lt;img&gt;</code></td>
+              <td>Imagem</td>
+              <td>Insere fotos (é uma tag "self-closing", não tem fechamento).</td>
+            </tr>
+            <tr>
+              <td><code>&lt;br&gt;</code></td>
+              <td>Break</td>
+              <td>Apenas pula uma linha.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section">
+        <div class="section-label">// 01.2 — o container genérico</div>
+        <h2>O que é a <code>&lt;div&gt;</code>?</h2>
+        <p>
+          A <code>&lt;div&gt;</code> (abreviação de <em>division</em>) é um container genérico.
+          Diferente das tags semânticas, ela não diz <strong>nada</strong> sobre o que tem dentro dela para o Google ou
+          para leitores de tela.
+        </p>
+
+        <div class="analogy-card">
+          <div class="analogy-label">📦 Analogia da Caixa de Papelão</div>
+          <div class="analogy-text">
+            Uma <code>&lt;div&gt;</code> é como uma <strong>caixa de papelão sem etiqueta</strong>. Você pode colocar
+            qualquer coisa dentro, mas ninguém sabe o que é até abrir.
+            Já uma tag semântica como <code>&lt;header&gt;</code> é uma caixa com a etiqueta "Documentos Importantes" —
+            todos já sabem a função dela antes mesmo de olhar o conteúdo.
+          </div>
+        </div>
+
+        <h3>Quando usar a Div?</h3>
+        <p>Embora a aula foque em semântica, a <code>&lt;div&gt;</code> ainda é essencial em dois cenários principais:
+        </p>
+
+        <div class="grid-2">
+          <div class="card-mini">
+            <div class="pillar-badge" style="background: var(--info); color: #000;">Layout & Estilo</div>
+            <p>Quando você precisa agrupar elementos apenas para aplicar CSS (ex: centralizar um bloco ou criar uma
+              grade/grid).</p>
+          </div>
+          <div class="card-mini">
+            <div class="pillar-badge" style="background: var(--warn); color: #000;">Último Recurso</div>
+            <p>Quando nenhum outro elemento semântico (como section ou article) descreve bem aquele pedaço de código.
+            </p>
+          </div>
+        </div>
+
+        <div class="callout callout-warn">
+          <div class="callout-title">⚠️ O Perigo da "Div Soup"</div>
+          Muitos desenvolvedores iniciantes usam <code>&lt;div&gt;</code> para tudo. Isso cria um código difícil de ler
+          e ruim para o SEO.
+          Sempre se pergunte: <strong>"Existe uma tag mais específica para isso?"</strong> Se a resposta for sim, use a
+          específica.
+        </div>
+      </div>
+    </div>
+
     <!-- ══════════════════════════════════════════
          2. ANALOGIA
     ══════════════════════════════════════════ -->
@@ -136,19 +260,32 @@
         </div>
         <div class="analogy-mapping">
           <span class="analogy-real">Entrada principal do edifício</span>
-          <span class="analogy-tech">→ &lt;header&gt;</span>
+          <span class="analogy-arrow">→</span>
+          <span class="analogy-tech">&lt;header&gt;</span>
+
           <span class="analogy-real">Placa com menu de navegação</span>
-          <span class="analogy-tech">→ &lt;nav&gt;</span>
+          <span class="analogy-arrow">→</span>
+          <span class="analogy-tech">&lt;nav&gt;</span>
+
           <span class="analogy-real">Área principal de trabalho</span>
-          <span class="analogy-tech">→ &lt;main&gt;</span>
+          <span class="analogy-arrow">→</span>
+          <span class="analogy-tech">&lt;main&gt;</span>
+
           <span class="analogy-real">Sala individual de projeto</span>
-          <span class="analogy-tech">→ &lt;article&gt;</span>
+          <span class="analogy-arrow">→</span>
+          <span class="analogy-tech">&lt;article&gt;</span>
+
           <span class="analogy-real">Áreas temáticas dentro da sala</span>
-          <span class="analogy-tech">→ &lt;section&gt;</span>
+          <span class="analogy-arrow">→</span>
+          <span class="analogy-tech">&lt;section&gt;</span>
+
           <span class="analogy-real">Sala de utilidades lateral</span>
-          <span class="analogy-tech">→ &lt;aside&gt;</span>
+          <span class="analogy-arrow">→</span>
+          <span class="analogy-tech">&lt;aside&gt;</span>
+
           <span class="analogy-real">Placa de saída / rodapé</span>
-          <span class="analogy-tech">→ &lt;footer&gt;</span>
+          <span class="analogy-arrow">→</span>
+          <span class="analogy-tech">&lt;footer&gt;</span>
         </div>
       </div>
     </div>
@@ -546,7 +683,8 @@
           <div class="media-thumb">🎬</div>
           <div class="media-body">
             <div class="media-element">&lt;video&gt;</div>
-            <div class="media-desc">Vídeo nativo sem player externo. Múltiplos formatos via <code>&lt;source&gt;</code>.
+            <div class="media-desc">Vídeo nativo sem player externo. Múltiplos formatos via
+              <code>&lt;source&gt;</code>.
             </div>
             <div class="media-attr">controls · autoplay · muted · loop · poster · preload</div>
           </div>
@@ -667,7 +805,7 @@
 
       <div class="mermaid-wrap">
         <div class="mermaid-label">// outline correto de uma página de blog</div>
-        <div class="mermaid">
+        <pre class="mermaid">
           graph TD
           H1["H1 — Título da página (único)"]
           H2a["H2 — Seção: Artigos Recentes"]
@@ -686,7 +824,7 @@
           style H3a fill:#16161f,stroke:#8585a8,color:#e8e8f0
           style H3b fill:#16161f,stroke:#8585a8,color:#e8e8f0
           style H4a fill:#16161f,stroke:#1e1e2e,color:#8585a8
-        </div>
+        </pre>
       </div>
 
       <div class="callout callout-warn">
@@ -715,7 +853,7 @@
               </div>
               <pre><code class="language-bash">mkdir meu-portfolio
 cd meu-portfolio
-touch index.html
+ni index.html
 # Abra no VS Code
 code .</code></pre>
             </div>
@@ -726,8 +864,10 @@ code .</code></pre>
           <div class="step-num">2</div>
           <div class="step-body">
             <div class="step-title">Cole o boilerplate semântico</div>
-            <div class="step-desc">No VS Code, abra o <code>index.html</code> e use o snippet <code>html:5</code> + Tab
-              para gerar o DOCTYPE, depois construa a estrutura semântica completa baseada no exemplo desta aula.</div>
+            <div class="step-desc">No VS Code, abra o <code>index.html</code> e use o snippet <code>"html:5"</code> +
+              Tab
+              para gerar o DOCTYPE, depois construa a estrutura semântica completa baseada no exemplo desta aula.
+            </div>
             <div class="callout callout-tip">
               <div class="callout-title">🔥 Extensões VS Code essenciais para HTML</div>
               Instale <strong>Live Server</strong> (atualiza o browser automaticamente ao salvar) e
@@ -751,7 +891,8 @@ code .</code></pre>
           <div class="step-num">4</div>
           <div class="step-body">
             <div class="step-title">Audite com o Lighthouse do Chrome</div>
-            <div class="step-desc">Abra o DevTools (F12) → aba Lighthouse → gere um relatório. Mire 90+ em Accessibility
+            <div class="step-desc">Abra o DevTools (F12) → aba Lighthouse → gere um relatório. Mire 90+ em
+              Accessibility
               e SEO. Os problemas encontrados são lições diretas de HTML semântico.</div>
           </div>
         </div>
@@ -768,8 +909,10 @@ code .</code></pre>
       <div class="callout callout-warn">
         <div class="callout-title">⚠️ Div soup — o pesadelo semântico</div>
         <p>Páginas com dezenas de
-          <code>&lt;div class="wrapper"&gt;&lt;div class="container"&gt;&lt;div class="inner"&gt;</code> são a norma em
-          código legado. Cada div extra é um elemento sem significado que polui o DOM. Revise: pode ser substituído por
+          <code>&lt;div class="wrapper"&gt;&lt;div class="container"&gt;&lt;div class="inner"&gt;</code> são a norma
+          em
+          código legado. Cada div extra é um elemento sem significado que polui o DOM. Revise: pode ser substituído
+          por
           um elemento semântico?
         </p>
       </div>
@@ -783,7 +926,8 @@ code .</code></pre>
 
       <div class="callout callout-warn">
         <div class="callout-title">⚠️ &lt;label&gt; sem conexão com o &lt;input&gt;</div>
-        <p>Um <code>&lt;label&gt;</code> solto sem o atributo <code>for</code> apontando para o <code>id</code> do input
+        <p>Um <code>&lt;label&gt;</code> solto sem o atributo <code>for</code> apontando para o <code>id</code> do
+          input
           não tem efeito nenhum — nem visual (clicar no label não foca o input) nem de acessibilidade. É um dos erros
           mais comuns em formulários e um dos mais impactantes.</p>
       </div>
@@ -839,7 +983,8 @@ code .</code></pre>
           <div>
             <div class="video-title">HTML in 100 Seconds</div>
             <div class="video-channel">Fireship · ~2 min</div>
-            <div class="video-why">Por que assistir: resumo visual relâmpago dos conceitos centrais do HTML. Ideal como
+            <div class="video-why">Por que assistir: resumo visual relâmpago dos conceitos centrais do HTML. Ideal
+              como
               revisão rápida antes de praticar.</div>
             <span class="video-watch">Assistir →</span>
           </div>
@@ -875,7 +1020,8 @@ code .</code></pre>
         <li>Cada article com: <code>&lt;h3&gt;</code>, <code>&lt;p&gt;</code>, e uma imagem com <code>alt</code>
           descritivo e <code>loading="lazy"</code></li>
         <li>Um formulário de contato com: campo nome (<code>type="text"</code>), email (<code>type="email"</code>),
-          mensagem (<code>&lt;textarea&gt;</code>), e botão submit — todos com <code>&lt;label&gt;</code> conectado</li>
+          mensagem (<code>&lt;textarea&gt;</code>), e botão submit — todos com <code>&lt;label&gt;</code> conectado
+        </li>
         <li>Um <code>&lt;aside&gt;</code> com lista de habilidades</li>
         <li>Um <code>&lt;footer&gt;</code> com copyright e links de redes sociais</li>
         <li>Valide em <a href="https://validator.w3.org/#validate_by_input" target="_blank">validator.w3.org</a> e

@@ -7,13 +7,13 @@
   <title>Branches, Merge & Conflitos · GitHub</title>
 
   <!-- Syntax highlighting — github-dark inlined (funciona offline) -->
-  
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 
-  
-<style>
+
+  <style>
     /* ─── TOKENS ────────────────────────────────────────────── */
     :root {
       --bg: #0a0a0f;
@@ -23,9 +23,12 @@
       --text: #e8e8f0;
       --muted: #8585a8;
 
-      --accent: #58a6ff;       /* ex: #3b82f6 para Python */
-      --accent-dim: rgba(88, 166, 255, 0.1);     /* ex: rgba(59,130,246,0.15) */
-      --accent-border: rgba(88, 166, 255, 0.3); /* ex: rgba(59,130,246,0.3) */
+      --accent: #58a6ff;
+      /* ex: #3b82f6 para Python */
+      --accent-dim: rgba(88, 166, 255, 0.1);
+      /* ex: rgba(59,130,246,0.15) */
+      --accent-border: rgba(88, 166, 255, 0.3);
+      /* ex: rgba(59,130,246,0.3) */
 
       /* Semantic colors */
       --success: #10b981;
@@ -60,7 +63,7 @@
     ══════════════════════════════════════════ -->
     <div class="hero">
       <div class="hero-eyebrow">
-        <span>🐙 GitHub · Prioridade 1</span>
+        <span>🐙 GitHub · 02 · Prioridade 1</span>
         <span class="hero-badge">Aula 02 — Base Universal</span>
       </div>
       <h1>Git — Branches, Merge & Conflitos</h1>
@@ -132,15 +135,24 @@
         </div>
         <div class="analogy-mapping">
           <span class="analogy-real">Rascunho principal aprovado</span>
-          <span class="analogy-tech">→ branch main</span>
+          <span class="analogy-arrow">→</span>
+          <span class="analogy-tech">branch main</span>
+
           <span class="analogy-real">Tirar uma fotocópia para editar</span>
-          <span class="analogy-tech">→ git checkout -b minha-feature</span>
+          <span class="analogy-arrow">→</span>
+          <span class="analogy-tech">git checkout -b minha-feature</span>
+
           <span class="analogy-real">Mesclar de volta ao original</span>
-          <span class="analogy-tech">→ git merge</span>
+          <span class="analogy-arrow">→</span>
+          <span class="analogy-tech">git merge</span>
+
           <span class="analogy-real">Dois roteiristas editando a mesma cena</span>
-          <span class="analogy-tech">→ conflito de merge</span>
+          <span class="analogy-arrow">→</span>
+          <span class="analogy-tech">conflito de merge</span>
+
           <span class="analogy-real">Guardar rascunho inacabado na gaveta</span>
-          <span class="analogy-tech">→ git stash</span>
+          <span class="analogy-arrow">→</span>
+          <span class="analogy-tech">git stash</span>
         </div>
       </div>
     </div>
@@ -598,7 +610,7 @@ git revert abc1234 --no-edit</code></pre>
 
       <div class="mermaid-wrap">
         <div class="mermaid-label">// fluxo típico de uso do stash</div>
-        <div class="mermaid">
+        <pre class="mermaid">
           sequenceDiagram
           participant WD as Working Dir
           participant ST as Stash
@@ -612,7 +624,7 @@ git revert abc1234 --no-edit</code></pre>
           BR->>WD: git switch feat/nova-feature
           ST->>WD: git stash pop (recupera rascunho)
           Note over WD: Continua de onde parou
-        </div>
+        </pre>
       </div>
 
       <div class="code-wrap">

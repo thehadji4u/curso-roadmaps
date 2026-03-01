@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS — Animações, Tipografia & Efeitos · HTML/CSS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <style>
+    /* ─── TOKENS ────────────────────────────────────────────── */
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+
+      --accent: #ef4444;
+      --accent-dim: rgba(239, 68, 68, 0.12);
+      --accent-border: rgba(239, 68, 68, 0.35);
+
+      /* Semantic colors */
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+  </style>
+  <link rel="stylesheet" href="../assets/css/lesson.css">
+</head>
+
+<body>
+
+  <!-- Progress Bar -->
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill"></div>
+  </div>
+
+  <!-- Top Navigation -->
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="html-03-responsivo-moderno.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">🌐 HTML/CSS</span> · Aula 10 / 50
+      </div>
+      <a href="gh-03-colaboracao-prs.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- ── HERO ─────────────────────────────────────────── -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>🌐 HTML/CSS · 04 · Prioridade 2</span>
+        <span class="hero-badge">Aula 10</span>
+      </div>
+      <h1>CSS — Animações, Tipografia &amp; Efeitos</h1>
+      <div class="hero-meta">
+        <span>⏱ ~35 min de leitura</span>
+        <span>🎯 Intermediário</span>
+        <span>🔧 Hands-on incluído</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag">@keyframes</span>
+        <span class="tag">transition</span>
+        <span class="tag">animation</span>
+        <span class="tag">transform</span>
+        <span class="tag">pseudo-elementos</span>
+        <span class="tag">clamp()</span>
+        <span class="tag">backdrop-filter</span>
+        <span class="tag">will-change</span>
+      </div>
+    </div>
+
+    <!-- ── 1. POR QUE ISSO IMPORTA ───────────────────── -->
+    <div class="section">
+      <div class="section-label">// motivação</div>
+      <h2>Por que isso importa?</h2>
+      <p>
+        A diferença entre um site "funcional" e um produto que as pessoas <em>amam usar</em> quase sempre está no
+        movimento. Animações bem feitas guiam o olhar, confirmam ações, revelam hierarquia e criam sensação de qualidade
+        — tudo sem uma linha de JavaScript.
+      </p>
+      <p>
+        Mas há dois lados desta moeda: animações mal implementadas destroem a performance e causam náusea em usuários
+        com sensibilidade a movimento. Dominar CSS de animação é saber <strong>quando</strong> animar, <strong>o
+          que</strong> animar e <strong>como</strong> fazer isso com zero custo na thread principal.
+      </p>
+      <div class="callout callout-info">
+        <div class="callout-title">💼 Por que um engenheiro sênior usa isso hoje</div>
+        <p>
+          Times como Nubank e Notion definem <strong>design tokens de animação</strong> — variáveis CSS como
+          <code>--duration-fast: 150ms</code>, <code>--easing-spring: cubic-bezier(0.34,1.56,0.64,1)</code> — que
+          garantem consistência em todo o produto. Cada componente usa esses tokens, e quando o design system muda, uma
+          única variável atualiza tudo. Além disso, toda animação obedece <code>@media (prefers-reduced-motion)</code>
+          por padrão, tornando o produto acessível sem esforço extra.
+        </p>
+      </div>
+    </div>
+
+    <!-- ── 2. ANALOGIA ──────────────────────────────── -->
+    <div class="section">
+      <div class="section-label">// analogia</div>
+      <h2>Antes do código: uma analogia</h2>
+      <div class="analogy-card">
+        <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
+        <div class="analogy-text">
+          Pense em um animador de cinema clássico como o Disney. Ele tem dois tipos de movimento:
+          <strong>transições</strong> são como cenas que conectam estado A ao estado B em resposta a um evento — o
+          personagem abre um olho quando chamado. <strong>Keyframe animations</strong> são como um loop de ação autônoma
+          — a chama de uma vela que oscila eternamente sem precisar de gatilho externo.
+          <br><br>
+          O animador da Disney também sabia o segredo do movimento orgânico: objetos reais <em>nunca</em> se movem em
+          linha reta com velocidade constante. Eles aceleram no início, desaceleram no fim, esticam, comprimem. Em CSS
+          isso se chama <strong>easing</strong> (cubic-bezier). E assim como um filme tem orçamento de fotogramas, seu
+          site tem orçamento de GPU — só as propriedades <code>transform</code> e <code>opacity</code> são "de graça".
+        </div>
+        <div class="analogy-mapping">
+          <span class="analogy-real">Cena de transição entre estados</span>
+
+          <span class="analogy-arrow">→</span>
+
+          <span class="analogy-tech">CSS transition (ativada por evento)</span>
+          <span class="analogy-real">Loop autônomo da chama</span>
+
+          <span class="analogy-arrow">→</span>
+
+          <span class="analogy-tech">@keyframes + animation (roda sozinha)</span>
+          <span class="analogy-real">Curva de aceleração natural</span>
+
+          <span class="analogy-arrow">→</span>
+
+          <span class="analogy-tech">cubic-bezier / easing functions</span>
+          <span class="analogy-real">Orçamento de fotogramas (60 fps)</span>
+
+          <span class="analogy-arrow">→</span>
+
+          <span class="analogy-tech">Só animar transform & opacity</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 3. CONCEITO CENTRAL ──────────────────────── -->
+    <div class="section">
+      <div class="section-label">// conceito</div>
+      <h2>O conceito</h2>
+      <p>
+        CSS oferece três sistemas de movimento que trabalham em conjunto: <strong>transitions</strong> para mudanças de
+        estado reativas, <strong>@keyframes + animation</strong> para sequências autônomas, e <strong>transform</strong>
+        como o "motor" de ambos — a única propriedade que move pixels sem disparar reflow na página.
+      </p>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// fluxo de decisão: qual sistema usar</div>
+        <pre class="mermaid">
+          graph TD
+          A["Preciso de movimento?"] --> B{"É uma resposta<br>a evento :hover / click?"}
+          B -->|"Sim"| C["CSS transition"]
+          B -->|"Não"| D{"Tem múltiplos<br>pontos intermediários?"}
+          D -->|"Não - A→B simples"| C
+          D -->|"Sim - A→B→C→D..."| E["@keyframes + animation"]
+          C --> F{"O que vou animar?"}
+          E --> F
+          F -->|"Mover / escalar / rotacionar"| G["transform: translate / scale / rotate ✅"]
+          F -->|"Mostrar / esconder"| H["opacity ✅"]
+          F -->|"Cor de fundo ou borda"| I["background-color / border-color ⚠️ OK se sem loop"]
+          F -->|"width, height, top, left"| J["❌ EVITAR — causa reflow"]
+          G --> K["GPU composta<br>60fps garantido"]
+          H --> K
+          I --> L["Compositor + layout<br>monitorar performance"]
+          J --> M["Reflow + repaint<br>janking visível"]
+
+          style G fill:#10b981,color:#fff
+          style H fill:#10b981,color:#fff
+          style K fill:#10b981,color:#fff
+          style J fill:#ef4444,color:#fff
+          style M fill:#ef4444,color:#fff
+          style I fill:#f59e0b,color:#000
+          style C fill:#ef4444,color:#fff,stroke:#ef4444
+          style E fill:#ef4444,color:#fff,stroke:#ef4444
+        </pre>
+      </div>
+
+      <p>
+        O segredo da performance é entender o pipeline de renderização do browser: <strong>Layout → Paint →
+          Composite</strong>. Propriedades que acionam Layout (width, height, top, margin) são as mais caras. Transform
+        e opacity vivem apenas na etapa Composite — rodando inteiramente na GPU, sem tocar no layout da página. Por
+        isso, um card que "voa" com <code>transform: translateY(-8px)</code> usa 0% da CPU; o mesmo efeito com
+        <code>top: -8px</code> pode travar a animação.
+      </p>
+    </div>
+
+    <!-- ── 4. TABELA COMPARATIVA ─────────────────────── -->
+    <div class="section">
+      <div class="section-label">// comparação</div>
+      <h2>transition vs animation: guia de escolha</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Característica</th>
+              <th>transition</th>
+              <th>@keyframes + animation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Gatilho</strong></td>
+              <td>Precisa de mudança de estado (:hover, :focus, classe JS)</td>
+              <td>Roda automaticamente ao renderizar</td>
+            </tr>
+            <tr>
+              <td><strong>Pontos intermediários</strong></td>
+              <td>Apenas início e fim</td>
+              <td>Infinitos — 0%, 25%, 60%, 100%...</td>
+            </tr>
+            <tr>
+              <td><strong>Loop</strong></td>
+              <td>Não tem loop nativo</td>
+              <td><code>animation-iteration-count: infinite</code></td>
+            </tr>
+            <tr>
+              <td><strong>Direção reversa</strong></td>
+              <td>Automático ao desfazer o estado</td>
+              <td><code>animation-direction: alternate</code></td>
+            </tr>
+            <tr>
+              <td><strong>Delay</strong></td>
+              <td><code>transition-delay</code></td>
+              <td><code>animation-delay</code> (aceita negativo!)</td>
+            </tr>
+            <tr>
+              <td><strong>Pausa</strong></td>
+              <td>Não tem</td>
+              <td><code>animation-play-state: paused</code></td>
+            </tr>
+            <tr>
+              <td><strong>Uso típico</strong></td>
+              <td>Hover em botão, foco em input, abertura de menu</td>
+              <td>Loading spinner, skeleton, banner, efeito de entrada</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top: 1.5rem;">
+        <h3 style="font-size:1.1rem; margin-bottom:0.75rem; color:var(--text)">Propriedades seguras para animar
+          (GPU-only)</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Propriedade</th>
+                <th>Custo</th>
+                <th>Uso</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>transform: translate()</code></td>
+                <td>✅ Composite only</td>
+                <td>Mover elementos, slides, parallax</td>
+              </tr>
+              <tr>
+                <td><code>transform: scale()</code></td>
+                <td>✅ Composite only</td>
+                <td>Hover de cards, zoom, pop-in</td>
+              </tr>
+              <tr>
+                <td><code>transform: rotate()</code></td>
+                <td>✅ Composite only</td>
+                <td>Spinners, ícones, carousséis</td>
+              </tr>
+              <tr>
+                <td><code>opacity</code></td>
+                <td>✅ Composite only</td>
+                <td>Fade in/out, hover states</td>
+              </tr>
+              <tr>
+                <td><code>background-color</code></td>
+                <td>⚠️ Paint</td>
+                <td>OK para transições curtas</td>
+              </tr>
+              <tr>
+                <td><code>width / height</code></td>
+                <td>❌ Layout + Paint + Composite</td>
+                <td>Evitar — usar transform: scaleX() ou max-height hack</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 5. HANDS-ON ───────────────────────────────── -->
+    <div class="section">
+      <div class="section-label">// prática</div>
+      <h2>Mãos na massa</h2>
+      <p>Vamos construir um componente de card de produto com 4 camadas de animação progressiva:</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Crie o HTML base do card</div>
+            <div class="step-desc">Um card com imagem, título, preço e botão — a estrutura que vamos animar:</div>
+            <div class="code-wrap">
+              <div class="code-header">
+                <span class="code-filename">index.html</span>
+                <span class="code-lang">HTML</span>
+              </div>
+              <pre><code class="language-html">&lt;!-- Estrutura do card --&gt;
+&lt;div class="card"&gt;
+  &lt;div class="card-img-wrap"&gt;
+    &lt;img class="card-img" src="produto.jpg" alt="Produto"&gt;
+    &lt;span class="card-badge"&gt;Novo&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class="card-body"&gt;
+    &lt;h3 class="card-title"&gt;Produto Incrível&lt;/h3&gt;
+    &lt;p class="card-price"&gt;R$ 299,00&lt;/p&gt;
+    &lt;button class="card-btn"&gt;Adicionar ao carrinho&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Transitions no hover do card</div>
+            <div class="step-desc">Elevação suave, zoom da imagem e aparecimento do badge — tudo com transition:</div>
+            <div class="code-wrap">
+              <div class="code-header">
+                <span class="code-filename">style.css</span>
+                <span class="code-lang">CSS</span>
+              </div>
+              <pre><code class="language-css">/* Design tokens de animação */
+:root {
+  --duration-fast:   150ms;
+  --duration-base:   250ms;
+  --duration-slow:   400ms;
+  --ease-out:        cubic-bezier(0.0, 0.0, 0.2, 1);
+  --ease-spring:     cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth:     cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/* Card base */
+.card {
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  /* Transition do card inteiro */
+  transition:
+    transform var(--duration-base) var(--ease-out),
+    box-shadow var(--duration-base) var(--ease-out);
+}
+
+/* Hover do card: eleva com transform (GPU ✅) */
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.15);
+}
+
+/* Imagem com zoom no hover */
+.card-img-wrap {
+  overflow: hidden;    /* corta o zoom */
+  position: relative;
+}
+
+.card-img {
+  width: 100%;
+  display: block;
+  /* Transition da imagem */
+  transition: transform var(--duration-slow) var(--ease-smooth);
+}
+
+.card:hover .card-img {
+  transform: scale(1.08);  /* zoom — GPU ✅ */
+}
+
+/* Badge que aparece no hover */
+.card-badge {
+  position: absolute;
+  top: 12px; left: 12px;
+  background: #ef4444;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  /* Estado inicial: invisível e levemente acima */
+  opacity: 0;
+  transform: translateY(-8px);
+  transition:
+    opacity var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-spring);
+}
+
+.card:hover .card-badge {
+  opacity: 1;
+  transform: translateY(0);
+}</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">@keyframes para o botão e loading state</div>
+            <div class="step-desc">Animação de "pulse" no botão e skeleton loading com shimmer:</div>
+            <div class="code-wrap">
+              <div class="code-header">
+                <span class="code-filename">style.css</span>
+                <span class="code-lang">CSS</span>
+              </div>
+              <pre><code class="language-css">/* Botão com shimmer de atenção */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+.card-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  background: linear-gradient(
+    90deg,
+    #ef4444 0%,
+    #f97316 40%,
+    #ef4444 60%,
+    #ef4444 100%
+  );
+  background-size: 200% auto;
+  color: white;
+  transition: transform var(--duration-fast) var(--ease-spring);
+}
+
+.card-btn:hover {
+  animation: shimmer 1.5s linear infinite;
+  transform: scale(1.02);
+}
+
+.card-btn:active {
+  transform: scale(0.97);
+}
+
+/* ── Skeleton Loading ────────────────────────────── */
+@keyframes skeleton-wave {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%);  }
+}
+
+.skeleton {
+  background: #e8e8e8;
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* O "brilho" que percorre o skeleton */
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,255,255,0.6) 50%,
+    transparent 100%
+  );
+  animation: skeleton-wave 1.4s ease-in-out infinite;
+}
+
+/* Spinner de loading */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(239,68,68,0.2);
+  border-top-color: #ef4444;
+  border-radius: 50%;
+  animation: spin 700ms linear infinite;
+}</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Pseudo-elementos ::before/::after + prefers-reduced-motion</div>
+            <div class="step-desc">Efeito de brilho no hover usando apenas pseudo-elementos, e acessibilidade com
+              prefers-reduced-motion:</div>
+            <div class="code-wrap">
+              <div class="code-header">
+                <span class="code-filename">style.css</span>
+                <span class="code-lang">CSS</span>
+              </div>
+              <pre><code class="language-css">/* Efeito "luz que passa" no card com ::before */
+.card {
+  position: relative;  /* contexto para o pseudo-elemento */
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  /* Gradiente em diagonal que vai de transparente a branco suave */
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.15) 0%,
+    transparent 50%
+  );
+  /* Começa fora da tela à esquerda */
+  transform: translateX(-100%);
+  transition: transform var(--duration-slow) var(--ease-out);
+  pointer-events: none;  /* não bloqueia cliques */
+  z-index: 1;
+}
+
+.card:hover::before {
+  transform: translateX(100%);  /* atravessa o card */
+}
+
+/* ── ACESSIBILIDADE: prefers-reduced-motion ───────── */
+/* Usuários que preferem menos movimento no sistema    */
+@media (prefers-reduced-motion: reduce) {
+  /* Remove TODAS as animações/transições */
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Ou, de forma mais cirúrgica, manter apenas feedback essencial */
+@media (prefers-reduced-motion: reduce) {
+  .card:hover {
+    transform: none;  /* remove o lift */
+    box-shadow: 0 0 0 2px #ef4444;  /* usa outline como alternativa */
+  }
+  .card-img { transform: none; }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 6. CÓDIGO COMPLETO ────────────────────────── -->
+    <div class="section">
+      <div class="section-label">// código</div>
+      <h2>Sistema completo: tipografia fluida + transforms + gradients</h2>
+      <p>Componente de hero section combinando clamp() para tipografia, backdrop-filter para glassmorphism, gradientes e
+        animação de entrada:</p>
+
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-filename">hero-completo.css</span>
+          <span class="code-lang">CSS</span>
+        </div>
+        <pre><code class="language-css">/* ══════════════════════════════════════════════════
+   HERO SECTION — tipografia fluida + efeitos visuais
+   ══════════════════════════════════════════════════ */
+
+/* ── 1. Tipografia Fluida com clamp() ────────────── */
+/* clamp(min, preferred, max)
+   preferred = valor relativo ao viewport */
+:root {
+  /* Escala tipográfica que se adapta sem breakpoints */
+  --text-sm:   clamp(0.8rem,   0.75rem + 0.3vw,  0.875rem);
+  --text-base: clamp(1rem,     0.9rem  + 0.5vw,  1.125rem);
+  --text-lg:   clamp(1.1rem,   1rem    + 0.5vw,  1.25rem);
+  --text-xl:   clamp(1.25rem,  1.1rem  + 0.8vw,  1.5rem);
+  --text-2xl:  clamp(1.5rem,   1.2rem  + 1.5vw,  2rem);
+  --text-3xl:  clamp(2rem,     1.5rem  + 2.5vw,  3rem);
+  --text-hero: clamp(2.5rem,   2rem    + 3vw,    4.5rem);
+
+  /* Espaçamento fluido */
+  --space-sm:  clamp(0.75rem,  0.5rem  + 1vw,    1rem);
+  --space-md:  clamp(1.25rem,  1rem    + 2vw,    2rem);
+  --space-lg:  clamp(2rem,     1.5rem  + 3vw,    4rem);
+}
+
+/* ── 2. Hero com glassmorphism ─────────────────────── */
+.hero {
+  min-height: 80vh;
+  display: grid;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
+  padding: var(--space-lg);
+}
+
+/* Gradiente de fundo com múltiplas camadas */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    /* Grade de linhas sutis */
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 40px,
+      rgba(255,255,255,0.03) 40px,
+      rgba(255,255,255,0.03) 41px
+    ),
+    /* Gradiente radial de brilho central */
+    radial-gradient(
+      ellipse 80% 60% at 50% 50%,
+      rgba(239, 68, 68, 0.15),
+      transparent 70%
+    ),
+    /* Fundo sólido */
+    #0a0a0f;
+  z-index: 0;
+}
+
+/* "Bolhas" de cor animadas */
+.hero-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.4;
+  z-index: 0;
+  /* Cada bolha tem delay diferente para movimento assíncrono */
+  animation: float 8s ease-in-out infinite;
+}
+
+.hero-blob--1 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, #ef4444, transparent);
+  top: -100px; right: -100px;
+  animation-delay: 0s;
+}
+
+.hero-blob--2 {
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, #f97316, transparent);
+  bottom: -80px; left: -80px;
+  animation-delay: -4s;  /* começa no meio do ciclo */
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0)    scale(1); }
+  33%       { transform: translate(30px, -20px) scale(1.05); }
+  66%       { transform: translate(-20px, 15px) scale(0.95); }
+}
+
+/* ── 3. Conteúdo do hero ─────────────────────────── */
+.hero-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  max-width: 700px;
+  /* Animação de entrada */
+  animation: fade-up 0.8s var(--ease-out) both;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-title {
+  font-size: var(--text-hero);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  /* Gradiente no texto */
+  background: linear-gradient(135deg, #fff 30%, #ef4444 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: var(--space-sm);
+}
+
+.hero-subtitle {
+  font-size: var(--text-xl);
+  color: rgba(255,255,255,0.6);
+  margin-bottom: var(--space-md);
+  animation: fade-up 0.8s var(--ease-out) 0.15s both;
+}
+
+/* ── 4. Botão com glassmorphism ──────────────────── */
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.9rem 2rem;
+  border-radius: 99px;
+  font-weight: 700;
+  font-size: var(--text-base);
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.2);
+  /* Glassmorphism */
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #fff;
+  animation: fade-up 0.8s var(--ease-out) 0.3s both;
+  transition:
+    background var(--duration-base) var(--ease-out),
+    transform   var(--duration-fast) var(--ease-spring),
+    box-shadow  var(--duration-base) var(--ease-out);
+}
+
+.hero-cta:hover {
+  background: rgba(239,68,68,0.3);
+  border-color: rgba(239,68,68,0.6);
+  box-shadow: 0 0 30px rgba(239,68,68,0.3);
+  transform: scale(1.04);
+}
+
+.hero-cta:active {
+  transform: scale(0.98);
+}
+
+/* ── 5. Transforms 3D: card flip ─────────────────── */
+.flip-card {
+  perspective: 1000px;  /* profundidade da cena 3D */
+  width: 200px;
+  height: 280px;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;  /* filhos em 3D */
+  transition: transform 0.6s var(--ease-smooth);
+}
+
+.flip-card:hover .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;  /* esconde lado oposto */
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flip-card-back {
+  transform: rotateY(180deg);  /* começa virado */
+  background: #ef4444;
+  color: white;
+}</code></pre>
+      </div>
+    </div>
+
+    <!-- ── 7. ERROS COMUNS ───────────────────────────── -->
+    <div class="section">
+      <div class="section-label">// armadilhas</div>
+      <h2>Erros comuns</h2>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Animar width/height em vez de transform: scale()</div>
+        <p>
+          <code>width: 0 → width: 100%</code> em transition dispara <strong>reflow completo</strong> a cada frame — o
+          browser recalcula o layout de toda a página. Resultado: janking visível, especialmente em mobile. A
+          alternativa é <code>transform: scaleX(0) → scaleX(1)</code>, que roda 100% na GPU. Para "revelar" altura, o
+          truque é <code>max-height: 0 → max-height: 500px</code> (com cuidado) ou usar a nova
+          <code>transition: height allow-discrete</code> do CSS moderno.
+        </p>
+      </div>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Esquecer will-change em animações complexas</div>
+        <p>
+          Para elementos com animações pesadas, <code>will-change: transform</code> avisa o browser para criar uma
+          camada GPU antecipadamente. Mas use com moderação — cada <code>will-change</code> cria uma camada e consome
+          memória de GPU. Aplique apenas em elementos que realmente vão animar, e remova após a animação terminar se
+          possível. Nunca use <code>will-change: all</code>.
+        </p>
+      </div>
+
+      <div class="callout callout-danger">
+        <div class="callout-title">🚨 Omitir prefers-reduced-motion</div>
+        <p>
+          Cerca de 26% dos usuários de iOS usam "Reduce Motion". Pessoas com epilepsia, vertigem, ou enxaqueca podem ser
+          fisicamente afetadas por animações que piscam ou se movem muito. Sempre inclua
+          <code>@media (prefers-reduced-motion: reduce)</code>. A regra de ouro: nunca animar nada que pisque mais de
+          3x/segundo, e sempre oferecer alternativa estática para qualquer animação "decorativa".
+        </p>
+      </div>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ backdrop-filter sem fallback</div>
+        <p>
+          <code>backdrop-filter: blur()</code> não funciona em alguns contextos (elemento pai com
+          <code>overflow: hidden</code> em versões antigas, ou quando o browser não suporta). Sempre teste e ofereça um
+          background sólido como fallback: <code>background: rgba(0,0,0,0.8)</code> quando backdrop-filter não estiver
+          disponível usando <code>@supports not (backdrop-filter: blur(1px))</code>.
+        </p>
+      </div>
+    </div>
+
+    <!-- ── 8. VÍDEOS ─────────────────────────────────── -->
+    <div class="section">
+      <div class="section-label">// curadoria</div>
+      <h2>Referências em vídeo</h2>
+      <p>Vídeos validados para aprofundar cada área desta aula:</p>
+      <div class="videos-grid">
+
+        <a class="video-card" href="https://www.youtube.com/watch?v=PjDw3azfZWI" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div>
+            <div class="video-title">CSS Animation Tutorial #1 - Introduction</div>
+            <div class="video-channel">The Net Ninja · série ~1h total (EN)</div>
+            <div class="video-why">Por que assistir: Série em playlist com 14 vídeos curtos (~5 min cada) cobrindo
+              transitions, @keyframes, timing functions, fill-mode e animações em cadeia. Ideal para consumir no ritmo
+              certo.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+
+        <a class="video-card" href="https://www.youtube.com/watch?v=zHUpx90NerM" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div>
+            <div class="video-title">CSS Transitions & Animations — Full Course</div>
+            <div class="video-channel">Traversy Media · ~50 min (EN)</div>
+            <div class="video-why">Por que assistir: Curso completo de animações CSS com projeto real. Cobre transition,
+              @keyframes, transforms 2D e 3D, e efeitos de flip card exatamente como visto nesta aula. Brad vai direto
+              ao ponto.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+
+        <a class="video-card" href="https://www.youtube.com/watch?v=YszONjKpgg4" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div>
+            <div class="video-title">5 CSS mistakes you're probably making</div>
+            <div class="video-channel">Kevin Powell · ~14 min (EN)</div>
+            <div class="video-why">Por que assistir: Kevin mostra diretamente por que animar width/height é
+              problemático, por que usar transform é a solução correta, e como pensar em performance de animação.
+              Essencial para quem quer evitar jank.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+
+        <a class="video-card" href="https://www.youtube.com/watch?v=YDU_3WdfkxA" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div>
+            <div class="video-title">Animações CSS na prática — Hora de Codar</div>
+            <div class="video-channel">Matheus Battisti · ~28 min (PT-BR)</div>
+            <div class="video-why">Por que assistir: Tutorial em português com projeto de card animado do zero —
+              transition, hover states, @keyframes para skeleton loading e efeito de entrada. Ótimo para revisar os
+              conceitos desta aula em PT-BR com código ao vivo.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- ── 9. CHECKPOINT ─────────────────────────────── -->
+    <div class="checkpoint">
+      <div class="checkpoint-label">// desafio</div>
+      <h3>🏁 Checkpoint — valide seu aprendizado</h3>
+      <p>
+        Crie uma <strong>página de perfil animada</strong> do zero. O objetivo é demonstrar domínio das três ferramentas
+        (transition, @keyframes e transforms) e das boas práticas de performance e acessibilidade.
+      </p>
+      <ul>
+        <li>✓ <strong>Avatar com ring animado:</strong> borda que pulsa infinitamente usando @keyframes (escala +
+          opacidade, não width)</li>
+        <li>✓ <strong>Cards de skill com hover:</strong> ao passar o mouse, o card eleva com
+          <code>transform: translateY()</code> + sombra via transition — sem tocar em margin/top
+        </li>
+        <li>✓ <strong>Animação de entrada:</strong> cada card aparece com <code>fade-up</code> usando animation-delay
+          escalonado (0ms, 100ms, 200ms...) para efeito cascata</li>
+        <li>✓ <strong>Botão com pseudo-elemento:</strong> efeito de "luz que passa" usando ::before + overflow: hidden +
+          transform: translateX</li>
+        <li>✓ <strong>Tipografia fluida:</strong> pelo menos o título usa <code>clamp()</code> — sem media query para o
+          tamanho de fonte</li>
+        <li>✓ <strong>prefers-reduced-motion:</strong> todas as animações são desabilitadas/simplificadas quando a
+          preferência do sistema for "reduce"</li>
+      </ul>
+      <div class="checkpoint-hint">
+        💬 Dica: Comece sem nenhuma animação — HTML + CSS estático primeiro. Depois adicione as transitions, depois os
+        @keyframes. Por fim teste no DevTools: aba Animations mostra todas as animações rodando em tempo real, e você
+        pode simular prefers-reduced-motion em Rendering → Emulate CSS media feature.
+      </div>
+    </div>
+
+    <!-- ── PRÓXIMA AULA ───────────────────────────────── -->
+    <a href="gh-03-colaboracao-prs.html" class="next-lesson">
+      <div>
+        <div class="next-label">Próxima aula →</div>
+        <div class="next-title">🐙 GitHub — Colaboração &amp; Pull Requests</div>
+      </div>
+      <div class="next-arrow">→</div>
+    </a>
+
+    <!-- ── FOOTER ─────────────────────────────────────── -->
+    <div class="footer">
+      <span>🌐 HTML/CSS · Aula 10 / 50</span>
+      <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+    </div>
+
+  </div><!-- /page -->
+
+  <script>
+    // Syntax highlighting
+    document.addEventListener('DOMContentLoaded', () => {
+      hljs.highlightAll();
+    });
+
+    // Mermaid
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      themeVariables: {
+        primaryColor: '#ef4444',
+        primaryTextColor: '#e8e8f0',
+        primaryBorderColor: 'rgba(239,68,68,0.35)',
+        lineColor: '#8585a8',
+        background: '#111118',
+        mainBkg: '#16161f',
+        nodeBorder: '#ef4444'
+      }
+    });
+
+    // Progress bar
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      document.querySelector('.progress-bar-fill').style.width = progress + '%';
+    });
+  </script>
+
+</body>
+
+</html>

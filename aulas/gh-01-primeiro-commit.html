@@ -20,9 +20,12 @@
       --text: #e8e8f0;
       --muted: #8585a8;
 
-      --accent: #58a6ff;       /* ex: #3b82f6 para Python */
-      --accent-dim: rgba(88, 166, 255, 0.1);     /* ex: rgba(59,130,246,0.15) */
-      --accent-border: rgba(88, 166, 255, 0.3); /* ex: rgba(59,130,246,0.3) */
+      --accent: #58a6ff;
+      /* ex: #3b82f6 para Python */
+      --accent-dim: rgba(88, 166, 255, 0.1);
+      /* ex: rgba(59,130,246,0.15) */
+      --accent-border: rgba(88, 166, 255, 0.3);
+      /* ex: rgba(59,130,246,0.3) */
 
       /* Semantic colors */
       --success: #10b981;
@@ -58,7 +61,7 @@
     ══════════════════════════════════════════ -->
     <div class="hero">
       <div class="hero-eyebrow">
-        <span>🐙 GitHub · Prioridade 1</span>
+        <span>🐙 GitHub · 01 · Prioridade 1</span>
         <span class="hero-badge">Aula 01 — Base Universal</span>
       </div>
       <h1>Git — Do Zero ao Primeiro Commit</h1>
@@ -128,15 +131,24 @@
         </div>
         <div class="analogy-mapping">
           <span class="analogy-real">Apertar "Salvar" no jogo</span>
-          <span class="analogy-tech">→ git commit</span>
+          <span class="analogy-arrow">→</span>
+          <span class="analogy-tech">git commit</span>
+
           <span class="analogy-real">Carregar um save antigo</span>
-          <span class="analogy-tech">→ git checkout &lt;hash&gt;</span>
+          <span class="analogy-arrow">→</span>
+          <span class="analogy-tech">git checkout &lt;hash&gt;</span>
+
           <span class="analogy-real">Jogar numa cópia do save</span>
-          <span class="analogy-tech">→ git branch</span>
+          <span class="analogy-arrow">→</span>
+          <span class="analogy-tech">git branch</span>
+
           <span class="analogy-real">Ver todos os seus saves</span>
-          <span class="analogy-tech">→ git log</span>
+          <span class="analogy-arrow">→</span>
+          <span class="analogy-tech">git log</span>
+
           <span class="analogy-real">Nuvem de sincronização</span>
-          <span class="analogy-tech">→ GitHub (remote)</span>
+          <span class="analogy-arrow">→</span>
+          <span class="analogy-tech">GitHub (remote)</span>
         </div>
       </div>
     </div>
@@ -179,7 +191,7 @@
 
       <div class="mermaid-wrap">
         <div class="mermaid-label">// fluxo completo de um commit</div>
-        <div class="mermaid">
+        <pre class="mermaid">
           graph LR
           A[📝 Editar arquivo] -->|git add| B[📋 Staging Area]
           B -->|git commit| C[🔒 Repositório local]
@@ -189,7 +201,7 @@
           style B fill:#16161f,stroke:#f59e0b,color:#e8e8f0
           style C fill:#16161f,stroke:#10b981,color:#e8e8f0
           style D fill:#16161f,stroke:#a855f7,color:#e8e8f0
-        </div>
+        </pre>
       </div>
 
       <h3>Git vs GitHub — não são a mesma coisa</h3>

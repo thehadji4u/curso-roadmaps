@@ -20,9 +20,12 @@
       --text: #e8e8f0;
       --muted: #8585a8;
 
-      --accent: #3b82f6;       /* ex: #3b82f6 para Python */
-      --accent-dim: rgba(59, 130, 246, 0.12);     /* ex: rgba(59,130,246,0.15) */
-      --accent-border: rgba(59, 130, 246, 0.35); /* ex: rgba(59,130,246,0.3) */
+      --accent: #3b82f6;
+      /* ex: #3b82f6 para Python */
+      --accent-dim: rgba(59, 130, 246, 0.12);
+      /* ex: rgba(59,130,246,0.15) */
+      --accent-border: rgba(59, 130, 246, 0.35);
+      /* ex: rgba(59,130,246,0.3) */
 
       /* Semantic colors */
       --success: #10b981;
@@ -60,7 +63,7 @@
     ══════════════════════════════════════════ -->
     <div class="hero">
       <div class="hero-eyebrow">
-        <span>🐍 Python</span>
+        <span>🐍 Python · 01 · Prioridade 1</span>
         <span class="hero-badge">Aula 05</span>
       </div>
       <h1>Python — Ambiente &amp; Primeiros Passos</h1>
@@ -127,13 +130,25 @@
         </div>
         <div class="analogy-mapping">
           <span class="analogy-real">Cozinha industrial global</span>
-          <span class="analogy-tech">→ Python do sistema (nunca toque)</span>
+
+          <span class="analogy-arrow">→</span>
+
+          <span class="analogy-tech">Python do sistema (nunca toque)</span>
           <span class="analogy-real">Estação de trabalho isolada</span>
-          <span class="analogy-tech">→ <code>venv</code> do projeto</span>
+
+          <span class="analogy-arrow">→</span>
+
+          <span class="analogy-tech"><code>venv</code> do projeto</span>
           <span class="analogy-real">Lista de ingredientes da receita</span>
-          <span class="analogy-tech">→ <code>requirements.txt</code></span>
+
+          <span class="analogy-arrow">→</span>
+
+          <span class="analogy-tech"><code>requirements.txt</code></span>
           <span class="analogy-real">Tipo de ingrediente (líquido, sólido…)</span>
-          <span class="analogy-tech">→ tipo de dado (<code>int</code>, <code>str</code>…)</span>
+
+          <span class="analogy-arrow">→</span>
+
+          <span class="analogy-tech">tipo de dado (<code>int</code>, <code>str</code>…)</span>
         </div>
       </div>
     </div>
@@ -152,7 +167,7 @@
 
       <div class="mermaid-wrap">
         <div class="mermaid-label">// relação entre Python, pip e venv</div>
-        <div class="mermaid">
+        <pre class="mermaid">
           graph TD
           A[🖥️ Sistema Operacional] --> B[Python 3 global]
           B --> C[pip global]
@@ -167,7 +182,7 @@
           style B fill:#1e3a5f,stroke:#3b82f6,color:#93c5fd
           style E fill:#0f3020,stroke:#10b981,color:#6ee7b7
           style J fill:#0f3020,stroke:#10b981,color:#6ee7b7
-        </div>
+        </pre>
       </div>
 
       <h3>Comparativo: pip global vs venv</h3>

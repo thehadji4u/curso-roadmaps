@@ -55,7 +55,7 @@
 
     <!-- HERO -->
     <div class="hero">
-      <div class="hero-eyebrow"><span>🐍 Python</span><span class="hero-badge">Aula 07</span></div>
+      <div class="hero-eyebrow"><span>🐍 Python · 03 · Prioridade 2</span><span class="hero-badge">Aula 07</span></div>
       <h1>Python — Coleções &amp; Arquivos</h1>
       <div class="hero-meta">
         <span>⏱ ~40 min de leitura</span>
@@ -114,12 +114,36 @@
           <code>try/except</code>.
         </div>
         <div class="analogy-mapping">
-          <span class="analogy-real">Bandeja numerada reordenável</span> <span class="analogy-tech">→ list</span>
-          <span class="analogy-real">Embalagem lacrada imutável</span> <span class="analogy-tech">→ tuple</span>
-          <span class="analogy-real">Fichário indexado por nome</span> <span class="analogy-tech">→ dict</span>
-          <span class="analogy-real">Cesto sem duplicatas</span> <span class="analogy-tech">→ set</span>
-          <span class="analogy-real">Livro na estante</span> <span class="analogy-tech">→ arquivo em disco</span>
-          <span class="analogy-real">Chef que lida com imprevistos</span> <span class="analogy-tech">→ try/except</span>
+          <span class="analogy-real">Bandeja numerada reordenável</span>
+
+          <span class="analogy-arrow">→</span>
+
+          <span class="analogy-tech">list</span>
+          <span class="analogy-real">Embalagem lacrada imutável</span>
+
+          <span class="analogy-arrow">→</span>
+
+          <span class="analogy-tech">tuple</span>
+          <span class="analogy-real">Fichário indexado por nome</span>
+
+          <span class="analogy-arrow">→</span>
+
+          <span class="analogy-tech">dict</span>
+          <span class="analogy-real">Cesto sem duplicatas</span>
+
+          <span class="analogy-arrow">→</span>
+
+          <span class="analogy-tech">set</span>
+          <span class="analogy-real">Livro na estante</span>
+
+          <span class="analogy-arrow">→</span>
+
+          <span class="analogy-tech">arquivo em disco</span>
+          <span class="analogy-real">Chef que lida com imprevistos</span>
+
+          <span class="analogy-arrow">→</span>
+
+          <span class="analogy-tech">try/except</span>
         </div>
       </div>
     </div>
@@ -154,23 +178,23 @@
 
       <div class="mermaid-wrap">
         <div class="mermaid-label">// quando usar cada estrutura</div>
-        <div class="mermaid">
+        <pre class="mermaid">
           flowchart TD
           A([Preciso armazenar dados?]) --> B{A ordem importa?}
-          B -- Não --> C{Só únicos?}
-          C -- Sim --> D[🔵 set]
-          C -- Não --> E[🟡 dict]
-          B -- Sim --> F{Os dados mudam?}
-          F -- Não --> G[🟢 tuple]
-          F -- Sim --> H{Chave→Valor?}
-          H -- Sim --> I[🟡 dict]
-          H -- Não --> J[🟠 list]
+          B -->|Não| C{Só únicos?}
+          C -->|Sim| D[🔵 set]
+          C -->|Não| E[🟡 dict]
+          B -->|Sim| F{Os dados mudam?}
+          F -->|Não| G[🟢 tuple]
+          F -->|Sim| H{Chave→Valor?}
+          H -->|Sim| I[🟡 dict]
+          H -->|Não| J[🟠 list]
           style D fill:#1e3a5f,stroke:#3b82f6,color:#93c5fd
           style E fill:#3d2f0f,stroke:#f59e0b,color:#fde68a
           style G fill:#0f3020,stroke:#10b981,color:#6ee7b7
           style I fill:#3d2f0f,stroke:#f59e0b,color:#fde68a
           style J fill:#3d1f0f,stroke:#f97316,color:#fdba74
-        </div>
+        </pre>
       </div>
 
       <div class="code-wrap">
@@ -292,7 +316,7 @@ unicos = list(dict.fromkeys(emails))    # ["a@x.com", "b@x.com"]</code></pre>
 
       <div class="mermaid-wrap">
         <div class="mermaid-label">// fluxo try / except / else / finally</div>
-        <div class="mermaid">
+        <pre class="mermaid">
           flowchart TD
           A([bloco try executa]) --> B{Exceção lançada?}
           B -- Não --> C[else: roda se sem erro]
@@ -305,7 +329,7 @@ unicos = list(dict.fromkeys(emails))    # ["a@x.com", "b@x.com"]</code></pre>
           style C fill:#0f3020,stroke:#10b981,color:#6ee7b7
           style E fill:#3d2f0f,stroke:#f59e0b,color:#fde68a
           style F fill:#3d0f0f,stroke:#ef4444,color:#fca5a5
-        </div>
+        </pre>
       </div>
 
       <div class="code-wrap">

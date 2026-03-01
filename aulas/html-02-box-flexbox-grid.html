@@ -20,9 +20,12 @@
       --text: #e8e8f0;
       --muted: #8585a8;
 
-      --accent: #ef4444;       /* ex: #3b82f6 para Python */
-      --accent-dim: rgba(239, 68, 68, 0.12);     /* ex: rgba(59,130,246,0.15) */
-      --accent-border: rgba(239, 68, 68, 0.35); /* ex: rgba(59,130,246,0.3) */
+      --accent: #ef4444;
+      /* ex: #3b82f6 para Python */
+      --accent-dim: rgba(239, 68, 68, 0.12);
+      /* ex: rgba(59,130,246,0.15) */
+      --accent-border: rgba(239, 68, 68, 0.35);
+      /* ex: rgba(59,130,246,0.3) */
 
       /* Semantic colors */
       --success: #10b981;
@@ -58,7 +61,7 @@
     ══════════════════════════════════════════ -->
     <div class="hero">
       <div class="hero-eyebrow">
-        <span>🌐 HTML/CSS</span>
+        <span>🌐 HTML/CSS · 02 · Prioridade 1</span>
         <span class="hero-badge">Aula 04</span>
       </div>
       <h1>CSS — Box Model, Flexbox &amp; Grid</h1>
@@ -128,19 +131,40 @@
         </div>
         <div class="analogy-mapping">
           <span class="analogy-real">Tela do quadro</span>
-          <span class="analogy-tech">→ <code>content</code></span>
+
+          <span class="analogy-arrow">→</span>
+
+          <span class="analogy-tech"><code>content</code></span>
           <span class="analogy-real">Suporte embutido</span>
-          <span class="analogy-tech">→ <code>padding</code></span>
+
+          <span class="analogy-arrow">→</span>
+
+          <span class="analogy-tech"><code>padding</code></span>
           <span class="analogy-real">Moldura</span>
-          <span class="analogy-tech">→ <code>border</code></span>
+
+          <span class="analogy-arrow">→</span>
+
+          <span class="analogy-tech"><code>border</code></span>
           <span class="analogy-real">Espaço entre quadros</span>
-          <span class="analogy-tech">→ <code>margin</code></span>
+
+          <span class="analogy-arrow">→</span>
+
+          <span class="analogy-tech"><code>margin</code></span>
           <span class="analogy-real">Curador alinhando obras</span>
-          <span class="analogy-tech">→ Flexbox</span>
+
+          <span class="analogy-arrow">→</span>
+
+          <span class="analogy-tech">Flexbox</span>
           <span class="analogy-real">Planta baixa do museu</span>
-          <span class="analogy-tech">→ CSS Grid</span>
+
+          <span class="analogy-arrow">→</span>
+
+          <span class="analogy-tech">CSS Grid</span>
           <span class="analogy-real">Hierarquia de regras</span>
-          <span class="analogy-tech">→ Cascade &amp; Specificity</span>
+
+          <span class="analogy-arrow">→</span>
+
+          <span class="analogy-tech">Cascade &amp; Specificity</span>
         </div>
       </div>
     </div>
@@ -213,7 +237,7 @@
 
       <div class="mermaid-wrap">
         <div class="mermaid-label">// fluxo do Box Model</div>
-        <div class="mermaid">
+        <pre class="mermaid">
           graph LR
           A[content<br />width × height] --> B[+ padding<br />espaço interno]
           B --> C[+ border<br />borda visível]
@@ -224,7 +248,7 @@
           style C fill:#3d2f0f,stroke:#eab308,color:#fde047
           style D fill:#1f3d0f,stroke:#22c55e,color:#86efac
           style E fill:#0f1f3d,stroke:#60a5fa,color:#93c5fd
-        </div>
+        </pre>
       </div>
 
       <div class="code-wrap">
@@ -715,7 +739,7 @@ form:has(input:required:placeholder-shown) .btn-submit {
 
       <div class="mermaid-wrap">
         <div class="mermaid-label">// como o browser decide qual CSS aplicar</div>
-        <div class="mermaid">
+        <pre class="mermaid">
           flowchart TD
           A[Conflito de regras CSS] --> B{Qual tem maior<br />origem?}
           B -->|!important user-agent| C[Vence — fim]
@@ -733,7 +757,7 @@ form:has(input:required:placeholder-shown) .btn-submit {
           style G fill:#033a16,stroke:#22c55e,color:#86efac
           style I fill:#033a16,stroke:#22c55e,color:#86efac
           style J fill:#033a16,stroke:#22c55e,color:#86efac
-        </div>
+        </pre>
       </div>
     </div>
 

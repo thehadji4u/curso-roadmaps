@@ -59,7 +59,7 @@
     <!-- ── HERO ── -->
     <div class="hero">
       <div class="hero-eyebrow">
-        <span>🐍 Python</span>
+        <span>🐍 Python · 04 · Prioridade 2</span>
         <span class="hero-badge">Aula 08</span>
       </div>
       <h1>Python — POO na Prática</h1>
@@ -122,13 +122,25 @@
         </div>
         <div class="analogy-mapping">
           <span class="analogy-real">🏭 Planta da Fábrica (molde)</span>
-          <span class="analogy-tech">→ <code>class Carro</code></span>
+
+          <span class="analogy-arrow">→</span>
+
+          <span class="analogy-tech"><code>class Carro</code></span>
           <span class="analogy-real">🚗 Carro produzido (unidade real)</span>
-          <span class="analogy-tech">→ <code>meu_carro = Carro(...)</code></span>
+
+          <span class="analogy-arrow">→</span>
+
+          <span class="analogy-tech"><code>meu_carro = Carro(...)</code></span>
           <span class="analogy-real">📋 Características do carro</span>
-          <span class="analogy-tech">→ Atributos (<code>self.cor</code>)</span>
+
+          <span class="analogy-arrow">→</span>
+
+          <span class="analogy-tech">Atributos (<code>self.cor</code>)</span>
           <span class="analogy-real">⚙️ O que o carro faz (acelerar)</span>
-          <span class="analogy-tech">→ Métodos (<code>def acelerar()</code>)</span>
+
+          <span class="analogy-arrow">→</span>
+
+          <span class="analogy-tech">Métodos (<code>def acelerar()</code>)</span>
         </div>
       </div>
     </div>
@@ -175,7 +187,7 @@
 
       <div class="mermaid-wrap">
         <div class="mermaid-label">// anatomia de uma classe Python</div>
-        <div class="mermaid">
+        <pre class="mermaid">
           classDiagram
           class ContaBancaria {
           -String titular
@@ -196,8 +208,8 @@
           -float taxa_juros
           +render_juros() void
           }
-          ContaBancaria <|-- ContaCorrente : herança ContaBancaria <|-- ContaPoupanca : herança </div>
-        </div>
+          ContaBancaria <|-- ContaCorrente : herança
+          ContaBancaria <|-- ContaPoupanca : herança </pre>
       </div>
 
       <!-- ── 4. TABELA ── -->
@@ -620,7 +632,8 @@ if __name__ == "__main__":
             <div>
               <div class="video-title">Python OOP in 10 Minutes</div>
               <div class="video-channel">Bro Code · ~10 min (EN)</div>
-              <div class="video-why">Por que assistir: Revisão ultrarrápida dos conceitos — ótimo para consultar quando
+              <div class="video-why">Por que assistir: Revisão ultrarrápida dos conceitos — ótimo para consultar
+                quando
                 já sabe e precisa refrescar a memória antes de uma entrevista ou projeto.</div>
               <span class="video-watch">Assistir →</span>
             </div>
@@ -659,7 +672,8 @@ if __name__ == "__main__":
           </li>
           <li>✓ Implemente um método <code>calcular_bonus()</code> com polimorfismo: Gerente recebe 20% do salário,
             Desenvolvedor recebe 15%</li>
-          <li>✓ Adicione <code>__str__</code> e <code>__repr__</code> nas classes. Crie um <code>@classmethod</code> que
+          <li>✓ Adicione <code>__str__</code> e <code>__repr__</code> nas classes. Crie um <code>@classmethod</code>
+            que
             crie um Funcionario a partir de um dicionário <code>{"nome": ..., "salario": ...}</code></li>
           <li>✓ Instancie pelo menos 4 objetos, chame todos os métodos e imprima os resultados — mostre que o código
             funciona sem erros</li>

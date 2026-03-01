@@ -47,7 +47,7 @@
       <div class="nav-position">
         <span class="track">🌐 HTML/CSS</span> · Aula 09 / 50
       </div>
-      <a href="html-04-animacoes-transicoes.html" class="nav-next">Próxima →</a>
+      <a href="html-04-animacoes-efeitos.html" class="nav-next">Próxima →</a>
     </div>
   </nav>
 
@@ -56,7 +56,7 @@
     <!-- ── HERO ── -->
     <div class="hero">
       <div class="hero-eyebrow">
-        <span>🌐 HTML/CSS</span>
+        <span>🌐 HTML/CSS · 03 · Prioridade 2</span>
         <span class="hero-badge">Aula 09</span>
       </div>
       <h1>CSS — Responsivo & Moderno</h1>
@@ -122,13 +122,25 @@
         </div>
         <div class="analogy-mapping">
           <span class="analogy-real">👗 Tamanho da roupa (P/M/G/GG)</span>
-          <span class="analogy-tech">→ Breakpoints (480px / 768px / 1024px / 1280px)</span>
+
+          <span class="analogy-arrow">→</span>
+
+          <span class="analogy-tech">Breakpoints (480px / 768px / 1024px / 1280px)</span>
           <span class="analogy-real">🪡 Tecido elástico que se ajusta</span>
-          <span class="analogy-tech">→ <code>clamp(min, ideal, max)</code></span>
+
+          <span class="analogy-arrow">→</span>
+
+          <span class="analogy-tech"><code>clamp(min, ideal, max)</code></span>
           <span class="analogy-real">📐 Medida a partir do corpo (não da vitrine)</span>
-          <span class="analogy-tech">→ Container queries</span>
+
+          <span class="analogy-arrow">→</span>
+
+          <span class="analogy-tech">Container queries</span>
           <span class="analogy-real">👕 Começa pelo menor tamanho</span>
-          <span class="analogy-tech">→ Mobile-first approach</span>
+
+          <span class="analogy-arrow">→</span>
+
+          <span class="analogy-tech">Mobile-first approach</span>
         </div>
       </div>
     </div>
@@ -194,21 +206,21 @@
 
       <div class="mermaid-wrap">
         <div class="mermaid-label">// fluxo de decisão: qual CSS aplicar?</div>
-        <div class="mermaid">
+        <pre class="mermaid">
           graph TD
-            A[Usuário acessa o site] --> B{Tamanho da tela?}
-            B -->|< 768px| C[📱 Mobile]
-            B -->|768px - 1023px| D[📟 Tablet]
+          A[Usuário acessa o site] --> B{Tamanho da tela?}
+          B -->|< 768px| C[📱 Mobile]
+          B -->|768px - 1023px| D[📟 Tablet]
             B -->|>= 1024px| E[🖥️ Desktop]
-            C --> F[Estilos base<br/>flex-column, fonte 16px]
-            D --> G[Media 768px<br/>flex-row, navegação expandida]
-            E --> H[Media 1024px<br/>grid multi-coluna, sidebar]
+            C --> F[Estilos base<br />flex-column, fonte 16px]
+            D --> G[Media 768px<br />flex-row, navegação expandida]
+            E --> H[Media 1024px<br />grid multi-coluna, sidebar]
             F --> I[Sistema operacional]
             G --> I
             H --> I
             I -->|prefers-dark| J[🌙 Modo escuro ativado]
             I -->|prefers-reduced-motion| K[♿ Animações removidas]
-        </div>
+        </pre>
       </div>
     </div>
 
@@ -279,7 +291,8 @@
           <div class="step-num">1</div>
           <div class="step-body">
             <div class="step-title">Configure o viewport e estrutura base</div>
-            <div class="step-desc">Sem a meta tag viewport, as media queries não funcionam em dispositivos móveis reais.</div>
+            <div class="step-desc">Sem a meta tag viewport, as media queries não funcionam em dispositivos móveis reais.
+            </div>
             <div class="code-wrap">
               <div class="code-header">
                 <span class="code-filename">responsivo.html</span>
@@ -471,7 +484,8 @@ h2 {
           <div class="step-num">4</div>
           <div class="step-body">
             <div class="step-title">Container Queries — o futuro do CSS responsivo</div>
-            <div class="step-desc">Com container queries, o componente reage ao seu próprio container, não ao viewport.</div>
+            <div class="step-desc">Com container queries, o componente reage ao seu próprio container, não ao viewport.
+            </div>
             <div class="code-wrap">
               <div class="code-header">
                 <span class="code-filename">container-query.css</span>
@@ -620,7 +634,9 @@ p  { font-size: var(--font-base); line-height: 1.7; }
           <div>
             <div class="video-title">Are you using media queries wrong?</div>
             <div class="video-channel">Kevin Powell · ~15 min (EN)</div>
-            <div class="video-why">Por que assistir: Kevin Powell é a referência absoluta em CSS moderno. Neste vídeo ele desmonta o approach desktop-first e ensina definitivamente por que mobile-first é o caminho — com exemplos práticos claros.</div>
+            <div class="video-why">Por que assistir: Kevin Powell é a referência absoluta em CSS moderno. Neste vídeo
+              ele desmonta o approach desktop-first e ensina definitivamente por que mobile-first é o caminho — com
+              exemplos práticos claros.</div>
             <span class="video-watch">Assistir →</span>
           </div>
         </a>
@@ -630,7 +646,9 @@ p  { font-size: var(--font-base); line-height: 1.7; }
           <div>
             <div class="video-title">Learn CSS Media Query in 7 Minutes</div>
             <div class="video-channel">Web Dev Simplified · ~7 min (EN)</div>
-            <div class="video-why">Por que assistir: Explicação rápida e direta da sintaxe de media queries com exemplos visuais imediatos. Ideal para quem quer entender a mecânica básica antes de partir para técnicas avançadas.</div>
+            <div class="video-why">Por que assistir: Explicação rápida e direta da sintaxe de media queries com exemplos
+              visuais imediatos. Ideal para quem quer entender a mecânica básica antes de partir para técnicas
+              avançadas.</div>
             <span class="video-watch">Assistir →</span>
           </div>
         </a>
@@ -640,7 +658,9 @@ p  { font-size: var(--font-base); line-height: 1.7; }
           <div>
             <div class="video-title">Flexbox CSS Complete Tutorial</div>
             <div class="video-channel">Traversy Media · ~20 min (EN)</div>
-            <div class="video-why">Por que assistir: Flexbox e responsividade andam juntos. Este tutorial consolida as bases de Flexbox que você precisa dominar antes de construir layouts responsivos complexos com sidebar + content.</div>
+            <div class="video-why">Por que assistir: Flexbox e responsividade andam juntos. Este tutorial consolida as
+              bases de Flexbox que você precisa dominar antes de construir layouts responsivos complexos com sidebar +
+              content.</div>
             <span class="video-watch">Assistir →</span>
           </div>
         </a>
@@ -650,7 +670,9 @@ p  { font-size: var(--font-base); line-height: 1.7; }
           <div>
             <div class="video-title">Masterclass de Responsividade — HTML e CSS</div>
             <div class="video-channel">Rocketseat · ~1h (PT-BR)</div>
-            <div class="video-why">Por que assistir: Masterclass completa em português com projeto real. Cobre viewport meta tag, media queries, imagens responsivas e boas práticas de acessibilidade. Produção de qualidade da Rocketseat.</div>
+            <div class="video-why">Por que assistir: Masterclass completa em português com projeto real. Cobre viewport
+              meta tag, media queries, imagens responsivas e boas práticas de acessibilidade. Produção de qualidade da
+              Rocketseat.</div>
             <span class="video-watch">Assistir →</span>
           </div>
         </a>
@@ -687,7 +709,7 @@ p  { font-size: var(--font-base); line-height: 1.7; }
 
     <!-- ── PRÓXIMA AULA ── -->
     <div class="section">
-      <a href="html-04-animacoes-transicoes.html" class="next-lesson">
+      <a href="html-04-animacoes-efeitos.html" class="next-lesson">
         <div>
           <div class="next-label">Próxima aula →</div>
           <div class="next-title">CSS — Animações & Transições</div>
