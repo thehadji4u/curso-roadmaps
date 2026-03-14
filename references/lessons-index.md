@@ -89,8 +89,8 @@ Todos os HTMLs ficam em `outputs/aulas/` com o nome exato da coluna **Arquivo**.
 | `26-PY-07` | `[x]` | 🐍 Python | FastAPI — API REST do Zero | FastAPI · Pydantic · validação · async · Swagger | `py-07-fastapi.html` |
 | `27-PY-08` | `[x]` | 🐍 Python | Python Back-end Completo | SQLAlchemy · Autenticação JWT · Async/Await · pytest · Deploy | `py-08-backend-completo.html` |
 | `28-JS-05` | `[x]` | ⚡ JavaScript | Node.js & Express — API REST | Node.js · Express/Fastify · rotas · middleware · REST API | `js-05-nodejs-express.html` |
-| `29-N8N-03` | `[ ]` | 🔀 n8n | n8n — Integrações Reais | Google Sheets · Telegram/Slack · Email · Banco de dados · Airtable/Notion | `n8n-03-integracoes.html` |
-| `30-GH-06` | `[ ]` | 🐙 GitHub | GitHub Avançado — Segurança & Packages | Branch protection · Dependabot · Code scanning · Packages & Registry · API & CLI | `gh-06-seguranca-packages.html` |
+| `29-N8N-03` | `[x]` | 🔀 n8n | n8n — Integrações Reais | Google Sheets · Telegram/Slack · Email · Banco de dados · Airtable/Notion | `n8n-03-integracoes.html` |
+| `30-GH-06` | `[x]` | 🐙 GitHub | GitHub Avançado — Segurança & Packages | Branch protection · Dependabot · Code scanning · Packages & Registry · API & CLI | `gh-06-seguranca-packages.html` |
 
 ---
 
@@ -100,7 +100,7 @@ Todos os HTMLs ficam em `outputs/aulas/` com o nome exato da coluna **Arquivo**.
 
 | ID | Status | Trilha | Título da Aula | Cards agrupados | Arquivo |
 |---|---|---|---|---|---|
-| `31-JS-06` | `[ ]` | ⚡ JavaScript | React 18 — Componentes, Hooks & Estado | React 18+ · JSX · hooks · context · Suspense · Server Components | `js-06-react.html` |
+| `31-JS-06` | `[x]` | ⚡ JavaScript | React 18 — Componentes, Hooks & Estado | React 18+ · JSX · hooks · context · Suspense · Server Components | `js-06-react.html` |
 | `32-JS-07` | `[ ]` | ⚡ JavaScript | Next.js — Full-stack Moderno | Next.js · App Router · SSR · SSG · API routes | `js-07-nextjs.html` |
 | `33-DKR-04` | `[ ]` | 🐳 Docker | Docker em Produção — Registry & Swarm | Registry · CI/CD com Docker · Docker Swarm | `dkr-04-producao-swarm.html` |
 | `34-N8N-04` | `[ ]` | 🔀 n8n | n8n Avançado — Sub-workflows & Self-hosting | Sub-workflows · Self-hosting · Custom nodes | `n8n-04-avancado.html` |

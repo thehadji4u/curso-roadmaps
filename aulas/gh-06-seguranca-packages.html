@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub Avançado — Segurança & Packages · Aula 30</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #58a6ff;
+      --accent-dim: rgba(88,166,255,0.15);
+      --accent-border: rgba(88,166,255,0.35);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #58a6ff, #79c0ff); width: 0%; transition: width 0.1s; }
+
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; cursor: default; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #79c0ff; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(88,166,255,0.08); border-color: var(--accent); }
+    .callout-tip .callout-title { color: var(--accent); }
+    .callout-check { background: rgba(16,185,129,0.06); border-color: var(--success); }
+    .callout-check .callout-title { color: var(--success); }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(88,166,255,0.2); color: #79c0ff; }
+    .badge-cyan { background: rgba(6,182,212,0.2); color: #22d3ee; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    @media (max-width: 640px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+    .pillar-badge { font-size: 11px; padding: 3px 10px; border-radius: 4px; font-weight: 600; }
+
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; text-decoration: none; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-watch { font-size: 12px; color: var(--accent); text-decoration: none; }
+    .video-watch:hover { text-decoration: underline; }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(88,166,255,0.08), rgba(0,0,0,0)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; margin-bottom: 40px; }
+    .checkpoint-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(255,255,255,0.03); border-radius: 6px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; font-size: 14px; }
+
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+
+    .footer { display: flex; justify-content: space-between; align-items: center; padding: 24px 0; margin-top: 32px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); }
+    .footer a { color: var(--muted); text-decoration: none; }
+    .footer a:hover { color: var(--text); }
+
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #79c0ff; }
+
+    .terminal { background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .terminal-bar { background: #1a1a1a; padding: 8px 14px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ef4444; } .dot-yellow { background: #f59e0b; } .dot-green { background: #10b981; }
+    .terminal-title { font-size: 11px; color: #555; margin-left: 6px; }
+    .terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; }
+    .t-prompt { color: #58a6ff; } .t-cmd { color: #e8e8f0; } .t-out { color: #8585a8; } .t-comment { color: #555; font-style: italic; }
+
+    .security-layer { display: flex; align-items: flex-start; gap: 16px; padding: 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin: 12px 0; border-left: 3px solid var(--accent); }
+    .security-icon { font-size: 26px; flex-shrink: 0; }
+    .security-name { font-weight: 700; color: #fff; margin-bottom: 4px; }
+    .security-desc { color: var(--muted); font-size: 13px; }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar"></div>
+  </div>
+
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="n8n-03-integracoes.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">🐙 GitHub</span> · Aula 30 / 50
+      </div>
+      <a href="js-06-react.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>🐙 GitHub</span>
+        <span class="hero-badge">Aula 30</span>
+      </div>
+      <h1>GitHub Avançado — Segurança & Packages</h1>
+      <div class="hero-meta">
+        <span>⏱ ~50 min de leitura</span>
+        <span>🎯 Avançado</span>
+        <span>🔧 Hands-on incluído</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">Branch Protection</span>
+        <span class="tag accent">Dependabot</span>
+        <span class="tag accent">CodeQL</span>
+        <span class="tag accent">GitHub Packages</span>
+        <span class="tag accent">gh CLI</span>
+        <span class="tag accent">GitHub API</span>
+        <span class="tag accent">Codespaces</span>
+        <span class="tag">SAST</span>
+        <span class="tag">supply chain</span>
+        <span class="tag">DevSecOps</span>
+      </div>
+    </div>
+
+    <!-- 1. POR QUE IMPORTA -->
+    <div class="section">
+      <div class="section-label">// motivação</div>
+      <h2>Por que isso importa?</h2>
+      <p>
+        Um repositório sem proteções é uma porta aberta. Qualquer desenvolvedor pode dar push direto na main, uma dependência desatualizada pode ter uma vulnerabilidade crítica, e um token exposto no código pode comprometer toda a infraestrutura. Em ambientes de produção, <strong>segurança não é opcional — é requisito de entrada</strong>.
+      </p>
+      <p>
+        Nesta aula você vai aprender as <strong>5 camadas de segurança e governança do GitHub</strong>: proteger branches, automatizar atualizações de dependências, escanear código em busca de vulnerabilidades, publicar pacotes de forma controlada e automatizar o próprio GitHub com a CLI e API. Tudo isso são habilidades que qualquer tech lead ou engenheiro sênior precisa dominar.
+      </p>
+      <div class="callout callout-info">
+        <div class="callout-title">💼 Por que um engenheiro sênior usa isso hoje</div>
+        Em times grandes, você não pode confiar que todos vão seguir as boas práticas manualmente. Engenheiros sêniors <strong>automatizam a governança</strong>: branch rules garantem que código não revisado nunca chega à produção, Dependabot fecha CVEs antes que virem incidentes, CodeQL detecta SQL injection e XSS antes do deploy. Isso se chama <strong>DevSecOps</strong> — segurança integrada no pipeline, não checada depois.
+      </div>
+    </div>
+
+    <!-- 2. ANALOGIA -->
+    <div class="section">
+      <div class="section-label">// analogia</div>
+      <h2>Antes do código: uma analogia</h2>
+      <div class="analogy-card">
+        <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
+        <div class="analogy-text">
+          Pense no seu repositório como uma <strong>agência bancária</strong>. O banco tem múltiplas camadas de segurança que operam em paralelo, não em sequência: o cofre tem travas que requerem duas chaves ao mesmo tempo (branch protection + required reviews), um sistema detecta automaticamente transações suspeitas (Dependabot + security alerts), guardas inspecionam cada pacote que entra no cofre (CodeQL), e há uma central de monitoramento que registra tudo e pode ser acionada remotamente (GitHub API & CLI).
+          <br><br>
+          Nenhuma dessas camadas protege sozinha — é a combinação delas que torna o sistema robusto.
+        </div>
+        <div class="analogy-mapping">
+          <span class="analogy-real">🔒 Travas do cofre com 2 chaves</span>
+          <span class="analogy-tech">→ Branch Protection + Required Reviews</span>
+          <span class="analogy-real">🚨 Detector de transações suspeitas</span>
+          <span class="analogy-tech">→ Dependabot Security Alerts</span>
+          <span class="analogy-real">🔍 Inspeção de cada pacote</span>
+          <span class="analogy-tech">→ CodeQL / SAST Scanning</span>
+          <span class="analogy-real">📡 Central de monitoramento remota</span>
+          <span class="analogy-tech">→ GitHub API & gh CLI</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. CONCEITO CENTRAL — CAMADAS DE SEGURANÇA -->
+    <div class="section">
+      <div class="section-label">// conceito central</div>
+      <h2>As 5 camadas de segurança do GitHub</h2>
+
+      <div class="security-layer">
+        <div class="security-icon">🛡️</div>
+        <div>
+          <div class="security-name">1. Branch Protection Rules</div>
+          <div class="security-desc">Impede push direto na main, exige reviews obrigatórios, bloqueia merge sem CI passando. A primeira linha de defesa contra código não revisado.</div>
+        </div>
+      </div>
+      <div class="security-layer">
+        <div class="security-icon">🤖</div>
+        <div>
+          <div class="security-name">2. Dependabot</div>
+          <div class="security-desc">Monitora dependências do projeto e abre PRs automáticos quando há atualizações de segurança ou versões novas disponíveis.</div>
+        </div>
+      </div>
+      <div class="security-layer">
+        <div class="security-icon">🔬</div>
+        <div>
+          <div class="security-name">3. Code Scanning (CodeQL)</div>
+          <div class="security-desc">Análise estática automática que detecta vulnerabilidades como SQL injection, XSS, path traversal e credenciais expostas no código.</div>
+        </div>
+      </div>
+      <div class="security-layer">
+        <div class="security-icon">📦</div>
+        <div>
+          <div class="security-name">4. GitHub Packages</div>
+          <div class="security-desc">Registry privado ou público para publicar e consumir pacotes npm, Docker, PyPI e Maven. Integrado ao repositório e à autenticação do GitHub.</div>
+        </div>
+      </div>
+      <div class="security-layer">
+        <div class="security-icon">⚡</div>
+        <div>
+          <div class="security-name">5. GitHub API & gh CLI</div>
+          <div class="security-desc">Automação do próprio GitHub: criar issues, gerenciar PRs, configurar repositórios e orquestrar workflows — tudo programaticamente.</div>
+        </div>
+      </div>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// pipeline seguro — do commit ao deploy</div>
+        <div class="mermaid">
+flowchart LR
+    DEV["👩‍💻 Developer\ncommit + push"] --> BP["🛡️ Branch\nProtection\n(PR obrigatório)"]
+    BP --> CI["⚙️ CI Pipeline\n(tests + lint)"]
+    CI --> CQL["🔬 CodeQL\n(SAST scan)"]
+    CQL --> REV["👥 Code Review\n(2 approvals)"]
+    REV --> MRG["✅ Merge\n→ main"]
+    MRG --> DEP["🚀 Deploy\n→ produção"]
+    DB["🤖 Dependabot"] -.->|"PRs automáticos\npara deps"| BP
+    style DEV fill:#111118,stroke:#58a6ff,color:#e8e8f0
+    style BP fill:#111118,stroke:#58a6ff,color:#e8e8f0
+    style CI fill:#111118,stroke:#f59e0b,color:#e8e8f0
+    style CQL fill:#111118,stroke:#ef4444,color:#e8e8f0
+    style REV fill:#111118,stroke:#10b981,color:#e8e8f0
+    style MRG fill:#10b981,stroke:#34d399,color:#000
+    style DEP fill:#111118,stroke:#10b981,color:#e8e8f0
+    style DB fill:#111118,stroke:#8b5cf6,color:#e8e8f0
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. BRANCH PROTECTION -->
+    <div class="section">
+      <div class="section-label">// camada 1</div>
+      <h2>Branch Protection Rules</h2>
+      <p>
+        Branch protection rules são configurações aplicadas a branches específicos (como <code>main</code> ou <code>release/*</code>) que definem quem pode fazer o quê — e o que deve acontecer antes de um merge ser permitido.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Regra</th><th>O que faz</th><th>Quando usar</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Require PR reviews</strong></td>
+              <td>Bloqueia merge sem N aprovações de outros devs</td>
+              <td>Sempre em projetos com time ≥ 2 pessoas</td>
+            </tr>
+            <tr>
+              <td><strong>Require status checks</strong></td>
+              <td>Bloqueia merge se CI falhar (testes, lint, build)</td>
+              <td>Todo projeto com Actions configurados</td>
+            </tr>
+            <tr>
+              <td><strong>Require conversation resolution</strong></td>
+              <td>Exige que todos os comentários de review sejam resolvidos</td>
+              <td>Times que usam review como checklist</td>
+            </tr>
+            <tr>
+              <td><strong>Restrict who can push</strong></td>
+              <td>Apenas pessoas/teams específicos podem fazer push</td>
+              <td>Branches de release e hotfix</td>
+            </tr>
+            <tr>
+              <td><strong>Require signed commits</strong></td>
+              <td>Apenas commits com GPG assinados são aceitos</td>
+              <td>Projetos com requisitos de compliance</td>
+            </tr>
+            <tr>
+              <td><strong>Require linear history</strong></td>
+              <td>Proíbe merge commits — só rebase ou squash</td>
+              <td>Times que preferem histórico limpo</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Configurando via gh CLI</h3>
+      <div class="terminal">
+        <div class="terminal-bar"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span><span class="terminal-title">gh CLI</span></div>
+        <div class="terminal-body">
+          <span class="t-comment"># Criar branch protection rule via API</span><br>
+          <span class="t-prompt">$</span> <span class="t-cmd">gh api repos/OWNER/REPO/branches/main/protection \</span><br>
+          <span class="t-cmd">&nbsp;&nbsp;-X PUT \</span><br>
+          <span class="t-cmd">&nbsp;&nbsp;--field required_status_checks='{"strict":true,"contexts":["ci/tests"]}' \</span><br>
+          <span class="t-cmd">&nbsp;&nbsp;--field enforce_admins=true \</span><br>
+          <span class="t-cmd">&nbsp;&nbsp;--field required_pull_request_reviews='{"required_approving_review_count":2}' \</span><br>
+          <span class="t-cmd">&nbsp;&nbsp;--field restrictions=null</span><br>
+          <br>
+          <span class="t-comment"># Ver status das regras de um branch</span><br>
+          <span class="t-prompt">$</span> <span class="t-cmd">gh api repos/OWNER/REPO/branches/main/protection</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. DEPENDABOT -->
+    <div class="section">
+      <div class="section-label">// camada 2</div>
+      <h2>Dependabot — atualizações automáticas</h2>
+      <p>
+        O Dependabot monitora o arquivo de dependências do seu projeto (<code>package.json</code>, <code>requirements.txt</code>, <code>Dockerfile</code>, etc.) e abre PRs automaticamente quando:
+      </p>
+      <ul style="padding-left: 20px; margin-bottom: 16px; color: var(--text);">
+        <li>Uma <strong>vulnerabilidade de segurança</strong> (CVE) é encontrada numa dependência</li>
+        <li>Uma <strong>versão nova</strong> da dependência é publicada (se configurado)</li>
+      </ul>
+
+      <div class="grid-2">
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(239,68,68,0.2);color:#f87171;">Security Alerts</span>
+          <h4>Alertas automáticos</h4>
+          <p>Notifica quando uma dependência do seu projeto tem CVE conhecido. Aparece em Security → Dependabot alerts no repositório.</p>
+        </div>
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(88,166,255,0.2);color:#79c0ff;">Version Updates</span>
+          <h4>PRs de atualização</h4>
+          <p>Configura via <code>dependabot.yml</code> para abrir PRs semanalmente/mensalmente com atualizações de patch, minor ou major.</p>
+        </div>
+      </div>
+
+      <div class="code-label">.github/dependabot.yml — configuração completa</div>
+      <pre><code class="language-yaml">version: 2
+updates:
+  # Dependências npm/Node.js
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Sao_Paulo"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "seu-usuario"
+    labels:
+      - "dependencies"
+      - "javascript"
+    ignore:
+      # Evitar major bumps automáticos (pode quebrar)
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+
+  # Dependências Python
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "python"
+
+  # Actions do GitHub — crítico para segurança!
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "github-actions"
+
+  # Imagens Docker base
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    labels:
+      - "dependencies"
+      - "docker"</code></pre>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Ative também o Dependabot para GitHub Actions</div>
+        Actions que usam <code>actions/checkout@v2</code> (versão fixada) podem ter vulnerabilidades. Configure o Dependabot para <code>github-actions</code> também — é um vetor de ataque frequentemente ignorado.
+      </div>
+    </div>
+
+    <!-- 6. CODEQL -->
+    <div class="section">
+      <div class="section-label">// camada 3</div>
+      <h2>Code Scanning & CodeQL — SAST no CI</h2>
+      <p>
+        CodeQL é a engine de análise estática do GitHub. Ela trata o código como um banco de dados e executa <strong>queries de segurança</strong> para encontrar padrões de vulnerabilidade — SQL injection, XSS, path traversal, credenciais hardcoded, deserialização insegura.
+      </p>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">💡 SAST vs DAST</div>
+        <strong>SAST (Static Analysis)</strong>: analisa o código fonte sem executar. Detecta vulnerabilidades antes do deploy. Rápido, sem falsos negativos de runtime.<br>
+        <strong>DAST (Dynamic Analysis)</strong>: executa a aplicação e testa em tempo real. Complementar ao SAST. Mais lento, detecta problemas de configuração e runtime.
+      </div>
+
+      <div class="code-label">.github/workflows/codeql.yml — análise automática em cada PR</div>
+      <pre><code class="language-yaml">name: "CodeQL Security Analysis"
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    # Rodar toda segunda às 8h — detecta CVEs novas em código existente
+    - cron: '0 8 * * 1'
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write  # necessário para publicar alertas
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'javascript', 'python' ]
+        # Suporte: javascript, python, java, go, csharp, cpp, ruby, swift
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: ${{ matrix.language }}
+        # Queries extras de segurança (mais abrangentes)
+        queries: security-extended
+
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v3
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:${{matrix.language}}"</code></pre>
+
+      <p>Após o workflow rodar, os resultados aparecem em <strong>Security → Code scanning alerts</strong>. Cada alerta indica o arquivo, linha, severidade (critical/high/medium/low) e uma explicação da vulnerabilidade com sugestão de fix.</p>
+    </div>
+
+    <!-- 7. GITHUB PACKAGES -->
+    <div class="section">
+      <div class="section-label">// camada 4</div>
+      <h2>GitHub Packages — seu registry privado</h2>
+      <p>
+        GitHub Packages é um registry integrado ao GitHub que suporta npm, Docker, Maven, NuGet, RubyGems e Gradle. A vantagem é que a autenticação usa o próprio token do GitHub — sem precisar gerenciar credenciais separadas.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Formato</th><th>URL do Registry</th><th>Caso de uso</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>npm</strong></td>
+              <td><code>npm.pkg.github.com</code></td>
+              <td>Bibliotecas JS/TS compartilhadas entre projetos</td>
+            </tr>
+            <tr>
+              <td><strong>Docker</strong></td>
+              <td><code>ghcr.io</code></td>
+              <td>Imagens Docker privadas para CI/CD e deploy</td>
+            </tr>
+            <tr>
+              <td><strong>PyPI (pip)</strong></td>
+              <td><code>pypi.pkg.github.com</code></td>
+              <td>Pacotes Python internos (utils, SDKs)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Publicar imagem Docker no GHCR</h3>
+      <div class="code-label">.github/workflows/docker-publish.yml</div>
+      <pre><code class="language-yaml">name: Build & Publish Docker Image
+
+on:
+  push:
+    branches: [ "main" ]
+  release:
+    types: [published]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write  # necessário para push no GHCR
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Log in to GHCR
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}  # token automático do Actions
+
+    - name: Extract metadata (tags, labels)
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ghcr.io/${{ github.repository }}
+        tags: |
+          type=ref,event=branch
+          type=semver,pattern={{version}}
+          type=sha,prefix=sha-
+
+    - name: Build and push
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max</code></pre>
+
+      <div class="terminal">
+        <div class="terminal-bar"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span><span class="terminal-title">Pull da imagem do GHCR</span></div>
+        <div class="terminal-body">
+          <span class="t-comment"># Autenticar com token pessoal</span><br>
+          <span class="t-prompt">$</span> <span class="t-cmd">echo $GITHUB_TOKEN | docker login ghcr.io -u seu-usuario --password-stdin</span><br>
+          <br>
+          <span class="t-comment"># Fazer pull da imagem</span><br>
+          <span class="t-prompt">$</span> <span class="t-cmd">docker pull ghcr.io/OWNER/REPO:main</span><br>
+          <span class="t-out">main: Pulling from OWNER/REPO</span><br>
+          <span class="t-out">Digest: sha256:abc123...</span><br>
+          <span class="t-out">Status: Downloaded newer image for ghcr.io/OWNER/REPO:main</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. GH CLI -->
+    <div class="section">
+      <div class="section-label">// camada 5</div>
+      <h2>GitHub CLI (gh) — automatizar o GitHub</h2>
+      <p>
+        O <code>gh</code> é a CLI oficial do GitHub que permite fazer praticamente tudo que você faz na interface web — criar PRs, gerenciar issues, rodar workflows, ver logs — tudo no terminal e scriptável.
+      </p>
+
+      <div class="terminal">
+        <div class="terminal-bar"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span><span class="terminal-title">gh CLI — comandos essenciais</span></div>
+        <div class="terminal-body">
+          <span class="t-comment"># Autenticar</span><br>
+          <span class="t-prompt">$</span> <span class="t-cmd">gh auth login</span><br>
+          <br>
+          <span class="t-comment"># Criar PR com template</span><br>
+          <span class="t-prompt">$</span> <span class="t-cmd">gh pr create --title "feat: add payment gateway" --body "## Summary\n- Integra Stripe\n- Adiciona testes" --reviewer colega1,colega2</span><br>
+          <br>
+          <span class="t-comment"># Ver status de todos os PRs</span><br>
+          <span class="t-prompt">$</span> <span class="t-cmd">gh pr list --state open</span><br>
+          <span class="t-out">ID  TITLE                        BRANCH         STATUS</span><br>
+          <span class="t-out">#42 feat: add payment gateway     feature/stripe  Open</span><br>
+          <br>
+          <span class="t-comment"># Rodar workflow manualmente</span><br>
+          <span class="t-prompt">$</span> <span class="t-cmd">gh workflow run deploy.yml --field environment=staging</span><br>
+          <br>
+          <span class="t-comment"># Ver logs de uma run específica</span><br>
+          <span class="t-prompt">$</span> <span class="t-cmd">gh run view 12345 --log</span><br>
+          <br>
+          <span class="t-comment"># Criar issue a partir de template</span><br>
+          <span class="t-prompt">$</span> <span class="t-cmd">gh issue create --title "Bug: login falha em Safari" --label "bug,priority:high" --assignee @me</span><br>
+          <br>
+          <span class="t-comment"># Clonar e abrir PR em um comando</span><br>
+          <span class="t-prompt">$</span> <span class="t-cmd">gh repo clone OWNER/REPO && cd REPO && gh pr checkout 42</span>
+        </div>
+      </div>
+
+      <h3>GitHub API — scripting avançado</h3>
+      <p>Para casos mais complexos, a API REST e GraphQL do GitHub permitem qualquer operação programaticamente. O <code>gh api</code> é um atalho conveniente que já inclui autenticação:</p>
+
+      <div class="code-label">exemplos de uso da GitHub API via gh</div>
+      <pre><code class="language-bash"># Listar todos os repositórios de uma organização
+gh api orgs/MINHA-ORG/repos --paginate --jq '.[].name'
+
+# Criar repository secret
+gh secret set DATABASE_URL --body "postgresql://user:pass@host/db" --repo OWNER/REPO
+
+# Obter métricas de CI (tempo médio de build dos últimos 10 runs)
+gh api repos/OWNER/REPO/actions/workflows/ci.yml/runs \
+  --jq '[.workflow_runs[:10] | .[].run_duration_ms] | add / length / 1000 | "\(.) segundos"'
+
+# Fechar todas as issues com label "wontfix"
+gh issue list --label "wontfix" --json number --jq '.[].number' | \
+  xargs -I{} gh issue close {}
+
+# Criar release com changelog automático
+gh release create v1.2.0 \
+  --title "Release 1.2.0" \
+  --generate-notes \
+  --target main</code></pre>
+    </div>
+
+    <!-- 9. HANDS-ON -->
+    <div class="section">
+      <div class="section-label">// prática</div>
+      <h2>Mãos na massa: blindar um repositório do zero</h2>
+      <p>Vamos configurar todas as camadas de segurança em um repositório real:</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Ativar Branch Protection na main</div>
+            <div class="step-desc">Settings → Branches → Add rule → <code>main</code> → marque: Require PR reviews (2), Require status checks, Require conversation resolution, Include administrators</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Criar .github/dependabot.yml</div>
+            <div class="step-desc">Use o template acima. Commit → aguarde o primeiro PR do Dependabot (normalmente aparece em horas)</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Criar .github/workflows/codeql.yml</div>
+            <div class="step-desc">Use o template acima com as linguagens do seu projeto. Após o push, veja os resultados em Security → Code scanning alerts</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Ativar Secret Scanning</div>
+            <div class="step-desc">Settings → Security → Secret scanning → Enable. O GitHub vai varrer o histórico inteiro em busca de tokens, API keys e passwords expostos</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Configurar CODEOWNERS</div>
+            <div class="step-desc">Crie <code>.github/CODEOWNERS</code> para definir revisores obrigatórios por área do código</div>
+            <pre><code class="language-bash"># .github/CODEOWNERS
+# Revisores globais
+*                   @OWNER/team-leads
+
+# Backend requer review do time de backend
+/src/api/           @OWNER/backend-team
+/src/database/      @OWNER/backend-team
+
+# Frontend requer review do time de design
+/src/components/    @OWNER/frontend-team
+
+# Infra requer review do time de DevOps
+/infrastructure/    @OWNER/devops-team
+/.github/           @OWNER/devops-team</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10. CODESPACES -->
+    <div class="section">
+      <div class="section-label">// bônus</div>
+      <h2>GitHub Codespaces — dev environment na nuvem</h2>
+      <p>
+        Codespaces cria um ambiente de desenvolvimento completo na nuvem, configurado via <code>devcontainer.json</code>. Qualquer colaborador pode contribuir com um clique — sem instalar nada localmente.
+      </p>
+
+      <div class="code-label">.devcontainer/devcontainer.json — configuração de ambiente</div>
+      <pre><code class="language-json">{
+  "name": "Meu Projeto Dev",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "20" },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "postCreateCommand": "pip install -r requirements.txt && npm install",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "python.defaultInterpreterPath": "/usr/local/bin/python"
+      }
+    }
+  },
+  "forwardPorts": [3000, 8000, 5432],
+  "remoteEnv": {
+    "DATABASE_URL": "${localEnv:DATABASE_URL}"
+  }
+}</code></pre>
+    </div>
+
+    <!-- 11. PITFALLS -->
+    <div class="section">
+      <div class="section-label">// armadilhas</div>
+      <h2>Erros comuns em segurança no GitHub</h2>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Branch protection sem "Include administrators" — admin faz push direto</div>
+        <p style="color: var(--text); font-size: 14px; margin-bottom: 8px;">Por padrão, administradores conseguem contornar as regras de branch protection. Em incidentes de pressão, isso vira atalho perigoso.</p>
+        <p style="color: var(--muted); font-size: 13px;">✅ Solução: sempre marque <strong>"Include administrators"</strong> nas branch protection rules. Ninguém está acima das regras de segurança.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Dependabot abrindo 50 PRs de uma vez — todo o time ignora</div>
+        <p style="color: var(--text); font-size: 14px; margin-bottom: 8px;">Se configurado sem limites, o Dependabot pode abrir dezenas de PRs simultaneamente, causando fadiga de alertas e sendo ignorado.</p>
+        <p style="color: var(--muted); font-size: 13px;">✅ Solução: defina <code>open-pull-requests-limit: 5</code> no dependabot.yml. Priorize atualizações de segurança — configure grouping para agrupar várias atualizações de um mesmo ecossistema em um único PR.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ GITHUB_TOKEN com permissões desnecessárias no Actions</div>
+        <p style="color: var(--text); font-size: 14px; margin-bottom: 8px;">Por padrão em alguns repos, o GITHUB_TOKEN tem permissões amplas de read/write. Se uma Action maliciosa for injetada via supply chain, ela tem acesso completo.</p>
+        <p style="color: var(--muted); font-size: 13px;">✅ Solução: defina permissões mínimas no workflow. Use <code>permissions: read-all</code> no topo do arquivo e adicione explicitamente apenas o que precisar (ex: <code>packages: write</code>).</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Usar Actions de terceiros por branch em vez de hash</div>
+        <p style="color: var(--text); font-size: 14px; margin-bottom: 8px;"><code>uses: actions/checkout@main</code> — se o repositório da action for comprometido, o código malicioso roda nos seus pipelines imediatamente.</p>
+        <p style="color: var(--muted); font-size: 13px;">✅ Solução: sempre pin com hash: <code>uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2</code>. O Dependabot mantém os hashes atualizados automaticamente.</p>
+      </div>
+    </div>
+
+    <!-- 12. VÍDEOS -->
+    <div class="section">
+      <div class="section-label">// curadoria</div>
+      <h2>Referências em vídeo</h2>
+      <div class="video-grid">
+        <a class="video-card" href="https://www.youtube.com/@GitHub" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">GitHub — Advanced Security Overview</div>
+            <div class="video-channel">GitHub · Canal oficial</div>
+            <div class="video-why">Por que assistir: demonstrações oficiais de CodeQL, Secret Scanning e Dependabot em repositórios reais. Atualizado com cada release.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+        <a class="video-card" href="https://www.youtube.com/watch?v=8lp_nHicYd4" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">GitHub CLI in 10 Minutes — Everything You Need</div>
+            <div class="video-channel">Fireship · ~10 min</div>
+            <div class="video-why">Por que assistir: overview rápido e prático do gh CLI com os casos de uso mais comuns. Típico estilo Fireship — denso e eficiente.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+        <a class="video-card" href="https://www.youtube.com/watch?v=UEOtZvTCmDo" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">GitHub Actions Security Best Practices</div>
+            <div class="video-channel">DevSecOps · ~25 min</div>
+            <div class="video-why">Por que assistir: cobre em profundidade as armadilhas de segurança no GitHub Actions, incluindo supply chain attacks e como mitigar com hashes.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+        <a class="video-card" href="https://docs.github.com/en/code-security" target="_blank">
+          <div class="video-thumb">📖</div>
+          <div class="video-info">
+            <div class="video-title">GitHub Docs — Code Security</div>
+            <div class="video-channel">docs.github.com · Referência oficial</div>
+            <div class="video-why">Por que consultar: documentação completa de todas as features de segurança, com guias passo a passo para cada configuração.</div>
+            <span class="video-watch">Acessar →</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- CHECKPOINT -->
+    <div class="checkpoint">
+      <div class="checkpoint-label">// desafio</div>
+      <h3>🏁 Checkpoint — valide seu aprendizado</h3>
+      <p>Configure um <strong>repositório de produção seguro</strong> do zero:</p>
+      <ul>
+        <li>Criar branch protection na main: 2 reviews obrigatórios, CI deve passar, include admins</li>
+        <li>Adicionar <code>.github/dependabot.yml</code> cobrindo pelo menos 2 ecossistemas + github-actions</li>
+        <li>Adicionar <code>.github/workflows/codeql.yml</code> para a linguagem principal do projeto</li>
+        <li>Criar <code>.github/CODEOWNERS</code> com pelo menos 2 regras por área do código</li>
+        <li>Fazer um PR de teste e verificar que todas as proteções estão funcionando</li>
+        <li>Usar <code>gh pr list</code> e <code>gh run list</code> no terminal</li>
+      </ul>
+      <div class="checkpoint-hint">💬 Dica: use o repositório <code>curso-roadmaps</code> que você já criou! É o ambiente perfeito para testar essas configurações em algo real.</div>
+    </div>
+
+    <!-- PRÓXIMA AULA -->
+    <a href="js-06-react.html" class="next-card">
+      <div>
+        <div class="next-card-label">Próxima aula →</div>
+        <div class="next-card-title">React 18 — Componentes, Hooks & Estado</div>
+      </div>
+      <div class="next-arrow">→</div>
+    </a>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      <span>🐙 GitHub · Aula 30 / 50</span>
+      <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+    </div>
+
+  </div><!-- /page -->
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      document.querySelector('.progress-bar-fill').style.width = progress + '%';
+    });
+    mermaid.initialize({
+      startOnLoad: true, theme: 'dark',
+      themeVariables: { primaryColor: '#58a6ff', primaryTextColor: '#e8e8f0', primaryBorderColor: 'rgba(88,166,255,0.5)', lineColor: '#8585a8', background: '#111118', mainBkg: '#16161f' }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>n8n — Integrações Reais · Aula 29</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #10b981;
+      --accent-dim: rgba(16,185,129,0.15);
+      --accent-border: rgba(16,185,129,0.35);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #10b981, #34d399); width: 0%; transition: width 0.1s; }
+
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; cursor: default; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #34d399; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.08); border-color: var(--success); }
+    .callout-tip .callout-title { color: var(--success); }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(88,166,255,0.2); color: #79c0ff; }
+    .badge-cyan { background: rgba(6,182,212,0.2); color: #22d3ee; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    @media (max-width: 640px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+    .pillar-badge { font-size: 11px; padding: 3px 10px; border-radius: 4px; font-weight: 600; }
+
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; text-decoration: none; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-watch { font-size: 12px; color: var(--accent); text-decoration: none; }
+    .video-watch:hover { text-decoration: underline; }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(0,0,0,0)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; margin-bottom: 40px; }
+    .checkpoint-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(255,255,255,0.03); border-radius: 6px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; font-size: 14px; }
+
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+
+    .footer { display: flex; justify-content: space-between; align-items: center; padding: 24px 0; margin-top: 32px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); }
+    .footer a { color: var(--muted); text-decoration: none; }
+    .footer a:hover { color: var(--text); }
+
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #34d399; }
+
+    .terminal { background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .terminal-bar { background: #1a1a1a; padding: 8px 14px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ef4444; } .dot-yellow { background: #f59e0b; } .dot-green { background: #10b981; }
+    .terminal-title { font-size: 11px; color: #555; margin-left: 6px; }
+    .terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; }
+    .t-prompt { color: #10b981; } .t-cmd { color: #e8e8f0; } .t-out { color: #8585a8; } .t-comment { color: #555; font-style: italic; }
+
+    .node-visual { display: flex; align-items: center; gap: 0; flex-wrap: wrap; margin: 20px 0; }
+    .node-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 20px; text-align: center; min-width: 110px; }
+    .node-box.active { border-color: var(--accent-border); background: var(--accent-dim); }
+    .node-icon { font-size: 22px; margin-bottom: 4px; }
+    .node-name { font-size: 11px; font-weight: 700; color: #fff; }
+    .node-type { font-size: 10px; color: var(--muted); margin-top: 2px; }
+    .node-arrow { color: var(--accent); font-size: 20px; padding: 0 8px; align-self: center; }
+
+    .integration-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin: 16px 0; border-left: 3px solid var(--accent); }
+    .integration-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .integration-icon { font-size: 28px; }
+    .integration-name { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .integration-type { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar"></div>
+  </div>
+
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="n8n-02-nodes-logica.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">🔀 n8n</span> · Aula 29 / 50
+      </div>
+      <a href="gh-06-seguranca-packages.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>🔀 n8n</span>
+        <span class="hero-badge">Aula 29</span>
+      </div>
+      <h1>n8n — Integrações Reais</h1>
+      <div class="hero-meta">
+        <span>⏱ ~55 min de leitura</span>
+        <span>🎯 Intermediário</span>
+        <span>🔧 Hands-on incluído</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">Google Sheets</span>
+        <span class="tag accent">Telegram</span>
+        <span class="tag accent">Slack</span>
+        <span class="tag accent">Email / Gmail</span>
+        <span class="tag accent">PostgreSQL</span>
+        <span class="tag accent">Notion</span>
+        <span class="tag accent">Airtable</span>
+        <span class="tag">OAuth2</span>
+        <span class="tag">webhooks</span>
+        <span class="tag">workflow completo</span>
+      </div>
+    </div>
+
+    <!-- 1. POR QUE IMPORTA -->
+    <div class="section">
+      <div class="section-label">// motivação</div>
+      <h2>Por que isso importa?</h2>
+      <p>
+        Saber criar workflows no n8n é apenas o começo. O verdadeiro poder da ferramenta aparece quando você <strong>conecta sistemas reais</strong> — Google Sheets que sua equipe já usa, Telegram para notificações instantâneas, bancos de dados onde seus dados vivem, Notion para documentação dinâmica. É aí que a automação sai do papel e economiza horas por semana.
+      </p>
+      <p>
+        Nesta aula vamos cobrir as <strong>6 categorias de integração mais usadas em produção</strong>: planilhas, mensageiros, e-mail, banco de dados, gerenciadores de projetos e ferramentas no-code. Para cada uma, você vai entender a autenticação, os nodes principais, os padrões mais usados e as armadilhas mais comuns.
+      </p>
+      <div class="callout callout-info">
+        <div class="callout-title">💼 Por que um engenheiro sênior domina isso</div>
+        Automação sem integração é script isolado. Engenheiros sêniors constroem <strong>pipelines de dados</strong> que capturam leads em formulários → salvam no Sheets → notificam no Slack → criam tickets no Notion → disparam e-mails de boas-vindas. Todo esse fluxo automatizado significa menos erros manuais, mais velocidade e dados sempre sincronizados. O n8n é o hub que cola tudo.
+      </div>
+    </div>
+
+    <!-- 2. ANALOGIA -->
+    <div class="section">
+      <div class="section-label">// analogia</div>
+      <h2>Antes do código: uma analogia</h2>
+      <div class="analogy-card">
+        <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
+        <div class="analogy-text">
+          Pense no n8n como o <strong>adaptador universal de viagem</strong>. Quando você viaja entre países, cada tomada tem um formato diferente — Brasil usa padrão NBR, EUA usa plug tipo A, Europa usa tipo C. O adaptador universal recebe qualquer plug e entrega energia no formato que o aparelho precisa, sem que o aparelho saiba nada sobre a tomada original.
+          <br><br>
+          No mundo digital, cada serviço fala uma linguagem própria: Google Sheets usa OAuth + API REST, Telegram usa Bot Token, PostgreSQL usa TCP com credenciais. O n8n é o adaptador — você conecta qualquer serviço de qualquer lado e ele faz a tradução. Os dados fluem sem que os sistemas precisem conhecer uns aos outros.
+        </div>
+        <div class="analogy-mapping">
+          <span class="analogy-real">🔌 Tomada de energia do país A</span>
+          <span class="analogy-tech">→ API do Google Sheets (OAuth2)</span>
+          <span class="analogy-real">🔌 Tomada do país B</span>
+          <span class="analogy-tech">→ Bot API do Telegram (Token)</span>
+          <span class="analogy-real">🔌 Tomada do país C</span>
+          <span class="analogy-tech">→ PostgreSQL (host + credenciais)</span>
+          <span class="analogy-real">🔌 Adaptador universal</span>
+          <span class="analogy-tech">→ n8n (gerencia todas as auth)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. CONCEITO — AUTENTICAÇÃO -->
+    <div class="section">
+      <div class="section-label">// conceito central</div>
+      <h2>Autenticação: o pré-requisito de tudo</h2>
+      <p>
+        Antes de usar qualquer integração, você precisa configurar as <strong>Credentials</strong> no n8n. Cada serviço usa um método diferente. Entender esses padrões evita 80% das frustrações com integrações.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Serviço</th>
+              <th>Tipo de Auth</th>
+              <th>O que você precisa</th>
+              <th>Onde obter</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Google Sheets / Gmail</strong></td>
+              <td><span class="badge badge-blue">OAuth2</span></td>
+              <td>Client ID + Client Secret</td>
+              <td>Google Cloud Console → APIs & Services</td>
+            </tr>
+            <tr>
+              <td><strong>Telegram</strong></td>
+              <td><span class="badge badge-cyan">Bot Token</span></td>
+              <td>Token do bot</td>
+              <td>@BotFather no Telegram</td>
+            </tr>
+            <tr>
+              <td><strong>Slack</strong></td>
+              <td><span class="badge badge-blue">OAuth2</span></td>
+              <td>Bot Token (xoxb-...)</td>
+              <td>api.slack.com → Apps → OAuth</td>
+            </tr>
+            <tr>
+              <td><strong>PostgreSQL / MySQL</strong></td>
+              <td><span class="badge badge-yellow">Credenciais</span></td>
+              <td>Host, Porta, DB, User, Password</td>
+              <td>Seu provedor de banco de dados</td>
+            </tr>
+            <tr>
+              <td><strong>Notion</strong></td>
+              <td><span class="badge badge-cyan">API Key</span></td>
+              <td>Integration Token</td>
+              <td>notion.so/my-integrations</td>
+            </tr>
+            <tr>
+              <td><strong>Airtable</strong></td>
+              <td><span class="badge badge-cyan">API Key</span></td>
+              <td>Personal Access Token</td>
+              <td>airtable.com/create/tokens</td>
+            </tr>
+            <tr>
+              <td><strong>SMTP (Email)</strong></td>
+              <td><span class="badge badge-yellow">Credenciais</span></td>
+              <td>Host SMTP, Porta, User, Password</td>
+              <td>Configurações do provedor de e-mail</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// arquitetura — n8n como hub de integrações</div>
+        <div class="mermaid">
+flowchart TD
+    T["🎯 Trigger\n(Webhook / Schedule / Form)"] --> N8N["🔀 n8n\nOrchestrator"]
+    N8N --> GS["📊 Google Sheets\nSalvar dados"]
+    N8N --> TG["✈️ Telegram / Slack\nNotificação"]
+    N8N --> EM["📧 Email SMTP\nConfirmação"]
+    N8N --> DB["🗄️ PostgreSQL\nPersistir registro"]
+    N8N --> NO["📝 Notion / Airtable\nCriar task"]
+    style T fill:#111118,stroke:#10b981,color:#e8e8f0
+    style N8N fill:#10b981,stroke:#34d399,color:#000,font-weight:bold
+    style GS fill:#111118,stroke:#34d399,color:#e8e8f0
+    style TG fill:#111118,stroke:#34d399,color:#e8e8f0
+    style EM fill:#111118,stroke:#34d399,color:#e8e8f0
+    style DB fill:#111118,stroke:#34d399,color:#e8e8f0
+    style NO fill:#111118,stroke:#34d399,color:#e8e8f0
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. GOOGLE SHEETS -->
+    <div class="section">
+      <div class="section-label">// integração 1</div>
+      <h2>Google Sheets — a planilha que vira banco</h2>
+
+      <div class="integration-card">
+        <div class="integration-header">
+          <div class="integration-icon">📊</div>
+          <div>
+            <div class="integration-name">Google Sheets Node</div>
+            <div class="integration-type">Auth: OAuth2 — Categoria: Produtividade</div>
+          </div>
+        </div>
+        <p>O node do Google Sheets é um dos mais usados no n8n. Ele permite ler, escrever, atualizar e deletar dados em planilhas do Google, sem nenhuma linha de código.</p>
+      </div>
+
+      <h3>Operações principais</h3>
+      <div class="grid-2">
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(16,185,129,0.2);color:#34d399;">Append Row</span>
+          <h4>Adicionar linha</h4>
+          <p>Insere uma nova linha com os dados do item atual. Ideal para capturar respostas de formulários, logs e leads.</p>
+        </div>
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(6,182,212,0.2);color:#22d3ee;">Get All Rows</span>
+          <h4>Ler todas as linhas</h4>
+          <p>Retorna todas as linhas da planilha como items n8n. Perfeito para sincronizar dados ou processar listas em loop.</p>
+        </div>
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(245,158,11,0.2);color:#fbbf24;">Update Row</span>
+          <h4>Atualizar linha</h4>
+          <p>Atualiza células específicas usando um campo como chave (ex: ID ou e-mail). Usado para marcar status, atualizar timestamps.</p>
+        </div>
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(239,68,68,0.2);color:#f87171;">Delete Row</span>
+          <h4>Deletar linha</h4>
+          <p>Remove uma linha pelo número ou por uma condição. Use com cuidado — não tem undo nativo no n8n.</p>
+        </div>
+      </div>
+
+      <h3>Configuração passo a passo</h3>
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Como configurar OAuth2 com Google</div>
+        1. Acesse <strong>console.cloud.google.com</strong> → crie um projeto<br>
+        2. Ative a API: <strong>Google Sheets API</strong> e <strong>Google Drive API</strong><br>
+        3. Em "Credenciais" → Criar Credenciais → OAuth 2.0 Client ID<br>
+        4. Tipo: <strong>Aplicativo da Web</strong> → adicione <code>https://SEU-N8N/rest/oauth2-credential/callback</code> como URI de redirecionamento<br>
+        5. No n8n: Credentials → Google Sheets OAuth2 → cole Client ID e Client Secret → clique em "Sign in with Google"
+      </div>
+
+      <div class="code-label">exemplo: estrutura de dados para Append Row</div>
+      <pre><code class="language-json">// No node Google Sheets → Append Row:
+// Mapeie os campos da planilha com expressões n8n
+
+{
+  "Nome": "{{ $json.nome }}",
+  "Email": "{{ $json.email }}",
+  "Telefone": "{{ $json.telefone }}",
+  "Data": "{{ $now.toFormat('dd/MM/yyyy HH:mm') }}",
+  "Status": "Novo Lead",
+  "Origem": "{{ $json.utm_source || 'direto' }}"
+}</code></pre>
+    </div>
+
+    <!-- 5. TELEGRAM / SLACK -->
+    <div class="section">
+      <div class="section-label">// integração 2</div>
+      <h2>Telegram & Slack — notificações em tempo real</h2>
+
+      <div class="integration-card">
+        <div class="integration-header">
+          <div class="integration-icon">✈️</div>
+          <div>
+            <div class="integration-name">Telegram Node</div>
+            <div class="integration-type">Auth: Bot Token — Categoria: Comunicação</div>
+          </div>
+        </div>
+        <p>O Telegram é a escolha número 1 para notificações de automação por ser simples, gratuito e ter bots sem custo. Em 2 minutos você cria um bot e começa a receber alertas de qualquer workflow.</p>
+      </div>
+
+      <h3>Criar um bot Telegram</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Fale com o @BotFather</div>
+            <div class="step-desc">No Telegram, busque @BotFather → envie <code>/newbot</code> → escolha um nome e username para o bot</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Guarde o token</div>
+            <div class="step-desc">O BotFather vai te enviar um token no formato <code>1234567890:ABCdefGHIjklMNOpqrsTUVwxyz</code> — guarde-o</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Obtenha seu Chat ID</div>
+            <div class="step-desc">Envie uma mensagem para o seu bot. Depois acesse: <code>https://api.telegram.org/botSEU_TOKEN/getUpdates</code> — o <code>chat.id</code> aparece no JSON de resposta</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Configure no n8n</div>
+            <div class="step-desc">Credentials → Telegram API → cole o token → no node Telegram: operação "Send Message", Chat ID e o texto com expressões</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-label">exemplo: mensagem formatada com HTML no Telegram</div>
+      <pre><code class="language-javascript">// No node Telegram → Send Message:
+// Parse Mode: HTML (suporta bold, italic, links)
+
+// Chat ID: {{ $env.TELEGRAM_CHAT_ID }}
+// Text:
+`🔔 <b>Novo Lead Capturado!</b>
+
+👤 <b>Nome:</b> {{ $json.nome }}
+📧 <b>Email:</b> {{ $json.email }}
+📱 <b>Telefone:</b> {{ $json.telefone }}
+🌐 <b>Origem:</b> {{ $json.utm_source || 'orgânico' }}
+🕐 <b>Data:</b> {{ $now.toFormat('dd/MM/yyyy HH:mm') }}
+
+<i>Acesse o CRM para mais detalhes.</i>`</code></pre>
+
+      <h3>Slack — alternativa corporativa</h3>
+      <p>Para ambientes corporativos, o Slack é mais comum. A configuração usa OAuth2 com um Bot Token. O padrão de uso é similar ao Telegram, mas com recursos adicionais como <em>blocks</em> para mensagens formatadas.</p>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Slack Blocks vs. Texto simples</div>
+        Para notificações simples, texto funciona. Para dashboards e alertas bonitos, use <strong>Slack Block Kit Builder</strong> (app.slack.com/block-kit-builder) para criar templates visuais e cole o JSON no campo "Blocks" do node Slack.
+      </div>
+    </div>
+
+    <!-- 6. EMAIL -->
+    <div class="section">
+      <div class="section-label">// integração 3</div>
+      <h2>Email — SMTP e Gmail</h2>
+
+      <p>Envio de e-mail é uma das automações mais pedidas. O n8n suporta dois nodes principais: <strong>Send Email</strong> (SMTP genérico) e <strong>Gmail</strong> (OAuth2 com funcionalidades extras como ler, mover e rotular e-mails).</p>
+
+      <div class="grid-2">
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(16,185,129,0.2);color:#34d399;">Send Email (SMTP)</span>
+          <h4>SMTP Genérico</h4>
+          <p>Funciona com qualquer provedor: Gmail, Outlook, SendGrid, Mailgun, Zoho. Configure host, porta (587/465), TLS e credenciais.</p>
+        </div>
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(88,166,255,0.2);color:#79c0ff;">Gmail Node</span>
+          <h4>Gmail via OAuth2</h4>
+          <p>Além de enviar, permite ler e-mails, buscar por label, mover para pastas e criar drafts. Ideal para automações de inbox.</p>
+        </div>
+      </div>
+
+      <h3>Configuração SMTP para Gmail</h3>
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Gmail exige App Password</div>
+        O Google bloqueou o uso de senha normal para SMTP. Para usar SMTP com Gmail você precisa de uma <strong>App Password</strong>:<br>
+        1. Ative <strong>2-Step Verification</strong> na conta Google<br>
+        2. Acesse: myaccount.google.com → Security → App Passwords<br>
+        3. Gere uma senha específica para o n8n<br>
+        4. No n8n: Use <code>smtp.gmail.com</code>, porta <code>587</code>, TLS: STARTTLS, e a App Password como senha
+      </div>
+
+      <div class="code-label">exemplo: e-mail HTML de boas-vindas</div>
+      <pre><code class="language-html">&lt;!-- No node Send Email → HTML Body --&gt;
+&lt;div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;"&gt;
+  &lt;h2 style="color: #10b981;"&gt;Olá, {{ $json.nome }}! 👋&lt;/h2&gt;
+  &lt;p&gt;Obrigado por se cadastrar. Seu acesso foi criado com sucesso.&lt;/p&gt;
+  &lt;div style="background: #f4f4f4; padding: 16px; border-radius: 8px; margin: 20px 0;"&gt;
+    &lt;strong&gt;Seus dados:&lt;/strong&gt;&lt;br&gt;
+    📧 Email: {{ $json.email }}&lt;br&gt;
+    🔑 Senha temporária: {{ $json.senha_temp }}
+  &lt;/div&gt;
+  &lt;p&gt;Acesse agora: &lt;a href="{{ $env.APP_URL }}"&gt;Entrar na plataforma&lt;/a&gt;&lt;/p&gt;
+  &lt;p style="color: #888; font-size: 12px;"&gt;Este e-mail foi enviado automaticamente.&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+    </div>
+
+    <!-- 7. BANCO DE DADOS -->
+    <div class="section">
+      <div class="section-label">// integração 4</div>
+      <h2>Banco de Dados — PostgreSQL, MySQL e MongoDB</h2>
+
+      <p>Quando os dados precisam persistir de forma estruturada — com relações, consultas complexas e transações — o caminho é o banco de dados. O n8n tem nodes nativos para PostgreSQL, MySQL, MariaDB, SQLite e MongoDB.</p>
+
+      <div class="integration-card">
+        <div class="integration-header">
+          <div class="integration-icon">🗄️</div>
+          <div>
+            <div class="integration-name">PostgreSQL Node</div>
+            <div class="integration-type">Auth: Host + Porta + Credenciais — O mais usado em produção</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Operação</th><th>Descrição</th><th>Exemplo de uso</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>Execute Query</code></td>
+              <td>Roda SQL puro — SELECTs complexos, JOINs, agregações</td>
+              <td>Relatórios, dashboards, auditorias</td>
+            </tr>
+            <tr>
+              <td><code>Insert</code></td>
+              <td>Insere um ou vários registros via mapeamento visual</td>
+              <td>Salvar leads, logs, eventos</td>
+            </tr>
+            <tr>
+              <td><code>Update</code></td>
+              <td>Atualiza registros usando uma coluna como chave</td>
+              <td>Mudar status, atualizar campos</td>
+            </tr>
+            <tr>
+              <td><code>Delete</code></td>
+              <td>Remove registros por condição</td>
+              <td>Limpeza de dados expirados</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="code-label">exemplo: insert + query encadeados no workflow</div>
+      <pre><code class="language-sql">-- Node 1: Execute Query — verificar se lead já existe
+SELECT id, email, created_at
+FROM leads
+WHERE email = '{{ $json.email }}'
+LIMIT 1;
+
+-- Node 2 (após IF verificar se veio resultado):
+-- Se não existe → Insert
+INSERT INTO leads (nome, email, telefone, origem, created_at)
+VALUES (
+  '{{ $json.nome }}',
+  '{{ $json.email }}',
+  '{{ $json.telefone }}',
+  '{{ $json.utm_source }}',
+  NOW()
+)
+RETURNING id;
+
+-- Se já existe → Update
+UPDATE leads
+SET ultimo_contato = NOW(),
+    total_visitas = total_visitas + 1
+WHERE email = '{{ $json.email }}';</code></pre>
+    </div>
+
+    <!-- 8. NOTION / AIRTABLE -->
+    <div class="section">
+      <div class="section-label">// integração 5</div>
+      <h2>Notion & Airtable — gerenciar projetos com automação</h2>
+
+      <div class="grid-2">
+        <div class="card-mini" style="border-left: 3px solid #8b5cf6;">
+          <span class="pillar-badge" style="background:rgba(139,92,246,0.2);color:#a78bfa;">Notion</span>
+          <h4>Base de conhecimento viva</h4>
+          <p>Crie páginas, database entries e blocos automaticamente. Ideal para logs de auditoria, documentação gerada por IA e kanban populado por workflows.</p>
+        </div>
+        <div class="card-mini" style="border-left: 3px solid #f59e0b;">
+          <span class="pillar-badge" style="background:rgba(245,158,11,0.2);color:#fbbf24;">Airtable</span>
+          <h4>Planilha + banco híbrido</h4>
+          <p>Insira e atualize records em Bases do Airtable. As views do Airtable (Grid, Gallery, Kanban) ficam automaticamente atualizadas com os dados dos seus workflows.</p>
+        </div>
+      </div>
+
+      <h3>Notion: configurar a integração</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Criar Integration no Notion</div>
+            <div class="step-desc">Acesse notion.so/my-integrations → New Integration → dê um nome → copie o <strong>Internal Integration Token</strong></div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Conectar ao Database</div>
+            <div class="step-desc">Abra o Database no Notion → clique nos 3 pontinhos (⋯) → <strong>Add connections</strong> → selecione sua integration</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Pegar o Database ID</div>
+            <div class="step-desc">A URL do database tem o formato <code>notion.so/WORKSPACE/DATABASE_ID?v=VIEW_ID</code> — copie o DATABASE_ID (32 chars)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-label">exemplo: criar página no Notion via n8n</div>
+      <pre><code class="language-json">// Node Notion → Create → Database Page
+// Database ID: {{ $env.NOTION_DB_LEADS }}
+// Properties (mapeadas para as colunas do seu database):
+{
+  "Nome": {
+    "title": [{ "text": { "content": "{{ $json.nome }}" } }]
+  },
+  "Email": {
+    "email": "{{ $json.email }}"
+  },
+  "Status": {
+    "select": { "name": "Novo" }
+  },
+  "Data de entrada": {
+    "date": { "start": "{{ $now.toISO() }}" }
+  },
+  "Origem": {
+    "rich_text": [{ "text": { "content": "{{ $json.utm_source || 'orgânico' }}" } }]
+  }
+}</code></pre>
+    </div>
+
+    <!-- 9. HANDS-ON -->
+    <div class="section">
+      <div class="section-label">// prática</div>
+      <h2>Mãos na massa: Workflow de Lead Capture completo</h2>
+      <p>
+        Vamos construir um workflow real e completo: um formulário web captura um lead → salva no Google Sheets → notifica no Telegram → envia e-mail de boas-vindas → cria entrada no Notion. Tudo automático.
+      </p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Criar o Trigger — Webhook</div>
+            <div class="step-desc">Node: <strong>Webhook</strong> → HTTP Method: POST → Path: <code>/lead-capture</code> → copie a URL de produção</div>
+            <div class="terminal">
+              <div class="terminal-bar"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span><span class="terminal-title">Testar com cURL</span></div>
+              <div class="terminal-body">
+                <span class="t-prompt">$</span> <span class="t-cmd">curl -X POST https://SEU-N8N/webhook/lead-capture \</span><br>
+                <span class="t-cmd">&nbsp;&nbsp;-H "Content-Type: application/json" \</span><br>
+                <span class="t-cmd">&nbsp;&nbsp;-d '{"nome":"João Silva","email":"joao@email.com","telefone":"11999999999","utm_source":"google"}'</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Validar dados — IF Node</div>
+            <div class="step-desc">Adicione um <strong>IF</strong> para garantir que o e-mail está presente: <code>{{ $json.email }}</code> is not empty. Caso inválido → retorne erro 400 com "Respond to Webhook".</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Salvar no Google Sheets</div>
+            <div class="step-desc">Node: <strong>Google Sheets</strong> → Append Row → selecione sua planilha → mapeie os campos (Nome, Email, Telefone, Data, Origem)</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Notificar no Telegram</div>
+            <div class="step-desc">Node: <strong>Telegram</strong> → Send Message → Chat ID do seu grupo/canal → mensagem formatada com os dados do lead</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Enviar e-mail de boas-vindas</div>
+            <div class="step-desc">Node: <strong>Send Email</strong> → From: seu@email.com → To: <code>{{ $json.email }}</code> → Subject: "Bem-vindo(a), {{ $json.nome }}!" → HTML Body com template</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <div class="step-title">Criar página no Notion</div>
+            <div class="step-desc">Node: <strong>Notion</strong> → Create → Database Page → mapeie as propriedades → retorne <code>200 OK</code> com "Respond to Webhook"</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="node-visual" style="flex-wrap: wrap; gap: 8px;">
+        <div class="node-box active"><div class="node-icon">🎯</div><div class="node-name">Webhook</div><div class="node-type">Trigger</div></div>
+        <div class="node-arrow">→</div>
+        <div class="node-box"><div class="node-icon">🔀</div><div class="node-name">IF Válido</div><div class="node-type">Validação</div></div>
+        <div class="node-arrow">→</div>
+        <div class="node-box"><div class="node-icon">📊</div><div class="node-name">G. Sheets</div><div class="node-type">Salvar</div></div>
+        <div class="node-arrow">→</div>
+        <div class="node-box"><div class="node-icon">✈️</div><div class="node-name">Telegram</div><div class="node-type">Notificar</div></div>
+        <div class="node-arrow">→</div>
+        <div class="node-box"><div class="node-icon">📧</div><div class="node-name">Email</div><div class="node-type">Boas-vindas</div></div>
+        <div class="node-arrow">→</div>
+        <div class="node-box"><div class="node-icon">📝</div><div class="node-name">Notion</div><div class="node-type">CRM</div></div>
+      </div>
+    </div>
+
+    <!-- 10. PITFALLS -->
+    <div class="section">
+      <div class="section-label">// armadilhas</div>
+      <h2>Erros comuns nas integrações</h2>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Rate Limits — a integração para de funcionar aleatoriamente</div>
+        <p style="color: var(--text); font-size: 14px; margin-bottom: 8px;">Google Sheets tem limite de 100 requests/100 segundos. Telegram tem limite de 30 mensagens/segundo. Se você processar uma lista grande em loop, vai estourar o rate limit.</p>
+        <p style="color: var(--muted); font-size: 13px;">✅ Solução: adicione um <strong>Wait</strong> node entre as iterações (1–2 segundos) ou use o modo "Batch" disponível em alguns nodes.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Credencial OAuth2 expira — workflow para às 3h da manhã</div>
+        <p style="color: var(--text); font-size: 14px; margin-bottom: 8px;">Tokens OAuth2 do Google expiram. O n8n renova automaticamente usando o refresh token, mas se a credencial foi criada sem o scope correto, a renovação falha silenciosamente.</p>
+        <p style="color: var(--muted); font-size: 13px;">✅ Solução: ao criar a credencial Google, certifique-se de que o consent screen inclui os scopes necessários. Adicione um <strong>Error Trigger</strong> no workflow para ser avisado por Telegram quando algo falhar.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Tipos de dados — números chegam como string</div>
+        <p style="color: var(--text); font-size: 14px; margin-bottom: 8px;">Webhooks e Google Sheets frequentemente retornam números como strings. Uma operação matemática como <code>{{ $json.preco * 1.1 }}</code> pode resultar em "10.00...1.1" (concatenação) em vez de 11.</p>
+        <p style="color: var(--muted); font-size: 13px;">✅ Solução: converta explicitamente: <code>{{ Number($json.preco) * 1.1 }}</code> ou use o <strong>Code Node</strong> para transformar os tipos antes de operar.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Notion: propriedades com tipos errados causam 400</div>
+        <p style="color: var(--text); font-size: 14px; margin-bottom: 8px;">O Notion é estrito com tipos. Se você tentar escrever texto em um campo de número ou uma string onde espera-se um objeto select, a API retorna 400.</p>
+        <p style="color: var(--muted); font-size: 13px;">✅ Solução: use sempre a estrutura correta da API do Notion para cada tipo de propriedade (title, rich_text, select, date, email, number). Teste no Notion API Explorer antes de integrar.</p>
+      </div>
+    </div>
+
+    <!-- 11. VÍDEOS -->
+    <div class="section">
+      <div class="section-label">// curadoria</div>
+      <h2>Referências em vídeo</h2>
+      <div class="video-grid">
+        <a class="video-card" href="https://www.youtube.com/@n8n-io" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">n8n Official — Google Sheets Automation</div>
+            <div class="video-channel">n8n · Canal oficial</div>
+            <div class="video-why">Por que assistir: tutoriais oficiais com casos de uso reais de integração com Sheets, Gmail e Slack, atualizados a cada versão.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+        <a class="video-card" href="https://www.youtube.com/@LiamOttley" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Liam Ottley — Build Real AI Automations with n8n</div>
+            <div class="video-channel">Liam Ottley · ~20–40 min por episódio</div>
+            <div class="video-why">Por que assistir: workflows completos do zero, incluindo integração com Telegram, Notion e bancos de dados em projetos reais de agência.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+        <a class="video-card" href="https://www.youtube.com/@automationanywhere" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Automatize com n8n — Telegram Bot do Zero</div>
+            <div class="video-channel">Cole Medin · ~15 min</div>
+            <div class="video-why">Por que assistir: passo a passo criando bot no BotFather, configurando no n8n e enviando mensagens formatadas. Excelente para iniciantes.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+        <a class="video-card" href="https://docs.n8n.io/integrations/" target="_blank">
+          <div class="video-thumb">📖</div>
+          <div class="video-info">
+            <div class="video-title">Documentação oficial — Integrações n8n</div>
+            <div class="video-channel">docs.n8n.io · Referência completa</div>
+            <div class="video-why">Por que consultar: lista todos os 400+ nodes com parâmetros, exemplos e links para configuração de credenciais. Sempre atualizado.</div>
+            <span class="video-watch">Acessar →</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- CHECKPOINT -->
+    <div class="checkpoint">
+      <div class="checkpoint-label">// desafio</div>
+      <h3>🏁 Checkpoint — valide seu aprendizado</h3>
+      <p>Construa um <strong>sistema de monitoramento de formulário de contato</strong> completo em n8n:</p>
+      <ul>
+        <li>Trigger via Webhook recebendo nome, email, mensagem e assunto</li>
+        <li>Validar que email e mensagem não estão vazios (IF Node)</li>
+        <li>Salvar no Google Sheets com timestamp automático</li>
+        <li>Enviar notificação formatada no Telegram com todos os dados</li>
+        <li>Responder ao webhook com JSON <code>{"status": "ok", "id": "{{ $json.id }}"}</code></li>
+        <li>Adicionar Error Trigger que avisa no Telegram se qualquer node falhar</li>
+      </ul>
+      <div class="checkpoint-hint">💬 Dica: use o node "Set" para preparar os dados antes de enviar para múltiplos destinos — isso evita repetir expressões e torna o workflow mais legível.</div>
+    </div>
+
+    <!-- PRÓXIMA AULA -->
+    <a href="gh-06-seguranca-packages.html" class="next-card">
+      <div>
+        <div class="next-card-label">Próxima aula →</div>
+        <div class="next-card-title">GitHub Avançado — Segurança & Packages</div>
+      </div>
+      <div class="next-arrow">→</div>
+    </a>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      <span>🔀 n8n · Aula 29 / 50</span>
+      <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+    </div>
+
+  </div><!-- /page -->
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      document.querySelector('.progress-bar-fill').style.width = progress + '%';
+    });
+    mermaid.initialize({
+      startOnLoad: true, theme: 'dark',
+      themeVariables: { primaryColor: '#10b981', primaryTextColor: '#e8e8f0', primaryBorderColor: 'rgba(16,185,129,0.5)', lineColor: '#8585a8', background: '#111118', mainBkg: '#16161f' }
+    });
+  </script>
+</body>
+</html>

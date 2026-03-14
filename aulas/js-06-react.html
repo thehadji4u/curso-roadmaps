@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>React 18 — Componentes, Hooks & Estado · Aula 31</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #f59e0b;
+      --accent-dim: rgba(245,158,11,0.15);
+      --accent-border: rgba(245,158,11,0.35);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #f59e0b, #fcd34d); width: 0%; transition: width 0.1s; }
+
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; cursor: default; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #fcd34d; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(245,158,11,0.06); border-color: var(--accent); }
+    .callout-tip .callout-title { color: var(--accent); }
+    .callout-check { background: rgba(16,185,129,0.06); border-color: var(--success); }
+    .callout-check .callout-title { color: var(--success); }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(88,166,255,0.2); color: #79c0ff; }
+    .badge-cyan { background: rgba(6,182,212,0.2); color: #22d3ee; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    @media (max-width: 640px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+    .pillar-badge { font-size: 11px; padding: 3px 10px; border-radius: 4px; font-weight: 600; }
+
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; text-decoration: none; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-watch { font-size: 12px; color: var(--accent); text-decoration: none; }
+    .video-watch:hover { text-decoration: underline; }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(0,0,0,0)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; margin-bottom: 40px; }
+    .checkpoint-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(255,255,255,0.03); border-radius: 6px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; font-size: 14px; }
+
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+
+    .footer { display: flex; justify-content: space-between; align-items: center; padding: 24px 0; margin-top: 32px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); }
+    .footer a { color: var(--muted); text-decoration: none; }
+    .footer a:hover { color: var(--text); }
+
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #fbbf24; }
+
+    .terminal { background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .terminal-bar { background: #1a1a1a; padding: 8px 14px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ef4444; } .dot-yellow { background: #f59e0b; } .dot-green { background: #10b981; }
+    .terminal-title { font-size: 11px; color: #555; margin-left: 6px; }
+    .terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; }
+    .t-prompt { color: #f59e0b; } .t-cmd { color: #e8e8f0; } .t-out { color: #8585a8; } .t-comment { color: #555; font-style: italic; }
+
+    .hook-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin: 12px 0; border-left: 3px solid var(--accent); }
+    .hook-name { color: var(--accent); font-weight: 700; font-size: 15px; margin-bottom: 6px; }
+    .hook-when { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+    .hook-desc { font-size: 14px; color: var(--text); }
+
+    .react18-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.35); color: #fbbf24; font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: 600; letter-spacing: 0.06em; margin-left: 8px; vertical-align: middle; }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar"></div>
+  </div>
+
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="gh-06-seguranca-packages.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">⚡ JavaScript</span> · Aula 31 / 50
+      </div>
+      <a href="js-07-nextjs.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>⚡ JavaScript</span>
+        <span class="hero-badge">Aula 31</span>
+      </div>
+      <h1>React 18 — Componentes, Hooks & Estado</h1>
+      <div class="hero-meta">
+        <span>⏱ ~60 min de leitura</span>
+        <span>🎯 Intermediário → Avançado</span>
+        <span>🔧 Hands-on incluído</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">React 18</span>
+        <span class="tag accent">JSX</span>
+        <span class="tag accent">useState</span>
+        <span class="tag accent">useEffect</span>
+        <span class="tag accent">useContext</span>
+        <span class="tag accent">useReducer</span>
+        <span class="tag accent">useMemo</span>
+        <span class="tag accent">useCallback</span>
+        <span class="tag accent">Suspense</span>
+        <span class="tag">Server Components</span>
+        <span class="tag">Concurrent Mode</span>
+        <span class="tag">props</span>
+      </div>
+    </div>
+
+    <!-- 1. POR QUE IMPORTA -->
+    <div class="section">
+      <div class="section-label">// motivação</div>
+      <h2>Por que isso importa?</h2>
+      <p>
+        React é a biblioteca de UI mais usada no mundo — presente em Facebook, Instagram, Airbnb, Netflix, Shopify e milhares de startups. Não é uma trend passageira: é a habilidade mais procurada em vagas de front-end desde 2015. Em 2024, a versão 18 trouxe mudanças fundamentais com o <strong>Concurrent Mode</strong> e os <strong>Server Components</strong>.
+      </p>
+      <p>
+        Mas React é difícil de aprender mal. A maioria dos devs júniors aprende os hooks de forma mecânica sem entender o modelo mental por trás. Nesta aula vamos construir a fundação correta: <strong>como o React realmente funciona</strong>, o que são componentes de verdade, como o estado muda a UI e como usar cada hook no momento certo.
+      </p>
+      <div class="callout callout-info">
+        <div class="callout-title">💼 Por que um engenheiro sênior domina React profundamente</div>
+        Sêniors não apenas "fazem funcionar" — eles entendem <strong>quando o React re-renderiza</strong>, como evitar renders desnecessários com <code>useMemo</code> e <code>useCallback</code>, como estruturar o estado para evitar prop drilling, e como usar Suspense para UIs que carregam dados de forma elegante. A diferença entre um app lento e um app rápido está em entender esses detalhes.
+      </div>
+    </div>
+
+    <!-- 2. ANALOGIA -->
+    <div class="section">
+      <div class="section-label">// analogia</div>
+      <h2>Antes do código: uma analogia</h2>
+      <div class="analogy-card">
+        <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
+        <div class="analogy-text">
+          Pense numa interface React como um <strong>conjunto de peças de LEGO</strong>. Cada peça (componente) tem uma forma específica, encaixes padronizados e pode ser combinada com outras peças de infinitas maneiras. Uma peça de LEGO não sabe onde vai ser usada — ela só sabe o que ela é e como ela se conecta.
+          <br><br>
+          O <strong>estado</strong> é como a cor da peça — pode mudar, e quando muda, qualquer pessoa que olha para ela enxerga a mudança imediatamente. As <strong>props</strong> são os encaixes — o que você passa de uma peça para outra para que elas se conectem corretamente. E o React é o <strong>arquiteto</strong> que decide quando reconstruir partes do conjunto baseado nas mudanças de estado.
+        </div>
+        <div class="analogy-mapping">
+          <span class="analogy-real">🧱 Peça de LEGO reutilizável</span>
+          <span class="analogy-tech">→ Componente React</span>
+          <span class="analogy-real">🔌 Encaixes da peça</span>
+          <span class="analogy-tech">→ Props (entrada de dados)</span>
+          <span class="analogy-real">🎨 Cor que pode mudar</span>
+          <span class="analogy-tech">→ State (useState)</span>
+          <span class="analogy-real">🏗️ Arquiteto que reconstrói</span>
+          <span class="analogy-tech">→ React Reconciler</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. CONCEITO CENTRAL — COMO REACT FUNCIONA -->
+    <div class="section">
+      <div class="section-label">// conceito central</div>
+      <h2>Como o React realmente funciona</h2>
+      <p>
+        O React mantém uma <strong>Virtual DOM</strong> (árvore de objetos JavaScript representando a UI). Quando o estado muda, o React cria uma nova árvore virtual, <em>compara</em> com a anterior (processo chamado <strong>reconciliation</strong>), e atualiza no DOM real apenas o que mudou.
+      </p>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// ciclo de vida — estado, render, DOM</div>
+        <div class="mermaid">
+flowchart LR
+    S["🔄 Estado muda\nsetState()"] --> R["⚛️ React\nrecalcula JSX"]
+    R --> V["🌲 Nova Virtual DOM\n(objeto JS)"]
+    V --> D["🔍 Diffing\n(compara anterior)"]
+    D --> U["🖥️ DOM Real\n(só o que mudou)"]
+    U --> UI["👁️ UI atualizada\nna tela"]
+    style S fill:#111118,stroke:#f59e0b,color:#e8e8f0
+    style R fill:#f59e0b,stroke:#fcd34d,color:#000
+    style V fill:#111118,stroke:#f59e0b,color:#e8e8f0
+    style D fill:#111118,stroke:#f59e0b,color:#e8e8f0
+    style U fill:#111118,stroke:#10b981,color:#e8e8f0
+    style UI fill:#10b981,stroke:#34d399,color:#000
+        </div>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">💡 A regra de ouro do React</div>
+        O React <strong>re-renderiza um componente</strong> quando: (1) seu estado muda via <code>setState</code>, (2) suas props mudam, ou (3) o componente pai re-renderiza. Entender isso é a chave para otimizar performance.
+      </div>
+
+      <h3>JSX — HTML no JavaScript</h3>
+      <p>
+        JSX não é HTML. É açúcar sintático que o compilador (Babel/SWC) transforma em chamadas <code>React.createElement()</code>. Entender isso explica por que você precisa usar <code>className</code> em vez de <code>class</code>, por que JSX precisa de um elemento raiz e por que você pode usar JavaScript dentro de <code>{}</code>.
+      </p>
+
+      <div class="code-label">jsx × o que o compilador gera</div>
+      <pre><code class="language-jsx">// O que você escreve (JSX):
+function Saudacao({ nome, ativo }) {
+  return (
+    &lt;div className={ativo ? 'ativo' : 'inativo'}&gt;
+      &lt;h1&gt;Olá, {nome}!&lt;/h1&gt;
+      &lt;p&gt;{ativo ? 'Online agora' : 'Offline'}&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}
+
+// O que o compilador gera:
+function Saudacao({ nome, ativo }) {
+  return React.createElement(
+    'div',
+    { className: ativo ? 'ativo' : 'inativo' },
+    React.createElement('h1', null, 'Olá, ', nome, '!'),
+    React.createElement('p', null, ativo ? 'Online agora' : 'Offline')
+  );
+}</code></pre>
+    </div>
+
+    <!-- 4. COMPONENTES E PROPS -->
+    <div class="section">
+      <div class="section-label">// fundamentos</div>
+      <h2>Componentes & Props</h2>
+      <p>
+        Todo componente React é uma <strong>função que retorna JSX</strong>. Props são os argumentos dessa função — dados que o componente pai passa para o filho. A regra: <strong>props são somente leitura</strong> (imutáveis dentro do componente que as recebe).
+      </p>
+
+      <div class="code-label">padrões de componentes — do simples ao composto</div>
+      <pre><code class="language-jsx">// 1. Componente puro — sem estado, só UI
+function Avatar({ src, nome, tamanho = 40 }) {
+  return (
+    &lt;div style={{ display: 'flex', alignItems: 'center', gap: 8 }}&gt;
+      &lt;img
+        src={src}
+        alt={nome}
+        style={{ width: tamanho, height: tamanho, borderRadius: '50%' }}
+      /&gt;
+      &lt;span&gt;{nome}&lt;/span&gt;
+    &lt;/div&gt;
+  );
+}
+
+// 2. Componente com children (composição)
+function Card({ titulo, children, variante = 'default' }) {
+  const estilos = {
+    default: { border: '1px solid #1e1e2e', background: '#111118' },
+    destaque: { border: '1px solid #f59e0b', background: 'rgba(245,158,11,0.05)' },
+  };
+  return (
+    &lt;div style={{ ...estilos[variante], borderRadius: 12, padding: 24 }}&gt;
+      &lt;h3 style={{ marginBottom: 12 }}&gt;{titulo}&lt;/h3&gt;
+      {children}
+    &lt;/div&gt;
+  );
+}
+
+// 3. Usar os componentes juntos
+function PerfilUsuario({ usuario }) {
+  return (
+    &lt;Card titulo="Perfil" variante="destaque"&gt;
+      &lt;Avatar src={usuario.foto} nome={usuario.nome} tamanho={56} /&gt;
+      &lt;p&gt;{usuario.bio}&lt;/p&gt;
+    &lt;/Card&gt;
+  );
+}</code></pre>
+    </div>
+
+    <!-- 5. HOOKS -->
+    <div class="section">
+      <div class="section-label">// hooks</div>
+      <h2>Guia completo de Hooks</h2>
+      <p>Hooks são funções especiais que permitem usar estado, ciclo de vida e contexto em componentes funcionais. A regra de ouro: <strong>só use hooks no nível raiz do componente</strong> (nunca dentro de if, loop ou função aninhada).</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Hook</th><th>Para que serve</th><th>Quando usar</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>useState</code></td>
+              <td>Estado local do componente</td>
+              <td>Todo dado que, quando muda, deve re-renderizar o componente</td>
+            </tr>
+            <tr>
+              <td><code>useEffect</code></td>
+              <td>Side effects (API calls, subscriptions, DOM)</td>
+              <td>Buscar dados, sincronizar com sistemas externos, eventos do DOM</td>
+            </tr>
+            <tr>
+              <td><code>useContext</code></td>
+              <td>Consumir contexto global</td>
+              <td>Dados compartilhados sem prop drilling (tema, usuário logado, idioma)</td>
+            </tr>
+            <tr>
+              <td><code>useReducer</code></td>
+              <td>Estado complexo com múltiplas ações</td>
+              <td>Quando o próximo estado depende do anterior ou há muitas transições</td>
+            </tr>
+            <tr>
+              <td><code>useMemo</code></td>
+              <td>Memoizar valor computado</td>
+              <td>Cálculos caros que não devem ser refeitos a cada render</td>
+            </tr>
+            <tr>
+              <td><code>useCallback</code></td>
+              <td>Memoizar referência de função</td>
+              <td>Funções passadas como props para componentes filhos memoizados</td>
+            </tr>
+            <tr>
+              <td><code>useRef</code></td>
+              <td>Referência mutável que não causa re-render</td>
+              <td>Acessar elementos DOM, guardar valores entre renders sem re-render</td>
+            </tr>
+            <tr>
+              <td><code>useId</code> <span class="react18-badge">18+</span></td>
+              <td>Gerar IDs únicos estáveis</td>
+              <td>IDs para formulários e acessibilidade (sem usar Math.random)</td>
+            </tr>
+            <tr>
+              <td><code>useTransition</code> <span class="react18-badge">18+</span></td>
+              <td>Marcar updates de baixa prioridade</td>
+              <td>Filtros, buscas — manter UI responsiva durante renders pesados</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>useState — o mais fundamental</h3>
+      <div class="code-label">useState — padrões e armadilhas</div>
+      <pre><code class="language-jsx">import { useState } from 'react';
+
+// PADRÃO 1: estado simples
+function Contador() {
+  const [count, setCount] = useState(0);
+
+  // ⚠️ ERRADO: ler state diretamente em updates sequenciais
+  const incrementarDuas = () => {
+    setCount(count + 1); // usa o valor atual
+    setCount(count + 1); // ainda usa o mesmo valor — só incrementa 1!
+  };
+
+  // ✅ CERTO: usar função de atualização (recebe prev state)
+  const incrementarDuasCerto = () => {
+    setCount(prev => prev + 1); // prev = valor mais atual
+    setCount(prev => prev + 1); // agora incrementa 2!
+  };
+
+  return &lt;button onClick={incrementarDuasCerto}&gt;{count}&lt;/button&gt;;
+}
+
+// PADRÃO 2: estado de objeto — sempre spread!
+function Formulario() {
+  const [form, setForm] = useState({ nome: '', email: '', aceito: false });
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setForm(prev => ({
+      ...prev, // ← preservar outros campos!
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  return (
+    &lt;form&gt;
+      &lt;input name="nome" value={form.nome} onChange={handleChange} /&gt;
+      &lt;input name="email" value={form.email} onChange={handleChange} /&gt;
+      &lt;input name="aceito" type="checkbox" checked={form.aceito} onChange={handleChange} /&gt;
+    &lt;/form&gt;
+  );
+}</code></pre>
+
+      <h3>useEffect — side effects com controle</h3>
+      <div class="code-label">useEffect — os 3 padrões essenciais</div>
+      <pre><code class="language-jsx">import { useState, useEffect } from 'react';
+
+// PADRÃO 1: buscar dados na montagem
+function ListaUsuarios() {
+  const [usuarios, setUsuarios] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState(null);
+
+  useEffect(() => {
+    let cancelado = false; // evita setState em componente desmontado
+
+    async function buscar() {
+      try {
+        const res = await fetch('/api/usuarios');
+        const dados = await res.json();
+        if (!cancelado) setUsuarios(dados);
+      } catch (e) {
+        if (!cancelado) setErro(e.message);
+      } finally {
+        if (!cancelado) setCarregando(false);
+      }
+    }
+
+    buscar();
+
+    // Cleanup: cancela se o componente desmontar antes de receber resposta
+    return () => { cancelado = true; };
+  }, []); // [] = roda só na montagem
+
+  if (carregando) return &lt;p&gt;Carregando...&lt;/p&gt;;
+  if (erro) return &lt;p&gt;Erro: {erro}&lt;/p&gt;;
+  return &lt;ul&gt;{usuarios.map(u => &lt;li key={u.id}&gt;{u.nome}&lt;/li&gt;)}&lt;/ul&gt;;
+}
+
+// PADRÃO 2: reagir a mudança de prop/estado (dependências)
+function BuscaUsuario({ id }) {
+  const [usuario, setUsuario] = useState(null);
+
+  useEffect(() => {
+    if (!id) return;
+    fetch(`/api/usuarios/${id}`)
+      .then(r => r.json())
+      .then(setUsuario);
+  }, [id]); // re-executa toda vez que `id` mudar
+
+  return usuario ? &lt;p&gt;{usuario.nome}&lt;/p&gt; : null;
+}
+
+// PADRÃO 3: subscription com cleanup (ex: event listener)
+function TamanhoJanela() {
+  const [tamanho, setTamanho] = useState({
+    w: window.innerWidth, h: window.innerHeight
+  });
+
+  useEffect(() => {
+    const handleResize = () => setTamanho({ w: window.innerWidth, h: window.innerHeight });
+    window.addEventListener('resize', handleResize);
+    // Cleanup OBRIGATÓRIO — remove o listener quando o componente desmontar
+    return () => window.removeEventListener('resize', handleResize);
+  }, []); // sem deps = registra uma vez, limpa ao desmontar
+
+  return &lt;p&gt;{tamanho.w} x {tamanho.h}&lt;/p&gt;;
+}</code></pre>
+
+      <h3>useContext — compartilhar estado globalmente</h3>
+      <div class="code-label">contexto completo — criação, provider e consumo</div>
+      <pre><code class="language-jsx">import { createContext, useContext, useState } from 'react';
+
+// 1. Criar o contexto
+const TemaContext = createContext(null);
+
+// 2. Criar o Provider (envolve a árvore que precisa do tema)
+export function TemaProvider({ children }) {
+  const [tema, setTema] = useState('escuro');
+
+  const alternarTema = () => setTema(t => t === 'escuro' ? 'claro' : 'escuro');
+
+  return (
+    &lt;TemaContext.Provider value={{ tema, alternarTema }}&gt;
+      {children}
+    &lt;/TemaContext.Provider&gt;
+  );
+}
+
+// 3. Hook customizado para consumir (boa prática!)
+export function useTema() {
+  const ctx = useContext(TemaContext);
+  if (!ctx) throw new Error('useTema deve ser usado dentro de TemaProvider');
+  return ctx;
+}
+
+// 4. Usar em qualquer componente da árvore — sem prop drilling!
+function BotaoTema() {
+  const { tema, alternarTema } = useTema();
+  return (
+    &lt;button onClick={alternarTema}&gt;
+      Tema atual: {tema}
+    &lt;/button&gt;
+  );
+}
+
+// 5. Na raiz do app:
+function App() {
+  return (
+    &lt;TemaProvider&gt;
+      &lt;Header /&gt;     {/* pode usar useTema() */}
+      &lt;Main /&gt;       {/* pode usar useTema() */}
+      &lt;Footer /&gt;     {/* pode usar useTema() */}
+    &lt;/TemaProvider&gt;
+  );
+}</code></pre>
+
+      <h3>useMemo & useCallback — otimização de performance</h3>
+      <div class="code-label">quando e como usar memoização</div>
+      <pre><code class="language-jsx">import { useState, useMemo, useCallback, memo } from 'react';
+
+// useMemo — evitar recalcular valor caro a cada render
+function TabelaProdutos({ produtos, filtro }) {
+  // ✅ só recalcula quando produtos ou filtro mudar
+  const produtosFiltrados = useMemo(() => {
+    console.log('Filtrando...'); // deve aparecer poucas vezes
+    return produtos.filter(p =>
+      p.nome.toLowerCase().includes(filtro.toLowerCase())
+    ).sort((a, b) => b.preco - a.preco);
+  }, [produtos, filtro]);
+
+  return &lt;ul&gt;{produtosFiltrados.map(p => &lt;li key={p.id}&gt;{p.nome}&lt;/li&gt;)}&lt;/ul&gt;;
+}
+
+// useCallback + memo — evitar re-render de filhos
+const ItemLista = memo(function ItemLista({ item, onDeletar }) {
+  console.log('Renderizando item:', item.id); // deve aparecer só quando necessário
+  return (
+    &lt;li&gt;
+      {item.nome}
+      &lt;button onClick={() => onDeletar(item.id)}&gt;Deletar&lt;/button&gt;
+    &lt;/li&gt;
+  );
+});
+
+function ListaItens() {
+  const [itens, setItens] = useState([...]);
+  const [outraCoisa, setOutraCoisa] = useState(false);
+
+  // ✅ mesma referência de função entre renders — ItemLista não re-renderiza à toa
+  const handleDeletar = useCallback((id) => {
+    setItens(prev => prev.filter(item => item.id !== id));
+  }, []); // sem deps = referência estável para sempre
+
+  return (
+    &lt;&gt;
+      &lt;button onClick={() => setOutraCoisa(v => !v)}&gt;Toggle&lt;/button&gt;
+      {itens.map(item => (
+        &lt;ItemLista key={item.id} item={item} onDeletar={handleDeletar} /&gt;
+      ))}
+    &lt;/&gt;
+  );
+}</code></pre>
+    </div>
+
+    <!-- 6. REACT 18 -->
+    <div class="section">
+      <div class="section-label">// react 18 — novidades</div>
+      <h2>React 18 — Concurrent Mode & Server Components</h2>
+
+      <div class="grid-2">
+        <div class="card-mini" style="border-left: 3px solid #f59e0b;">
+          <span class="pillar-badge" style="background:rgba(245,158,11,0.2);color:#fbbf24;">Concurrent Mode</span>
+          <h4>Renderização interrompível</h4>
+          <p>React 18 pode pausar, retomar e abandonar renders. Isso significa que a UI pode continuar responsiva mesmo durante renders pesados.</p>
+        </div>
+        <div class="card-mini" style="border-left: 3px solid #a855f7;">
+          <span class="pillar-badge" style="background:rgba(168,85,247,0.2);color:#c084fc;">Server Components</span>
+          <h4>Componentes no servidor</h4>
+          <p>RSC (React Server Components) rodam apenas no servidor — zero bundle size, acesso direto ao banco, mas sem hooks de estado ou eventos.</p>
+        </div>
+        <div class="card-mini" style="border-left: 3px solid #06b6d4;">
+          <span class="pillar-badge" style="background:rgba(6,182,212,0.2);color:#22d3ee;">Suspense Data</span>
+          <h4>Suspense para dados</h4>
+          <p>Suspense agora funciona com data fetching (antes era só lazy loading). Componentes declaram que "suspendem" enquanto aguardam dados.</p>
+        </div>
+        <div class="card-mini" style="border-left: 3px solid #10b981;">
+          <span class="pillar-badge" style="background:rgba(16,185,129,0.2);color:#34d399;">Automatic Batching</span>
+          <h4>Batch automático</h4>
+          <p>No React 18, múltiplos setState em qualquer contexto (async, setTimeout) são batched automaticamente em um único re-render.</p>
+        </div>
+      </div>
+
+      <h3>useTransition — manter UI responsiva</h3>
+      <div class="code-label">busca com useTransition — UI nunca trava</div>
+      <pre><code class="language-jsx">import { useState, useTransition } from 'react';
+
+function BuscaProdutos({ todosOsProdutos }) {
+  const [query, setQuery] = useState('');
+  const [resultados, setResultados] = useState(todosOsProdutos);
+  const [isPending, startTransition] = useTransition();
+
+  const handleBusca = (e) => {
+    const valor = e.target.value;
+    setQuery(valor); // atualização urgente — input responde imediatamente
+
+    startTransition(() => {
+      // atualização não-urgente — pode ser interrompida se novo input chegar
+      const filtrado = todosOsProdutos.filter(p =>
+        p.nome.toLowerCase().includes(valor.toLowerCase())
+      );
+      setResultados(filtrado);
+    });
+  };
+
+  return (
+    &lt;&gt;
+      &lt;input value={query} onChange={handleBusca} placeholder="Buscar..." /&gt;
+      {isPending &amp;&amp; &lt;span&gt;Filtrando...&lt;/span&gt;}
+      &lt;ul style={{ opacity: isPending ? 0.5 : 1 }}&gt;
+        {resultados.map(p => &lt;li key={p.id}&gt;{p.nome}&lt;/li&gt;)}
+      &lt;/ul&gt;
+    &lt;/&gt;
+  );
+}</code></pre>
+
+      <h3>Suspense para carregamento de dados</h3>
+      <div class="code-label">suspense + lazy loading</div>
+      <pre><code class="language-jsx">import { Suspense, lazy } from 'react';
+
+// Lazy loading — carrega o componente apenas quando necessário
+const GraficoComplexo = lazy(() => import('./GraficoComplexo'));
+const MapaInterativo = lazy(() => import('./MapaInterativo'));
+
+function Dashboard() {
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Dashboard&lt;/h1&gt;
+
+      {/* Fallback enquanto o chunk carrega */}
+      &lt;Suspense fallback={&lt;div className="skeleton"&gt;Carregando gráfico...&lt;/div&gt;}&gt;
+        &lt;GraficoComplexo /&gt;
+      &lt;/Suspense&gt;
+
+      {/* Múltiplos Suspense com fallbacks diferentes */}
+      &lt;Suspense fallback={&lt;div className="skeleton"&gt;Carregando mapa...&lt;/div&gt;}&gt;
+        &lt;MapaInterativo /&gt;
+      &lt;/Suspense&gt;
+    &lt;/div&gt;
+  );
+}
+
+// Com Error Boundary para tratar erros de loading:
+import { ErrorBoundary } from 'react-error-boundary';
+
+function DashboardSeguro() {
+  return (
+    &lt;ErrorBoundary fallback={&lt;p&gt;Erro ao carregar componente&lt;/p&gt;}&gt;
+      &lt;Suspense fallback={&lt;p&gt;Carregando...&lt;/p&gt;}&gt;
+        &lt;GraficoComplexo /&gt;
+      &lt;/Suspense&gt;
+    &lt;/ErrorBoundary&gt;
+  );
+}</code></pre>
+    </div>
+
+    <!-- 7. HANDS-ON -->
+    <div class="section">
+      <div class="section-label">// prática</div>
+      <h2>Mãos na massa: App de Tarefas completo</h2>
+      <p>Vamos criar um app de tarefas que usa <strong>useState, useEffect, useContext, useReducer e useCallback</strong> — tudo junto, como um projeto real.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Setup com Vite</div>
+            <div class="step-desc">Crie o projeto com Vite — mais rápido que CRA</div>
+            <div class="terminal">
+              <div class="terminal-bar"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span><span class="terminal-title">terminal</span></div>
+              <div class="terminal-body">
+                <span class="t-prompt">$</span> <span class="t-cmd">npm create vite@latest todo-app -- --template react</span><br>
+                <span class="t-prompt">$</span> <span class="t-cmd">cd todo-app && npm install</span><br>
+                <span class="t-prompt">$</span> <span class="t-cmd">npm run dev</span><br>
+                <span class="t-out">  ➜  Local:   http://localhost:5173/</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Reducer de tarefas</div>
+            <div class="step-desc">Crie <code>src/todoReducer.js</code> com toda a lógica de estado:</div>
+            <div class="code-label">src/todoReducer.js</div>
+            <pre><code class="language-javascript">// Estado inicial
+export const initialState = {
+  tarefas: [],
+  filtro: 'todas', // 'todas' | 'ativas' | 'concluidas'
+};
+
+// Reducer — todas as transições de estado em um lugar
+export function todoReducer(state, action) {
+  switch (action.type) {
+    case 'ADICIONAR':
+      return {
+        ...state,
+        tarefas: [...state.tarefas, {
+          id: Date.now(),
+          texto: action.payload,
+          concluida: false,
+          criadaEm: new Date().toISOString(),
+        }]
+      };
+    case 'TOGGLE':
+      return {
+        ...state,
+        tarefas: state.tarefas.map(t =>
+          t.id === action.payload ? { ...t, concluida: !t.concluida } : t
+        )
+      };
+    case 'DELETAR':
+      return { ...state, tarefas: state.tarefas.filter(t => t.id !== action.payload) };
+    case 'LIMPAR_CONCLUIDAS':
+      return { ...state, tarefas: state.tarefas.filter(t => !t.concluida) };
+    case 'SET_FILTRO':
+      return { ...state, filtro: action.payload };
+    default:
+      return state;
+  }
+}</code></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Contexto + Provider</div>
+            <div class="step-desc">Crie <code>src/TodoContext.jsx</code> — contexto que expõe estado e dispatch + persistência no localStorage:</div>
+            <div class="code-label">src/TodoContext.jsx</div>
+            <pre><code class="language-jsx">import { createContext, useContext, useReducer, useEffect } from 'react';
+import { todoReducer, initialState } from './todoReducer';
+
+const TodoContext = createContext(null);
+
+export function TodoProvider({ children }) {
+  const [state, dispatch] = useReducer(
+    todoReducer,
+    initialState,
+    // Inicializar com dados do localStorage (lazy initializer)
+    (init) => {
+      const salvo = localStorage.getItem('todos');
+      return salvo ? JSON.parse(salvo) : init;
+    }
+  );
+
+  // Persistir no localStorage a cada mudança
+  useEffect(() => {
+    localStorage.setItem('todos', JSON.stringify(state));
+  }, [state]);
+
+  return (
+    &lt;TodoContext.Provider value={{ state, dispatch }}&gt;
+      {children}
+    &lt;/TodoContext.Provider&gt;
+  );
+}
+
+export const useTodo = () => {
+  const ctx = useContext(TodoContext);
+  if (!ctx) throw new Error('useTodo fora do TodoProvider');
+  return ctx;
+};</code></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Componente principal App</div>
+            <div class="step-desc">Crie <code>src/App.jsx</code> usando todos os hooks:</div>
+            <div class="code-label">src/App.jsx</div>
+            <pre><code class="language-jsx">import { useState, useMemo, useCallback } from 'react';
+import { useTodo } from './TodoContext';
+
+function App() {
+  const { state, dispatch } = useTodo();
+  const [inputValue, setInputValue] = useState('');
+
+  // Filtrar tarefas — recalcula só quando tarefas ou filtro mudam
+  const tarefasFiltradas = useMemo(() => {
+    switch (state.filtro) {
+      case 'ativas':    return state.tarefas.filter(t => !t.concluida);
+      case 'concluidas': return state.tarefas.filter(t => t.concluida);
+      default:          return state.tarefas;
+    }
+  }, [state.tarefas, state.filtro]);
+
+  // Callbacks memoizados
+  const handleAdicionar = useCallback((e) => {
+    e.preventDefault();
+    if (!inputValue.trim()) return;
+    dispatch({ type: 'ADICIONAR', payload: inputValue.trim() });
+    setInputValue('');
+  }, [inputValue, dispatch]);
+
+  const handleToggle = useCallback((id) => {
+    dispatch({ type: 'TOGGLE', payload: id });
+  }, [dispatch]);
+
+  const handleDeletar = useCallback((id) => {
+    dispatch({ type: 'DELETAR', payload: id });
+  }, [dispatch]);
+
+  const pendentes = state.tarefas.filter(t => !t.concluida).length;
+
+  return (
+    &lt;div className="app"&gt;
+      &lt;h1&gt;Minhas Tarefas &lt;span&gt;({pendentes} pendentes)&lt;/span&gt;&lt;/h1&gt;
+
+      &lt;form onSubmit={handleAdicionar}&gt;
+        &lt;input
+          value={inputValue}
+          onChange={e => setInputValue(e.target.value)}
+          placeholder="Nova tarefa..."
+          autoFocus
+        /&gt;
+        &lt;button type="submit"&gt;Adicionar&lt;/button&gt;
+      &lt;/form&gt;
+
+      &lt;div className="filtros"&gt;
+        {['todas', 'ativas', 'concluidas'].map(f => (
+          &lt;button
+            key={f}
+            className={state.filtro === f ? 'ativo' : ''}
+            onClick={() => dispatch({ type: 'SET_FILTRO', payload: f })}
+          &gt;
+            {f.charAt(0).toUpperCase() + f.slice(1)}
+          &lt;/button&gt;
+        ))}
+      &lt;/div&gt;
+
+      &lt;ul&gt;
+        {tarefasFiltradas.map(tarefa => (
+          &lt;li key={tarefa.id}&gt;
+            &lt;input
+              type="checkbox"
+              checked={tarefa.concluida}
+              onChange={() => handleToggle(tarefa.id)}
+            /&gt;
+            &lt;span style={{ textDecoration: tarefa.concluida ? 'line-through' : 'none' }}&gt;
+              {tarefa.texto}
+            &lt;/span&gt;
+            &lt;button onClick={() => handleDeletar(tarefa.id)}&gt;✕&lt;/button&gt;
+          &lt;/li&gt;
+        ))}
+      &lt;/ul&gt;
+
+      {state.tarefas.some(t => t.concluida) &amp;&amp; (
+        &lt;button onClick={() => dispatch({ type: 'LIMPAR_CONCLUIDAS' })}&gt;
+          Limpar concluídas
+        &lt;/button&gt;
+      )}
+    &lt;/div&gt;
+  );
+}</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. PITFALLS -->
+    <div class="section">
+      <div class="section-label">// armadilhas</div>
+      <h2>Erros clássicos com React</h2>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Loop infinito no useEffect — a armadilha mais comum</div>
+        <p style="color: var(--text); font-size: 14px; margin-bottom: 8px;"><code>useEffect</code> com um objeto ou função como dependência causa loop infinito porque cada render cria uma nova referência para esses valores.</p>
+        <pre style="margin: 8px 0;"><code class="language-jsx">// ❌ Loop infinito — 'config' é novo objeto a cada render
+useEffect(() => { fetchData(config); }, [config]);
+
+// ✅ Extrair os valores primitivos das dependências
+useEffect(() => { fetchData(config); }, [config.url, config.method]);</code></pre>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Stale closure — função "esquecida" no tempo</div>
+        <p style="color: var(--text); font-size: 14px; margin-bottom: 8px;">Uma função criada dentro de useEffect com deps vazia captura os valores de quando foi criada — não os valores atuais.</p>
+        <pre style="margin: 8px 0;"><code class="language-jsx">// ❌ count sempre será 0 dentro do setInterval
+useEffect(() => {
+  const id = setInterval(() => {
+    setCount(count + 1); // count está "stale" — sempre 0
+  }, 1000);
+  return () => clearInterval(id);
+}, []);
+
+// ✅ Usar função de atualização — não captura o valor, recebe o atual
+useEffect(() => {
+  const id = setInterval(() => {
+    setCount(prev => prev + 1); // sempre incrementa corretamente
+  }, 1000);
+  return () => clearInterval(id);
+}, []);</code></pre>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ useMemo/useCallback em tudo — premature optimization</div>
+        <p style="color: var(--text); font-size: 14px; margin-bottom: 8px;">Adicionar useMemo e useCallback em todo componente é um erro comum de devs que leram sobre performance mas não entendem o custo de memoização (que também tem custo de memória e tempo).</p>
+        <p style="color: var(--muted); font-size: 13px;">✅ Regra: só use useMemo/useCallback quando (1) o cálculo é comprovadamente caro, (2) a função é passada para componente filho memoizado com memo(), ou (3) é dependência de outro hook. Profile primeiro, otimize depois.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Atualizar state de componente desmontado</div>
+        <p style="color: var(--text); font-size: 14px; margin-bottom: 8px;">Se um fetch termina depois que o componente desmontou (usuário navegou para outra página), setar state nele gera um warning e pode causar memory leaks.</p>
+        <p style="color: var(--muted); font-size: 13px;">✅ Solução: use a flag de cancelamento no useEffect (como mostrado nos exemplos acima) ou use <strong>AbortController</strong> para cancelar o fetch diretamente.</p>
+      </div>
+    </div>
+
+    <!-- 9. VÍDEOS -->
+    <div class="section">
+      <div class="section-label">// curadoria</div>
+      <h2>Referências em vídeo</h2>
+      <div class="video-grid">
+        <a class="video-card" href="https://www.youtube.com/watch?v=Tn6-PIqc4UM" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">React in 100 Seconds</div>
+            <div class="video-channel">Fireship · 2 min</div>
+            <div class="video-why">Por que assistir: visão geral perfeitíssima do que é React, componentes e o Virtual DOM. Assistir antes de tudo para ter o panorama certo.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+        <a class="video-card" href="https://www.youtube.com/@JackHerrington" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Jack Herrington — React 18 Deep Dives</div>
+            <div class="video-channel">Jack Herrington · ~15–30 min por episódio</div>
+            <div class="video-why">Por que assistir: o melhor conteúdo avançado de React disponível gratuitamente. Cobre useTransition, Server Components e padrões avançados com exemplos práticos.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+        <a class="video-card" href="https://www.youtube.com/watch?v=bMknfKXIFA8" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">React Course — Full Beginner to Advanced</div>
+            <div class="video-channel">freeCodeCamp · ~12 horas</div>
+            <div class="video-why">Por que assistir: o curso mais completo gratuito disponível. Cobre hooks, context, roteamento e projetos completos. Ideal para consolidar toda a base.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+        <a class="video-card" href="https://react.dev/learn" target="_blank">
+          <div class="video-thumb">📖</div>
+          <div class="video-info">
+            <div class="video-title">react.dev — Documentação oficial</div>
+            <div class="video-channel">react.dev · Referência completa</div>
+            <div class="video-why">Por que consultar: a nova documentação (2023+) é excepcional — tem exemplos interativos, explica o modelo mental e cobre todos os hooks em profundidade.</div>
+            <span class="video-watch">Acessar →</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- CHECKPOINT -->
+    <div class="checkpoint">
+      <div class="checkpoint-label">// desafio</div>
+      <h3>🏁 Checkpoint — valide seu aprendizado</h3>
+      <p>Complete o <strong>app de tarefas</strong> e adicione as funcionalidades avançadas:</p>
+      <ul>
+        <li>Implementar todos os 4 arquivos do hands-on (funcionando com persistência no localStorage)</li>
+        <li>Adicionar campo de <strong>prioridade</strong> (alta/média/baixa) nas tarefas com indicador visual</li>
+        <li>Criar um <strong>hook customizado</strong> <code>useLocalStorage(key, initialValue)</code> que abstrai a lógica de persistência</li>
+        <li>Adicionar contador de tarefas no título da aba (<code>document.title</code>) usando useEffect</li>
+        <li>Implementar <strong>drag-and-drop</strong> para reordenar tarefas (use a API nativa ou a lib react-dnd)</li>
+        <li>Garantir que não há re-renders desnecessários (use React DevTools Profiler para verificar)</li>
+      </ul>
+      <div class="checkpoint-hint">💬 Dica: instale o React Developer Tools no Chrome — a aba "Profiler" mostra exatamente quais componentes re-renderizaram e por quê. É sua principal ferramenta de debug de performance.</div>
+    </div>
+
+    <!-- PRÓXIMA AULA -->
+    <a href="js-07-nextjs.html" class="next-card">
+      <div>
+        <div class="next-card-label">Próxima aula →</div>
+        <div class="next-card-title">Next.js — Full-stack Moderno</div>
+      </div>
+      <div class="next-arrow">→</div>
+    </a>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      <span>⚡ JavaScript · Aula 31 / 50</span>
+      <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+    </div>
+
+  </div><!-- /page -->
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      document.querySelector('.progress-bar-fill').style.width = progress + '%';
+    });
+    mermaid.initialize({
+      startOnLoad: true, theme: 'dark',
+      themeVariables: { primaryColor: '#f59e0b', primaryTextColor: '#e8e8f0', primaryBorderColor: 'rgba(245,158,11,0.5)', lineColor: '#8585a8', background: '#111118', mainBkg: '#16161f' }
+    });
+  </script>
+</body>
+</html>
