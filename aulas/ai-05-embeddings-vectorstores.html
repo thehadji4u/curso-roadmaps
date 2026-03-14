@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Embeddings &amp; Vector Stores · Aula 42</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+    :root{--bg:#0a0a0f;--surface:#111118;--surface2:#16161f;--border:#1e1e2e;--text:#e8e8f0;--muted:#8585a8;--accent:#a855f7;--accent-dim:rgba(168,85,247,0.12);--accent-border:rgba(168,85,247,0.35);--success:#10b981;--warn:#f59e0b;--danger:#ef4444;--info:#06b6d4}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:15px;line-height:1.75}
+    .progress-bar-wrap{position:fixed;top:0;left:0;right:0;height:3px;background:var(--border);z-index:1000}
+    .progress-bar-fill{height:100%;background:linear-gradient(90deg,#a855f7,#d8b4fe);width:0%;transition:width 0.1s}
+    .top-nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:12px 32px;background:rgba(10,10,15,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+    .nav-back{text-decoration:none;color:var(--muted);font-size:12px;padding:6px 14px;border:1px solid var(--border);border-radius:6px;transition:all 0.2s}
+    .nav-back:hover{color:var(--text);border-color:rgba(255,255,255,0.15);background:rgba(255,255,255,0.04)}
+    .nav-center{display:flex;align-items:center;gap:10px}
+    .nav-position{font-size:12px;color:var(--muted);letter-spacing:0.06em}
+    .nav-position .track{color:var(--accent);font-weight:600}
+    .nav-prev,.nav-next{display:flex;align-items:center;gap:6px;text-decoration:none;color:var(--muted);font-size:12px;padding:6px 14px;border:1px solid var(--border);border-radius:6px;background:transparent;transition:all 0.2s}
+    .nav-prev:hover,.nav-next:hover{color:var(--text);border-color:rgba(255,255,255,0.15);background:rgba(255,255,255,0.04)}
+    .nav-next{border-color:var(--accent-border);color:var(--accent)}
+    .nav-next:hover{background:var(--accent-dim);color:#d8b4fe}
+    .page{max-width:860px;margin:0 auto;padding:48px 24px 96px}
+    .hero{padding:52px 0 40px;border-bottom:1px solid var(--border);margin-bottom:56px}
+    .hero-eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:20px;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)}
+    .hero-badge{background:var(--accent-dim);border:1px solid var(--accent-border);color:var(--accent);padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600}
+    .hero h1{font-family:'Syne',sans-serif;font-size:clamp(2rem,5vw,3rem);font-weight:800;line-height:1.1;letter-spacing:-0.02em;margin-bottom:20px;background:linear-gradient(135deg,#fff 40%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--muted);margin-bottom:24px}
+    .hero-tags{display:flex;flex-wrap:wrap;gap:8px}
+    .tag{background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--muted);padding:4px 12px;border-radius:4px;font-size:11px;letter-spacing:0.06em}
+    .tag.accent{background:var(--accent-dim);border-color:var(--accent-border);color:var(--accent)}
+    .section{margin-bottom:64px}
+    .section-label{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;font-weight:600}
+    .section h2{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:700;margin-bottom:20px;color:#fff}
+    .section h3{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:700;margin:32px 0 14px;color:#fff}
+    .section h4{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin:20px 0 10px;color:#e0e0f0}
+    .section p{color:var(--text);margin-bottom:16px}
+    .callout{border-radius:8px;padding:18px 20px;margin:20px 0;border-left:3px solid}
+    .callout-title{font-weight:700;margin-bottom:6px;font-size:13px}
+    .callout-info{background:rgba(6,182,212,0.08);border-color:var(--info)}.callout-info .callout-title{color:var(--info)}
+    .callout-warn{background:rgba(245,158,11,0.08);border-color:var(--warn)}.callout-warn .callout-title{color:var(--warn)}
+    .callout-tip{background:rgba(168,85,247,0.06);border-color:var(--accent)}.callout-tip .callout-title{color:var(--accent)}
+    .callout-check{background:rgba(16,185,129,0.06);border-color:var(--success)}.callout-check .callout-title{color:var(--success)}
+    .analogy-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;position:relative;overflow:hidden}
+    .analogy-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),transparent)}
+    .analogy-label{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+    .analogy-text{font-size:15px;color:var(--text);margin-bottom:20px;line-height:1.8}
+    .analogy-mapping{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px}
+    .analogy-real{background:rgba(255,255,255,0.04);border:1px solid var(--border);padding:8px 14px;border-radius:6px;font-size:13px;color:var(--muted)}
+    .analogy-tech{background:var(--accent-dim);border:1px solid var(--accent-border);padding:8px 14px;border-radius:6px;font-size:13px;color:var(--accent)}
+    .mermaid-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px 20px;margin:24px 0;overflow:auto}
+    .mermaid-label{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+    .table-wrap{overflow-x:auto;margin:16px 0}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    thead tr{border-bottom:2px solid var(--accent-border)}
+    thead th{text-align:left;padding:10px 14px;color:var(--accent);font-size:11px;letter-spacing:0.08em;text-transform:uppercase}
+    tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s}
+    tbody tr:hover{background:rgba(255,255,255,0.03)}
+    tbody td{padding:11px 14px;color:var(--text);vertical-align:top}
+    .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+    .badge-green{background:rgba(16,185,129,0.2);color:#34d399}
+    .badge-red{background:rgba(239,68,68,0.2);color:#f87171}
+    .badge-yellow{background:rgba(245,158,11,0.2);color:#fbbf24}
+    .badge-purple{background:rgba(168,85,247,0.2);color:#d8b4fe}
+    .badge-blue{background:rgba(59,130,246,0.2);color:#60a5fa}
+    pre{background:#0d1117 !important;border:1px solid var(--border);border-radius:8px;overflow-x:auto;margin:12px 0;font-size:13px}
+    pre code{font-family:'JetBrains Mono',monospace}
+    .code-label{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);padding:10px 16px 0}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    @media(max-width:640px){.grid-2,.grid-3{grid-template-columns:1fr}}
+    .card-mini{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;transition:border-color 0.2s}
+    .card-mini:hover{border-color:var(--accent-border)}
+    .card-mini h4{color:#fff;font-size:14px;margin:10px 0 6px}
+    .card-mini p{color:var(--muted);font-size:13px;margin:0}
+    .vs-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;margin-bottom:32px;position:relative;overflow:hidden}
+    .vs-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+    .vs-chroma::before{background:linear-gradient(90deg,#10b981,#34d399)}
+    .vs-pinecone::before{background:linear-gradient(90deg,#a855f7,#d8b4fe)}
+    .vs-pgvector::before{background:linear-gradient(90deg,#3b82f6,#60a5fa)}
+    .vs-qdrant::before{background:linear-gradient(90deg,#ef4444,#f87171)}
+    .vs-header{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+    .vs-logo{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0}
+    .vs-logo-chroma{background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);color:#10b981}
+    .vs-logo-pinecone{background:rgba(168,85,247,0.15);border:1px solid rgba(168,85,247,0.3);color:#a855f7}
+    .vs-logo-pgvector{background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);color:#3b82f6}
+    .vs-logo-qdrant{background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:#ef4444}
+    .vs-name{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:#fff}
+    .vs-desc{color:var(--muted);font-size:12px}
+    .video-grid{display:grid;gap:14px}
+    .video-card{display:flex;gap:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;transition:border-color 0.2s}
+    .video-card:hover{border-color:var(--accent-border)}
+    .video-thumb{flex-shrink:0;width:52px;height:52px;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px}
+    .video-info{flex:1}
+    .video-title{font-weight:700;color:#fff;font-size:14px;margin-bottom:4px}
+    .video-channel{color:var(--muted);font-size:12px;margin-bottom:6px}
+    .video-why{color:var(--text);font-size:12px;margin-bottom:10px}
+    .video-watch{font-size:12px;color:var(--accent);text-decoration:none}
+    .video-watch:hover{text-decoration:underline}
+    .checkpoint{background:linear-gradient(135deg,rgba(168,85,247,0.08),rgba(0,0,0,0));border:1px solid var(--accent-border);border-radius:12px;padding:28px;margin-bottom:40px}
+    .checkpoint-label{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;font-weight:600}
+    .checkpoint h3{font-family:'Syne',sans-serif;font-size:1.2rem;color:var(--accent);margin-bottom:12px}
+    .checkpoint p{margin-bottom:14px}
+    .checkpoint ul{padding-left:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+    .checkpoint ul li{color:var(--text);font-size:14px}
+    .checkpoint ul li::before{content:'✦ ';color:var(--accent)}
+    .checkpoint-hint{margin-top:16px;padding:12px 16px;background:rgba(255,255,255,0.03);border-radius:6px;font-size:13px;color:var(--muted)}
+    .pitfall{background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.25);border-radius:10px;padding:20px;margin:16px 0}
+    .pitfall-title{color:#f87171;font-weight:700;margin-bottom:8px;font-size:14px}
+    .next-card{display:flex;align-items:center;justify-content:space-between;padding:22px 24px;background:var(--surface);border:1px solid var(--accent-border);border-radius:10px;text-decoration:none;transition:all 0.2s;margin-top:24px}
+    .next-card:hover{background:var(--accent-dim)}
+    .next-card-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:4px;font-weight:600}
+    .next-card-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:#fff}
+    .next-arrow{font-size:1.5rem;color:var(--accent)}
+    .footer{display:flex;justify-content:space-between;align-items:center;padding:24px 0;margin-top:32px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)}
+    .footer a{color:var(--muted);text-decoration:none}.footer a:hover{color:var(--text)}
+    code:not(.hljs){background:rgba(255,255,255,0.07);border:1px solid var(--border);padding:1px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#d8b4fe}
+    .steps{display:flex;flex-direction:column;gap:20px;margin:20px 0}
+    .step{display:flex;gap:16px}
+    .step-num{flex-shrink:0;width:32px;height:32px;border-radius:50%;background:var(--accent-dim);border:1px solid var(--accent-border);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;margin-top:2px}
+    .step-body{flex:1}
+    .step-title{font-weight:700;color:#fff;margin-bottom:6px;font-size:14px}
+    .step-desc{color:var(--muted);font-size:13px;margin-bottom:10px}
+    .dim-pill{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 16px;font-size:13px;color:var(--text)}
+    .dim-pill strong{color:var(--accent);font-size:1.1rem}
+    .sim-scale{display:flex;align-items:stretch;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin:16px 0;font-size:13px}
+    .sim-item{flex:1;padding:14px;text-align:center}
+    .sim-item .sim-val{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:700;display:block;margin-bottom:4px}
+    .sim-item .sim-desc{color:var(--muted);font-size:11px}
+    .sim-neg{background:rgba(239,68,68,0.08);border-right:1px solid var(--border)}.sim-neg .sim-val{color:#f87171}
+    .sim-zero{background:rgba(255,255,255,0.03);border-right:1px solid var(--border)}.sim-zero .sim-val{color:var(--muted)}
+    .sim-pos{background:rgba(16,185,129,0.08)}.sim-pos .sim-val{color:#34d399}
+    .chunk-visual{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+    .chunk-block{background:var(--surface);border:1px solid var(--accent-border);border-radius:6px;padding:10px 14px;font-size:12px;color:var(--accent);position:relative}
+    .chunk-block.overlap{border-style:dashed;color:var(--muted);border-color:var(--border)}
+    .chunk-num{position:absolute;top:-8px;left:8px;background:var(--accent);color:#fff;font-size:9px;padding:1px 5px;border-radius:3px;font-weight:700}
+  </style>
+</head>
+<body>
+<div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+<nav class="top-nav">
+  <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+  <div class="nav-center">
+    <a href="n8n-05-ia-agentes.html" class="nav-prev">← Anterior</a>
+    <div class="nav-position"><span class="track">🤖 IA</span> · Aula 42 / 50</div>
+    <a href="ai-06-rag-pipeline.html" class="nav-next">Próxima →</a>
+  </div>
+</nav>
+<div class="page">
+
+  <!-- ── HERO ──────────────────────────────────────────────── -->
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <span class="hero-badge">🤖 INTELIGÊNCIA ARTIFICIAL</span>
+      <span>Aula 42 · Prioridade 9</span>
+      <span>⏱ ~30 min</span>
+    </div>
+    <h1>Embeddings &amp;<br>Vector Stores</h1>
+    <div class="hero-meta">
+      <span>🧮 Vetores de alta dimensionalidade</span>
+      <span>🔍 Busca semântica</span>
+      <span>🗄️ Bancos vetoriais · ANN</span>
+    </div>
+    <div class="hero-tags">
+      <span class="tag accent">Embeddings</span>
+      <span class="tag accent">Vector Store</span>
+      <span class="tag accent">Pinecone</span>
+      <span class="tag accent">Chroma</span>
+      <span class="tag accent">Qdrant</span>
+      <span class="tag accent">pgvector</span>
+      <span class="tag">Similaridade Cosseno</span>
+      <span class="tag">Semântica</span>
+    </div>
+  </div>
+
+  <!-- ── 01. POR QUE ISSO IMPORTA ─────────────────────────── -->
+  <div class="section">
+    <div class="section-label">01 · Motivação</div>
+    <h2>Por que embeddings são a espinha dorsal da IA moderna?</h2>
+    <p>Embeddings são a tecnologia subjacente de praticamente toda aplicação de IA que vai além de uma simples chamada de chat. <strong>Busca semântica, RAG pipelines, sistemas de recomendação, detecção de similaridade, clustering de documentos</strong> — tudo depende de representar texto (ou imagens, áudio, código) como vetores numéricos comparáveis.</p>
+    <p>Sem entender embeddings, você não consegue construir um RAG pipeline funcional. Você não sabe por que sua busca retorna resultados ruins. Você não consegue diagnosticar por que o modelo "confunde" conceitos semanticamente próximos. Embeddings são a camada de fundação invisível que sustenta tudo.</p>
+
+    <div class="callout callout-info">
+      <div class="callout-title">💼 O que um engenheiro sênior faz com embeddings</div>
+      <p style="margin-bottom:8px">A diferença entre busca por palavra-chave e busca semântica é a diferença entre um produto mediano e um produto excelente:</p>
+      <ul style="padding-left:16px;color:var(--text);font-size:14px;line-height:2">
+        <li><strong>Busca que entende intenção</strong> — "como eu configuro autenticação?" retorna documentos sobre OAuth, JWT, tokens de sessão — mesmo sem essas palavras na query.</li>
+        <li><strong>RAG sem embeddings não existe</strong> — para recuperar os chunks certos para o LLM responder, você precisa comparar a query do usuário com milhares de documentos em milissegundos. Isso é o trabalho do vector store.</li>
+        <li><strong>Recomendação personalizada</strong> — "usuários que gostaram de X também gostam de Y" é calculado via distância vetorial, não por regras manuais.</li>
+        <li><strong>Deduplicação e clustering</strong> — identificar documentos duplicados ou agrupar tickets de suporte por tema sem precisar de labels manuais.</li>
+      </ul>
+    </div>
+
+    <div class="grid-2" style="margin-top:24px">
+      <div class="card-mini">
+        <div style="font-size:1.4rem">🔍</div>
+        <h4>Busca semântica real</h4>
+        <p>Encontra documentos por significado, não por coincidência de palavras. Query em inglês pode retornar resultado em português se o conteúdo for semanticamente equivalente.</p>
+      </div>
+      <div class="card-mini">
+        <div style="font-size:1.4rem">🧱</div>
+        <h4>Fundação do RAG</h4>
+        <p>Todo pipeline de Retrieval-Augmented Generation usa embeddings para recuperar o contexto certo antes de enviar ao LLM. Aula 43 é inteiramente construída sobre esta.</p>
+      </div>
+      <div class="card-mini">
+        <div style="font-size:1.4rem">📊</div>
+        <h4>Clustering sem labels</h4>
+        <p>Agrupe milhares de documentos por tema usando K-means sobre embeddings. Zero anotação manual, resultados surpreendentemente coerentes.</p>
+      </div>
+      <div class="card-mini">
+        <div style="font-size:1.4rem">⚡</div>
+        <h4>Latência de milissegundos</h4>
+        <p>Vector stores com índices ANN (HNSW, IVF) retornam os N vizinhos mais próximos entre milhões de vetores em menos de 10ms.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 02. ANALOGIA ──────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">02 · Analogia</div>
+    <h2>O mapa GPS dos conceitos</h2>
+
+    <div class="analogy-card">
+      <div class="analogy-label">Analogia principal</div>
+      <div class="analogy-text">
+        Imagine que todas as palavras e frases do mundo são endereços num mapa multidimensional. <strong>"Rei" e "Rainha" ficam perto um do outro.</strong> "Cachorro" fica perto de "Cão" e longe de "Computador". "Python a linguagem" fica perto de "JavaScript" e longe de "Python a cobra". Embeddings são as <strong>coordenadas GPS de conceitos no espaço semântico</strong> — e a distância entre dois pontos mede o quão relacionados eles são.
+      </div>
+      <div class="analogy-mapping">
+        <div class="analogy-real">📍 Endereço GPS no mapa</div>
+        <div class="analogy-tech">🔢 Vetor de 1536 números</div>
+        <div class="analogy-real">📏 Distância entre dois endereços</div>
+        <div class="analogy-tech">📐 Similaridade cosseno entre vetores</div>
+        <div class="analogy-real">🗺️ Bairros temáticos no mapa</div>
+        <div class="analogy-tech">🔵 Clusters semânticos no espaço vetorial</div>
+        <div class="analogy-real">🧭 "Mais perto de A do que de B"</div>
+        <div class="analogy-tech">🏆 Top-K nearest neighbors</div>
+      </div>
+    </div>
+
+    <div class="callout callout-tip" style="margin-top:24px">
+      <div class="callout-title">📚 Analogia estendida — A biblioteca semântica</div>
+      <p style="margin-bottom:0">Imagine uma biblioteca onde os livros não são organizados por título ou autor, mas por <strong>significado e tema</strong>. "A Inteligência Artificial de Stuart Russell" e "Algoritmos de Machine Learning" ficam na mesma prateleira — não porque têm palavras em comum no título, mas porque tratam dos mesmos conceitos. Um vector store é exatamente essa biblioteca: você pergunta "quero algo sobre redes neurais" e ele aponta para a prateleira correta, mesmo que você não use essa exata expressão.</p>
+    </div>
+  </div>
+
+  <!-- ── 03. CONCEITO TÉCNICO ──────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">03 · Conceito Técnico</div>
+    <h2>O que são Embeddings — por dentro</h2>
+
+    <p>Um embedding é um <strong>vetor numérico de alta dimensionalidade</strong> que captura o significado semântico de um texto. O modelo de embedding transforma uma string de comprimento arbitrário num vetor de tamanho fixo, onde textos semanticamente similares ficam próximos no espaço vetorial.</p>
+
+    <div style="display:flex;flex-wrap:wrap;gap:12px;margin:20px 0">
+      <div class="dim-pill"><strong>1536</strong> dimensões · text-embedding-3-small</div>
+      <div class="dim-pill"><strong>3072</strong> dimensões · text-embedding-3-large</div>
+      <div class="dim-pill"><strong>384</strong> dimensões · all-MiniLM-L6-v2 (local)</div>
+      <div class="dim-pill"><strong>768</strong> dimensões · all-mpnet-base-v2 (local)</div>
+    </div>
+
+    <p>Cada dimensão captura uma "feature" semântica abstrata — não interpretável por humanos, mas matematicamente poderosa. A combinação de 1536 números representa a "localização" do texto num espaço semântico aprendido por bilhões de exemplos de linguagem.</p>
+
+    <div class="callout callout-info">
+      <div class="callout-title">🔢 Visualizando um embedding</div>
+      <p style="margin-bottom:8px;font-family:'JetBrains Mono',monospace;font-size:13px">"gato" → [<span style="color:#79c0ff">0.2</span>, <span style="color:#ff7b72">-0.5</span>, <span style="color:#a5d6ff">0.8</span>, <span style="color:#ffa657">0.1</span>, <span style="color:#79c0ff">-0.3</span>, ..., <span style="color:#a5d6ff">0.4</span>] &nbsp;·&nbsp; <strong style="color:#d8b4fe">1536 números</strong></p>
+      <p style="margin-bottom:8px;font-family:'JetBrains Mono',monospace;font-size:13px">"felino" → [<span style="color:#79c0ff">0.19</span>, <span style="color:#ff7b72">-0.48</span>, <span style="color:#a5d6ff">0.79</span>, <span style="color:#ffa657">0.12</span>, <span style="color:#79c0ff">-0.31</span>, ..., <span style="color:#a5d6ff">0.38</span>] &nbsp;·&nbsp; <strong style="color:#34d399">muito próximo!</strong></p>
+      <p style="margin-bottom:0;font-family:'JetBrains Mono',monospace;font-size:13px">"avião" &nbsp;→ [<span style="color:#79c0ff">-0.7</span>, <span style="color:#ff7b72">0.3</span>, <span style="color:#a5d6ff">-0.2</span>, <span style="color:#ffa657">0.9</span>, <span style="color:#79c0ff">0.5</span>, ..., <span style="color:#a5d6ff">-0.1</span>] &nbsp;·&nbsp; <strong style="color:#f87171">bem distante</strong></p>
+    </div>
+
+    <h3>Diagrama do fluxo de embedding</h3>
+    <div class="mermaid-wrap">
+      <div class="mermaid-label">Diagrama — Geração e comparação de embeddings</div>
+      <div class="mermaid">
+%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#a855f7', 'primaryTextColor': '#e8e8f0', 'primaryBorderColor': '#a855f7', 'lineColor': '#8585a8', 'secondaryColor': '#111118', 'tertiaryColor': '#1e1e2e', 'background': '#0a0a0f', 'mainBkg': '#111118', 'nodeBorder': '#a855f7', 'clusterBkg': '#16161f', 'edgeLabelBackground': '#0a0a0f', 'fontFamily': 'JetBrains Mono'}}}%%
+flowchart LR
+  A["Texto: 'O gato dorme'"] --> B[Embedding Model]
+  B --> C["Vetor: [0.2, -0.5, 0.8, ...]"]
+  C --> D{Comparar}
+  D --> E["'O felino repousa'\n✅ Alta similaridade"]
+  D --> F["'Carro esportivo'\n❌ Baixa similaridade"]
+      </div>
+    </div>
+
+    <div class="callout callout-warn">
+      <div class="callout-title">⚠️ Embedding não é conhecimento factual</div>
+      <p style="margin-bottom:0">Embeddings capturam <strong>similaridade semântica</strong>, não verdade. "A Terra é plana" e "A Terra é redonda" podem ter embeddings próximos porque falam do mesmo conceito (forma da Terra), mas o embedding não sabe qual é verdadeiro. Nunca use embeddings para verificação factual — use LLMs com RAG para isso.</p>
+    </div>
+  </div>
+
+  <!-- ── 04. GERAÇÃO DE EMBEDDINGS ─────────────────────────── -->
+  <div class="section">
+    <div class="section-label">04 · Código</div>
+    <h2>Gerando Embeddings com Python</h2>
+
+    <h3>OpenAI Embeddings (cloud, alta qualidade)</h3>
+    <div class="vs-card vs-pinecone">
+      <div class="vs-header">
+        <div class="vs-logo vs-logo-pinecone">O</div>
+        <div>
+          <div class="vs-name">OpenAI text-embedding-3</div>
+          <div class="vs-desc">Melhor qualidade geral · Multilíngue nativo · Pay-per-use</div>
+        </div>
+      </div>
+      <div class="code-label">python · openai_embeddings.py</div>
+<pre><code class="language-python">import os
+from openai import OpenAI
+
+client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+
+def gerar_embedding(texto: str) -> list[float]:
+    response = client.embeddings.create(
+        model="text-embedding-3-small",
+        input=texto
+    )
+    return response.data[0].embedding
+
+# Exemplo
+vetor = gerar_embedding("Como instalar Python no Ubuntu?")
+print(f"Dimensões: {len(vetor)}")  # 1536
+print(f"Primeiros 5 valores: {vetor[:5]}")
+
+# Batch embedding (mais eficiente — uma única chamada de API)
+textos = ["Python básico", "Machine Learning", "Docker containers"]
+response = client.embeddings.create(
+    model="text-embedding-3-small",
+    input=textos
+)
+vetores = [item.embedding for item in response.data]
+print(f"Total de vetores gerados: {len(vetores)}")  # 3</code></pre>
+    </div>
+
+    <h3>HuggingFace / Sentence Transformers (local, gratuito)</h3>
+    <div class="vs-card vs-chroma">
+      <div class="vs-header">
+        <div class="vs-logo vs-logo-chroma">H</div>
+        <div>
+          <div class="vs-name">sentence-transformers</div>
+          <div class="vs-desc">Roda 100% local · Sem custo de API · Ideal para dados sensíveis</div>
+        </div>
+      </div>
+      <div class="code-label">python · local_embeddings.py</div>
+<pre><code class="language-python">from sentence_transformers import SentenceTransformer
+
+# Modelo local — roda sem API, sem custo por chamada
+modelo = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+
+textos = [
+    "Como instalar Python?",
+    "Guia de instalação do Python",
+    "Receita de bolo de chocolate"
+]
+
+vetores = modelo.encode(textos, normalize_embeddings=True)
+print(f"Shape: {vetores.shape}")  # (3, 384)
+
+# normalize_embeddings=True → vetores unitários (norma = 1)
+# Com vetores normalizados, distância euclidiana == 2*(1 - similaridade_cosseno)
+# Isso torna cosseno e dot product matematicamente equivalentes</code></pre>
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">💡 Quando usar cada abordagem</div>
+      <p style="margin-bottom:0">Use <strong>OpenAI</strong> para produção com dados públicos onde qualidade máxima importa. Use <strong>sentence-transformers local</strong> para dados sensíveis (código proprietário, PII, dados médicos), prototipagem sem custo de API, ou quando você precisa rodar offline. Os modelos locais são surpreendentemente bons — all-MiniLM-L6-v2 com 384 dimensões bate muitas APIs pagas em benchmarks de recuperação.</p>
+    </div>
+  </div>
+
+  <!-- ── 05. SIMILARIDADE COSSENO ──────────────────────────── -->
+  <div class="section">
+    <div class="section-label">05 · Matemática</div>
+    <h2>Similaridade Cosseno — Como funciona</h2>
+
+    <p>A similaridade cosseno mede o <strong>ângulo entre dois vetores</strong>, não a distância entre eles. Isso é fundamental: dois textos curtos e dois textos longos sobre o mesmo tema terão vetores de magnitudes diferentes, mas apontando na mesma direção — e o cosseno ignora a magnitude, focando apenas na direção.</p>
+
+    <div class="sim-scale">
+      <div class="sim-item sim-neg">
+        <span class="sim-val">-1.0</span>
+        <span class="sim-desc">Oposto semântico<br>"bom" vs "ruim"</span>
+      </div>
+      <div class="sim-item sim-zero">
+        <span class="sim-val">0.0</span>
+        <span class="sim-desc">Sem relação<br>"cachorro" vs "foguete"</span>
+      </div>
+      <div class="sim-item sim-pos" style="border-left:1px solid var(--border)">
+        <span class="sim-val" style="color:#fbbf24">0.7</span>
+        <span class="sim-desc">Relacionado<br>"Python" vs "programação"</span>
+      </div>
+      <div class="sim-item sim-pos" style="border-left:1px solid var(--border)">
+        <span class="sim-val">1.0</span>
+        <span class="sim-desc">Idêntico<br>mesma frase, mesmo embedding</span>
+      </div>
+    </div>
+
+    <h3>Por que cosseno e não distância euclidiana?</h3>
+    <p>A distância euclidiana mede o comprimento do segmento entre dois pontos. Mas um documento de 10 palavras e um de 1000 palavras sobre o mesmo tema terão vetores de magnitudes muito diferentes — a distância euclidiana os colocaria distantes mesmo sendo semanticamente próximos. O <strong>cosseno resolve isso ao normalizar pela magnitude</strong>, comparando apenas a direção dos vetores.</p>
+
+    <div class="code-label">python · cosine_similarity.py</div>
+<pre><code class="language-python">import numpy as np
+
+def similaridade_cosseno(vetor_a: list[float], vetor_b: list[float]) -> float:
+    a = np.array(vetor_a)
+    b = np.array(vetor_b)
+    return float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)))
+
+# Teste com embeddings reais
+v1 = gerar_embedding("Python é uma linguagem de programação")
+v2 = gerar_embedding("Python é usado para desenvolver software")
+v3 = gerar_embedding("Futebol é o esporte mais popular do Brasil")
+
+sim_12 = similaridade_cosseno(v1, v2)
+sim_13 = similaridade_cosseno(v1, v3)
+
+print(f"v1 vs v2 (ambos sobre Python): {sim_12:.4f}")  # ~0.92
+print(f"v1 vs v3 (Python vs Futebol): {sim_13:.4f}")   # ~0.31
+
+# Interpretação:
+# > 0.9  → quase idêntico em significado
+# 0.7–0.9 → altamente relacionado
+# 0.5–0.7 → relacionado mas distinto
+# < 0.5  → pouco ou nenhuma relação semântica</code></pre>
+
+    <div class="callout callout-check">
+      <div class="callout-title">✅ Boa prática: vetores normalizados</div>
+      <p style="margin-bottom:0">Quando você usa <code>normalize_embeddings=True</code> no sentence-transformers (ou normaliza manualmente com <code>v / np.linalg.norm(v)</code>), o <strong>dot product simples equivale ao cosseno</strong>. Isso é mais rápido computacionalmente e é o formato esperado pela maioria dos vector stores. O pgvector com o operador <code>&lt;=&gt;</code> (cosine distance) faz isso internamente.</p>
+    </div>
+  </div>
+
+  <!-- ── 06. CHROMA ────────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">06 · Vector Stores</div>
+    <h2>Chroma — Local, ideal para desenvolvimento</h2>
+
+    <p>Chroma é o vector store mais fácil de começar: <code>pip install chromadb</code>, zero configuração de servidor, persiste em arquivo local. Perfeito para desenvolvimento, prototipagem e projetos pequenos/médios. Para produção em larga escala, migre para Pinecone ou Qdrant.</p>
+
+    <div class="vs-card vs-chroma">
+      <div class="vs-header">
+        <div class="vs-logo vs-logo-chroma">C</div>
+        <div>
+          <div class="vs-name">ChromaDB</div>
+          <div class="vs-desc">pip install chromadb · SQLite local · Sem servidor · Gratuito</div>
+        </div>
+      </div>
+      <div class="code-label">python · chroma_example.py</div>
+<pre><code class="language-python">import chromadb
+import os
+from chromadb.utils import embedding_functions
+
+# Cliente local com persistência em arquivo
+client = chromadb.PersistentClient(path="./chroma_db")
+
+# Função de embedding (OpenAI) — Chroma embute automaticamente
+openai_ef = embedding_functions.OpenAIEmbeddingFunction(
+    api_key=os.environ["OPENAI_API_KEY"],
+    model_name="text-embedding-3-small"
+)
+
+# Criar ou recuperar coleção
+colecao = client.get_or_create_collection(
+    name="documentos_curso",
+    embedding_function=openai_ef
+)
+
+# Adicionar documentos (Chroma gera os embeddings automaticamente)
+colecao.add(
+    documents=[
+        "Python é uma linguagem de alto nível",
+        "Docker containeriza aplicações",
+        "Git é um sistema de controle de versão"
+    ],
+    metadatas=[
+        {"fonte": "aula-01", "topico": "python"},
+        {"fonte": "aula-17", "topico": "docker"},
+        {"fonte": "aula-01", "topico": "git"}
+    ],
+    ids=["doc1", "doc2", "doc3"]
+)
+
+# Busca semântica por linguagem natural
+resultados = colecao.query(
+    query_texts=["Como usar containers?"],
+    n_results=2,
+    where={"topico": "docker"}  # filtro por metadado (opcional)
+)
+
+print(resultados["documents"])
+print(resultados["distances"])  # menor = mais similar (distância, não similaridade)
+
+# Atualizar documento existente
+colecao.update(
+    ids=["doc1"],
+    documents=["Python é uma linguagem interpretada de alto nível"],
+    metadatas=[{"fonte": "aula-01-v2", "topico": "python"}]
+)
+
+# Total de documentos na coleção
+print(f"Total: {colecao.count()}")</code></pre>
+    </div>
+  </div>
+
+  <!-- ── 07. PINECONE ──────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">07 · Vector Stores</div>
+    <h2>Pinecone — Cloud gerenciado para produção</h2>
+
+    <p>Pinecone é o vector store mais usado em produção: escalabilidade automática, SLA garantido, filtragem avançada de metadados, suporte a bilhões de vetores. O custo é por uso, mas o free tier permite prototipagem e aplicações pequenas.</p>
+
+    <div class="vs-card vs-pinecone">
+      <div class="vs-header">
+        <div class="vs-logo vs-logo-pinecone">P</div>
+        <div>
+          <div class="vs-name">Pinecone</div>
+          <div class="vs-desc">Cloud managed · Serverless tier gratuito · Bilhões de vetores</div>
+        </div>
+      </div>
+      <div class="code-label">python · pinecone_example.py</div>
+<pre><code class="language-python">from pinecone import Pinecone, ServerlessSpec
+import os
+
+pc = Pinecone(api_key=os.environ["PINECONE_API_KEY"])
+
+# Criar índice (executar apenas uma vez)
+# dimension deve ser igual ao modelo de embedding usado
+if "curso-docs" not in pc.list_indexes().names():
+    pc.create_index(
+        name="curso-docs",
+        dimension=1536,       # text-embedding-3-small
+        metric="cosine",
+        spec=ServerlessSpec(cloud="aws", region="us-east-1")
+    )
+
+index = pc.Index("curso-docs")
+
+# Upsert: inserir ou atualizar vetores com metadados
+vetores_para_upsert = [
+    {
+        "id": "doc-001",
+        "values": gerar_embedding("Python para iniciantes"),
+        "metadata": {"titulo": "Aula 1", "topico": "python", "aula_id": 1}
+    },
+    {
+        "id": "doc-002",
+        "values": gerar_embedding("Docker e containers"),
+        "metadata": {"titulo": "Aula 17", "topico": "docker", "aula_id": 17}
+    }
+]
+
+index.upsert(vectors=vetores_para_upsert)
+
+# Query com filtro de metadados
+resultado = index.query(
+    vector=gerar_embedding("Como rodar aplicação em container?"),
+    top_k=3,
+    include_metadata=True,
+    filter={"topico": {"$in": ["docker", "python"]}}
+)
+
+for match in resultado.matches:
+    print(f"Score: {match.score:.3f} | ID: {match.id} | {match.metadata['titulo']}")
+
+# Stats do índice
+stats = index.describe_index_stats()
+print(f"Total de vetores: {stats['total_vector_count']}")</code></pre>
+    </div>
+  </div>
+
+  <!-- ── 08. PGVECTOR ──────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">08 · Vector Stores</div>
+    <h2>pgvector — PostgreSQL com superpowers</h2>
+
+    <p>Se sua stack já usa PostgreSQL, pgvector é a opção mais pragmática: você mantém tudo num único banco, aproveita SQL completo para filtragem complexa, transações ACID, joins com outras tabelas. Perfeito para quando você quer busca semântica integrada ao seu modelo relacional existente.</p>
+
+    <div class="vs-card vs-pgvector">
+      <div class="vs-header">
+        <div class="vs-logo vs-logo-pgvector">PG</div>
+        <div>
+          <div class="vs-name">pgvector</div>
+          <div class="vs-desc">PostgreSQL extension · SQL completo · HNSW index · Self-hosted</div>
+        </div>
+      </div>
+      <div class="code-label">sql · setup_pgvector.sql</div>
+<pre><code class="language-sql">-- Instalar extensão (uma vez por banco)
+CREATE EXTENSION IF NOT EXISTS vector;
+
+-- Tabela com coluna vetorial
+CREATE TABLE documentos (
+    id          SERIAL PRIMARY KEY,
+    conteudo    TEXT NOT NULL,
+    embedding   vector(1536),        -- dimensão deve bater com o modelo
+    metadados   JSONB DEFAULT '{}',
+    criado_em   TIMESTAMP DEFAULT NOW()
+);
+
+-- Índice HNSW para busca aproximada rápida (recomendado para > 100k docs)
+-- m: número de conexões por nó | ef_construction: qualidade do índice
+CREATE INDEX ON documentos
+USING hnsw (embedding vector_cosine_ops)
+WITH (m = 16, ef_construction = 64);
+
+-- Para datasets menores, IVFFlat é mais simples:
+-- CREATE INDEX ON documentos USING ivfflat (embedding vector_cosine_ops)
+-- WITH (lists = 100);</code></pre>
+
+      <div class="code-label">python · pgvector_example.py</div>
+<pre><code class="language-python">import psycopg2
+import json
+import os
+
+conn = psycopg2.connect(os.environ["DATABASE_URL"])
+cur = conn.cursor()
+
+# Inserir documento com embedding
+vetor = gerar_embedding("Python é excelente para data science")
+cur.execute(
+    "INSERT INTO documentos (conteudo, embedding, metadados) VALUES (%s, %s, %s)",
+    (
+        "Python é excelente para data science",
+        vetor,              # psycopg2 aceita lista de floats diretamente com pgvector
+        json.dumps({"topico": "python"})
+    )
+)
+conn.commit()
+
+# Busca por similaridade cosseno
+# Operador <=> = distância cosseno (0 = idêntico, 2 = oposto)
+# 1 - (embedding <=> query) = similaridade cosseno
+query_vetor = gerar_embedding("linguagem para análise de dados")
+cur.execute("""
+    SELECT
+        conteudo,
+        1 - (embedding <=> %s::vector) AS similaridade,
+        metadados
+    FROM documentos
+    ORDER BY embedding <=> %s::vector
+    LIMIT 5
+""", (query_vetor, query_vetor))
+
+for row in cur.fetchall():
+    print(f"Similaridade: {row[1]:.3f} | {row[0][:60]}")
+
+# Busca com filtro SQL (vantagem única do pgvector!)
+cur.execute("""
+    SELECT conteudo, 1 - (embedding <=> %s::vector) AS sim
+    FROM documentos
+    WHERE metadados->>'topico' = 'python'   -- filtro SQL normal
+      AND criado_em > NOW() - INTERVAL '7 days'
+    ORDER BY embedding <=> %s::vector
+    LIMIT 3
+""", (query_vetor, query_vetor))
+
+cur.close()
+conn.close()</code></pre>
+    </div>
+  </div>
+
+  <!-- ── 09. QDRANT ────────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">09 · Vector Stores</div>
+    <h2>Qdrant — Recursos avançados, cloud e self-hosted</h2>
+
+    <p>Qdrant é um vector store de código aberto escrito em Rust, com foco em performance e recursos avançados: payloads ricos, filtragem sofisticada, quantização de vetores para reduzir memória, e tanto cloud gerenciado quanto Docker self-hosted gratuito.</p>
+
+    <div class="vs-card vs-qdrant">
+      <div class="vs-header">
+        <div class="vs-logo vs-logo-qdrant">Q</div>
+        <div>
+          <div class="vs-name">Qdrant</div>
+          <div class="vs-desc">Rust · Open source · Docker · Cloud · Filtros avançados · Quantização</div>
+        </div>
+      </div>
+      <div class="code-label">bash · docker run</div>
+<pre><code class="language-bash">docker run -p 6333:6333 -p 6334:6334 \
+  -v $(pwd)/qdrant_storage:/qdrant/storage \
+  qdrant/qdrant</code></pre>
+
+      <div class="code-label">python · qdrant_example.py</div>
+<pre><code class="language-python">from qdrant_client import QdrantClient
+from qdrant_client.models import Distance, VectorParams, PointStruct, Filter, FieldCondition, MatchValue
+
+client = QdrantClient(url="http://localhost:6333")
+
+# Criar coleção
+client.create_collection(
+    collection_name="curso_docs",
+    vectors_config=VectorParams(size=1536, distance=Distance.COSINE)
+)
+
+# Inserir pontos com payload (metadados ricos)
+client.upsert(
+    collection_name="curso_docs",
+    points=[
+        PointStruct(
+            id=1,
+            vector=gerar_embedding("FastAPI para APIs REST"),
+            payload={
+                "titulo": "FastAPI",
+                "dificuldade": "intermediário",
+                "aula_id": 22,
+                "tags": ["python", "api", "web"]
+            }
+        ),
+        PointStruct(
+            id=2,
+            vector=gerar_embedding("Docker containers e microserviços"),
+            payload={
+                "titulo": "Docker",
+                "dificuldade": "intermediário",
+                "aula_id": 17,
+                "tags": ["docker", "containers", "devops"]
+            }
+        )
+    ]
+)
+
+# Busca com filtro estruturado
+resultados = client.search(
+    collection_name="curso_docs",
+    query_vector=gerar_embedding("criar API web em Python"),
+    query_filter=Filter(
+        must=[
+            FieldCondition(
+                key="dificuldade",
+                match=MatchValue(value="intermediário")
+            )
+        ]
+    ),
+    limit=3
+)
+
+for r in resultados:
+    print(f"Score: {r.score:.3f} | ID: {r.id} | {r.payload['titulo']}")
+
+# Scroll para listar todos os documentos
+pontos, _ = client.scroll(
+    collection_name="curso_docs",
+    limit=100,
+    with_payload=True
+)
+print(f"Total de pontos: {len(pontos)}")</code></pre>
+    </div>
+  </div>
+
+  <!-- ── 10. TABELA COMPARATIVA ────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">10 · Comparação</div>
+    <h2>Qual Vector Store escolher?</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Chroma</th>
+            <th>Pinecone</th>
+            <th>pgvector</th>
+            <th>Qdrant</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Hosting</strong></td>
+            <td>Local / Docker</td>
+            <td>Cloud (managed)</td>
+            <td>Self-hosted</td>
+            <td>Cloud + Self-hosted</td>
+          </tr>
+          <tr>
+            <td><strong>Setup</strong></td>
+            <td><code>pip install chromadb</code></td>
+            <td>API key + SDK</td>
+            <td>PostgreSQL + ext</td>
+            <td>Docker pull</td>
+          </tr>
+          <tr>
+            <td><strong>Custo</strong></td>
+            <td><span class="badge badge-green">Gratuito</span></td>
+            <td><span class="badge badge-yellow">Pay-as-you-go</span></td>
+            <td>Infra própria</td>
+            <td><span class="badge badge-green">Gratuito (self)</span></td>
+          </tr>
+          <tr>
+            <td><strong>Escala</strong></td>
+            <td>Milhões docs</td>
+            <td>Bilhões vetores</td>
+            <td>Depends on PG</td>
+            <td>Bilhões vetores</td>
+          </tr>
+          <tr>
+            <td><strong>Filtros</strong></td>
+            <td>Básico ($eq, $in)</td>
+            <td>Avançado</td>
+            <td><span class="badge badge-green">SQL completo</span></td>
+            <td>Avançado</td>
+          </tr>
+          <tr>
+            <td><strong>Melhor para</strong></td>
+            <td>Dev / prototipagem</td>
+            <td>Produção grande</td>
+            <td>Stack SQL existente</td>
+            <td>Produção flexível</td>
+          </tr>
+          <tr>
+            <td><strong>Persistência</strong></td>
+            <td>Arquivo local</td>
+            <td>☁️ gerenciado</td>
+            <td>PostgreSQL</td>
+            <td>Arquivo + cloud</td>
+          </tr>
+          <tr>
+            <td><strong>Linguagens</strong></td>
+            <td>Python, JS</td>
+            <td>Python, JS, Go, Java</td>
+            <td>Qualquer (SQL)</td>
+            <td>Python, JS, Rust, Go</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">💡 Regra de decisão rápida</div>
+      <p style="margin-bottom:0"><strong>Desenvolvendo/prototipando?</strong> Use Chroma. <strong>Stack PostgreSQL em produção?</strong> Adicione pgvector — zero infraestrutura nova. <strong>Precisa escalar para bilhões de vetores sem gerenciar infra?</strong> Pinecone. <strong>Quer open source com recursos enterprise self-hosted?</strong> Qdrant.</p>
+    </div>
+  </div>
+
+  <!-- ── 11. CHUNKING ──────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">11 · Preparação de Dados</div>
+    <h2>Chunking — Preparando textos para embeddings</h2>
+
+    <p>Modelos de embedding têm um limite de tokens (geralmente 512 a 8192). Mas mais importante: <strong>chunks maiores produzem embeddings "médios" imprecisos</strong>. Um chunk de 3000 palavras tem seu embedding contaminado por muitos temas diferentes, tornando a recuperação vaga. O tamanho ideal de chunk depende do seu caso de uso — tipicamente 200 a 600 tokens, com overlap de 10-20%.</p>
+
+    <h3>Visualização de chunking com overlap</h3>
+    <div class="chunk-visual">
+      <div class="chunk-block" style="min-width:200px">
+        <div class="chunk-num">1</div>
+        Python é uma linguagem de alto nível criada por Guido van Rossum em 1991...
+      </div>
+      <div class="chunk-block overlap" style="min-width:120px">
+        ⟵ overlap 50 chars ⟶
+      </div>
+      <div class="chunk-block" style="min-width:200px">
+        <div class="chunk-num">2</div>
+        ...criada por Guido van Rossum em 1991. Python é amplamente usado em ciência de dados...
+      </div>
+      <div class="chunk-block overlap" style="min-width:120px">
+        ⟵ overlap 50 chars ⟶
+      </div>
+      <div class="chunk-block" style="min-width:200px">
+        <div class="chunk-num">3</div>
+        ...usado em ciência de dados, IA e desenvolvimento web. Sua sintaxe clara...
+      </div>
+    </div>
+    <p style="font-size:13px;color:var(--muted)">O overlap garante que informações no limite entre chunks não se percam — a continuidade de contexto é preservada.</p>
+
+    <h3>Estratégias de chunking</h3>
+    <div class="grid-2">
+      <div class="card-mini">
+        <h4>Fixed-size</h4>
+        <p>Divide por número fixo de caracteres/tokens. Simples, mas pode cortar sentenças no meio.</p>
+      </div>
+      <div class="card-mini">
+        <h4>Sentence-based</h4>
+        <p>Divide por pontuação (., !, ?). Preserva sentenças inteiras, mas tamanho irregular.</p>
+      </div>
+      <div class="card-mini">
+        <h4>Recursive Character</h4>
+        <p>Tenta dividir por parágrafos, depois por linhas, depois por sentenças. Melhor compromisso — padrão do LangChain.</p>
+      </div>
+      <div class="card-mini">
+        <h4>Semantic Chunking</h4>
+        <p>Agrupa sentenças por similaridade semântica. Mais lento mas produz chunks tematicamente coerentes.</p>
+      </div>
+    </div>
+
+    <div class="code-label">python · chunking.py</div>
+<pre><code class="language-python">from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=500,       # tamanho máximo em caracteres
+    chunk_overlap=50,     # overlap entre chunks consecutivos
+    separators=["\n\n", "\n", ".", " ", ""]  # ordem de preferência de split
+)
+
+texto = """
+Python é uma linguagem de programação de alto nível.
+Criada por Guido van Rossum em 1991, tornou-se uma das mais populares do mundo.
+
+Python é amplamente usado em ciência de dados, inteligência artificial e desenvolvimento web.
+Sua sintaxe clara e legível facilita o aprendizado.
+"""
+
+chunks = splitter.create_documents([texto])
+print(f"Total de chunks: {len(chunks)}")
+for i, chunk in enumerate(chunks):
+    print(f"Chunk {i+1}: {len(chunk.page_content)} chars | Preview: {chunk.page_content[:60]}...")
+
+# Adicionar metadados a cada chunk (importante para rastreabilidade)
+chunks_com_meta = splitter.create_documents(
+    texts=[texto],
+    metadatas=[{"fonte": "aula-01.txt", "autor": "professor", "topico": "python"}]
+)
+# Cada chunk herda o metadado do documento-pai
+print(chunks_com_meta[0].metadata)</code></pre>
+
+    <div class="callout callout-warn">
+      <div class="callout-title">⚠️ A regra de ouro do chunk size</div>
+      <p style="margin-bottom:0">Para sistemas de QA/RAG, o tamanho de chunk deve refletir a <strong>granularidade da informação buscada</strong>. Se o usuário faz perguntas pontuais ("qual o comando para X?"), use chunks pequenos (100-300 tokens). Se o usuário pede análises contextuais ("explique a arquitetura de Y"), use chunks maiores (500-1000 tokens). Experimente e meça com seu dataset real — não existe tamanho universalmente ideal.</p>
+    </div>
+  </div>
+
+  <!-- ── 12. ARMADILHAS ────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">12 · Armadilhas</div>
+    <h2>Erros comuns que custam horas de debugging</h2>
+
+    <div class="pitfall">
+      <div class="pitfall-title">🪤 Misturar modelos de embedding na ingestão e na query</div>
+      <p style="color:var(--text);font-size:14px;margin-bottom:0">O <strong>erro mais comum e mais silencioso</strong>: você ingere documentos com <code>text-embedding-3-small</code> (1536 dims) e depois faz queries com <code>text-embedding-3-large</code> (3072 dims). O vector store retorna resultados aleatórios ou lança erro de dimensão. Regra: <strong>o mesmo modelo deve ser usado do início ao fim</strong>. Documente e fixe a versão do modelo nos metadados do índice.</p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">🪤 Chunk muito grande → embedding impreciso</div>
+      <p style="color:var(--text);font-size:14px;margin-bottom:0">Um chunk de 3000 palavras discutindo Python, depois Docker, depois SQL tem um embedding que é a "média" de todos esses temas. Quando o usuário pergunta sobre Docker, esse chunk pode não ser recuperado porque o sinal de Docker foi diluído pelos outros temas. Mantenha chunks temáticos e coerentes — de preferência um tópico por chunk.</p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">🪤 Chunk muito pequeno → perde contexto</div>
+      <p style="color:var(--text);font-size:14px;margin-bottom:0">O chunk "O método retorna True" sem contexto do que é o método, em qual classe, em qual contexto — é inútil quando recuperado. O LLM não consegue formular uma resposta com chunks sem contexto suficiente. Use overlap e mantenha chunks com pelo menos uma sentença completa de contexto.</p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">🪤 Embeddings não capturam fatos, só similaridade</div>
+      <p style="color:var(--text);font-size:14px;margin-bottom:0">"A Terra é plana" e "A Terra é esférica" terão embeddings próximos porque falam do mesmo conceito. O embedding não sabe qual é verdadeiro. Nunca use similaridade de embedding para verificação factual — isso requer um LLM com raciocínio.</p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">🪤 Não normalizar vetores antes do cosseno no pgvector</div>
+      <p style="color:var(--text);font-size:14px;margin-bottom:0">O operador <code>&lt;=&gt;</code> do pgvector calcula distância cosseno corretamente independente da normalização, mas alguns cálculos manuais com <code>&lt;#&gt;</code> (produto interno negativo) assumem vetores normalizados. Normalize sempre com <code>v / np.linalg.norm(v)</code> antes de inserir para ser seguro com qualquer operador.</p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">🪤 Misturar idiomas sem normalização degrada qualidade</div>
+      <p style="color:var(--text);font-size:14px;margin-bottom:0">Documentos em PT-BR e queries em EN funcionam com modelos multilíngues (como os da OpenAI e all-MiniLM-L6-v2 multilingual), mas modelos só-inglês como alguns da SBERT vão produzir resultados degradados para PT-BR. Escolha um modelo adequado ao seu idioma ou normalize os textos para inglês antes de embedar.</p>
+    </div>
+  </div>
+
+  <!-- ── 13. VÍDEOS ────────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">13 · Curadoria</div>
+    <h2>Vídeos recomendados</h2>
+
+    <div class="video-grid">
+      <div class="video-card">
+        <div class="video-thumb">🎬</div>
+        <div class="video-info">
+          <div class="video-title">Vector Databases simply explained!</div>
+          <div class="video-channel">Decoder — YouTube</div>
+          <div class="video-why">A melhor explicação visual de como vector databases funcionam internamente — cobre HNSW, IVF, e a diferença entre busca exata e aproximada. Ideal para entender o "por quê" antes de codar.</div>
+          <a href="https://www.youtube.com/results?search_query=Vector+Databases+simply+explained+Decoder" target="_blank" class="video-watch">Assistir no YouTube →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">🎬</div>
+        <div class="video-info">
+          <div class="video-title">Embeddings Explained</div>
+          <div class="video-channel">AssemblyAI — YouTube</div>
+          <div class="video-why">Cobertura técnica de como embeddings são treinados, o que cada dimensão representa (intuitivamente), e como usar similaridade cosseno na prática. Foca em aplicações reais.</div>
+          <a href="https://www.youtube.com/results?search_query=Embeddings+Explained+AssemblyAI" target="_blank" class="video-watch">Assistir no YouTube →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">🎬</div>
+        <div class="video-info">
+          <div class="video-title">Chroma DB Tutorial — Build a Semantic Search App</div>
+          <div class="video-channel">Sam Witteveen — YouTube</div>
+          <div class="video-why">Tutorial hands-on de ChromaDB do zero: instalação, criação de coleções, embedding com OpenAI, busca semântica e filtragem por metadados. Sam Witteveen é referência em LLM engineering prático.</div>
+          <a href="https://www.youtube.com/results?search_query=Chroma+DB+Tutorial+Sam+Witteveen" target="_blank" class="video-watch">Assistir no YouTube →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">🎬</div>
+        <div class="video-info">
+          <div class="video-title">Pinecone Vector Database Tutorial</div>
+          <div class="video-channel">James Briggs — YouTube</div>
+          <div class="video-why">James Briggs (ex-Pinecone) explica o Pinecone do zero: criação de índices, upsert em batch, queries com filtros, e boas práticas de produção. Canal focado em LLM engineering aplicado.</div>
+          <a href="https://www.youtube.com/results?search_query=Pinecone+Vector+Database+Tutorial+James+Briggs" target="_blank" class="video-watch">Assistir no YouTube →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 14. CHECKPOINT ────────────────────────────────────── -->
+  <div class="checkpoint">
+    <div class="checkpoint-label">Checkpoint · Aula 42</div>
+    <h3>Busca semântica para os documentos do curso</h3>
+    <p>Coloque em prática todos os conceitos desta aula: gere embeddings reais, armazene num vector store e construa uma busca semântica funcional para as aulas do curso.</p>
+    <ul>
+      <li>Crie uma lista com os títulos e descrições das 50 aulas do roadmap</li>
+      <li>Gere embeddings de cada aula com <code>text-embedding-3-small</code> ou <code>all-MiniLM-L6-v2</code> (local)</li>
+      <li>Armazene no ChromaDB com metadados: <code>aula_id</code>, <code>trilha</code>, <code>link</code></li>
+      <li>Crie uma função <code>buscar_aulas(duvida: str, n=3)</code> que retorna as aulas mais relevantes</li>
+      <li>Exiba título, score de similaridade e link de cada resultado</li>
+      <li><strong>Bônus:</strong> adicione um fallback que usa similaridade de keywords como segundo critério quando o score semântico for menor que 0.6</li>
+    </ul>
+    <div class="checkpoint-hint">
+      Teste a busca com queries como: "como usar docker na nuvem", "autenticação segura", "criando APIs rápidas em Python". Os resultados devem fazer sentido semântico mesmo sem usar as palavras exatas dos títulos das aulas.
+    </div>
+  </div>
+
+  <!-- ── 15. PRÓXIMOS PASSOS ───────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">15 · Próximos Passos</div>
+    <h2>O que vem depois</h2>
+    <p>Você acabou de dominar os blocos fundamentais: gerar embeddings, calcular similaridade, e armazenar/recuperar vetores eficientemente. Agora é hora de montar o pipeline completo que usa tudo isso em conjunto com um LLM para criar respostas baseadas nos seus próprios documentos.</p>
+
+    <div class="callout callout-check">
+      <div class="callout-title">✅ O que você aprendeu nesta aula</div>
+      <ul style="padding-left:16px;color:var(--text);font-size:14px;line-height:2;margin-bottom:0">
+        <li>O que são embeddings e por que são vetores de alta dimensionalidade</li>
+        <li>Como gerar embeddings com OpenAI API e com sentence-transformers local</li>
+        <li>Como calcular e interpretar similaridade cosseno</li>
+        <li>Como usar ChromaDB, Pinecone, pgvector e Qdrant</li>
+        <li>Estratégias de chunking e os trade-offs de cada abordagem</li>
+        <li>As 6 armadilhas mais comuns em sistemas de embedding</li>
+      </ul>
+    </div>
+
+    <a href="ai-06-rag-pipeline.html" class="next-card">
+      <div>
+        <div class="next-card-label">Próxima Aula · 43 / 50</div>
+        <div class="next-card-title">RAG Pipeline — Retrieval-Augmented Generation</div>
+      </div>
+      <div class="next-arrow">→</div>
+    </a>
+  </div>
+
+  <footer class="footer">
+    <span>Curso Roadmaps · <a href="../roadmaps_new.html">Ver roadmap completo</a></span>
+    <span>Aula 42 · 🤖 IA · Embeddings &amp; Vector Stores</span>
+  </footer>
+
+</div><!-- .page -->
+
+<script>
+  // Progress bar scroll indicator
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    document.getElementById('progressBar').style.width = progress + '%';
+  });
+
+  // Mermaid dark theme
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      primaryColor: '#a855f7',
+      primaryTextColor: '#e8e8f0',
+      primaryBorderColor: '#a855f7',
+      lineColor: '#8585a8',
+      secondaryColor: '#111118',
+      tertiaryColor: '#1e1e2e',
+      background: '#0a0a0f',
+      mainBkg: '#111118',
+      nodeBorder: '#a855f7',
+      fontFamily: 'JetBrains Mono, monospace'
+    }
+  });
+
+  // Highlight.js
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('pre code').forEach(block => {
+      hljs.highlightElement(block);
+    });
+  });
+</script>
+</body>
+</html>

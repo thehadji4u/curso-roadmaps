@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pipeline RAG Completo · Aula 43</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+    :root{--bg:#0a0a0f;--surface:#111118;--surface2:#16161f;--border:#1e1e2e;--text:#e8e8f0;--muted:#8585a8;--accent:#a855f7;--accent-dim:rgba(168,85,247,0.12);--accent-border:rgba(168,85,247,0.35);--success:#10b981;--warn:#f59e0b;--danger:#ef4444;--info:#06b6d4}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:15px;line-height:1.75}
+    .progress-bar-wrap{position:fixed;top:0;left:0;right:0;height:3px;background:var(--border);z-index:1000}
+    .progress-bar-fill{height:100%;background:linear-gradient(90deg,#a855f7,#d8b4fe);width:0%;transition:width 0.1s}
+    .top-nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:12px 32px;background:rgba(10,10,15,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+    .nav-back{text-decoration:none;color:var(--muted);font-size:12px;padding:6px 14px;border:1px solid var(--border);border-radius:6px;transition:all 0.2s}
+    .nav-back:hover{color:var(--text);border-color:rgba(255,255,255,0.15);background:rgba(255,255,255,0.04)}
+    .nav-center{display:flex;align-items:center;gap:10px}
+    .nav-position{font-size:12px;color:var(--muted);letter-spacing:0.06em}
+    .nav-position .track{color:var(--accent);font-weight:600}
+    .nav-prev,.nav-next{display:flex;align-items:center;gap:6px;text-decoration:none;color:var(--muted);font-size:12px;padding:6px 14px;border:1px solid var(--border);border-radius:6px;background:transparent;transition:all 0.2s}
+    .nav-prev:hover,.nav-next:hover{color:var(--text);border-color:rgba(255,255,255,0.15);background:rgba(255,255,255,0.04)}
+    .nav-next{border-color:var(--accent-border);color:var(--accent)}
+    .nav-next:hover{background:var(--accent-dim);color:#d8b4fe}
+    .page{max-width:860px;margin:0 auto;padding:48px 24px 96px}
+    .hero{padding:52px 0 40px;border-bottom:1px solid var(--border);margin-bottom:56px}
+    .hero-eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:20px;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)}
+    .hero-badge{background:var(--accent-dim);border:1px solid var(--accent-border);color:var(--accent);padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600}
+    .hero h1{font-family:'Syne',sans-serif;font-size:clamp(2rem,5vw,3rem);font-weight:800;line-height:1.1;letter-spacing:-0.02em;margin-bottom:20px;background:linear-gradient(135deg,#fff 40%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--muted);margin-bottom:24px}
+    .hero-tags{display:flex;flex-wrap:wrap;gap:8px}
+    .tag{background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--muted);padding:4px 12px;border-radius:4px;font-size:11px;letter-spacing:0.06em}
+    .tag.accent{background:var(--accent-dim);border-color:var(--accent-border);color:var(--accent)}
+    .section{margin-bottom:64px}
+    .section-label{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;font-weight:600}
+    .section h2{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:700;margin-bottom:20px;color:#fff}
+    .section h3{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:700;margin:32px 0 14px;color:#fff}
+    .section h4{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin:20px 0 10px;color:#e0e0f0}
+    .section p{color:var(--text);margin-bottom:16px}
+    .callout{border-radius:8px;padding:18px 20px;margin:20px 0;border-left:3px solid}
+    .callout-title{font-weight:700;margin-bottom:6px;font-size:13px}
+    .callout-info{background:rgba(6,182,212,0.08);border-color:var(--info)}.callout-info .callout-title{color:var(--info)}
+    .callout-warn{background:rgba(245,158,11,0.08);border-color:var(--warn)}.callout-warn .callout-title{color:var(--warn)}
+    .callout-tip{background:rgba(168,85,247,0.06);border-color:var(--accent)}.callout-tip .callout-title{color:var(--accent)}
+    .callout-check{background:rgba(16,185,129,0.06);border-color:var(--success)}.callout-check .callout-title{color:var(--success)}
+    .analogy-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;position:relative;overflow:hidden}
+    .analogy-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),transparent)}
+    .analogy-label{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+    .analogy-text{font-size:15px;color:var(--text);margin-bottom:20px;line-height:1.8}
+    .analogy-mapping{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px}
+    .analogy-real{background:rgba(255,255,255,0.04);border:1px solid var(--border);padding:8px 14px;border-radius:6px;font-size:13px;color:var(--muted)}
+    .analogy-tech{background:var(--accent-dim);border:1px solid var(--accent-border);padding:8px 14px;border-radius:6px;font-size:13px;color:var(--accent)}
+    .mermaid-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px 20px;margin:24px 0;overflow:auto}
+    .mermaid-label{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+    .table-wrap{overflow-x:auto;margin:16px 0}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    thead tr{border-bottom:2px solid var(--accent-border)}
+    thead th{text-align:left;padding:10px 14px;color:var(--accent);font-size:11px;letter-spacing:0.08em;text-transform:uppercase}
+    tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s}
+    tbody tr:hover{background:rgba(255,255,255,0.03)}
+    tbody td{padding:11px 14px;color:var(--text);vertical-align:top}
+    .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+    .badge-green{background:rgba(16,185,129,0.2);color:#34d399}
+    .badge-red{background:rgba(239,68,68,0.2);color:#f87171}
+    .badge-yellow{background:rgba(245,158,11,0.2);color:#fbbf24}
+    .badge-purple{background:rgba(168,85,247,0.2);color:#d8b4fe}
+    .badge-blue{background:rgba(59,130,246,0.2);color:#60a5fa}
+    pre{background:#0d1117 !important;border:1px solid var(--border);border-radius:8px;overflow-x:auto;margin:12px 0;font-size:13px}
+    pre code{font-family:'JetBrains Mono',monospace}
+    .code-label{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);padding:10px 16px 0}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    @media(max-width:640px){.grid-2,.grid-3{grid-template-columns:1fr}.analogy-mapping{grid-template-columns:1fr}}
+    .card-mini{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;transition:border-color 0.2s}
+    .card-mini:hover{border-color:var(--accent-border)}
+    .card-mini h4{color:#fff;font-size:14px;margin:10px 0 6px}
+    .card-mini p{color:var(--muted);font-size:13px;margin:0}
+    .video-grid{display:grid;gap:14px}
+    .video-card{display:flex;gap:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;transition:border-color 0.2s}
+    .video-card:hover{border-color:var(--accent-border)}
+    .video-thumb{flex-shrink:0;width:52px;height:52px;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px}
+    .video-info{flex:1}
+    .video-title{font-weight:700;color:#fff;font-size:14px;margin-bottom:4px}
+    .video-channel{color:var(--muted);font-size:12px;margin-bottom:6px}
+    .video-why{color:var(--text);font-size:12px;margin-bottom:10px}
+    .video-watch{font-size:12px;color:var(--accent);text-decoration:none}
+    .video-watch:hover{text-decoration:underline}
+    .checkpoint{background:linear-gradient(135deg,rgba(168,85,247,0.08),rgba(0,0,0,0));border:1px solid var(--accent-border);border-radius:12px;padding:28px;margin-bottom:40px}
+    .checkpoint-label{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;font-weight:600}
+    .checkpoint h3{font-family:'Syne',sans-serif;font-size:1.2rem;color:var(--accent);margin-bottom:12px}
+    .checkpoint p{margin-bottom:14px}
+    .checkpoint ul{padding-left:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+    .checkpoint ul li{color:var(--text);font-size:14px}
+    .checkpoint ul li::before{content:'✦ ';color:var(--accent)}
+    .checkpoint-hint{margin-top:16px;padding:12px 16px;background:rgba(255,255,255,0.03);border-radius:6px;font-size:13px;color:var(--muted)}
+    .pitfall{background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.25);border-radius:10px;padding:20px;margin:16px 0}
+    .pitfall-title{color:#f87171;font-weight:700;margin-bottom:8px;font-size:14px}
+    .next-card{display:flex;align-items:center;justify-content:space-between;padding:22px 24px;background:var(--surface);border:1px solid var(--accent-border);border-radius:10px;text-decoration:none;transition:all 0.2s;margin-top:24px}
+    .next-card:hover{background:var(--accent-dim)}
+    .next-card-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:4px;font-weight:600}
+    .next-card-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:#fff}
+    .next-arrow{font-size:1.5rem;color:var(--accent)}
+    .footer{display:flex;justify-content:space-between;align-items:center;padding:24px 0;margin-top:32px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)}
+    .footer a{color:var(--muted);text-decoration:none}.footer a:hover{color:var(--text)}
+    code:not(.hljs){background:rgba(255,255,255,0.07);border:1px solid var(--border);padding:1px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#d8b4fe}
+    .steps{display:flex;flex-direction:column;gap:20px;margin:20px 0}
+    .step{display:flex;gap:16px}
+    .step-num{flex-shrink:0;width:32px;height:32px;border-radius:50%;background:var(--accent-dim);border:1px solid var(--accent-border);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;margin-top:2px}
+    .step-body{flex:1}
+    .step-title{font-weight:700;color:#fff;margin-bottom:6px;font-size:14px}
+    .step-desc{color:var(--muted);font-size:13px;margin-bottom:10px}
+    .phase-header{display:flex;align-items:center;gap:14px;margin:40px 0 18px;padding:16px 20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;border-left:3px solid var(--accent)}
+    .phase-num{flex-shrink:0;width:36px;height:36px;border-radius:8px;background:var(--accent-dim);border:1px solid var(--accent-border);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+    .phase-info h3{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:700;color:#fff;margin:0 0 2px}
+    .phase-info p{color:var(--muted);font-size:12px;margin:0}
+    .pipeline-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;margin:4px 4px 4px 0}
+    .pipeline-offline{background:rgba(6,182,212,0.12);border:1px solid rgba(6,182,212,0.3);color:var(--info)}
+    .pipeline-online{background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);color:var(--success)}
+    .metric-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}
+    .metric-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 14px;text-align:center}
+    .metric-val{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:var(--accent);display:block;margin-bottom:4px}
+    .metric-label{font-size:11px;color:var(--muted);letter-spacing:0.04em}
+    .adv-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px;margin-bottom:14px;border-left:3px solid var(--accent)}
+    .adv-card h4{color:var(--accent);font-size:14px;margin:0 0 8px}
+    .adv-card p{color:var(--muted);font-size:13px;margin:0}
+    @media(max-width:640px){.metric-row{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body>
+<div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+<nav class="top-nav">
+  <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+  <div class="nav-center">
+    <a href="ai-05-embeddings-vectorstores.html" class="nav-prev">← Anterior</a>
+    <div class="nav-position"><span class="track">🤖 IA</span> · Aula 43 / 50</div>
+    <a href="ai-07-agentes-tools.html" class="nav-next">Próxima →</a>
+  </div>
+</nav>
+<div class="page">
+
+  <!-- ── HERO ──────────────────────────────────────────────── -->
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <span class="hero-badge">🤖 INTELIGÊNCIA ARTIFICIAL</span>
+      <span>Aula 43 · Prioridade 10</span>
+      <span>⏱ ~35 min</span>
+    </div>
+    <h1>Pipeline RAG<br>Completo</h1>
+    <div class="hero-meta">
+      <span>📄 Ingestão de documentos</span>
+      <span>🔪 Chunking estratégico</span>
+      <span>🔍 Retrieval + Reranking · Geração fundamentada</span>
+    </div>
+    <div class="hero-tags">
+      <span class="tag accent">RAG</span>
+      <span class="tag accent">Chunking</span>
+      <span class="tag accent">Retrieval</span>
+      <span class="tag accent">Reranking</span>
+      <span class="tag accent">RAGAS</span>
+      <span class="tag accent">LangChain</span>
+      <span class="tag accent">LlamaIndex</span>
+      <span class="tag">Geração Aumentada</span>
+    </div>
+  </div>
+
+  <!-- ── 01. POR QUE ISSO IMPORTA ─────────────────────────── -->
+  <div class="section">
+    <div class="section-label">01 · Motivação</div>
+    <h2>Por que RAG é a técnica dominante de grounding para LLMs?</h2>
+    <p>LLMs são impressionantes mas têm um problema fundamental: eles só sabem o que estava nos dados de treino. Sua empresa tem documentos internos, manuais atualizados semanalmente, contratos, wikis, bases de suporte — nada disso está no GPT-4o. <strong>RAG (Retrieval-Augmented Generation)</strong> é a ponte entre o conhecimento privado da sua organização e a capacidade de raciocínio do LLM.</p>
+    <p>Mais do que isso, RAG <em>resolve o problema das alucinações</em> de forma sistemática. Em vez de perguntar "o que você sabe sobre X?", você passa os documentos relevantes diretamente no prompt: "dado este contexto específico, responda X". O modelo não precisa inventar — ele sintetiza a partir de fontes reais que você fornece.</p>
+
+    <div class="callout callout-info">
+      <div class="callout-title">💼 O que um engenheiro sênior constrói com RAG</div>
+      <p style="margin-bottom:8px">RAG é o arquétipo de aplicação LLM em produção. Casos de uso reais:</p>
+      <ul style="padding-left:16px;color:var(--text);font-size:14px;line-height:2">
+        <li><strong>Chatbot corporativo</strong> — responde perguntas sobre RH, políticas internas, benefícios. Base: PDFs e wikis da empresa.</li>
+        <li><strong>Q&amp;A sobre documentação técnica</strong> — desenvolvedor pergunta "como configuro CORS no FastAPI?" e recebe a resposta exata com trecho do manual.</li>
+        <li><strong>Assistente jurídico</strong> — analisa contratos, encontra cláusulas relevantes, compara com legislação vigente sem vazar dados para o LLM cloud.</li>
+        <li><strong>Suporte ao cliente nível 1</strong> — RAG sobre base de conhecimento do produto responde 80% dos tickets automaticamente, escalando apenas os complexos.</li>
+        <li><strong>Assistente de código</strong> — indexa toda a codebase da empresa, responde "onde está a lógica de precificação?" com arquivo e linha.</li>
+      </ul>
+    </div>
+
+    <div class="grid-2" style="margin-top:24px">
+      <div class="card-mini">
+        <div style="font-size:1.4rem">🧠</div>
+        <h4>Sem alucinações</h4>
+        <p>O LLM responde com base em documentos reais que você fornece. Se a informação não está no contexto, ele diz isso — em vez de inventar.</p>
+      </div>
+      <div class="card-mini">
+        <div style="font-size:1.4rem">🔒</div>
+        <h4>Dados privados seguros</h4>
+        <p>O conhecimento fica no seu vector store local. O LLM só vê os trechos relevantes em cada query — não toda a base de uma vez.</p>
+      </div>
+      <div class="card-mini">
+        <div style="font-size:1.4rem">🔄</div>
+        <h4>Atualização sem re-treino</h4>
+        <p>Para atualizar o conhecimento, basta reindexar os documentos novos. Nenhum fine-tuning necessário — o LLM permanece o mesmo.</p>
+      </div>
+      <div class="card-mini">
+        <div style="font-size:1.4rem">📎</div>
+        <h4>Citação de fontes</h4>
+        <p>RAG permite retornar não só a resposta, mas de qual documento e em qual trecho ela foi baseada. Rastreabilidade total.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 02. ANALOGIA ──────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">02 · Analogia</div>
+    <h2>O advogado que vai à biblioteca antes de responder</h2>
+
+    <div class="analogy-card">
+      <div class="analogy-label">Analogia do mundo real</div>
+      <div class="analogy-text">
+        "RAG é como um advogado que, antes de responder uma pergunta do cliente, vai à biblioteca buscar os casos relevantes, anota os trechos específicos, e <em>então</em> formula a resposta baseada nos documentos. Sem RAG, é como o advogado respondendo de memória — pode errar datas, leis, precedentes. Com RAG, ele cita as fontes: 'Conforme o Artigo 927 do Código Civil e a decisão STJ 12345/2023...'."
+      </div>
+      <div class="analogy-mapping">
+        <div class="analogy-real">📋 Pergunta do cliente</div>
+        <div class="analogy-tech">Query do usuário</div>
+        <div class="analogy-real">📚 Busca na biblioteca</div>
+        <div class="analogy-tech">Vector Search (top-k)</div>
+        <div class="analogy-real">📄 Trechos relevantes anotados</div>
+        <div class="analogy-tech">Chunks recuperados</div>
+        <div class="analogy-real">⚖️ Advogado formulando resposta</div>
+        <div class="analogy-tech">LLM gerando com contexto</div>
+        <div class="analogy-real">📝 Briefing estruturado</div>
+        <div class="analogy-tech">Prompt template</div>
+      </div>
+    </div>
+
+    <p style="margin-top:20px">A diferença crítica: um advogado respondendo <em>de memória</em> é um LLM sem RAG. Impressionante, mas falível. Um advogado que <em>pesquisa antes</em> de responder é um LLM com RAG. Mais lento, porém fundamentado e confiável.</p>
+  </div>
+
+  <!-- ── 03. ARQUITETURA ────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">03 · Arquitetura</div>
+    <h2>Visão completa dos dois pipelines</h2>
+
+    <p>Um sistema RAG tem dois pipelines distintos com momentos de execução diferentes. O pipeline de <strong>ingestão</strong> roda offline (uma vez, ou quando documentos mudam). O pipeline de <strong>consulta</strong> roda online, em tempo real a cada pergunta do usuário.</p>
+
+    <div style="margin:8px 0 14px;display:flex;gap:8px;flex-wrap:wrap">
+      <span class="pipeline-badge pipeline-offline">🔵 Ingestão (offline) — roda 1x por batch de documentos</span>
+      <span class="pipeline-badge pipeline-online">🟢 Consulta (online) — roda a cada pergunta do usuário</span>
+    </div>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label">Diagrama — Pipelines de ingestão e consulta RAG</div>
+      <div class="mermaid">
+flowchart TD
+  subgraph INGESTAO ["🔵 Pipeline de Ingestão (offline)"]
+    A["📄 Documentos\nPDF/TXT/HTML/CSV"] --> B[Document Loader]
+    B --> C["Text Splitter\nchunk_size=500\noverlap=50"]
+    C --> D["Embedding Model\ntext-embedding-3-small"]
+    D --> E[("Vector Store\nChroma/Pinecone")]
+  end
+
+  subgraph CONSULTA ["🟢 Pipeline de Consulta (online)"]
+    F["💬 Pergunta do usuário"] --> G[Embedding Model]
+    G --> H["Vector Search\ntop-k=5"]
+    H --> E
+    E --> I[Chunks relevantes]
+    I --> J["Reranker\nCross-encoder"]
+    J --> K["Prompt Template\nContext + Question"]
+    K --> L["LLM\nGPT-4o / Claude"]
+    L --> M["✅ Resposta com fontes"]
+  end
+
+  style INGESTAO fill:#0d1117,stroke:#1f6feb,color:#c9d1d9
+  style CONSULTA fill:#0d1117,stroke:#238636,color:#c9d1d9
+      </div>
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">Insight arquitetural</div>
+      <p style="margin:0">O Vector Store é o elo entre os dois pipelines. A ingestão <em>escreve</em> nele; a consulta <em>lê</em> dele. Esta separação é o que torna RAG escalável: você pode ter milhões de documentos indexados e cada query ainda resolve em milissegundos.</p>
+    </div>
+  </div>
+
+  <!-- ── 04. FASE 1 — LOADING ───────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">04 · Implementação</div>
+    <h2>Construindo o pipeline passo a passo</h2>
+
+    <div class="phase-header">
+      <div class="phase-num">1</div>
+      <div class="phase-info">
+        <h3>Document Loading — Ingerir qualquer fonte</h3>
+        <p>LangChain oferece loaders para dezenas de formatos. O objetivo é normalizar tudo para uma lista de <code>Document</code> com <code>page_content</code> e <code>metadata</code>.</p>
+      </div>
+    </div>
+
+    <div class="code-label">python · langchain document loaders</div>
+    <pre><code class="language-python">from langchain_community.document_loaders import (
+    PyPDFLoader,
+    TextLoader,
+    WebBaseLoader,
+    CSVLoader,
+    DirectoryLoader
+)
+
+# PDF — carrega página a página, metadata inclui número da página
+loader = PyPDFLoader("documentos/manual.pdf")
+docs = loader.load()
+print(f"Páginas carregadas: {len(docs)}")
+print(f"Metadados: {docs[0].metadata}")
+# {'source': 'documentos/manual.pdf', 'page': 0}
+
+# Diretório completo — indexa recursivamente
+loader = DirectoryLoader(
+    "documentos/",
+    glob="**/*.pdf",
+    loader_cls=PyPDFLoader
+)
+docs = loader.load()
+print(f"Total de páginas: {len(docs)}")
+
+# Web scraping — útil para documentação online
+loader = WebBaseLoader([
+    "https://docs.python.org/3/",
+    "https://fastapi.tiangolo.com/"
+])
+docs = loader.load()</code></pre>
+
+    <div class="callout callout-warn">
+      <div class="callout-title">Atenção aos metadados</div>
+      <p style="margin:0">Os metadados que você adiciona durante o loading aparecem na resposta final como citação de fonte. Inclua sempre <code>source</code> (nome do arquivo), <code>page</code> (número da página), <code>created_at</code>, <code>author</code> — tudo que ajuda o usuário a verificar a informação.</p>
+    </div>
+
+    <!-- FASE 2 — CHUNKING -->
+    <div class="phase-header">
+      <div class="phase-num">2</div>
+      <div class="phase-info">
+        <h3>Chunking — Dividir documentos estrategicamente</h3>
+        <p>Documentos grandes precisam ser divididos em pedaços (chunks) que caibam no context window do LLM e sejam semanticamente coerentes.</p>
+      </div>
+    </div>
+
+    <div class="code-label">python · recursive character text splitter</div>
+    <pre><code class="language-python">from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=500,       # tamanho máximo de cada chunk (em chars)
+    chunk_overlap=50,     # sobreposição entre chunks adjacentes
+    separators=["\n\n", "\n", ".", " ", ""],  # ordem de prioridade
+    length_function=len,
+)
+
+chunks = splitter.split_documents(docs)
+print(f"Documentos originais: {len(docs)}")
+print(f"Chunks gerados: {len(chunks)}")
+
+# Adicionar metadados ricos para rastreabilidade
+for i, chunk in enumerate(chunks):
+    chunk.metadata["chunk_id"] = i
+    chunk.metadata["chunk_size"] = len(chunk.page_content)</code></pre>
+
+    <h3>Estratégias de chunking</h3>
+    <p>A escolha errada de chunk strategy é uma das causas mais comuns de RAG com performance ruim. A tabela abaixo guia a decisão:</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Estratégia</th>
+            <th>chunk_size</th>
+            <th>Quando usar</th>
+            <th>Trade-off</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Fixed-size</strong></td>
+            <td>200–500 chars</td>
+            <td>FAQ, respostas curtas, artigos de suporte</td>
+            <td>Rápido, pode cortar frases no meio</td>
+          </tr>
+          <tr>
+            <td><strong>Sentence</strong></td>
+            <td>~3–5 frases</td>
+            <td>Documentação técnica, tutoriais</td>
+            <td>Preserva frases completas, tamanho variável</td>
+          </tr>
+          <tr>
+            <td><strong>Recursive</strong> <span class="badge badge-green">Recomendado</span></td>
+            <td>500 tokens</td>
+            <td>Propósito geral — primeira escolha</td>
+            <td>Respeita estrutura do texto, configurável</td>
+          </tr>
+          <tr>
+            <td><strong>Semantic</strong></td>
+            <td>Variável</td>
+            <td>Textos narrativos longos, livros</td>
+            <td>Melhor qualidade, mais lento e caro</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">Regra prática para chunk_size</div>
+      <p style="margin:0">Chunks menores = melhor precisão no retrieval (menos ruído). Chunks maiores = mais contexto por chunk (menos fragmentação). Para começar: <strong>500 chars com 50 de overlap</strong> funciona para 80% dos casos. Ajuste baseado em avaliação com RAGAS (veja Fase 7).</p>
+    </div>
+
+    <!-- FASE 3 — INGESTÃO -->
+    <div class="phase-header">
+      <div class="phase-num">3</div>
+      <div class="phase-info">
+        <h3>Ingestão no Vector Store — Indexar os chunks</h3>
+        <p>Gerar embeddings para cada chunk e persistir no vector store. Esta fase pode demorar minutos a horas dependendo do volume.</p>
+      </div>
+    </div>
+
+    <div class="code-label">python · chroma vector store com persistência</div>
+    <pre><code class="language-python">import os
+from langchain_openai import OpenAIEmbeddings
+from langchain_community.vectorstores import Chroma
+
+embeddings = OpenAIEmbeddings(
+    model="text-embedding-3-small",  # 1536 dims, barato e eficiente
+    api_key=os.environ["OPENAI_API_KEY"]
+)
+
+# Criar vector store com persistência em disco
+vectorstore = Chroma.from_documents(
+    documents=chunks,
+    embedding=embeddings,
+    persist_directory="./chroma_db",
+    collection_name="base_conhecimento"
+)
+
+print(f"Chunks indexados: {vectorstore._collection.count()}")
+
+# Carregar vector store existente (sem re-indexar)
+vectorstore = Chroma(
+    persist_directory="./chroma_db",
+    embedding_function=embeddings,
+    collection_name="base_conhecimento"
+)</code></pre>
+
+    <!-- FASE 4 — RETRIEVAL -->
+    <div class="phase-header">
+      <div class="phase-num">4</div>
+      <div class="phase-info">
+        <h3>Retrieval — Buscar os chunks mais relevantes</h3>
+        <p>Transformar a query do usuário em embedding e buscar os k chunks mais similares no vector store.</p>
+      </div>
+    </div>
+
+    <div class="code-label">python · retriever — similarity, mmr e busca com score</div>
+    <pre><code class="language-python"># Retriever básico — similaridade cosseno, top-k
+retriever = vectorstore.as_retriever(
+    search_type="similarity",
+    search_kwargs={"k": 5}
+)
+
+# MMR — Maximal Marginal Relevance
+# Equilibra relevância COM diversidade (evita chunks repetitivos)
+retriever_mmr = vectorstore.as_retriever(
+    search_type="mmr",
+    search_kwargs={
+        "k": 5,           # chunks retornados
+        "fetch_k": 20,    # candidatos avaliados antes do MMR
+        "lambda_mult": 0.5  # 0=máx diversidade, 1=máx similaridade
+    }
+)
+
+# Busca com score de similaridade (útil para debug e thresholding)
+docs_com_score = vectorstore.similarity_search_with_score(
+    "Como configurar autenticação JWT?",
+    k=3
+)
+
+for doc, score in docs_com_score:
+    print(f"Score: {score:.3f} | Fonte: {doc.metadata.get('source', 'N/A')}")
+    print(f"Trecho: {doc.page_content[:100]}...")
+    print()</code></pre>
+
+    <div class="callout callout-info">
+      <div class="callout-title">Similarity vs MMR — quando usar cada um?</div>
+      <p style="margin:0"><strong>Similarity puro</strong>: rápido, direto, bom quando os chunks são bem distintos. <strong>MMR</strong>: essencial quando a base tem documentos redundantes (ex.: vários tutoriais sobre o mesmo tópico). MMR garante que os 5 chunks retornados cubram perspectivas diferentes, não a mesma informação repetida 5 vezes.</p>
+    </div>
+
+    <!-- FASE 5 — RERANKING -->
+    <div class="phase-header">
+      <div class="phase-num">5</div>
+      <div class="phase-info">
+        <h3>Reranking — Refinar a ordem dos resultados</h3>
+        <p>O retrieval por embedding é rápido mas aproximado. O reranker usa um modelo mais poderoso (cross-encoder) para reordenar os candidatos com maior precisão.</p>
+      </div>
+    </div>
+
+    <div class="code-label">python · reranking com cohere (cloud) e cross-encoder local</div>
+    <pre><code class="language-python"># Opção 1: Reranking com Cohere — excelente qualidade, pago
+from langchain.retrievers import ContextualCompressionRetriever
+from langchain_cohere import CohereRerank
+
+compressor = CohereRerank(
+    model="rerank-multilingual-v3.0",
+    top_n=3  # retorna apenas os 3 melhores após reranking
+)
+
+compression_retriever = ContextualCompressionRetriever(
+    base_compressor=compressor,
+    base_retriever=retriever  # usa o retriever base para candidatos iniciais
+)
+
+# Opção 2: Cross-encoder local — gratuito, rodando na sua máquina
+from sentence_transformers import CrossEncoder
+
+reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+
+def rerank_local(query: str, docs: list, top_n: int = 3) -> list:
+    """Reordena docs por relevância usando cross-encoder."""
+    pairs = [(query, doc.page_content) for doc in docs]
+    scores = reranker.predict(pairs)
+    ranked = sorted(zip(docs, scores), key=lambda x: x[1], reverse=True)
+    return [doc for doc, _ in ranked[:top_n]]
+
+# Uso: primeiro retrieval amplo, depois rerank
+candidatos = retriever.invoke("Como implementar JWT em FastAPI?")  # top-10
+top_docs = rerank_local("Como implementar JWT em FastAPI?", candidatos, top_n=3)</code></pre>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">Por que reranking importa?</div>
+      <p style="margin:0">Embedding models comparam query e chunk independentemente (bi-encoder). Cross-encoders analisam query + chunk juntos — mais lento, mas dramaticamente mais preciso para capturar nuances de relevância. O padrão recomendado é: retrieval amplo (top-20 com embedding) → reranking (top-3 com cross-encoder) → geração.</p>
+    </div>
+
+    <!-- FASE 6 — GERAÇÃO -->
+    <div class="phase-header">
+      <div class="phase-num">6</div>
+      <div class="phase-info">
+        <h3>Geração — RAG Chain completo com LCEL</h3>
+        <p>Montar o pipeline final: retriever → formatar contexto → prompt → LLM → resposta. Com LangChain Expression Language (LCEL).</p>
+      </div>
+    </div>
+
+    <div class="code-label">python · rag chain completo com lcel</div>
+    <pre><code class="language-python">from langchain_openai import ChatOpenAI
+from langchain.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnablePassthrough
+
+llm = ChatOpenAI(model="gpt-4o", temperature=0)
+
+PROMPT_TEMPLATE = """Você é um assistente especializado. Responda a pergunta com base EXCLUSIVAMENTE no contexto fornecido.
+Se a informação não estiver no contexto, diga explicitamente: "Não encontrei essa informação na base de conhecimento."
+
+Contexto:
+{context}
+
+Pergunta: {question}
+
+Resposta (cite a fonte quando possível):"""
+
+prompt = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
+
+def formatar_docs(docs):
+    """Formata a lista de chunks com referência à fonte."""
+    return "\n\n".join([
+        f"[Fonte: {doc.metadata.get('source', 'desconhecida')}]\n{doc.page_content}"
+        for doc in docs
+    ])
+
+# RAG Chain usando LCEL — composição declarativa de pipelines
+rag_chain = (
+    {
+        "context": retriever | formatar_docs,
+        "question": RunnablePassthrough()
+    }
+    | prompt
+    | llm
+    | StrOutputParser()
+)
+
+# Invocar
+resposta = rag_chain.invoke("Como implementar autenticação JWT em FastAPI?")
+print(resposta)</code></pre>
+
+    <div class="callout callout-check">
+      <div class="callout-title">O que é LCEL e por que usar?</div>
+      <p style="margin:0">LCEL (LangChain Expression Language) é uma DSL de composição de pipelines usando o operador <code>|</code> (pipe). Vantagens: streaming nativo, suporte a async, paralelismo automático, e facilidade para trocar componentes (ex.: trocar o LLM sem reescrever o pipeline). Todo RAG moderno em LangChain usa LCEL.</p>
+    </div>
+
+    <!-- FASE 6B — COM FONTES -->
+    <h3>Retornando documentos fonte</h3>
+    <p>Em produção, você quase sempre quer retornar não só a resposta, mas também as fontes que embasaram ela — para o usuário poder verificar.</p>
+
+    <div class="code-label">python · retrieval qa com sources</div>
+    <pre><code class="language-python">from langchain.chains import RetrievalQAWithSourcesChain
+
+chain = RetrievalQAWithSourcesChain.from_chain_type(
+    llm=llm,
+    chain_type="stuff",  # coloca todos os chunks no prompt (simples e eficaz)
+    retriever=retriever,
+    return_source_documents=True
+)
+
+resultado = chain.invoke({"question": "Como criar um endpoint POST em FastAPI?"})
+
+print("Resposta:", resultado["answer"])
+print("\nFontes:")
+for doc in resultado["source_documents"]:
+    print(f"  - {doc.metadata['source']} (página {doc.metadata.get('page', 'N/A')})")</code></pre>
+  </div>
+
+  <!-- ── 05. AVALIAÇÃO COM RAGAS ────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">05 · Avaliação quantitativa</div>
+    <h2>Medir a qualidade do RAG com RAGAS</h2>
+
+    <p>"Parece estar funcionando bem" não é avaliação. <strong>RAGAS</strong> (RAG Assessment) é o framework padrão para medir objetivamente a qualidade de sistemas RAG com quatro métricas complementares. Sem isso, você não sabe se suas mudanças melhoraram ou pioraram o sistema.</p>
+
+    <div class="metric-row">
+      <div class="metric-box">
+        <span class="metric-val">&gt; 0.85</span>
+        <div class="metric-label">Faithfulness alvo</div>
+      </div>
+      <div class="metric-box">
+        <span class="metric-val">&gt; 0.80</span>
+        <div class="metric-label">Answer Relevancy alvo</div>
+      </div>
+      <div class="metric-box">
+        <span class="metric-val">&gt; 0.70</span>
+        <div class="metric-label">Context Precision alvo</div>
+      </div>
+      <div class="metric-box">
+        <span class="metric-val">&gt; 0.75</span>
+        <div class="metric-label">Context Recall alvo</div>
+      </div>
+    </div>
+
+    <div class="code-label">python · avaliação com ragas</div>
+    <pre><code class="language-python">from ragas import evaluate
+from ragas.metrics import (
+    faithfulness,        # resposta fiel ao contexto?
+    answer_relevancy,   # resposta relevante à pergunta?
+    context_precision,  # contexto recuperado é preciso?
+    context_recall      # contexto recuperado é completo?
+)
+from datasets import Dataset
+
+# Montar dataset de avaliação (mínimo 5-10 pares)
+test_data = {
+    "question": [
+        "Como instalar FastAPI?",
+        "O que é async/await em Python?"
+    ],
+    "answer": [
+        rag_chain.invoke("Como instalar FastAPI?"),
+        rag_chain.invoke("O que é async/await em Python?")
+    ],
+    "contexts": [
+        [doc.page_content for doc in retriever.invoke("Como instalar FastAPI?")],
+        [doc.page_content for doc in retriever.invoke("O que é async/await em Python?")]
+    ],
+    "ground_truth": [
+        "pip install fastapi uvicorn",
+        "async/await permite programação assíncrona sem bloquear o event loop"
+    ]
+}
+
+dataset = Dataset.from_dict(test_data)
+
+resultado = evaluate(
+    dataset=dataset,
+    metrics=[faithfulness, answer_relevancy, context_precision, context_recall]
+)
+
+print(resultado.to_pandas())
+# Saída esperada:
+# faithfulness=0.92 | answer_relevancy=0.88 | context_precision=0.75 | context_recall=0.83</code></pre>
+
+    <h3>As quatro métricas RAGAS explicadas</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Métrica</th>
+            <th>O que mede</th>
+            <th>Faixa ideal</th>
+            <th>Quando está baixo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Faithfulness</strong></td>
+            <td>Resposta é fiel ao contexto recuperado? (sem alucinação)</td>
+            <td><span class="badge badge-green">&gt; 0.85</span></td>
+            <td>LLM está "completando" além do contexto. Ajuste o prompt para ser mais restritivo.</td>
+          </tr>
+          <tr>
+            <td><strong>Answer Relevancy</strong></td>
+            <td>Resposta é relevante à pergunta feita?</td>
+            <td><span class="badge badge-green">&gt; 0.80</span></td>
+            <td>LLM está divagando. Reduza o contexto ou melhore o prompt template.</td>
+          </tr>
+          <tr>
+            <td><strong>Context Precision</strong></td>
+            <td>Os chunks recuperados são de fato úteis para a resposta?</td>
+            <td><span class="badge badge-yellow">&gt; 0.70</span></td>
+            <td>Retrieval está trazendo "lixo". Ajuste chunk size ou adicione reranking.</td>
+          </tr>
+          <tr>
+            <td><strong>Context Recall</strong></td>
+            <td>Todos os chunks necessários foram recuperados?</td>
+            <td><span class="badge badge-yellow">&gt; 0.75</span></td>
+            <td>Aumente k no retriever ou melhore a estratégia de chunking.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── 06. TÉCNICAS AVANÇADAS ────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">06 · Técnicas avançadas</div>
+    <h2>Além do RAG básico</h2>
+
+    <p>RAG básico funciona. RAG avançado funciona <em>bem</em>. Estas técnicas resolvem problemas específicos que aparecem em produção:</p>
+
+    <div class="adv-card">
+      <h4>HyDE — Hypothetical Document Embeddings</h4>
+      <p>Em vez de embeddar a query diretamente, pede ao LLM para gerar um "documento hipotético" que responderia a pergunta — então embeda esse documento para buscar. Funciona melhor porque queries são curtas e documentos são longos: o HyDE resolve essa assimetria de distribuição.</p>
+    </div>
+
+    <div class="adv-card">
+      <h4>Self-Query Retriever</h4>
+      <p>O LLM analisa a query e gera automaticamente filtros de metadados. Exemplo: "documentos de segurança criados depois de 2023" → LLM gera <code>filter=&#123;type: 'segurança', date: &#123;$gt: '2023'&#125;&#125;</code>. Combina busca semântica com filtros estruturados.</p>
+    </div>
+
+    <div class="adv-card">
+      <h4>Parent Document Retriever</h4>
+      <p>Indexa chunks <em>pequenos</em> para retrieval preciso, mas retorna o <em>documento pai maior</em> para ter mais contexto na geração. Melhor dos dois mundos: alta precisão no match + contexto rico para o LLM.</p>
+    </div>
+
+    <div class="adv-card">
+      <h4>Multi-Query Retriever</h4>
+      <p>Gera múltiplas variações da pergunta original e busca cada uma separadamente. Une os resultados e remove duplicatas. Resolve o problema de queries ambíguas ou mal formuladas pelo usuário.</p>
+    </div>
+
+    <div class="code-label">python · multi-query retriever</div>
+    <pre><code class="language-python">from langchain.retrievers.multi_query import MultiQueryRetriever
+
+retriever_mq = MultiQueryRetriever.from_llm(
+    retriever=vectorstore.as_retriever(search_kwargs={"k": 3}),
+    llm=llm
+)
+
+# Para a query "Como configurar JWT no FastAPI?", o LLM gera automaticamente:
+# Variação 1: "Qual é o processo de configurar JWT no FastAPI?"
+# Variação 2: "Como adicionar autenticação Bearer token ao FastAPI?"
+# Variação 3: "Exemplo de middleware de autenticação FastAPI"
+# → Busca as 3, une os resultados únicos → maior cobertura
+
+docs = retriever_mq.invoke("Como configurar JWT no FastAPI?")</code></pre>
+  </div>
+
+  <!-- ── 07. ARMADILHAS ────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">07 · Armadilhas</div>
+    <h2>Erros comuns que destroem RAG pipelines</h2>
+
+    <div class="pitfall">
+      <div class="pitfall-title">Chunk size inadequado para o tipo de documento</div>
+      <p style="color:var(--text);font-size:14px;margin:0">Chunk de 200 chars para contratos de 50 páginas fragmente informações cruciais. Chunk de 2000 chars para FAQ de uma linha coloca ruído demais no contexto. Teste com RAGAS para encontrar o tamanho certo para o seu corpus.</p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">Metadados insuficientes nos chunks</div>
+      <p style="color:var(--text);font-size:14px;margin:0">Se o chunk não tem <code>source</code>, <code>page</code> e <code>section</code>, você não consegue citar a fonte nem filtrar por tipo de documento. Adicione metadados ricos no momento do loading — depois fica difícil.</p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">Prompt template que não instrui a usar só o contexto</div>
+      <p style="color:var(--text);font-size:14px;margin:0">Se o prompt diz "responda a pergunta", o LLM mistura contexto recuperado com conhecimento próprio — voltando a ter alucinações. Use a instrução explícita: "responda <em>exclusivamente</em> com base no contexto fornecido".</p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">Vector store desatualizado após mudanças nos documentos</div>
+      <p style="color:var(--text);font-size:14px;margin:0">Documento atualizado no disco não atualiza o vector store automaticamente. Implemente um pipeline de re-ingestão incremental (detectar documentos modificados e re-indexar só esses).</p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">Avaliar RAG "na intuição" sem métricas quantitativas</div>
+      <p style="color:var(--text);font-size:14px;margin:0">Sem RAGAS ou framework equivalente, você não sabe se sua mudança de chunk_size de 500 para 750 melhorou ou piorou. Defina um test set com ground_truth antes de iterar.</p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">Context stuffing — ultrapassar a context window</div>
+      <p style="color:var(--text);font-size:14px;margin:0">Recuperar k=20 chunks de 500 chars cada = 10.000 tokens só de contexto. Com prompt template + pergunta, você pode ultrapassar os 128k do GPT-4o em casos com muita formatação. Monitore o tamanho do prompt.</p>
+    </div>
+  </div>
+
+  <!-- ── 08. VÍDEOS ────────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">08 · Curadoria</div>
+    <h2>Vídeos essenciais sobre RAG</h2>
+    <div class="video-grid">
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">RAG from Scratch</div>
+          <div class="video-channel">LangChain · Canal oficial</div>
+          <div class="video-why">Série completa do time do LangChain cobrindo RAG do zero: indexação, retrieval, geração e técnicas avançadas. O recurso mais completo e atualizado disponível, com notebooks executáveis no Colab.</div>
+          <a href="https://www.youtube.com/playlist?list=PLfaIDFEXuae2LXbO1_PKyVJiQ23ZztA0x" class="video-watch" target="_blank" rel="noopener">Assistir no YouTube →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">Building Production RAG Systems</div>
+          <div class="video-channel">Jerry Liu · LlamaIndex</div>
+          <div class="video-why">Fundador do LlamaIndex discute o que diferencia RAG de prova de conceito de RAG em produção: chunking semântico, avaliação contínua, monitoring e otimização de custos. Perspectiva prática de quem constrói o framework.</div>
+          <a href="https://www.youtube.com/watch?v=TRjq7t2Ms5I" class="video-watch" target="_blank" rel="noopener">Assistir no YouTube →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">Advanced RAG Techniques</div>
+          <div class="video-channel">Sam Witteveen · Red Dragon AI</div>
+          <div class="video-why">Cobre técnicas além do RAG básico: HyDE, Self-RAG, RAPTOR, reranking com cross-encoders e estratégias de chunking avançadas. Ideal para quem já tem RAG funcionando e quer elevar a qualidade.</div>
+          <a href="https://www.youtube.com/watch?v=sVcwVQRHIc8" class="video-watch" target="_blank" rel="noopener">Assistir no YouTube →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">Evaluate Your RAG with RAGAS</div>
+          <div class="video-channel">Mervin Praison · Praison AI</div>
+          <div class="video-why">Tutorial hands-on de como integrar RAGAS no seu pipeline: configurar métricas, interpretar resultados, identificar pontos fracos e iterar. Mostra exemplos reais de faithfulness baixa e como corrigi-la.</div>
+          <a href="https://www.youtube.com/watch?v=pc3e79P1b0A" class="video-watch" target="_blank" rel="noopener">Assistir no YouTube →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 09. CHECKPOINT ────────────────────────────────────── -->
+  <div class="checkpoint">
+    <div class="checkpoint-label">Checkpoint · Aula 43</div>
+    <h3>Construir um chatbot RAG para a documentação do curso</h3>
+    <p>Aplique tudo desta aula construindo um assistente que responde perguntas sobre as 50 aulas do curso. O sistema deve recuperar a aula certa e citar o link.</p>
+    <ul>
+      <li>Criar um arquivo JSON ou texto com título, descrição e link das 50 aulas como documentos</li>
+      <li>Fazer chunking (cada aula como um chunk) e indexar no Chroma localmente</li>
+      <li>Criar RAG chain com <code>gpt-4o-mini</code> (mais barato para desenvolvimento)</li>
+      <li>Testar: "Qual aula me ensina Docker Compose?" → retorna título + link correto</li>
+      <li>Montar dataset RAGAS com 5+ pares de Q&amp;A com ground_truth</li>
+      <li>Avaliar com as 4 métricas e atingir faithfulness &gt; 0.85</li>
+      <li>Iterar: ajustar chunk_size ou k até Context Recall &gt; 0.75</li>
+    </ul>
+    <div class="checkpoint-hint">
+      Dica: use os metadados para incluir o número da aula, trilha e URL. Assim o RAG chain pode retornar um link clicável junto com a resposta — não apenas texto.
+    </div>
+  </div>
+
+  <!-- ── PRÓXIMOS PASSOS ────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">09 · Continuação</div>
+    <h2>O que vem a seguir</h2>
+    <p>Com RAG dominado, o próximo passo é construir sistemas que não só buscam e respondem — mas que <strong>agem</strong>. Agentes com tools podem executar código, consultar APIs, navegar na web e tomar decisões multi-passo. RAG é o fundamento; Agentes são a evolução.</p>
+    <a href="ai-07-agentes-tools.html" class="next-card">
+      <div>
+        <div class="next-card-label">Próxima Aula · 44 / 50</div>
+        <div class="next-card-title">Agentes e Tools</div>
+      </div>
+      <div class="next-arrow">→</div>
+    </a>
+  </div>
+
+  <footer class="footer">
+    <span>🤖 IA · Aula 43 / 50</span>
+    <span>Pipeline RAG Completo</span>
+    <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+  </footer>
+</div>
+
+<script>
+  // Progress bar
+  window.addEventListener('scroll', () => {
+    const doc = document.documentElement;
+    const scrolled = doc.scrollTop / (doc.scrollHeight - doc.clientHeight);
+    document.getElementById('progressBar').style.width = (scrolled * 100) + '%';
+  });
+
+  // Mermaid dark theme
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      darkMode: true,
+      background: '#111118',
+      primaryColor: '#a855f7',
+      primaryTextColor: '#e8e8f0',
+      primaryBorderColor: '#a855f7',
+      lineColor: '#8585a8',
+      secondaryColor: '#16161f',
+      tertiaryColor: '#1e1e2e',
+      fontSize: '14px'
+    }
+  });
+
+  // Highlight.js
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('pre code').forEach(block => {
+      hljs.highlightElement(block);
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>n8n + IA — AI Agent Node &amp; LLMs · Aula 41</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+    :root{--bg:#0a0a0f;--surface:#111118;--surface2:#16161f;--border:#1e1e2e;--text:#e8e8f0;--muted:#8585a8;--accent:#10b981;--accent-dim:rgba(16,185,129,0.10);--accent-border:rgba(16,185,129,0.32);--success:#10b981;--warn:#f59e0b;--danger:#ef4444;--info:#06b6d4}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:15px;line-height:1.75}
+    .progress-bar-wrap{position:fixed;top:0;left:0;right:0;height:3px;background:var(--border);z-index:1000}
+    .progress-bar-fill{height:100%;background:linear-gradient(90deg,#10b981,#6ee7b7);width:0%;transition:width 0.1s}
+    .top-nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:12px 32px;background:rgba(10,10,15,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+    .nav-back{text-decoration:none;color:var(--muted);font-size:12px;padding:6px 14px;border:1px solid var(--border);border-radius:6px;transition:all 0.2s}
+    .nav-back:hover{color:var(--text);border-color:rgba(255,255,255,0.15);background:rgba(255,255,255,0.04)}
+    .nav-center{display:flex;align-items:center;gap:10px}
+    .nav-position{font-size:12px;color:var(--muted);letter-spacing:0.06em}
+    .nav-position .track{color:var(--accent);font-weight:600}
+    .nav-prev,.nav-next{display:flex;align-items:center;gap:6px;text-decoration:none;color:var(--muted);font-size:12px;padding:6px 14px;border:1px solid var(--border);border-radius:6px;background:transparent;transition:all 0.2s}
+    .nav-prev:hover,.nav-next:hover{color:var(--text);border-color:rgba(255,255,255,0.15);background:rgba(255,255,255,0.04)}
+    .nav-prev.disabled{opacity:0.3;pointer-events:none}
+    .nav-next{border-color:var(--accent-border);color:var(--accent)}
+    .nav-next:hover{background:var(--accent-dim);color:#6ee7b7}
+    .page{max-width:860px;margin:0 auto;padding:48px 24px 96px}
+    .hero{padding:52px 0 40px;border-bottom:1px solid var(--border);margin-bottom:56px}
+    .hero-eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:20px;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)}
+    .hero-badge{background:var(--accent-dim);border:1px solid var(--accent-border);color:var(--accent);padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600}
+    .hero h1{font-family:'Syne',sans-serif;font-size:clamp(2rem,5vw,3rem);font-weight:800;line-height:1.1;letter-spacing:-0.02em;margin-bottom:20px;background:linear-gradient(135deg,#fff 40%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--muted);margin-bottom:24px}
+    .hero-tags{display:flex;flex-wrap:wrap;gap:8px}
+    .tag{background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--muted);padding:4px 12px;border-radius:4px;font-size:11px;letter-spacing:0.06em}
+    .tag.accent{background:var(--accent-dim);border-color:var(--accent-border);color:var(--accent)}
+    .section{margin-bottom:64px}
+    .section-label{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;font-weight:600}
+    .section h2{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:700;margin-bottom:20px;color:#fff}
+    .section h3{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:700;margin:32px 0 14px;color:#fff}
+    .section h4{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin:20px 0 10px;color:#e0e0f0}
+    .section p{color:var(--text);margin-bottom:16px}
+    .callout{border-radius:8px;padding:18px 20px;margin:20px 0;border-left:3px solid}
+    .callout-title{font-weight:700;margin-bottom:6px;font-size:13px}
+    .callout-info{background:rgba(6,182,212,0.08);border-color:var(--info)}.callout-info .callout-title{color:var(--info)}
+    .callout-warn{background:rgba(245,158,11,0.08);border-color:var(--warn)}.callout-warn .callout-title{color:var(--warn)}
+    .callout-tip{background:rgba(16,185,129,0.06);border-color:var(--accent)}.callout-tip .callout-title{color:var(--accent)}
+    .callout-check{background:rgba(16,185,129,0.06);border-color:var(--success)}.callout-check .callout-title{color:var(--success)}
+    .analogy-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;position:relative;overflow:hidden}
+    .analogy-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),transparent)}
+    .analogy-label{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+    .analogy-text{font-size:15px;color:var(--text);margin-bottom:20px;line-height:1.8}
+    .analogy-mapping{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px}
+    .analogy-real{background:rgba(255,255,255,0.04);border:1px solid var(--border);padding:8px 14px;border-radius:6px;font-size:13px;color:var(--muted)}
+    .analogy-tech{background:var(--accent-dim);border:1px solid var(--accent-border);padding:8px 14px;border-radius:6px;font-size:13px;color:var(--accent)}
+    .mermaid-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px 20px;margin:24px 0;overflow:auto}
+    .mermaid-label{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+    .table-wrap{overflow-x:auto;margin:16px 0}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    thead tr{border-bottom:2px solid var(--accent-border)}
+    thead th{text-align:left;padding:10px 14px;color:var(--accent);font-size:11px;letter-spacing:0.08em;text-transform:uppercase}
+    tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s}
+    tbody tr:hover{background:rgba(255,255,255,0.03)}
+    tbody td{padding:11px 14px;color:var(--text);vertical-align:top}
+    .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+    .badge-green{background:rgba(16,185,129,0.2);color:#34d399}
+    .badge-red{background:rgba(239,68,68,0.2);color:#f87171}
+    .badge-yellow{background:rgba(245,158,11,0.2);color:#fbbf24}
+    .badge-purple{background:rgba(168,85,247,0.2);color:#d8b4fe}
+    .badge-blue{background:rgba(59,130,246,0.2);color:#60a5fa}
+    pre{background:#0d1117 !important;border:1px solid var(--border);border-radius:8px;overflow-x:auto;margin:12px 0;font-size:13px}
+    pre code{font-family:'JetBrains Mono',monospace}
+    .code-label{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);padding:10px 16px 0}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    @media(max-width:640px){.grid-2,.grid-3{grid-template-columns:1fr}.analogy-mapping{grid-template-columns:1fr}}
+    .card-mini{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;transition:border-color 0.2s}
+    .card-mini:hover{border-color:var(--accent-border)}
+    .card-mini h4{color:#fff;font-size:14px;margin:10px 0 6px}
+    .card-mini p{color:var(--muted);font-size:13px;margin:0}
+    .video-grid{display:grid;gap:14px}
+    .video-card{display:flex;gap:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;transition:border-color 0.2s}
+    .video-card:hover{border-color:var(--accent-border)}
+    .video-thumb{flex-shrink:0;width:52px;height:52px;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px}
+    .video-info{flex:1}
+    .video-title{font-weight:700;color:#fff;font-size:14px;margin-bottom:4px}
+    .video-channel{color:var(--muted);font-size:12px;margin-bottom:6px}
+    .video-why{color:var(--text);font-size:12px;margin-bottom:10px}
+    .video-watch{font-size:12px;color:var(--accent);text-decoration:none}
+    .video-watch:hover{text-decoration:underline}
+    .checkpoint{background:linear-gradient(135deg,rgba(16,185,129,0.08),rgba(0,0,0,0));border:1px solid var(--accent-border);border-radius:12px;padding:28px;margin-bottom:40px}
+    .checkpoint-label{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;font-weight:600}
+    .checkpoint h3{font-family:'Syne',sans-serif;font-size:1.2rem;color:var(--accent);margin-bottom:12px}
+    .checkpoint p{margin-bottom:14px}
+    .checkpoint ul{padding-left:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+    .checkpoint ul li{color:var(--text);font-size:14px}
+    .checkpoint ul li::before{content:'✦ ';color:var(--accent)}
+    .checkpoint-hint{margin-top:16px;padding:12px 16px;background:rgba(255,255,255,0.03);border-radius:6px;font-size:13px;color:var(--muted)}
+    .pitfall{background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.25);border-radius:10px;padding:20px;margin:16px 0}
+    .pitfall-title{color:#f87171;font-weight:700;margin-bottom:8px;font-size:14px}
+    .next-card{display:flex;align-items:center;justify-content:space-between;padding:22px 24px;background:var(--surface);border:1px solid var(--accent-border);border-radius:10px;text-decoration:none;transition:all 0.2s;margin-top:24px}
+    .next-card:hover{background:var(--accent-dim)}
+    .next-card-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:4px;font-weight:600}
+    .next-card-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:#fff}
+    .next-arrow{font-size:1.5rem;color:var(--accent)}
+    .footer{display:flex;justify-content:space-between;align-items:center;padding:24px 0;margin-top:32px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)}
+    .footer a{color:var(--muted);text-decoration:none}.footer a:hover{color:var(--text)}
+    code:not(.hljs){background:rgba(255,255,255,0.07);border:1px solid var(--border);padding:1px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#6ee7b7}
+    .steps{display:flex;flex-direction:column;gap:20px;margin:20px 0}
+    .step{display:flex;gap:16px}
+    .step-num{flex-shrink:0;width:32px;height:32px;border-radius:50%;background:var(--accent-dim);border:1px solid var(--accent-border);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;margin-top:2px}
+    .step-body{flex:1}
+    .step-title{font-weight:700;color:#fff;margin-bottom:6px;font-size:14px}
+    .step-desc{color:var(--muted);font-size:13px;margin-bottom:10px}
+    .agent-type-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:14px;position:relative;overflow:hidden;transition:border-color 0.2s}
+    .agent-type-card:hover{border-color:var(--accent-border)}
+    .agent-type-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent)}
+    .agent-type-name{font-family:'Syne',sans-serif;font-weight:700;color:#fff;font-size:14px;margin-bottom:6px}
+    .agent-type-desc{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:8px}
+    .agent-type-use{font-size:12px;color:var(--accent)}
+    .tool-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;display:flex;gap:14px;margin-bottom:12px;transition:border-color 0.2s}
+    .tool-card:hover{border-color:var(--accent-border)}
+    .tool-icon{flex-shrink:0;width:40px;height:40px;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px}
+    .tool-info h4{color:#fff;font-size:14px;margin:0 0 4px}
+    .tool-info p{color:var(--muted);font-size:12px;margin:0}
+    .workflow-flow{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;margin:20px 0}
+    .workflow-step{display:flex;align-items:flex-start;gap:14px;padding:12px 0;border-bottom:1px solid var(--border)}
+    .workflow-step:last-child{border-bottom:none}
+    .workflow-node{flex-shrink:0;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:6px;padding:4px 10px;font-size:11px;color:var(--accent);font-weight:600;white-space:nowrap}
+    .workflow-arrow{flex-shrink:0;color:var(--muted);font-size:18px;margin-top:2px}
+    .workflow-desc{font-size:13px;color:var(--text)}
+    .workflow-sub{font-size:12px;color:var(--muted);margin-top:3px}
+    .memory-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px;margin-bottom:14px}
+    .memory-card-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+    .memory-icon{font-size:1.4rem}
+    .memory-name{font-family:'Syne',sans-serif;font-weight:700;color:#fff;font-size:14px}
+    .memory-badge{font-size:10px;padding:2px 8px;border-radius:4px;font-weight:600}
+    .memory-in-process{background:rgba(16,185,129,0.15);color:#34d399}
+    .memory-persistent{background:rgba(59,130,246,0.15);color:#60a5fa}
+    .memory-desc{color:var(--muted);font-size:13px;line-height:1.6}
+    .ui-mockup{background:#0d1117;border:1px solid var(--border);border-radius:10px;padding:20px;margin:20px 0;font-size:13px}
+    .ui-mockup-title{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+    .ui-field{margin-bottom:12px}
+    .ui-label{font-size:11px;color:var(--muted);margin-bottom:4px}
+    .ui-value{color:var(--text);background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:4px;padding:6px 10px;font-size:12px}
+    .ui-select{color:var(--accent);background:rgba(16,185,129,0.05);border:1px solid var(--accent-border);border-radius:4px;padding:6px 10px;font-size:12px}
+    .email-flow{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;margin:20px 0}
+    .email-branch{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:16px}
+    .email-branch-item{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center}
+    .email-branch-label{font-size:11px;font-weight:700;margin-bottom:6px}
+    .email-branch-action{font-size:12px;color:var(--muted)}
+    .branch-urgent{border-top:2px solid #ef4444}.branch-urgent .email-branch-label{color:#f87171}
+    .branch-normal{border-top:2px solid #f59e0b}.branch-normal .email-branch-label{color:#fbbf24}
+    .branch-spam{border-top:2px solid var(--muted)}.branch-spam .email-branch-label{color:var(--muted)}
+  </style>
+</head>
+<body>
+<div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+
+<nav class="top-nav">
+  <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+  <div class="nav-center">
+    <a href="ai-04-apis-llm.html" class="nav-prev">← Anterior</a>
+    <div class="nav-position"><span class="track">🔀 n8n</span> · Aula 41 / 50</div>
+    <a href="ai-05-embeddings-vectorstores.html" class="nav-next">Próxima →</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- ── HERO ──────────────────────────────────────────────── -->
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <span class="hero-badge">🔀 n8n</span>
+      <span>Aula 41 · Prioridade 9</span>
+      <span>⏱ ~35 min</span>
+    </div>
+    <h1>n8n + IA —<br>AI Agent Node &amp; LLMs</h1>
+    <div class="hero-meta">
+      <span>🤖 AI Agent Node</span>
+      <span>🧠 OpenAI · Anthropic</span>
+      <span>🔧 Tools · Memory · RAG</span>
+    </div>
+    <div class="hero-tags">
+      <span class="tag accent">n8n</span>
+      <span class="tag accent">AI Agent</span>
+      <span class="tag accent">OpenAI</span>
+      <span class="tag accent">Anthropic</span>
+      <span class="tag accent">LangChain</span>
+      <span class="tag accent">RAG</span>
+      <span class="tag accent">Memory</span>
+      <span class="tag accent">Automação</span>
+    </div>
+  </div>
+
+  <!-- ── 01. POR QUE ISSO IMPORTA ─────────────────────────── -->
+  <div class="section">
+    <div class="section-label">01 · Motivação</div>
+    <h2>Por que unir n8n e IA importa agora?</h2>
+
+    <p>Durante anos, automação e inteligência artificial viveram em mundos separados. O n8n conectava sistemas, APIs e bancos de dados — mas seguia regras rígidas e pré-definidas. Os LLMs raciocinam, interpretam linguagem natural, geram conteúdo — mas ficavam isolados em chatbots sem integração com o mundo real.</p>
+
+    <p>O <strong>AI Agent Node do n8n</strong> derrubou esse muro. Agora um workflow visual pode incorporar raciocínio autônomo: o agente decide quais ferramentas usar, em qual ordem, com base no contexto da tarefa. O resultado é uma nova classe de automações que não era possível antes.</p>
+
+    <div class="callout callout-info">
+      <div class="callout-title">💼 O que você consegue construir hoje com n8n + IA</div>
+      <p style="margin-bottom:12px">Casos de uso reais que engenheiros estão entregando em produção:</p>
+      <ul style="padding-left:16px;color:var(--text);font-size:14px;line-height:2.1">
+        <li><strong>Triagem inteligente de e-mails</strong> — classifica urgência, extrai ação requerida, roteia automaticamente para o canal certo.</li>
+        <li><strong>Suporte automatizado</strong> — responde tickets de suporte consultando base de conhecimento via RAG, escalando apenas casos complexos.</li>
+        <li><strong>Análise de documentos</strong> — recebe PDFs via webhook, extrai entidades, classifica, gera resumo estruturado e salva no banco.</li>
+        <li><strong>Geração de relatórios</strong> — puxa dados de múltiplas APIs, interpreta tendências com LLM, monta relatório em Markdown e envia por e-mail.</li>
+        <li><strong>Agente de pesquisa</strong> — dada uma pergunta, busca na web, Wikipedia e base interna, sintetiza e responde com fontes citadas.</li>
+      </ul>
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">🎯 A vantagem competitiva do engenheiro sênior</div>
+      <p style="margin:0">Um engenheiro que domina n8n + IA entrega automações que antes exigiriam um backend completo (API REST, banco, scheduler, filas) em horas, não semanas. A combinação de orquestração visual com raciocínio LLM elimina a necessidade de escrever boilerplate — você foca na lógica de negócio.</p>
+    </div>
+
+    <div class="grid-2" style="margin-top:24px">
+      <div class="card-mini">
+        <div style="font-size:1.4rem">⚡</div>
+        <h4>Zero backend</h4>
+        <p>Webhooks, agendamentos, integrações com 500+ serviços — tudo sem escrever uma linha de servidor.</p>
+      </div>
+      <div class="card-mini">
+        <div style="font-size:1.4rem">🧠</div>
+        <h4>Raciocínio autônomo</h4>
+        <p>O agente decide qual tool usar, quando parar, como formatar a resposta — sem lógica condicional manual.</p>
+      </div>
+      <div class="card-mini">
+        <div style="font-size:1.4rem">🔌</div>
+        <h4>Qualquer LLM</h4>
+        <p>OpenAI, Anthropic Claude, Google Gemini, Ollama local — troca de modelo sem reescrever o workflow.</p>
+      </div>
+      <div class="card-mini">
+        <div style="font-size:1.4rem">📈</div>
+        <h4>Escala imediata</h4>
+        <p>De 10 a 10.000 execuções por dia sem mudança de arquitetura — o n8n escala horizontalmente.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 02. ANALOGIA ──────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">02 · Analogia</div>
+    <h2>O maestro e a orquestra</h2>
+    <div class="analogy-card">
+      <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
+      <div class="analogy-text">
+        Imagine uma orquestra sinfônica de classe mundial. O <strong>maestro</strong> não toca nenhum instrumento diretamente — ele não precisa ser o violinista mais técnico nem o pianista mais veloz. Seu papel é coordenar: ler a partitura, entender a intenção musical, dar entradas aos músicos certos no momento certo, garantir harmonia entre seções completamente diferentes.<br><br>
+        Os <strong>músicos virtuosos</strong> são os especialistas: o violinista executa passagens rápidas com precisão, o pianista interpreta harmonias complexas, o percussionista mantém o ritmo. Cada um é excelente no seu instrumento — mas sozinhos, sem coordenação, criam cacofonia.<br><br>
+        <strong>O n8n é o maestro. Os LLMs são os músicos virtuosos.</strong> O n8n não "pensa" por si só — ele orquestra: aciona o agente OpenAI para interpretar a solicitação, chama a ferramenta HTTP para buscar dados, passa o resultado ao agente Anthropic para síntese, formata e entrega. A inteligência está nos músicos; a coordenação está no maestro.
+      </div>
+      <div class="analogy-mapping">
+        <div class="analogy-real">🎼 Partitura musical</div>
+        <div class="analogy-tech">→ Workflow n8n</div>
+        <div class="analogy-real">🎻 Músico solista</div>
+        <div class="analogy-tech">→ AI Agent Node</div>
+        <div class="analogy-real">🎺 Instrumento musical</div>
+        <div class="analogy-tech">→ Tools (HTTP, Calculator, Code)</div>
+        <div class="analogy-real">🧠 Memória musical do músico</div>
+        <div class="analogy-tech">→ Window Buffer / Redis Memory</div>
+        <div class="analogy-real">👥 Entrada na hora certa</div>
+        <div class="analogy-tech">→ Trigger (Webhook/Schedule/Chat)</div>
+        <div class="analogy-real">🎵 Performance final ao público</div>
+        <div class="analogy-tech">→ Output (Webhook response / Email)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 03. ARQUITETURA ───────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">03 · Arquitetura</div>
+    <h2>Arquitetura do AI Agent no n8n</h2>
+
+    <p>O AI Agent Node é o coração da integração IA no n8n. Ele implementa o padrão ReAct (Reasoning + Acting): o LLM raciocina sobre a tarefa, decide uma ação, executa via tool, observa o resultado, e itera até a resposta estar completa.</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label">Arquitetura completa — AI Agent Node no n8n</div>
+      <div class="mermaid">
+flowchart TD
+    A([Webhook Trigger]) --> D
+    B([Schedule Trigger]) --> D
+    C([Chat Trigger]) --> D
+
+    D[AI Agent Node] -->|"Consulta modelo"| E{LLM}
+    E --> E1[OpenAI GPT-4o]
+    E --> E2[Anthropic Claude]
+    E --> E3[Google Gemini]
+
+    D <-->|"Acessa tools"| F{Tools}
+    F --> F1[HTTP Request Tool]
+    F --> F2[Calculator Tool]
+    F --> F3[Code Tool]
+    F --> F4[Vector Store Tool]
+    F --> F5[Workflow Tool]
+
+    D <-->|"Lê/escreve contexto"| G{Memory}
+    G --> G1[Window Buffer Memory]
+    G --> G2[Redis Chat Memory]
+    G --> G3[Postgres Chat Memory]
+
+    D --> H{Output}
+    H --> H1[Respond to Webhook]
+    H --> H2[Send Email]
+    H --> H3[Update Google Sheet]
+    H --> H4[Telegram / Slack]
+
+    style D fill:#10b981,color:#000,font-weight:bold
+    style E fill:#1e1e2e,color:#e8e8f0
+    style F fill:#1e1e2e,color:#e8e8f0
+    style G fill:#1e1e2e,color:#e8e8f0
+    style H fill:#1e1e2e,color:#e8e8f0
+      </div>
+    </div>
+
+    <div class="callout callout-info">
+      <div class="callout-title">🔄 Como o ciclo ReAct funciona internamente</div>
+      <p style="margin-bottom:8px">A cada chamada ao AI Agent Node, o LLM executa este loop interno:</p>
+      <ol style="padding-left:20px;color:var(--text);font-size:13px;line-height:2">
+        <li><strong>Thought</strong> — O modelo raciocina: "Para responder esta pergunta, preciso buscar dados atualizados."</li>
+        <li><strong>Action</strong> — Seleciona a tool: <code>http_request_tool</code> com os parâmetros adequados.</li>
+        <li><strong>Observation</strong> — Recebe o resultado da tool e incorpora ao contexto.</li>
+        <li><strong>Repeat</strong> — Decide se precisa de mais ações ou se já pode formular a resposta final.</li>
+        <li><strong>Final Answer</strong> — Gera a resposta quando tem informação suficiente ou atinge <code>maxIterations</code>.</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- ── 04. CONFIGURANDO CREDENCIAIS ─────────────────────── -->
+  <div class="section">
+    <div class="section-label">04 · Setup</div>
+    <h2>Configurando OpenAI / Anthropic no n8n</h2>
+
+    <p>Antes de usar o AI Agent Node, você precisa registrar as credenciais dos provedores de LLM no n8n. O processo é idêntico para OpenAI e Anthropic — apenas os campos específicos diferem.</p>
+
+    <h3>Criando uma OpenAI API Credential no n8n</h3>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Acesse Settings → Credentials</div>
+          <div class="step-desc">No menu lateral do n8n, clique em "Settings" e depois em "Credentials". Clique em "+ Add Credential" no canto superior direito.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Busque "OpenAI" no modal de credenciais</div>
+          <div class="step-desc">Digite "OpenAI" no campo de busca. Selecione "OpenAI API" (não confunda com "OpenAI" que é outra integração).</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Cole sua API Key</div>
+          <div class="step-desc">No campo "API Key", cole sua chave do OpenAI (começa com <code>sk-</code>). Opcionalmente, defina a Organization ID se usar conta corporativa.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Salve e teste a conexão</div>
+          <div class="step-desc">Clique em "Save". O n8n faz uma chamada de teste automaticamente. Se aparecer um checkmark verde, a credencial está ativa.</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Mockup do UI — OpenAI Chat Model Node</h3>
+
+    <div class="ui-mockup">
+      <div class="ui-mockup-title">n8n · OpenAI Chat Model · Node Settings</div>
+      <div class="ui-field">
+        <div class="ui-label">CREDENTIAL FOR OPENAI API</div>
+        <div class="ui-select">✓ OpenAI Production Key (sk-...4f2a)</div>
+      </div>
+      <div class="ui-field">
+        <div class="ui-label">MODEL</div>
+        <div class="ui-select">gpt-4o-mini</div>
+      </div>
+      <div class="ui-field">
+        <div class="ui-label">TEMPERATURE</div>
+        <div class="ui-value">0.7 &nbsp; <span style="color:var(--muted);font-size:11px">// 0 = determinístico · 1 = criativo · 2 = caótico</span></div>
+      </div>
+      <div class="ui-field">
+        <div class="ui-label">MAX TOKENS</div>
+        <div class="ui-value">2048 &nbsp; <span style="color:var(--muted);font-size:11px">// tokens na resposta (não no input)</span></div>
+      </div>
+      <div class="ui-field">
+        <div class="ui-label">TIMEOUT (MS)</div>
+        <div class="ui-value">60000 &nbsp; <span style="color:var(--muted);font-size:11px">// LLMs podem demorar 30s+ em requests longos</span></div>
+      </div>
+    </div>
+
+    <h3>Chat Models disponíveis no n8n</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Node</th>
+            <th>Provedor</th>
+            <th>Modelos recomendados</th>
+            <th>Melhor para</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>OpenAI Chat Model</code></td>
+            <td>OpenAI</td>
+            <td>gpt-4o, gpt-4o-mini, o1-mini</td>
+            <td>Uso geral, function calling</td>
+          </tr>
+          <tr>
+            <td><code>Anthropic Chat Model</code></td>
+            <td>Anthropic</td>
+            <td>claude-3-5-sonnet, claude-3-haiku</td>
+            <td>Raciocínio longo, análise</td>
+          </tr>
+          <tr>
+            <td><code>Google Gemini Chat Model</code></td>
+            <td>Google</td>
+            <td>gemini-1.5-pro, gemini-flash</td>
+            <td>Multimodal, contexto longo</td>
+          </tr>
+          <tr>
+            <td><code>Ollama Chat Model</code></td>
+            <td>Local</td>
+            <td>llama3.2, mistral, qwen2.5</td>
+            <td>Privacidade, custo zero</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── 05. AI AGENT NODE CONFIG ─────────────────────────── -->
+  <div class="section">
+    <div class="section-label">05 · AI Agent Node</div>
+    <h2>AI Agent Node — Configuração completa</h2>
+
+    <p>O AI Agent Node é o nó central da automação inteligente. Ele recebe uma mensagem ou tarefa, consulta o LLM configurado, usa as tools disponíveis de forma autônoma, e retorna o resultado. A escolha do <strong>Agent Type</strong> determina a estratégia de raciocínio.</p>
+
+    <h3>Agent Types — escolhendo a estratégia certa</h3>
+
+    <div class="agent-type-card">
+      <div class="agent-type-name">Conversational Agent</div>
+      <div class="agent-type-desc">O mais simples e direto. Mantém histórico de conversa e usa as tools quando o LLM decide que são necessárias. Não há planning explícito — o modelo reage ao contexto imediato. Ideal para chatbots e assistentes interativos.</div>
+      <div class="agent-type-use">✦ Melhor para: suporte ao cliente, FAQ inteligente, assistente de chat</div>
+    </div>
+
+    <div class="agent-type-card">
+      <div class="agent-type-name">ReAct Agent</div>
+      <div class="agent-type-desc">Implementa o padrão Reason + Act: o modelo explica o raciocínio antes de cada ação ("Preciso saber o preço atual, então vou usar a HTTP tool para consultar a API"). Mais transparente e auditável. Consome mais tokens mas entrega trace completo do raciocínio.</div>
+      <div class="agent-type-use">✦ Melhor para: tasks multi-step, quando você precisa auditar decisões do agente</div>
+    </div>
+
+    <div class="agent-type-card">
+      <div class="agent-type-name">OpenAI Functions Agent</div>
+      <div class="agent-type-desc">Usa o mecanismo nativo de function calling/tool use da OpenAI. O modelo seleciona tools através do protocolo oficial da API, que é mais robusto para selecionar múltiplas tools em paralelo. Exclusivo para modelos OpenAI que suportam tool_calls.</div>
+      <div class="agent-type-use">✦ Melhor para: workflows com muitas tools, uso de modelos GPT-4o/GPT-4o-mini</div>
+    </div>
+
+    <div class="agent-type-card">
+      <div class="agent-type-name">Plan and Execute Agent</div>
+      <div class="agent-type-desc">Divide a tarefa em duas fases: primeiro gera um plano completo ("1. Buscar dados. 2. Calcular média. 3. Gerar relatório."), depois executa cada passo. Muito mais robusto para tarefas complexas mas significativamente mais lento e caro — pode consumir 5x mais tokens.</div>
+      <div class="agent-type-use">✦ Melhor para: tarefas de análise complexas, pipelines de processamento de dados</div>
+    </div>
+
+    <h3>Configurando System Message e Output</h3>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">💡 System Message é o DNA do seu agente</div>
+      <p style="margin:0">O System Message define personalidade, restrições, formato de output e contexto do agente. É a instrução mais importante: um bom system message reduz ambiguidade, melhora consistência e elimina alucinações. Sempre inclua: idioma de resposta, tom, formato esperado e limitações.</p>
+    </div>
+
+    <p>Exemplo de configuração JSON de um agente de suporte técnico Python:</p>
+
+    <div class="code-label">AI Agent Node · Configuração · JSON</div>
+    <pre><code class="language-json">{
+  "agent": "conversationalAgent",
+  "options": {
+    "systemMessage": "Você é um agente de suporte técnico especializado em Python. Responda sempre em português, seja direto e forneça exemplos de código quando relevante.",
+    "maxIterations": 10
+  }
+}</code></pre>
+
+    <p>No UI do n8n, o System Message é um campo de texto livre com suporte a expressões dinâmicas usando <code>{{ }}</code>. Você pode injetar contexto do workflow:</p>
+
+    <div class="code-label">System Message com contexto dinâmico</div>
+    <pre><code class="language-text">Você é um agente de suporte especializado em Python.
+
+CONTEXTO DO USUÁRIO:
+- Nome: {{ $('Webhook').item.json.userName }}
+- Plano: {{ $('Webhook').item.json.planType }}
+- Histórico de tickets: {{ $('Get Tickets').item.json.count }} tickets anteriores
+
+INSTRUÇÕES:
+- Responda SEMPRE em português brasileiro
+- Seja conciso — máximo 3 parágrafos por resposta
+- Forneça exemplos de código quando relevante (use blocos markdown)
+- Se a pergunta estiver fora do escopo Python, diga que não pode ajudar
+- Não revele informações sobre outros usuários</code></pre>
+
+    <div class="callout callout-warn">
+      <div class="callout-title">⚠️ Nunca use expressões para injetar API Keys no System Message</div>
+      <p style="margin:0">Um erro comum: usar <code>{{ $env.OPENAI_KEY }}</code> no System Message para "contexto". Isso expõe a chave no histórico de conversa e nos logs do LLM. Use sempre o mecanismo de Credentials do n8n para segredos.</p>
+    </div>
+  </div>
+
+  <!-- ── 06. TOOLS ─────────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">06 · Tools</div>
+    <h2>Tools disponíveis para o AI Agent</h2>
+
+    <p>Tools são as "mãos" do agente — permitem que ele interaja com o mundo além do que está no contexto. O agente decide autonomamente quando e como usar cada tool com base na tarefa recebida.</p>
+
+    <div class="tool-card">
+      <div class="tool-icon">🧮</div>
+      <div class="tool-info">
+        <h4>Calculator Tool</h4>
+        <p>Executa expressões matemáticas precisas. Essencial para evitar que o LLM "calcule" por conta própria (LLMs são notoriamente imprecisos em aritmética). Ex.: soma de valores de uma fatura, cálculo de percentual de crescimento.</p>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-icon">🌐</div>
+      <div class="tool-info">
+        <h4>HTTP Request Tool</h4>
+        <p>Faz requisições HTTP para qualquer API externa. O agente define URL, método, headers e body com base na tarefa. Ex.: consultar preço em API de produtos, buscar status de pedido, chamar API de clima.</p>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-icon">💻</div>
+      <div class="tool-info">
+        <h4>Code Tool (JavaScript / Python)</h4>
+        <p>Executa código JavaScript ou Python gerado pelo agente. Permite transformações de dados complexas, formatação customizada, lógica que seria difícil de expressar em prompt. Atenção: execute em ambiente sandboxed.</p>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-icon">📖</div>
+      <div class="tool-info">
+        <h4>Wikipedia Tool</h4>
+        <p>Busca artigos na Wikipedia. Útil para agentes de pesquisa que precisam de informações factuais gerais. O agente recebe o resumo do artigo como contexto para formular a resposta.</p>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-icon">🗄️</div>
+      <div class="tool-info">
+        <h4>Vector Store Tool</h4>
+        <p>Busca semântica em uma Vector Store (Pinecone, Qdrant, Weaviate, Supabase). É a base do padrão RAG no n8n: o agente faz uma query semântica e recebe os chunks de documento mais relevantes para fundamentar a resposta.</p>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-icon">🔀</div>
+      <div class="tool-info">
+        <h4>Workflow Tool</h4>
+        <p>Chama outro workflow n8n como se fosse uma função. Permite criar agentes compostos: o agente principal delega subtarefas a agentes especializados em outros workflows — padrão de multi-agent.</p>
+      </div>
+    </div>
+
+    <h3>Exemplo: Agente de Pesquisa com múltiplas tools</h3>
+
+    <div class="workflow-flow">
+      <div class="workflow-step">
+        <div class="workflow-node">Chat Trigger</div>
+        <div class="workflow-arrow">→</div>
+        <div class="workflow-desc">
+          Recebe pergunta do usuário via interface de chat integrada
+          <div class="workflow-sub">Ex: "Quais são as principais novidades do Python 3.13?"</div>
+        </div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-node">AI Agent Node</div>
+        <div class="workflow-arrow">⇄</div>
+        <div class="workflow-desc">
+          Processa a pergunta com GPT-4o-mini + 3 tools disponíveis
+          <div class="workflow-sub">Tool 1: HTTP Request → DuckDuckGo Instant Answer API<br>Tool 2: Wikipedia Tool → busca artigo Python 3.13<br>Tool 3: Code Tool → formata resultado em Markdown</div>
+        </div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-node">Window Buffer Memory</div>
+        <div class="workflow-arrow">↔</div>
+        <div class="workflow-desc">
+          Mantém as últimas 5 mensagens da conversa em memória
+          <div class="workflow-sub">Permite follow-up: "Me dê mais detalhes sobre o item 3."</div>
+        </div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-node">Respond to Chat</div>
+        <div class="workflow-arrow">→</div>
+        <div class="workflow-desc">
+          Retorna resposta formatada com Markdown e fontes citadas
+          <div class="workflow-sub">Resposta aparece na interface de chat em tempo real</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 07. MEMORY ────────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">07 · Memory</div>
+    <h2>Memory no n8n — Mantendo contexto de conversação</h2>
+
+    <p>Por padrão, cada execução do AI Agent Node é stateless — o agente não lembra de execuções anteriores. O módulo de Memory resolve isso, permitindo conversas com contexto persistente.</p>
+
+    <div class="memory-card">
+      <div class="memory-card-header">
+        <div class="memory-icon">🪟</div>
+        <div class="memory-name">Window Buffer Memory</div>
+        <span class="memory-badge memory-in-process">In-process</span>
+      </div>
+      <div class="memory-desc">Armazena as últimas N mensagens da conversa na memória do processo n8n. Rápido, sem dependência externa. A desvantagem é que o histórico é perdido se o n8n reiniciar, e não suporta múltiplas sessões simultâneas de forma segura sem configuração de session ID. Ideal para protótipos, demos e fluxos de uma única conversa.</div>
+    </div>
+
+    <div class="memory-card">
+      <div class="memory-card-header">
+        <div class="memory-icon">⚡</div>
+        <div class="memory-name">Redis Chat Memory</div>
+        <span class="memory-badge memory-persistent">Persistente</span>
+      </div>
+      <div class="memory-desc">Histórico de conversa armazenado no Redis com TTL configurável. Suporta múltiplas sessões simultâneas via session ID único por usuário. Ideal para produção: sobrevive a reinicializações do n8n, escala horizontalmente, e o TTL garante limpeza automática de sessões antigas.</div>
+    </div>
+
+    <div class="memory-card">
+      <div class="memory-card-header">
+        <div class="memory-icon">🗃️</div>
+        <div class="memory-name">Postgres Chat Memory</div>
+        <span class="memory-badge memory-persistent">Persistente</span>
+      </div>
+      <div class="memory-desc">Histórico completo em banco de dados PostgreSQL. Permite queries SQL para análise de conversas, auditoria, compliance e histórico ilimitado. Mais lento que Redis para leitura/escrita, mas essencial quando você precisa consultar o histórico de conversas retroativamente ou gerar relatórios de uso.</div>
+    </div>
+
+    <h3>Configuração de Redis Chat Memory</h3>
+
+    <div class="code-label">Redis Memory · Configuração JSON no n8n</div>
+    <pre><code class="language-json">{
+  "sessionId": "={{ $('Webhook').item.json.sessionId }}",
+  "sessionTTL": 3600,
+  "maxWindowSize": 10
+}</code></pre>
+
+    <div class="callout callout-warn">
+      <div class="callout-title">⚠️ Session ID fixo = todos os usuários compartilham memória</div>
+      <p style="margin-bottom:8px">Um dos erros mais perigosos ao configurar memória no n8n: usar uma string fixa como session ID:</p>
+      <pre style="margin:8px 0"><code class="language-json">// ERRADO — todos os usuários vêem a conversa um do outro
+{ "sessionId": "my-agent-session" }
+
+// CORRETO — cada usuário/conversa tem seu próprio contexto
+{ "sessionId": "={{ $('Webhook').item.json.userId }}-{{ $('Webhook').item.json.conversationId }}" }</code></pre>
+      <p style="margin-top:8px;margin-bottom:0">Sempre use um identificador único derivado do contexto: user ID, session token, ou UUID gerado no início da conversa.</p>
+    </div>
+
+    <div class="callout callout-info">
+      <div class="callout-title">📐 Escolhendo maxWindowSize corretamente</div>
+      <p style="margin:0">O <code>maxWindowSize</code> define quantas mensagens (pares usuário/assistente) ficam no contexto. Cada mensagem adiciona tokens ao input do LLM — o que aumenta custo e latência. Para suporte técnico, 5-10 mensagens é suficiente. Para análise de documentos longos, 3-5 basta. Monitore o uso de tokens e ajuste conforme necessário.</p>
+    </div>
+  </div>
+
+  <!-- ── 08. RAG PIPELINE ──────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">08 · Exemplo Completo</div>
+    <h2>Pipeline RAG no n8n — Q&amp;A sobre documentos</h2>
+
+    <p>RAG (Retrieval-Augmented Generation) é a técnica de enriquecer o contexto do LLM com informações buscadas dinamicamente em uma base de conhecimento. No n8n, isso se divide em dois workflows: <strong>ingestão</strong> (preparar os documentos) e <strong>consulta</strong> (responder perguntas).</p>
+
+    <h3>Workflow 1: Ingestão de documentos</h3>
+
+    <div class="workflow-flow">
+      <div class="workflow-step">
+        <div class="workflow-node">Schedule Trigger</div>
+        <div class="workflow-arrow">→</div>
+        <div class="workflow-desc">
+          Executa diariamente às 02:00 para ingestão incremental
+          <div class="workflow-sub">Cron: <code>0 2 * * *</code></div>
+        </div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-node">HTTP Request</div>
+        <div class="workflow-arrow">→</div>
+        <div class="workflow-desc">
+          Baixa PDFs de um bucket S3 ou endpoint interno
+          <div class="workflow-sub">GET /api/documents?updated_since={{ $today.minus(1, 'day') }}</div>
+        </div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-node">Extract from File</div>
+        <div class="workflow-arrow">→</div>
+        <div class="workflow-desc">
+          Extrai texto dos PDFs usando o nó nativo do n8n
+          <div class="workflow-sub">Suporta PDF, DOCX, TXT, HTML, Markdown</div>
+        </div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-node">Recursive Character Text Splitter</div>
+        <div class="workflow-arrow">→</div>
+        <div class="workflow-desc">
+          Divide texto em chunks de ~500 tokens com 50 tokens de overlap
+          <div class="workflow-sub">Overlap garante que contexto não seja cortado no meio de uma frase</div>
+        </div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-node">Embeddings OpenAI</div>
+        <div class="workflow-arrow">→</div>
+        <div class="workflow-desc">
+          Gera vetores de 1536 dimensões com text-embedding-3-small
+          <div class="workflow-sub">Custo: ~$0.02 por 1M tokens (muito mais barato que GPT-4)</div>
+        </div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-node">Pinecone Vector Store</div>
+        <div class="workflow-arrow">→</div>
+        <div class="workflow-desc">
+          Faz upsert dos vetores com metadados (doc_id, chunk_index, source)
+          <div class="workflow-sub">Alternativas: Qdrant (self-hosted), Supabase, Weaviate</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Workflow 2: Consulta com AI Agent + RAG</h3>
+
+    <div class="workflow-flow">
+      <div class="workflow-step">
+        <div class="workflow-node">Webhook / Chat Trigger</div>
+        <div class="workflow-arrow">→</div>
+        <div class="workflow-desc">
+          Recebe pergunta do usuário com session ID
+          <div class="workflow-sub">POST /webhook/qa com body: { "question": "...", "sessionId": "abc123" }</div>
+        </div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-node">AI Agent Node</div>
+        <div class="workflow-arrow">⇄</div>
+        <div class="workflow-desc">
+          Orquestra busca e resposta com GPT-4o-mini
+          <div class="workflow-sub">
+            Tool 1: Vector Store Retriever → busca semântica (top-5 chunks)<br>
+            Tool 2: HTTP Request → fonte externa para contexto adicional<br>
+            Memory: Window Buffer (5 mensagens)
+          </div>
+        </div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-node">Respond to Webhook</div>
+        <div class="workflow-arrow">→</div>
+        <div class="workflow-desc">
+          Retorna resposta contextualizada com chunks fontes
+          <div class="workflow-sub">JSON: { "answer": "...", "sources": [...], "confidence": 0.92 }</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Diagrama completo do pipeline RAG</h3>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label">Pipeline RAG completo — ingestão + consulta</div>
+      <div class="mermaid">
+flowchart TD
+    A["📄 Documentos (PDF/DOCX)"] --> B[Extract Text]
+    B --> C["Chunk Text\n~500 tokens\n50 overlap"]
+    C --> D[OpenAI Embeddings\ntext-embedding-3-small]
+    D --> E[("Vector Store\nPinecone / Qdrant")]
+
+    F["💬 Pergunta do usuário"] --> G[AI Agent Node\nGPT-4o-mini]
+    G --> H[Vector Store Tool]
+    H --> E
+    E --> I["Top-K chunks\nrelevantes"]
+    I --> G
+    G --> J["OpenAI / Anthropic\nLLM"]
+    J --> K["✅ Resposta\ncontextualizada"]
+
+    style E fill:#10b981,color:#000
+    style G fill:#10b981,color:#000
+    style K fill:#10b981,color:#000
+      </div>
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">🎯 System Message para agente RAG</div>
+      <pre style="margin-top:8px"><code class="language-text">Você é um assistente especializado em responder perguntas baseado EXCLUSIVAMENTE
+nos documentos fornecidos. Siga estas regras:
+
+1. Use SOMENTE informações dos chunks recuperados pela Vector Store Tool
+2. Se a informação não estiver nos documentos, diga: "Não encontrei essa informação
+   na base de conhecimento."
+3. Cite sempre o documento fonte no formato: [Fonte: nome_do_documento, p. X]
+4. Responda em português brasileiro, de forma clara e objetiva
+5. Para perguntas técnicas, inclua exemplos práticos se disponíveis nos documentos</code></pre>
+    </div>
+  </div>
+
+  <!-- ── 09. TRIAGEM DE EMAILS ─────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">09 · Exemplo Completo</div>
+    <h2>Agente de Triagem Inteligente de E-mails</h2>
+
+    <p>Um dos casos de uso mais práticos e imediatos: um agente que lê e-mails assim que chegam, classifica, extrai informações relevantes e toma a ação correta — tudo automaticamente, sem intervenção humana para 80% dos casos.</p>
+
+    <div class="workflow-flow">
+      <div class="workflow-step">
+        <div class="workflow-node">Gmail Trigger</div>
+        <div class="workflow-arrow">→</div>
+        <div class="workflow-desc">
+          Monitora caixa de entrada em tempo real com polling a cada 1 minuto
+          <div class="workflow-sub">Filtra por: INBOX, is:unread — ignora e-mails já processados</div>
+        </div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-node">AI Agent Node</div>
+        <div class="workflow-arrow">→</div>
+        <div class="workflow-desc">
+          Classifica e extrai informações do e-mail usando Claude 3 Haiku (mais barato)
+          <div class="workflow-sub">Input: remetente + assunto + corpo | Output: JSON estruturado</div>
+        </div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-node">Parse JSON</div>
+        <div class="workflow-arrow">→</div>
+        <div class="workflow-desc">
+          Extrai campos do JSON retornado pelo agente
+          <div class="workflow-sub">classificacao, resumo, acao_requerida, prioridade</div>
+        </div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-node">IF Node</div>
+        <div class="workflow-arrow">→</div>
+        <div class="workflow-desc">
+          Roteia baseado na classificação extraída
+          <div class="workflow-sub">Condição: {{ $json.classificacao }} === "URGENTE"</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Roteamento por classificação</h3>
+
+    <div class="email-flow">
+      <p style="color:var(--muted);font-size:13px;margin-bottom:14px">Baseado na resposta do AI Agent Node, o workflow divide em 3 branches:</p>
+      <div class="email-branch">
+        <div class="email-branch-item branch-urgent">
+          <div class="email-branch-label">URGENTE</div>
+          <div class="email-branch-action">→ Notificação Telegram imediata + Label "Urgente" no Gmail</div>
+        </div>
+        <div class="email-branch-item branch-normal">
+          <div class="email-branch-label">NORMAL</div>
+          <div class="email-branch-action">→ Adiciona label "Processado" e salva resumo no Notion</div>
+        </div>
+        <div class="email-branch-item branch-spam">
+          <div class="email-branch-label">SPAM / NEWSLETTER</div>
+          <div class="email-branch-action">→ Move para lixo / arquivo automaticamente</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Prompt estruturado para classificação</h3>
+
+    <div class="code-label">System Message · Agente de Triagem de E-mails</div>
+    <pre><code class="language-text">Analise o e-mail abaixo e retorne um JSON válido com esta estrutura:
+{
+  "classificacao": "URGENTE|NORMAL|SPAM|NEWSLETTER",
+  "resumo": "string (max 100 chars)",
+  "acao_requerida": "string ou null",
+  "prioridade": 1-5
+}
+
+Critérios de classificação:
+- URGENTE: problema em produção, prazo hoje, solicitação de cliente VIP, incidente de segurança
+- NORMAL: solicitações com prazo futuro, perguntas gerais, follow-ups
+- SPAM: tentativas de phishing, ofertas não solicitadas, e-mails suspeitos
+- NEWSLETTER: boletins informativos, promoções, atualizações de serviços
+
+Retorne APENAS o JSON, sem texto adicional antes ou depois.
+
+E-mail:
+De: {{ $json.from }}
+Assunto: {{ $json.subject }}
+Corpo: {{ $json.text }}</code></pre>
+
+    <div class="callout callout-check">
+      <div class="callout-title">✅ Dica: Force output estruturado com JSON mode</div>
+      <p style="margin:0">Para evitar que o LLM adicione texto antes ou depois do JSON, use o campo "Response Format" do OpenAI Chat Model Node e selecione <code>json_object</code>. Isso garante que a saída seja sempre JSON válido, eliminando a necessidade de parsing manual.</p>
+    </div>
+  </div>
+
+  <!-- ── 10. ARMADILHAS COMUNS ─────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">10 · Armadilhas</div>
+    <h2>Erros comuns e como evitá-los</h2>
+
+    <div class="pitfall">
+      <div class="pitfall-title">⏱️ Timeout muito curto para LLMs</div>
+      <p style="color:var(--text);font-size:13px;margin-bottom:0">LLMs podem demorar 20–60 segundos em respostas longas ou quando o servidor está sob alta carga. O timeout padrão do n8n é 5 segundos para nós HTTP — insuficiente. No OpenAI Chat Model Node, sempre defina <code>timeout: 60000</code> (60 segundos) ou mais. Para agentes com múltiplas iterações, considere 120 segundos.</p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">🔄 Loop infinito no agente (maxIterations muito alto)</div>
+      <p style="color:var(--text);font-size:13px;margin-bottom:0">Se o agente não consegue completar a tarefa (tool retorna erro, instrução ambígua), ele pode iterar indefinidamente, consumindo tokens e gerando custos sem retorno. Sempre defina <code>maxIterations</code> para um valor razoável (5–15). Para tasks simples, 5 é suficiente. Para pipelines complexos, 15 raramente é excedido. Monitore execuções com muitas iterações — geralmente indicam um problema no system message ou nas tools.</p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">🔑 Expor API Keys no System Message via expressões</div>
+      <p style="color:var(--text);font-size:13px;margin-bottom:0">Usar <code>{{ $env.OPENAI_KEY }}</code> ou similar no System Message injeta segredos no contexto do LLM e nos logs de execução. Use EXCLUSIVAMENTE o sistema de Credentials do n8n para API keys. O n8n criptografa credenciais em repouso — expressões no System Message não recebem essa proteção.</p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">❌ Não tratar erros do LLM (rate limit, context overflow)</div>
+      <p style="color:var(--text);font-size:13px;margin-bottom:6px">APIs de LLM retornam erros específicos que precisam de tratamento diferente:</p>
+      <ul style="padding-left:16px;font-size:13px;color:var(--text);line-height:1.9">
+        <li><code>429 Rate Limit</code> — adicione um Wait Node com retry exponencial (2s, 4s, 8s)</li>
+        <li><code>400 Context Length Exceeded</code> — reduza o maxWindowSize da memory ou o tamanho dos chunks RAG</li>
+        <li><code>500 Server Error</code> — adicione Error Trigger workflow para alertar no Slack/Telegram</li>
+      </ul>
+      <p style="color:var(--text);font-size:13px;margin-bottom:0">Use o nó "Error Trigger" do n8n para capturar todas as falhas e notificar automaticamente.</p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">👥 Memory session ID fixo — todos os usuários compartilham memória</div>
+      <p style="color:var(--text);font-size:13px;margin-bottom:0">Se você hardcoda o session ID (ex: <code>"sessionId": "agent-memory"</code>), todos os usuários que interagem com o agente vêem o histórico de conversa uns dos outros. Sempre gere um session ID único por usuário/conversa: <code>"sessionId": "={{ $('Webhook').item.json.userId }}"</code> ou use um UUID gerado no início do fluxo.</p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">📊 Não monitorar custo de tokens em produção</div>
+      <p style="color:var(--text);font-size:13px;margin-bottom:0">Agentes com memory e múltiplas tools podem consumir 10–50x mais tokens que uma chamada simples de completions. Uma execução de agente com 10 iterações, 5 mensagens de histórico e 3 tool calls pode facilmente consumir 20.000 tokens. Configure alertas de custo na OpenAI/Anthropic e registre o uso de tokens em cada execução no n8n para monitoramento.</p>
+    </div>
+  </div>
+
+  <!-- ── 11. TABELA COMPARATIVA ────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">11 · Referência</div>
+    <h2>Tabela comparativa — Tipos de Agente no n8n</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tipo de Agente</th>
+            <th>Quando usar</th>
+            <th>Pontos fortes</th>
+            <th>Limitações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Conversational Agent</strong></td>
+            <td>Chat geral, suporte ao cliente, FAQ inteligente</td>
+            <td>
+              <span class="badge badge-green">Simples</span>
+              <span class="badge badge-green">Direto</span>
+              <span class="badge badge-green">Baixo custo</span>
+            </td>
+            <td>Sem planning explícito; menos robusto em tasks complexas</td>
+          </tr>
+          <tr>
+            <td><strong>ReAct Agent</strong></td>
+            <td>Tasks com múltiplos passos interdependentes, análise</td>
+            <td>
+              <span class="badge badge-blue">Raciocínio explícito</span>
+              <span class="badge badge-blue">Auditável</span>
+            </td>
+            <td>Mais tokens por iteração; pode ser mais lento</td>
+          </tr>
+          <tr>
+            <td><strong>OpenAI Functions Agent</strong></td>
+            <td>Workflows com muitas tools, uso exclusivo de GPT</td>
+            <td>
+              <span class="badge badge-purple">Tool calling nativo</span>
+              <span class="badge badge-purple">Paralelo</span>
+            </td>
+            <td>Exclusivo para modelos OpenAI com suporte a tool_calls</td>
+          </tr>
+          <tr>
+            <td><strong>Plan and Execute</strong></td>
+            <td>Tasks complexas com muitos sub-passos, pipelines de dados</td>
+            <td>
+              <span class="badge badge-yellow">Decomposição</span>
+              <span class="badge badge-yellow">Robusto</span>
+            </td>
+            <td>Lento (2 chamadas mínimo), custo alto (5x+)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">🎯 Regra prática: comece com Conversational, migre se precisar</div>
+      <p style="margin:0">Para 90% dos casos de uso, o <strong>Conversational Agent</strong> é suficiente e mais econômico. Só migre para ReAct se precisar auditar o raciocínio. Use OpenAI Functions se já estiver no ecossistema OpenAI e tiver muitas tools. Plan and Execute raramente compensa o custo extra exceto em tarefas de automação de análise pesada.</p>
+    </div>
+  </div>
+
+  <!-- ── 12. VIDEOS ────────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">12 · Curadoria</div>
+    <h2>Vídeos recomendados</h2>
+    <p>Seleção de vídeos práticos e diretos ao ponto para consolidar o conteúdo desta aula.</p>
+    <div class="video-grid">
+
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">n8n AI Agent — Complete Guide 2024</div>
+          <div class="video-channel">Leon van Zyl · YouTube</div>
+          <div class="video-why">O guia mais completo sobre o AI Agent Node no n8n. Cobre todos os tipos de agente, configuração de tools, memory e exemplos práticos do zero. Ideal para quem está começando com agentes no n8n.</div>
+          <a class="video-watch" href="https://www.youtube.com/@leonvanzyl" target="_blank" rel="noopener">Buscar no canal Leon van Zyl →</a>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">Build a RAG Pipeline in n8n — Step by Step</div>
+          <div class="video-channel">Dave Ebbelaar · YouTube</div>
+          <div class="video-why">Tutorial hands-on construindo um pipeline RAG completo no n8n: ingestão de PDFs, geração de embeddings, Vector Store e consulta com AI Agent. Muito prático com demonstração ao vivo.</div>
+          <a class="video-watch" href="https://www.youtube.com/@daveebbelaar" target="_blank" rel="noopener">Buscar no canal Dave Ebbelaar →</a>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">n8n AI Agents with Memory — Full Tutorial</div>
+          <div class="video-channel">Cole Medin · YouTube</div>
+          <div class="video-why">Foco específico em memory no n8n: Window Buffer, Redis e Postgres. Demonstra multi-session, session ID único por usuário e persistência entre reinicializações. Essencial para produção.</div>
+          <a class="video-watch" href="https://www.youtube.com/@ColeMedin" target="_blank" rel="noopener">Buscar no canal Cole Medin →</a>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">Automate ANYTHING with n8n + ChatGPT</div>
+          <div class="video-channel">Liam Ottley · YouTube</div>
+          <div class="video-why">Visão mais ampla de automação com n8n e LLMs. Cobre casos de uso de negócio reais, integração com Gmail, Slack, Notion. Bom para inspiração e entender o escopo do que é possível construir.</div>
+          <a class="video-watch" href="https://www.youtube.com/@LiamOttley" target="_blank" rel="noopener">Buscar no canal Liam Ottley →</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── 13. CHECKPOINT ────────────────────────────────────── -->
+  <div class="checkpoint">
+    <div class="checkpoint-label">✦ Checkpoint · Aula 41</div>
+    <h3>Agente de suporte técnico com memória e registro</h3>
+    <p>Construa do zero um agente de suporte técnico funcional no n8n que demonstre todos os conceitos desta aula em um workflow coeso e pronto para produção.</p>
+    <ul>
+      <li>Crie um Webhook Trigger que recebe POST com <code>{ "question": "...", "userId": "...", "sessionId": "..." }</code></li>
+      <li>Configure um OpenAI Chat Model Node com GPT-4o-mini, temperature 0.3, timeout 60000ms</li>
+      <li>Adicione um AI Agent Node (Conversational Agent) com system message em português especializado em Python</li>
+      <li>Conecte um HTTP Request Tool apontando para uma API pública (ex: api.github.com para buscar issues)</li>
+      <li>Configure Window Buffer Memory com <code>sessionId: {{ $json.sessionId }}</code> e maxWindowSize: 5</li>
+      <li>Adicione um Google Sheets node ao final para registrar: timestamp, userId, pergunta, resposta, tokens usados</li>
+      <li>Responda via Respond to Webhook com JSON: <code>{ "answer": "...", "sessionId": "..." }</code></li>
+      <li>Teste com pelo menos 3 perguntas sequenciais para validar que a memória de conversa funciona</li>
+    </ul>
+    <div class="checkpoint-hint">
+      Dica de validação: faça a pergunta "Qual foi minha primeira pergunta desta sessão?" — o agente deve lembrar corretamente graças ao Window Buffer Memory configurado com o session ID correto.
+    </div>
+  </div>
+
+  <!-- ── 14. PRÓXIMOS PASSOS ───────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">14 · Próximos passos</div>
+    <h2>O que vem a seguir</h2>
+    <p>Você dominou o AI Agent Node do n8n — a peça central que une automação visual com raciocínio de LLMs. O próximo passo aprofunda a fundação técnica do RAG que você usou nesta aula: como embeddings funcionam matematicamente, como escolher e operar Vector Stores em produção, e como otimizar busca semântica para alta precisão.</p>
+
+    <a href="ai-05-embeddings-vectorstores.html" class="next-card">
+      <div>
+        <div class="next-card-label">Aula 42 · Próxima →</div>
+        <div class="next-card-title">Embeddings &amp; Vector Stores — Busca Semântica em Profundidade</div>
+      </div>
+      <div class="next-arrow">→</div>
+    </a>
+  </div>
+
+  <!-- ── FOOTER ────────────────────────────────────────────── -->
+  <div class="footer">
+    <span>🔀 n8n · Aula 41 / 50</span>
+    <span><a href="../roadmaps_new.html">← Voltar ao Roadmap</a></span>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+  // Progress bar
+  window.addEventListener('scroll', () => {
+    const doc = document.documentElement;
+    const scrollTop = doc.scrollTop || document.body.scrollTop;
+    const scrollHeight = doc.scrollHeight - doc.clientHeight;
+    const pct = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+    document.getElementById('progressBar').style.width = pct + '%';
+  });
+
+  // Mermaid dark theme
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      darkMode: true,
+      background: '#111118',
+      primaryColor: '#10b981',
+      primaryTextColor: '#e8e8f0',
+      primaryBorderColor: '#1e1e2e',
+      lineColor: '#8585a8',
+      secondaryColor: '#16161f',
+      tertiaryColor: '#1e1e2e'
+    }
+  });
+
+  // Highlight.js
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('pre code').forEach(el => {
+      hljs.highlightElement(el);
+    });
+  });
+</script>
+</body>
+</html>

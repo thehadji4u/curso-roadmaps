@@ -119,7 +119,7 @@ Todos os HTMLs ficam em `outputs/aulas/` com o nome exato da coluna **Arquivo**.
 | `38-AI-02` | `[x]` | 🤖 IA | Prompt Engineering — Fundamentos | zero-shot · few-shot · CoT · role prompting · system vs user prompt | `ai-02-prompt-eng-fundamentos.html` |
 | `39-AI-03` | `[x]` | 🤖 IA | Prompt Engineering — Avançado | Tree-of-Thought · Self-Consistency · ReAct · chaining · JSON mode · meta-prompting · jailbreak defense | `ai-03-prompt-eng-avancado.html` |
 | `40-AI-04` | `[x]` | 🤖 IA | APIs de LLM — OpenAI, Anthropic & Gemini | chamadas básicas · streaming · autenticação · Avaliação de respostas | `ai-04-apis-llm.html` |
-| `41-N8N-05` | `[ ]` | 🔀 n8n | n8n + IA — AI Agent Node & LLMs | OpenAI/Anthropic no n8n · AI Agent node · memory · RAG pipelines | `n8n-05-ia-agentes.html` |
+| `41-N8N-05` | `[x]` | 🔀 n8n | n8n + IA — AI Agent Node & LLMs | OpenAI/Anthropic no n8n · AI Agent node · memory · RAG pipelines | `n8n-05-ia-agentes.html` |
 
 ---
 
@@ -129,8 +129,8 @@ Todos os HTMLs ficam em `outputs/aulas/` com o nome exato da coluna **Arquivo**.
 
 | ID | Status | Trilha | Título da Aula | Cards agrupados | Arquivo |
 |---|---|---|---|---|---|
-| `42-AI-05` | `[ ]` | 🤖 IA | Embeddings & Vector Stores | Embeddings · similaridade cosseno · Pinecone/Chroma/Qdrant/pgvector | `ai-05-embeddings-vectorstores.html` |
-| `43-AI-06` | `[ ]` | 🤖 IA | Pipeline RAG Completo | Chunking · ingestão → busca → rerank → geração · Avaliação de RAG · RAGAS | `ai-06-rag-pipeline.html` |
+| `42-AI-05` | `[x]` | 🤖 IA | Embeddings & Vector Stores | Embeddings · similaridade cosseno · Pinecone/Chroma/Qdrant/pgvector | `ai-05-embeddings-vectorstores.html` |
+| `43-AI-06` | `[x]` | 🤖 IA | Pipeline RAG Completo | Chunking · ingestão → busca → rerank → geração · Avaliação de RAG · RAGAS | `ai-06-rag-pipeline.html` |
 | `44-AI-07` | `[ ]` | 🤖 IA | Agentes — Function Calling, ReAct & Memória | Function Calling · ReAct pattern · Memória · LangChain · LlamaIndex · Assistants API | `ai-07-agentes-tools.html` |
 | `45-DKR-05` | `[ ]` | 🐳 Docker | Kubernetes & Helm | Kubernetes básico · pods · deployments · services · ingress · Helm | `dkr-05-kubernetes-helm.html` |
 
