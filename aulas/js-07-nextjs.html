@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Next.js — Full-stack Moderno · Aula 32</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
+    :root {
+      --bg: #0a0a0f; --surface: #111118; --surface2: #16161f; --border: #1e1e2e;
+      --text: #e8e8f0; --muted: #8585a8;
+      --accent: #f59e0b; --accent-dim: rgba(245,158,11,0.15); --accent-border: rgba(245,158,11,0.35);
+      --success: #10b981; --warn: #f59e0b; --danger: #ef4444; --info: #06b6d4;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #f59e0b, #fcd34d); width: 0%; transition: width 0.1s; }
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #fcd34d; }
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(245,158,11,0.06); border-color: var(--accent); }
+    .callout-tip .callout-title { color: var(--accent); }
+    .callout-check { background: rgba(16,185,129,0.06); border-color: var(--success); }
+    .callout-check .callout-title { color: var(--success); }
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(88,166,255,0.2); color: #79c0ff; }
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    @media(max-width:640px){.grid-2,.grid-3{grid-template-columns:1fr;}}
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+    .pillar-badge { font-size: 11px; padding: 3px 10px; border-radius: 4px; font-weight: 600; }
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; text-decoration: none; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-watch { font-size: 12px; color: var(--accent); text-decoration: none; }
+    .video-watch:hover { text-decoration: underline; }
+    .checkpoint { background: linear-gradient(135deg,rgba(245,158,11,0.08),rgba(0,0,0,0)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; margin-bottom: 40px; }
+    .checkpoint-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(255,255,255,0.03); border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; font-size: 14px; }
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+    .footer { display: flex; justify-content: space-between; align-items: center; padding: 24px 0; margin-top: 32px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); }
+    .footer a { color: var(--muted); text-decoration: none; }
+    .footer a:hover { color: var(--text); }
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #fbbf24; }
+    .terminal { background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .terminal-bar { background: #1a1a1a; padding: 8px 14px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red{background:#ef4444;}.dot-yellow{background:#f59e0b;}.dot-green{background:#10b981;}
+    .terminal-title { font-size: 11px; color: #555; margin-left: 6px; }
+    .terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; }
+    .t-prompt{color:#f59e0b;}.t-cmd{color:#e8e8f0;}.t-out{color:#8585a8;}.t-comment{color:#555;font-style:italic;}
+    .rendering-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin: 10px 0; border-left: 3px solid var(--accent); }
+    .rendering-name { color: var(--accent); font-weight: 700; margin-bottom: 6px; font-size: 14px; }
+    .rendering-when { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+    .rendering-desc { font-size: 13px; color: var(--text); }
+  </style>
+</head>
+<body>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill"></div></div>
+
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="js-06-react.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position"><span class="track">⚡ JavaScript</span> · Aula 32 / 50</div>
+      <a href="dkr-04-producao-swarm.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <div class="hero">
+      <div class="hero-eyebrow"><span>⚡ JavaScript</span><span class="hero-badge">Aula 32</span></div>
+      <h1>Next.js — Full-stack Moderno</h1>
+      <div class="hero-meta">
+        <span>⏱ ~55 min de leitura</span>
+        <span>🎯 Intermediário → Avançado</span>
+        <span>🔧 Hands-on incluído</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">App Router</span>
+        <span class="tag accent">Server Components</span>
+        <span class="tag accent">SSR</span>
+        <span class="tag accent">SSG</span>
+        <span class="tag accent">ISR</span>
+        <span class="tag accent">API Routes</span>
+        <span class="tag accent">Server Actions</span>
+        <span class="tag">Vercel</span>
+        <span class="tag">Metadata API</span>
+        <span class="tag">Image Optimization</span>
+      </div>
+    </div>
+
+    <!-- 1. POR QUE IMPORTA -->
+    <div class="section">
+      <div class="section-label">// motivação</div>
+      <h2>Por que isso importa?</h2>
+      <p>
+        React resolve o problema de construir UIs interativas. Mas quando você precisa de <strong>SEO, performance de carregamento inicial, rotas, API, autenticação e deploy</strong> — você precisa de mais. Next.js é o framework que adiciona tudo isso em cima do React, de forma opinionada mas flexível.
+      </p>
+      <p>
+        Com o <strong>App Router</strong> (Next.js 13+), o modelo mental mudou completamente: por padrão, todos os componentes são <em>Server Components</em> que rodam no servidor — sem bundle JS no cliente, com acesso direto ao banco de dados, e com SSR automático. É a maior evolução do ecossistema React dos últimos anos.
+      </p>
+      <div class="callout callout-info">
+        <div class="callout-title">💼 Por que um engenheiro sênior usa Next.js hoje</div>
+        Sêniors usam Next.js porque ele resolve o problema mais difícil do front-end moderno: entregar páginas rápidas (para SEO e UX), com dados frescos (para conteúdo dinâmico), sem sobrecarregar o servidor (para escalar) e com uma DX excelente (para produtividade). O App Router com RSC redefine o que significa "full-stack em JavaScript".
+      </div>
+    </div>
+
+    <!-- 2. ANALOGIA -->
+    <div class="section">
+      <div class="section-label">// analogia</div>
+      <h2>Antes do código: uma analogia</h2>
+      <div class="analogy-card">
+        <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
+        <div class="analogy-text">
+          Pense num <strong>restaurante com dois tipos de atendimento</strong>: balcão e mesa. No balcão (SSG), o prato já está pronto quando você chega — feito antes, servido imediatamente, sempre igual. Na mesa (SSR), você faz o pedido e a cozinha prepara na hora — mais personalizado, mas leva um instante. E tem ainda o modelo de "buffet atualizado" (ISR): a comida foi preparada antes, mas de tempos em tempos a cozinha renova o prato.
+          <br><br>
+          O Next.js deixa você escolher o modelo para cada "prato" (página) — e misturá-los no mesmo restaurante (app).
+        </div>
+        <div class="analogy-mapping">
+          <span class="analogy-real">🍱 Prato pronto no balcão</span>
+          <span class="analogy-tech">→ SSG (Static Site Generation)</span>
+          <span class="analogy-real">👨‍🍳 Cozinha prepara no pedido</span>
+          <span class="analogy-tech">→ SSR (Server-Side Rendering)</span>
+          <span class="analogy-real">🔄 Buffet renovado periodicamente</span>
+          <span class="analogy-tech">→ ISR (Incremental Static Regeneration)</span>
+          <span class="analogy-real">🧑‍💻 Cozinheiro na cozinha (invisível)</span>
+          <span class="analogy-tech">→ React Server Components (RSC)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. APP ROUTER vs PAGES ROUTER -->
+    <div class="section">
+      <div class="section-label">// conceito central</div>
+      <h2>App Router vs Pages Router</h2>
+      <p>
+        Next.js tem dois sistemas de roteamento. O <strong>Pages Router</strong> (legado, mas ainda suportado) usa convenções de arquivo em <code>pages/</code>. O <strong>App Router</strong> (Next.js 13+, atual) usa <code>app/</code> e traz Server Components, Layouts aninhados e Server Actions.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Característica</th><th>Pages Router</th><th>App Router (atual)</th></tr></thead>
+          <tbody>
+            <tr><td>Diretório raiz</td><td><code>pages/</code></td><td><code>app/</code></td></tr>
+            <tr><td>Componentes padrão</td><td>Client Components</td><td><span class="badge badge-green">Server Components</span></td></tr>
+            <tr><td>Data fetching</td><td><code>getServerSideProps</code>, <code>getStaticProps</code></td><td><code>async/await</code> direto no componente</td></tr>
+            <tr><td>Layouts</td><td>Manual (via _app.js)</td><td>Automático via <code>layout.tsx</code></td></tr>
+            <tr><td>API Backend</td><td><code>pages/api/</code></td><td>Route Handlers + Server Actions</td></tr>
+            <tr><td>Loading states</td><td>Manual</td><td><code>loading.tsx</code> automático</td></tr>
+            <tr><td>Error handling</td><td>Manual</td><td><code>error.tsx</code> automático</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">💡 Qual usar?</div>
+        Para novos projetos: <strong>sempre App Router</strong>. Para projetos existentes com Pages Router: migre gradualmente — os dois podem coexistir no mesmo projeto durante a transição.
+      </div>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// estrutura de pastas — App Router</div>
+        <div class="mermaid">
+graph TD
+    A["app/"] --> B["layout.tsx\n(layout raiz global)"]
+    A --> C["page.tsx\n(rota: /)"]
+    A --> D["loading.tsx\n(Suspense automático)"]
+    A --> E["error.tsx\n(Error Boundary)"]
+    A --> F["dashboard/"]
+    F --> G["layout.tsx\n(layout do dashboard)"]
+    F --> H["page.tsx\n(rota: /dashboard)"]
+    F --> I["[id]/"]
+    I --> J["page.tsx\n(rota: /dashboard/123)"]
+    A --> K["api/users/"]
+    K --> L["route.ts\n(GET/POST /api/users)"]
+    style A fill:#111118,stroke:#f59e0b,color:#fbbf24
+    style B fill:#111118,stroke:#10b981,color:#e8e8f0
+    style C fill:#111118,stroke:#f59e0b,color:#e8e8f0
+    style L fill:#111118,stroke:#06b6d4,color:#e8e8f0
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. SERVER COMPONENTS -->
+    <div class="section">
+      <div class="section-label">// fundamento 1</div>
+      <h2>Server Components — o coração do App Router</h2>
+      <p>
+        React Server Components (RSC) executam <strong>apenas no servidor</strong>. Eles não têm JavaScript no bundle do cliente, podem fazer <code>async/await</code> diretamente, acessar banco de dados, ler arquivos e variáveis de ambiente — sem expor nada ao browser.
+      </p>
+
+      <div class="grid-2">
+        <div class="card-mini" style="border-left:3px solid #10b981;">
+          <span class="pillar-badge" style="background:rgba(16,185,129,0.2);color:#34d399;">Server Component</span>
+          <h4>Padrão no App Router</h4>
+          <p>Zero JS no cliente. Acesso direto ao banco/FS. Não pode usar hooks, eventos ou APIs do browser. Ideal para layouts, páginas, listas de dados.</p>
+        </div>
+        <div class="card-mini" style="border-left:3px solid #f59e0b;">
+          <span class="pillar-badge" style="background:rgba(245,158,11,0.2);color:#fbbf24;">"use client"</span>
+          <h4>Client Component</h4>
+          <p>Tem interatividade (hooks, eventos, useState). Recebe props de Server Components. Usar só quando necessário para manter bundle pequeno.</p>
+        </div>
+      </div>
+
+      <div class="code-label">server component vs client component — quando usar cada um</div>
+      <pre><code class="language-tsx">// ✅ Server Component (padrão — sem diretiva)
+// Busca dados direto do banco, sem fetch
+import { db } from '@/lib/db';
+
+async function ListaPosts() {
+  // async/await direto — sem useEffect, sem loading state
+  const posts = await db.post.findMany({
+    orderBy: { criadoEm: 'desc' },
+    take: 10,
+  });
+
+  return (
+    &lt;ul&gt;
+      {posts.map(post => (
+        &lt;li key={post.id}&gt;
+          &lt;h3&gt;{post.titulo}&lt;/h3&gt;
+          &lt;p&gt;{post.resumo}&lt;/p&gt;
+          {/* BotaoLike precisa de interatividade — é Client Component */}
+          &lt;BotaoLike postId={post.id} likes={post.likes} /&gt;
+        &lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}
+
+// ✅ Client Component — apenas para o que precisa de interatividade
+'use client';
+import { useState } from 'react';
+
+function BotaoLike({ postId, likes }: { postId: string; likes: number }) {
+  const [count, setCount] = useState(likes);
+  const [curtido, setCurtido] = useState(false);
+
+  async function handleLike() {
+    setCount(c => curtido ? c - 1 : c + 1);
+    setCurtido(c => !c);
+    await fetch(`/api/posts/${postId}/like`, { method: 'POST' });
+  }
+
+  return (
+    &lt;button onClick={handleLike}&gt;
+      {curtido ? '❤️' : '🤍'} {count}
+    &lt;/button&gt;
+  );
+}</code></pre>
+    </div>
+
+    <!-- 5. RENDERING STRATEGIES -->
+    <div class="section">
+      <div class="section-label">// fundamento 2</div>
+      <h2>Estratégias de Renderização</h2>
+      <p>No App Router, você não declara explicitamente SSG ou SSR — o Next.js decide automaticamente com base em como você busca os dados. Você controla via opções de <code>fetch</code> e <code>revalidate</code>.</p>
+
+      <div class="rendering-card">
+        <div class="rendering-name">Static (SSG equivalente) — padrão</div>
+        <div class="rendering-when">Quando: nenhuma configuração especial</div>
+        <div class="rendering-desc">Página gerada em build time. HTML estático, máxima performance, ideal para conteúdo que não muda frequentemente (blog, docs, landing pages).</div>
+      </div>
+      <div class="rendering-card">
+        <div class="rendering-name">Dynamic (SSR equivalente)</div>
+        <div class="rendering-when">Quando: <code>fetch(url, &#123; cache: 'no-store' &#125;)</code> ou uso de <code>cookies()</code> / <code>headers()</code></div>
+        <div class="rendering-desc">Página gerada a cada requisição. Dados sempre frescos. Ideal para dashboards autenticados, carrinho de compras, conteúdo personalizado.</div>
+      </div>
+      <div class="rendering-card">
+        <div class="rendering-name">Revalidation (ISR equivalente)</div>
+        <div class="rendering-when">Quando: <code>fetch(url, &#123; next: &#123; revalidate: 60 &#125; &#125;)</code></div>
+        <div class="rendering-desc">Página estática que é regenerada após N segundos. Equilíbrio perfeito entre performance e dados frescos. Ideal para e-commerce, notícias.</div>
+      </div>
+
+      <div class="code-label">as 3 estratégias no código</div>
+      <pre><code class="language-tsx">// 1. STATIC — gerado em build, nunca revalida
+async function PaginaEstatica() {
+  const dados = await fetch('https://api.exemplo.com/config');
+  // sem opções = static por padrão
+  return &lt;div&gt;...&lt;/div&gt;;
+}
+
+// 2. DYNAMIC — novo a cada request
+async function Dashboard() {
+  const dados = await fetch('https://api.exemplo.com/user', {
+    cache: 'no-store'  // força SSR
+  });
+  return &lt;div&gt;...&lt;/div&gt;;
+}
+
+// 3. ISR — regenera a cada 60 segundos
+async function PaginaProduto({ params }: { params: { id: string } }) {
+  const produto = await fetch(`https://api.exemplo.com/produtos/${params.id}`, {
+    next: { revalidate: 60 }  // revalida a cada 60s
+  });
+  return &lt;div&gt;...&lt;/div&gt;;
+}
+
+// Configuração de revalidate no nível da rota (aplica a toda a página)
+export const revalidate = 3600; // 1 hora</code></pre>
+    </div>
+
+    <!-- 6. LAYOUTS E ROTAS DINÂMICAS -->
+    <div class="section">
+      <div class="section-label">// fundamento 3</div>
+      <h2>Layouts Aninhados & Rotas Dinâmicas</h2>
+      <p>
+        O App Router usa o <strong>sistema de arquivos como roteador</strong>. Cada pasta cria uma rota, e arquivos especiais (<code>layout.tsx</code>, <code>page.tsx</code>, <code>loading.tsx</code>, <code>error.tsx</code>) têm funções específicas.
+      </p>
+
+      <div class="code-label">app/layout.tsx — layout raiz (obrigatório)</div>
+      <pre><code class="language-tsx">// app/layout.tsx — envolve TODA a aplicação
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
+
+const inter = Inter({ subsets: ['latin'] });
+
+export const metadata: Metadata = {
+  title: { template: '%s | Meu App', default: 'Meu App' },
+  description: 'Descrição do meu app',
+  openGraph: { type: 'website', locale: 'pt_BR' },
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    &lt;html lang="pt-BR"&gt;
+      &lt;body className={inter.className}&gt;
+        &lt;Header /&gt;
+        &lt;main&gt;{children}&lt;/main&gt;
+        &lt;Footer /&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+  );
+}</code></pre>
+
+      <div class="code-label">rotas dinâmicas e generateStaticParams</div>
+      <pre><code class="language-tsx">// app/blog/[slug]/page.tsx
+import { notFound } from 'next/navigation';
+
+interface Props { params: { slug: string } }
+
+// Gerar todos os slugs em build time (para SSG)
+export async function generateStaticParams() {
+  const posts = await fetch('https://api.exemplo.com/posts').then(r => r.json());
+  return posts.map((post: { slug: string }) => ({ slug: post.slug }));
+}
+
+// Metadata dinâmica por página
+export async function generateMetadata({ params }: Props) {
+  const post = await getPost(params.slug);
+  if (!post) return {};
+  return {
+    title: post.titulo,
+    description: post.resumo,
+    openGraph: {
+      images: [{ url: post.imagemCapa }],
+    },
+  };
+}
+
+async function getPost(slug: string) {
+  const res = await fetch(`https://api.exemplo.com/posts/${slug}`, {
+    next: { revalidate: 3600 }
+  });
+  if (!res.ok) return null;
+  return res.json();
+}
+
+export default async function PaginaPost({ params }: Props) {
+  const post = await getPost(params.slug);
+  if (!post) notFound(); // Renderiza app/not-found.tsx automaticamente
+
+  return (
+    &lt;article&gt;
+      &lt;h1&gt;{post.titulo}&lt;/h1&gt;
+      &lt;time&gt;{new Date(post.criadoEm).toLocaleDateString('pt-BR')}&lt;/time&gt;
+      &lt;div dangerouslySetInnerHTML={{ __html: post.conteudoHTML }} /&gt;
+    &lt;/article&gt;
+  );
+}</code></pre>
+    </div>
+
+    <!-- 7. SERVER ACTIONS -->
+    <div class="section">
+      <div class="section-label">// fundamento 4</div>
+      <h2>Server Actions — backend sem API Routes</h2>
+      <p>
+        Server Actions são funções <strong>assíncronas que rodam no servidor</strong>, mas podem ser chamadas diretamente de componentes client — sem precisar criar uma API Route. Usadas principalmente em formulários.
+      </p>
+
+      <div class="code-label">server action — formulário sem uma linha de API</div>
+      <pre><code class="language-tsx">// app/contato/page.tsx
+import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
+
+// Server Action — roda no servidor, chamada do form
+async function enviarContato(formData: FormData) {
+  'use server'; // diretiva obrigatória
+
+  const nome = formData.get('nome') as string;
+  const email = formData.get('email') as string;
+  const mensagem = formData.get('mensagem') as string;
+
+  // Validação
+  if (!nome || !email || !mensagem) {
+    throw new Error('Todos os campos são obrigatórios');
+  }
+
+  // Salvar no banco diretamente
+  await db.contato.create({
+    data: { nome, email, mensagem, criadoEm: new Date() }
+  });
+
+  // Enviar e-mail de confirmação
+  await sendEmail({ to: email, subject: 'Recebemos seu contato!', ... });
+
+  // Revalidar cache e redirecionar
+  revalidatePath('/contato');
+  redirect('/contato/obrigado');
+}
+
+export default function PaginaContato() {
+  return (
+    // action recebe a Server Action diretamente — sem fetch, sem useState
+    &lt;form action={enviarContato}&gt;
+      &lt;input name="nome" placeholder="Seu nome" required /&gt;
+      &lt;input name="email" type="email" placeholder="Seu e-mail" required /&gt;
+      &lt;textarea name="mensagem" placeholder="Mensagem" required /&gt;
+      &lt;button type="submit"&gt;Enviar&lt;/button&gt;
+    &lt;/form&gt;
+  );
+}</code></pre>
+    </div>
+
+    <!-- 8. ROUTE HANDLERS (API) -->
+    <div class="section">
+      <div class="section-label">// fundamento 5</div>
+      <h2>Route Handlers — API REST no Next.js</h2>
+      <p>Para construir APIs REST (para mobile, integrações externas ou quando Server Actions não são suficientes), o App Router usa <strong>Route Handlers</strong> em arquivos <code>route.ts</code>.</p>
+
+      <div class="code-label">app/api/posts/route.ts — CRUD completo</div>
+      <pre><code class="language-typescript">import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+
+// GET /api/posts — listar posts
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const pagina = Number(searchParams.get('pagina') ?? '1');
+  const limite = Number(searchParams.get('limite') ?? '10');
+
+  const posts = await db.post.findMany({
+    skip: (pagina - 1) * limite,
+    take: limite,
+    orderBy: { criadoEm: 'desc' },
+  });
+
+  return NextResponse.json({ posts, pagina, limite });
+}
+
+// POST /api/posts — criar post
+const PostSchema = z.object({
+  titulo: z.string().min(3).max(200),
+  conteudo: z.string().min(10),
+  tags: z.array(z.string()).optional(),
+});
+
+export async function POST(request: NextRequest) {
+  // Verificar autenticação
+  const session = await getServerSession();
+  if (!session) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+
+  const body = await request.json();
+  const validado = PostSchema.safeParse(body);
+
+  if (!validado.success) {
+    return NextResponse.json({ error: validado.error.format() }, { status: 400 });
+  }
+
+  const post = await db.post.create({
+    data: { ...validado.data, autorId: session.user.id }
+  });
+
+  return NextResponse.json(post, { status: 201 });
+}
+
+// app/api/posts/[id]/route.ts
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+  const session = await getServerSession();
+  if (!session) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+
+  await db.post.delete({ where: { id: params.id, autorId: session.user.id } });
+  return new NextResponse(null, { status: 204 });
+}</code></pre>
+    </div>
+
+    <!-- 9. HANDS-ON -->
+    <div class="section">
+      <div class="section-label">// prática</div>
+      <h2>Mãos na massa: Blog full-stack do zero</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Criar projeto Next.js com TypeScript</div>
+            <div class="step-desc">Use o create-next-app com todas as opções recomendadas</div>
+            <div class="terminal">
+              <div class="terminal-bar"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span><span class="terminal-title">terminal</span></div>
+              <div class="terminal-body">
+                <span class="t-prompt">$</span> <span class="t-cmd">npx create-next-app@latest meu-blog \</span><br>
+                <span class="t-cmd">&nbsp;&nbsp;--typescript --tailwind --eslint --app --src-dir --import-alias "@/*"</span><br>
+                <span class="t-prompt">$</span> <span class="t-cmd">cd meu-blog && npm install prisma @prisma/client zod</span><br>
+                <span class="t-prompt">$</span> <span class="t-cmd">npx prisma init --datasource-provider sqlite</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Schema Prisma para posts</div>
+            <div class="step-desc">Defina o modelo no <code>prisma/schema.prisma</code></div>
+            <pre><code class="language-prisma">model Post {
+  id        String   @id @default(cuid())
+  titulo    String
+  slug      String   @unique
+  conteudo  String
+  resumo    String
+  publicado Boolean  @default(false)
+  criadoEm DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+}</code></pre>
+            <div class="terminal">
+              <div class="terminal-bar"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span></div>
+              <div class="terminal-body">
+                <span class="t-prompt">$</span> <span class="t-cmd">npx prisma migrate dev --name init</span><br>
+                <span class="t-prompt">$</span> <span class="t-cmd">npx prisma db seed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Página inicial com lista de posts (SSG)</div>
+            <div class="step-desc">Crie <code>src/app/page.tsx</code> como Server Component que busca do banco</div>
+            <pre><code class="language-tsx">// src/app/page.tsx — Server Component (SSG por padrão)
+import { prisma } from '@/lib/prisma';
+import Link from 'next/link';
+
+export default async function Home() {
+  const posts = await prisma.post.findMany({
+    where: { publicado: true },
+    orderBy: { criadoEm: 'desc' },
+    select: { id: true, titulo: true, slug: true, resumo: true, criadoEm: true }
+  });
+
+  return (
+    &lt;main className="max-w-2xl mx-auto px-4 py-16"&gt;
+      &lt;h1 className="text-4xl font-bold mb-12"&gt;Blog&lt;/h1&gt;
+      &lt;div className="space-y-8"&gt;
+        {posts.map(post =&gt; (
+          &lt;article key={post.id}&gt;
+            &lt;Link href={`/blog/${post.slug}`}&gt;
+              &lt;h2 className="text-xl font-semibold hover:underline"&gt;{post.titulo}&lt;/h2&gt;
+            &lt;/Link&gt;
+            &lt;p className="text-gray-400 mt-2"&gt;{post.resumo}&lt;/p&gt;
+            &lt;time className="text-sm text-gray-500"&gt;
+              {new Date(post.criadoEm).toLocaleDateString('pt-BR')}
+            &lt;/time&gt;
+          &lt;/article&gt;
+        ))}
+      &lt;/div&gt;
+    &lt;/main&gt;
+  );
+}</code></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Deploy na Vercel</div>
+            <div class="step-desc">O jeito mais simples de colocar Next.js em produção</div>
+            <div class="terminal">
+              <div class="terminal-bar"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span></div>
+              <div class="terminal-body">
+                <span class="t-prompt">$</span> <span class="t-cmd">npm install -g vercel</span><br>
+                <span class="t-prompt">$</span> <span class="t-cmd">vercel</span><br>
+                <span class="t-out">? Set up and deploy "meu-blog"? Yes</span><br>
+                <span class="t-out">✅  Deployed to https://meu-blog.vercel.app</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10. PITFALLS -->
+    <div class="section">
+      <div class="section-label">// armadilhas</div>
+      <h2>Erros comuns no Next.js</h2>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Usar "use client" em tudo — perde os benefícios do RSC</div>
+        <p style="color:var(--text);font-size:14px;margin-bottom:8px;">O erro mais comum de devs que vêm do React puro é adicionar <code>'use client'</code> em todo arquivo porque estão acostumados com hooks. Isso anula os benefícios dos Server Components.</p>
+        <p style="color:var(--muted);font-size:13px;">✅ Regra: só adicione <code>'use client'</code> quando o componente usa <code>useState</code>, <code>useEffect</code>, event handlers ou APIs do browser. Mantenha a lógica de dados em Server Components.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Variáveis de ambiente expostas ao cliente</div>
+        <p style="color:var(--text);font-size:14px;margin-bottom:8px;">No Next.js, variáveis de ambiente sem o prefixo <code>NEXT_PUBLIC_</code> ficam <strong>apenas no servidor</strong>. Tentar acessar <code>process.env.DATABASE_URL</code> num Client Component retornará <code>undefined</code>.</p>
+        <p style="color:var(--muted);font-size:13px;">✅ Solução: use <code>NEXT_PUBLIC_</code> apenas para variáveis que realmente precisam estar no browser (ex: <code>NEXT_PUBLIC_API_URL</code>). Nunca prefixe segredos — eles ficariam expostos no HTML.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Instanciar Prisma sem singleton — too many connections</div>
+        <p style="color:var(--text);font-size:14px;margin-bottom:8px;">Em dev com hot reload, o Next.js pode criar múltiplas instâncias do PrismaClient, estourando o limite de conexões do banco.</p>
+        <pre style="margin:8px 0;"><code class="language-typescript">// src/lib/prisma.ts — padrão singleton
+import { PrismaClient } from '@prisma/client';
+const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
+export const prisma = globalForPrisma.prisma ?? new PrismaClient();
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;</code></pre>
+      </div>
+    </div>
+
+    <!-- 11. VÍDEOS -->
+    <div class="section">
+      <div class="section-label">// curadoria</div>
+      <h2>Referências em vídeo</h2>
+      <div class="video-grid">
+        <a class="video-card" href="https://www.youtube.com/watch?v=ZjAqacIC_3c" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Next.js 14 in 100 Seconds</div>
+            <div class="video-channel">Fireship · 2 min</div>
+            <div class="video-why">Por que assistir: overview rápido e visual do que mudou no Next.js 14 com App Router. Excelente ponto de partida antes de mergulhar fundo.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+        <a class="video-card" href="https://www.youtube.com/@JoshTriedCoding" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Josh tried coding — Next.js Projects</div>
+            <div class="video-channel">Josh tried coding · ~1–3h por projeto</div>
+            <div class="video-why">Por que assistir: projetos completos com App Router, Prisma, autenticação e deploy. O melhor canal para ver Next.js em projetos reais de produção.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+        <a class="video-card" href="https://www.youtube.com/watch?v=wm5gMKuwSYk" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Next.js Full Course — freeCodeCamp</div>
+            <div class="video-channel">freeCodeCamp · ~10h</div>
+            <div class="video-why">Por que assistir: curso completo do básico ao avançado com App Router, TypeScript, Prisma e autenticação. O mais completo disponível gratuitamente.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+        <a class="video-card" href="https://nextjs.org/docs" target="_blank">
+          <div class="video-thumb">📖</div>
+          <div class="video-info">
+            <div class="video-title">Documentação oficial Next.js</div>
+            <div class="video-channel">nextjs.org/docs · Referência completa</div>
+            <div class="video-why">Por que consultar: documentação exemplar, com exemplos interativos e guias de migração. A seção "Learn" é um curso por si só.</div>
+            <span class="video-watch">Acessar →</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- CHECKPOINT -->
+    <div class="checkpoint">
+      <div class="checkpoint-label">// desafio</div>
+      <h3>🏁 Checkpoint — valide seu aprendizado</h3>
+      <p>Construa um <strong>blog full-stack com Next.js + App Router</strong>:</p>
+      <ul>
+        <li>Rota <code>/</code> listando todos os posts publicados (Server Component, dados do banco)</li>
+        <li>Rota dinâmica <code>/blog/[slug]</code> com metadata dinâmica (title e description por post)</li>
+        <li>Rota <code>/admin/novo</code> com formulário usando Server Action para criar post</li>
+        <li>Route Handler <code>GET /api/posts</code> com paginação via query params</li>
+        <li>Loading skeleton com <code>loading.tsx</code> e tratamento de 404 com <code>not-found.tsx</code></li>
+        <li>Deploy na Vercel com variável de ambiente <code>DATABASE_URL</code> configurada</li>
+      </ul>
+      <div class="checkpoint-hint">💬 Dica: use o Next.js Learn (nextjs.org/learn) como guia complementar — é o tutorial oficial que cobre exatamente esse tipo de projeto step-by-step.</div>
+    </div>
+
+    <a href="dkr-04-producao-swarm.html" class="next-card">
+      <div>
+        <div class="next-card-label">Próxima aula →</div>
+        <div class="next-card-title">Docker em Produção — Registry & Swarm</div>
+      </div>
+      <div class="next-arrow">→</div>
+    </a>
+
+    <div class="footer">
+      <span>⚡ JavaScript · Aula 32 / 50</span>
+      <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+    window.addEventListener('scroll', () => {
+      const d = document.documentElement;
+      const p = d.scrollHeight - window.innerHeight;
+      document.querySelector('.progress-bar-fill').style.width = (p > 0 ? (window.scrollY / p) * 100 : 0) + '%';
+    });
+    mermaid.initialize({ startOnLoad: true, theme: 'dark', themeVariables: { primaryColor: '#f59e0b', primaryTextColor: '#e8e8f0', primaryBorderColor: 'rgba(245,158,11,0.5)', lineColor: '#8585a8', background: '#111118', mainBkg: '#16161f' } });
+  </script>
+</body>
+</html>

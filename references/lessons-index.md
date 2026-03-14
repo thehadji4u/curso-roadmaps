@@ -101,9 +101,9 @@ Todos os HTMLs ficam em `outputs/aulas/` com o nome exato da coluna **Arquivo**.
 | ID | Status | Trilha | Título da Aula | Cards agrupados | Arquivo |
 |---|---|---|---|---|---|
 | `31-JS-06` | `[x]` | ⚡ JavaScript | React 18 — Componentes, Hooks & Estado | React 18+ · JSX · hooks · context · Suspense · Server Components | `js-06-react.html` |
-| `32-JS-07` | `[ ]` | ⚡ JavaScript | Next.js — Full-stack Moderno | Next.js · App Router · SSR · SSG · API routes | `js-07-nextjs.html` |
-| `33-DKR-04` | `[ ]` | 🐳 Docker | Docker em Produção — Registry & Swarm | Registry · CI/CD com Docker · Docker Swarm | `dkr-04-producao-swarm.html` |
-| `34-N8N-04` | `[ ]` | 🔀 n8n | n8n Avançado — Sub-workflows & Self-hosting | Sub-workflows · Self-hosting · Custom nodes | `n8n-04-avancado.html` |
+| `32-JS-07` | `[x]` | ⚡ JavaScript | Next.js — Full-stack Moderno | Next.js · App Router · SSR · SSG · API routes | `js-07-nextjs.html` |
+| `33-DKR-04` | `[x]` | 🐳 Docker | Docker em Produção — Registry & Swarm | Registry · CI/CD com Docker · Docker Swarm | `dkr-04-producao-swarm.html` |
+| `34-N8N-04` | `[x]` | 🔀 n8n | n8n Avançado — Sub-workflows & Self-hosting | Sub-workflows · Self-hosting · Custom nodes | `n8n-04-avancado.html` |
 | `35-GH-07` | `[ ]` | 🐙 GitHub | GitHub no Stack Completo | GitHub + Docker · GitHub + n8n · GitHub + Python · GitHub Pages · Monorepo | `gh-07-stack-completo.html` |
 | `36-HTML-06` | `[ ]` | 🌐 HTML/CSS | Acessibilidade & SEO | Acessibilidade · ARIA · SEO básico · Pseudo-elementos · Figma handoff | `html-06-a11y-seo.html` |
 

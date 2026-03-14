@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Docker em Produção — Registry, CI/CD & Swarm · Aula 33</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
+    :root {
+      --bg: #0a0a0f; --surface: #111118; --surface2: #16161f; --border: #1e1e2e;
+      --text: #e8e8f0; --muted: #8585a8;
+      --accent: #06b6d4; --accent-dim: rgba(6,182,212,0.12); --accent-border: rgba(6,182,212,0.35);
+      --success: #10b981; --warn: #f59e0b; --danger: #ef4444; --info: #06b6d4;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #06b6d4, #67e8f9); width: 0%; transition: width 0.1s; }
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #67e8f9; }
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(6,182,212,0.06); border-color: var(--accent); }
+    .callout-tip .callout-title { color: var(--accent); }
+    .callout-check { background: rgba(16,185,129,0.06); border-color: var(--success); }
+    .callout-check .callout-title { color: var(--success); }
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(6,182,212,0.2); color: #67e8f9; }
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    @media(max-width:640px){.grid-2,.grid-3{grid-template-columns:1fr;}}
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+    .pillar-badge { font-size: 11px; padding: 3px 10px; border-radius: 4px; font-weight: 600; }
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; text-decoration: none; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-watch { font-size: 12px; color: var(--accent); text-decoration: none; }
+    .video-watch:hover { text-decoration: underline; }
+    .checkpoint { background: linear-gradient(135deg,rgba(6,182,212,0.08),rgba(0,0,0,0)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; margin-bottom: 40px; }
+    .checkpoint-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(255,255,255,0.03); border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; font-size: 14px; }
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+    .footer { display: flex; justify-content: space-between; align-items: center; padding: 24px 0; margin-top: 32px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); }
+    .footer a { color: var(--muted); text-decoration: none; }
+    .footer a:hover { color: var(--text); }
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #67e8f9; }
+    .terminal { background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .terminal-bar { background: #1a1a1a; padding: 8px 14px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red{background:#ef4444;}.dot-yellow{background:#f59e0b;}.dot-green{background:#10b981;}
+    .terminal-title { font-size: 11px; color: #555; margin-left: 6px; }
+    .terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; }
+    .t-prompt{color:#06b6d4;}.t-cmd{color:#e8e8f0;}.t-out{color:#8585a8;}.t-comment{color:#555;font-style:italic;}
+    .registry-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin: 10px 0; border-left: 3px solid var(--accent); }
+    .registry-name { color: var(--accent); font-weight: 700; margin-bottom: 6px; font-size: 14px; }
+    .registry-when { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+    .swarm-node { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; text-align: center; }
+    .swarm-node.manager { border-color: var(--accent-border); background: var(--accent-dim); }
+    .swarm-node-title { font-weight: 700; color: #fff; margin-bottom: 4px; }
+    .swarm-node-role { font-size: 11px; color: var(--muted); }
+  </style>
+</head>
+<body>
+
+<div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+
+<nav class="top-nav">
+  <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+  <div class="nav-center">
+    <a href="js-07-nextjs.html" class="nav-prev">← Anterior</a>
+    <div class="nav-position">
+      <span class="track">🐳 Docker</span> · Aula 33 / 50
+    </div>
+    <a href="n8n-04-avancado.html" class="nav-next">Próxima →</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- ═══════════════════════════════════════════════════════════ HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <span class="hero-badge">🐳 DOCKER</span>
+      <span>Aula 33 · Prioridade 6</span>
+      <span>⏱ ~35 min</span>
+    </div>
+    <h1>Docker em Produção<br>Registry, CI/CD & Swarm</h1>
+    <div class="hero-meta">
+      <span>📦 Registries: Hub · GHCR · ECR</span>
+      <span>⚙️ CI/CD com GitHub Actions</span>
+      <span>🔗 Orquestração com Swarm</span>
+    </div>
+    <div class="hero-tags">
+      <span class="tag accent">Docker Registry</span>
+      <span class="tag accent">GHCR</span>
+      <span class="tag accent">Docker Swarm</span>
+      <span class="tag">GitHub Actions</span>
+      <span class="tag">Rolling Updates</span>
+      <span class="tag">Secrets</span>
+      <span class="tag">Stacks</span>
+      <span class="tag">CI/CD</span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ POR QUE -->
+  <div class="section">
+    <div class="section-label">01 · Motivação</div>
+    <h2>Por que isso importa em produção?</h2>
+    <p>Nas aulas anteriores, você aprendeu a criar imagens Docker, escrever Dockerfiles e orquestrar múltiplos containers com Compose. Mas quando chega a hora de <strong>levar para produção</strong>, surgem perguntas reais:</p>
+
+    <div class="grid-3" style="margin: 24px 0;">
+      <div class="card-mini">
+        <div style="font-size:1.5rem">📦</div>
+        <h4>Onde armazenar imagens?</h4>
+        <p>Docker Hub, GitHub Container Registry, Amazon ECR — como escolher e usar cada um.</p>
+      </div>
+      <div class="card-mini">
+        <div style="font-size:1.5rem">🔄</div>
+        <h4>Como automatizar o deploy?</h4>
+        <p>Cada push no código deve automaticamente construir, testar e publicar a imagem.</p>
+      </div>
+      <div class="card-mini">
+        <div style="font-size:1.5rem">🌐</div>
+        <h4>Como escalar sem Kubernetes?</h4>
+        <p>Docker Swarm oferece orquestração nativa, simples e poderosa para equipes menores.</p>
+      </div>
+    </div>
+
+    <div class="callout callout-info">
+      <div class="callout-title">💡 Por que um engenheiro sênior usa isso hoje?</div>
+      Um pipeline CI/CD com Docker elimina o clássico "funciona na minha máquina". Docker Swarm é a escolha de times que precisam de orquestração sem a complexidade do Kubernetes — startups, projetos internos e VPS de baixo custo.
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ ANALOGIA -->
+  <div class="section">
+    <div class="section-label">02 · Analogia do Mundo Real</div>
+    <h2>A Fábrica, o Armazém e a Frota de Caminhões</h2>
+    <div class="analogy-card">
+      <div class="analogy-label">🏭 Analogia</div>
+      <div class="analogy-text">
+        Imagine uma <strong>fábrica de produtos</strong> (seu código) que a cada nova versão sai da linha de montagem como uma caixa lacrada (imagem Docker). Essa caixa vai para um <strong>armazém central</strong> (Registry) onde fica catalogada com versão e etiqueta. Quando é hora de distribuir, uma <strong>frota de caminhões</strong> (Docker Swarm) pega as caixas do armazém e as entrega nos pontos de venda (servidores). O gerente de logística (manager node) coordena a frota, e os motoristas (worker nodes) fazem as entregas. Se um motorista quebra, o gerente automaticamente redistribui a carga.
+      </div>
+      <div class="analogy-mapping">
+        <div class="analogy-real">🏭 Fábrica → código-fonte / Dockerfile</div>
+        <div class="analogy-tech">→ <code>docker build</code></div>
+        <div class="analogy-real">📦 Caixa lacrada → imagem versionada</div>
+        <div class="analogy-tech">→ Docker Image + tag</div>
+        <div class="analogy-real">🏬 Armazém central → Registry</div>
+        <div class="analogy-tech">→ Docker Hub / GHCR / ECR</div>
+        <div class="analogy-real">🚚 Frota de caminhões → cluster Swarm</div>
+        <div class="analogy-tech">→ Manager + Worker nodes</div>
+        <div class="analogy-real">👔 Gerente de logística → manager node</div>
+        <div class="analogy-tech">→ <code>docker service</code></div>
+        <div class="analogy-real">🔁 Nova coleção → versão nova do app</div>
+        <div class="analogy-tech">→ Rolling update</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════ REGISTRIES -->
+  <div class="section">
+    <div class="section-label">03 · Conceito Central</div>
+    <h2>Docker Registries — Onde Vivem Suas Imagens</h2>
+
+    <p>Um <strong>Registry</strong> é um servidor que armazena e distribui imagens Docker. Toda imagem que você baixa com <code>docker pull</code> vem de um registry. Por padrão, o Docker usa o Docker Hub — mas você pode usar registries privados ou gerenciados na nuvem.</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label">Fluxo completo: build → push → pull → run</div>
+      <div class="mermaid">
+graph LR
+    A[💻 Dev<br/>máquina local] -->|docker build| B[🐳 Image<br/>local]
+    B -->|docker push| C[(📦 Registry<br/>Hub/GHCR/ECR)]
+    C -->|docker pull| D[🖥️ Servidor<br/>Produção]
+    D -->|docker run| E[🟢 Container<br/>rodando]
+    style C fill:#06b6d4,color:#000
+    style E fill:#10b981,color:#000
+      </div>
+    </div>
+
+    <div class="registry-card">
+      <div class="registry-name">🐳 Docker Hub — hub.docker.com</div>
+      <div class="registry-when">Registry padrão. Gratuito com limitações (1 push/hora em conta free).</div>
+      <p style="font-size:13px;color:var(--muted)">Ideal para imagens públicas e projetos open source. Todas as imagens oficiais (nginx, postgres, redis) ficam aqui. Endereço implícito: <code>docker.io/usuario/imagem:tag</code></p>
+    </div>
+
+    <div class="registry-card" style="border-left-color:#58a6ff">
+      <div class="registry-name" style="color:#58a6ff">🐙 GitHub Container Registry (GHCR) — ghcr.io</div>
+      <div class="registry-when">Integrado ao GitHub. Free para repos públicos, incluído no GitHub Free para privados (até limite de Actions).</div>
+      <p style="font-size:13px;color:var(--muted)">Melhor escolha para projetos no GitHub. Imagens ficam na mesma conta do repositório, com controle de acesso por token. Endereço: <code>ghcr.io/usuario/imagem:tag</code></p>
+    </div>
+
+    <div class="registry-card" style="border-left-color:#f59e0b">
+      <div class="registry-name" style="color:#f59e0b">☁️ Amazon ECR — AWS Elastic Container Registry</div>
+      <div class="registry-when">Registry privado na AWS. Pago por GB armazenado + transferência.</div>
+      <p style="font-size:13px;color:var(--muted)">Padrão em projetos que usam ECS/EKS. Autenticação via AWS IAM. Endereço: <code>123456789.dkr.ecr.us-east-1.amazonaws.com/minha-app:tag</code></p>
+    </div>
+
+    <h3>Comandos essenciais de Registry</h3>
+
+    <div class="terminal">
+      <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><div class="terminal-title">registry — comandos básicos</div></div>
+      <div class="terminal-body">
+        <div><span class="t-comment"># ── DOCKER HUB ──────────────────────────────────────</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">docker login</span></div>
+        <div><span class="t-out">Username: seuusuario | Password: ****</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">docker build -t seuusuario/minha-app:1.0.0 .</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">docker push seuusuario/minha-app:1.0.0</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">docker pull seuusuario/minha-app:1.0.0</span></div>
+        <br>
+        <div><span class="t-comment"># ── GHCR (GitHub Container Registry) ────────────────</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">echo $GITHUB_TOKEN | docker login ghcr.io -u seuusuario --password-stdin</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">docker build -t ghcr.io/seuusuario/minha-app:latest .</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">docker push ghcr.io/seuusuario/minha-app:latest</span></div>
+        <br>
+        <div><span class="t-comment"># ── Tags múltiplas: latest + versão semântica ────────</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">docker tag minha-app:latest ghcr.io/org/minha-app:v2.3.1</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">docker push ghcr.io/org/minha-app:v2.3.1</span></div>
+      </div>
+    </div>
+
+    <h3>Comparativo de Registries</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Registry</th><th>Grátis?</th><th>Privado?</th><th>Melhor para</th><th>Auth</th></tr></thead>
+        <tbody>
+          <tr><td>Docker Hub</td><td><span class="badge badge-yellow">Limitado</span></td><td><span class="badge badge-green">1 repo grátis</span></td><td>Imagens públicas / open source</td><td>user/pass</td></tr>
+          <tr><td>GHCR</td><td><span class="badge badge-green">✓ Sim</span></td><td><span class="badge badge-green">✓ Sim</span></td><td>Projetos no GitHub (melhor custo-benefício)</td><td>PAT / GITHUB_TOKEN</td></tr>
+          <tr><td>Amazon ECR</td><td><span class="badge badge-red">Pago</span></td><td><span class="badge badge-green">✓ Sim</span></td><td>Stacks AWS (ECS/EKS)</td><td>AWS IAM</td></tr>
+          <tr><td>Google GCR</td><td><span class="badge badge-red">Pago</span></td><td><span class="badge badge-green">✓ Sim</span></td><td>Stacks GCP (GKE/Cloud Run)</td><td>GCP Service Account</td></tr>
+          <tr><td>GitLab Registry</td><td><span class="badge badge-green">✓ Sim</span></td><td><span class="badge badge-green">✓ Sim</span></td><td>Projetos no GitLab</td><td>CI token</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ CI/CD -->
+  <div class="section">
+    <div class="section-label">04 · CI/CD com Docker</div>
+    <h2>Pipeline Automatizado: Build → Push → Deploy</h2>
+
+    <p>Um pipeline CI/CD com Docker segue sempre o mesmo padrão: a cada novo commit, a imagem é construída, testada e publicada no registry — podendo ainda disparar o deploy automático no servidor.</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label">Pipeline CI/CD Docker com GitHub Actions</div>
+      <div class="mermaid">
+sequenceDiagram
+    participant Dev as 💻 Developer
+    participant GH as 🐙 GitHub
+    participant CI as ⚙️ GitHub Actions
+    participant Reg as 📦 GHCR
+    participant Srv as 🖥️ Servidor
+
+    Dev->>GH: git push main
+    GH->>CI: trigger workflow
+    CI->>CI: checkout code
+    CI->>CI: docker build
+    CI->>CI: run tests
+    CI->>Reg: docker push :sha + :latest
+    CI->>Srv: SSH → docker pull + restart
+    Srv-->>CI: ✅ deploy ok
+      </div>
+    </div>
+
+    <h3>GitHub Actions — Workflow Completo</h3>
+    <div class="code-label">.github/workflows/docker-cicd.yml</div>
+    <pre><code class="language-yaml">name: Docker CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}   # ex: org/minha-app
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write   # necessário para push no GHCR
+
+    steps:
+      # 1. Checkout do código
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. Login no GHCR usando token automático do Actions
+      - name: Login no Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # 3. Extrai metadados: tags automáticas (branch, sha, semver)
+      - name: Extrai metadados (tags e labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix=sha-
+            type=semver,pattern={{version}}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+
+      # 4. Build multi-plataforma + push em um único passo
+      - name: Build e Push da imagem
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}  # não faz push em PRs
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha       # cache do GitHub Actions (mais rápido)
+          cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'   # deploy só no main
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Pull a nova imagem e reinicia o container
+            docker pull ghcr.io/${{ github.repository }}:latest
+            docker stop minha-app || true
+            docker rm minha-app || true
+            docker run -d \
+              --name minha-app \
+              --restart unless-stopped \
+              -p 3000:3000 \
+              -e DATABASE_URL=$DATABASE_URL \
+              ghcr.io/${{ github.repository }}:latest</code></pre>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">🔥 Pro Tip: Cache do build</div>
+      <code>cache-from: type=gha</code> usa o cache do GitHub Actions para evitar rebuilds desnecessários. Em projetos grandes, pode reduzir o tempo de build de 5 minutos para 30 segundos.
+    </div>
+
+    <h3>Configurando os Secrets no GitHub</h3>
+    <p>Vá em <strong>Settings → Secrets and variables → Actions → New repository secret</strong> e adicione:</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Secret</th><th>Valor</th><th>Observação</th></tr></thead>
+        <tbody>
+          <tr><td><code>SERVER_HOST</code></td><td>IP ou domínio do servidor</td><td>Ex: 192.168.1.100</td></tr>
+          <tr><td><code>SERVER_USER</code></td><td>Usuário SSH</td><td>Ex: ubuntu, root</td></tr>
+          <tr><td><code>SSH_PRIVATE_KEY</code></td><td>Chave privada SSH</td><td>Conteúdo do arquivo <code>~/.ssh/id_rsa</code></td></tr>
+          <tr><td><code>GITHUB_TOKEN</code></td><td>Automático</td><td>Gerado pelo Actions — não precisa criar</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Não commite secrets no código!</div>
+      Nunca coloque credenciais, senhas ou chaves diretamente no código ou no Dockerfile. Use sempre <code>ARG</code> + <code>--build-arg</code> para build-time e variáveis de ambiente em runtime. Secrets no GitHub Actions são injetados de forma segura e nunca aparecem nos logs.
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ SWARM -->
+  <div class="section">
+    <div class="section-label">05 · Docker Swarm</div>
+    <h2>Orquestração Nativa: Docker Swarm</h2>
+
+    <p>Docker Swarm é o modo de orquestração <strong>nativo do Docker</strong> — baked in, sem instalação adicional. Com um único comando, você transforma múltiplos hosts Docker em um cluster gerenciado, capaz de distribuir containers, fazer rolling updates e se recuperar de falhas automaticamente.</p>
+
+    <div class="callout callout-info">
+      <div class="callout-title">💡 Swarm vs Kubernetes</div>
+      Kubernetes é mais poderoso, mas também mais complexo (curva de aprendizado enorme). Docker Swarm é ideal para equipes menores, projetos sem budget para cloud gerenciada, ou quando você precisa de orquestração sem dedicar semanas de estudo.
+    </div>
+
+    <h3>Arquitetura do Cluster</h3>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label">Cluster Docker Swarm — Manager + Workers</div>
+      <div class="mermaid">
+graph TB
+    subgraph Cluster["🐳 Docker Swarm Cluster"]
+      M1[👔 Manager<br/>Node 1<br/>LEADER]
+      M2[👔 Manager<br/>Node 2<br/>REPLICA]
+      W1[⚙️ Worker<br/>Node 1]
+      W2[⚙️ Worker<br/>Node 2]
+      W3[⚙️ Worker<br/>Node 3]
+    end
+
+    CLI[💻 docker CLI] --> M1
+    M1 <-->|Raft consensus| M2
+    M1 -->|distribui tasks| W1
+    M1 -->|distribui tasks| W2
+    M2 -->|distribui tasks| W3
+
+    W1 --> C1[🟢 Container]
+    W1 --> C2[🟢 Container]
+    W2 --> C3[🟢 Container]
+    W3 --> C4[🟢 Container]
+
+    style M1 fill:#06b6d4,color:#000
+    style M2 fill:#0891b2,color:#fff
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:20px;">
+      <div class="swarm-node manager">
+        <div style="font-size:1.3rem;margin-bottom:8px">👔</div>
+        <div class="swarm-node-title">Manager Node</div>
+        <div class="swarm-node-role">Recebe comandos da CLI · Mantém o estado do cluster · Distribui tasks para workers · Algoritmo Raft para HA</div>
+      </div>
+      <div class="swarm-node">
+        <div style="font-size:1.3rem;margin-bottom:8px">⚙️</div>
+        <div class="swarm-node-title">Worker Node</div>
+        <div class="swarm-node-role">Executa containers (tasks) · Reporta status ao manager · Pode ser promovido a manager a qualquer momento</div>
+      </div>
+    </div>
+
+    <h3>Inicializando o Swarm</h3>
+
+    <div class="terminal">
+      <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><div class="terminal-title">swarm init e join</div></div>
+      <div class="terminal-body">
+        <div><span class="t-comment"># No servidor que será o Manager:</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">docker swarm init --advertise-addr 192.168.1.100</span></div>
+        <div><span class="t-out">Swarm initialized: current node (abc123) is now a manager.</span></div>
+        <div><span class="t-out">To add a worker to this swarm, run the following command:</span></div>
+        <div><span class="t-out">  docker swarm join --token SWMTKN-1-xxxx 192.168.1.100:2377</span></div>
+        <br>
+        <div><span class="t-comment"># Nos servidores Worker (copie o token do comando acima):</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">docker swarm join --token SWMTKN-1-xxxx 192.168.1.100:2377</span></div>
+        <div><span class="t-out">This node joined a swarm as a worker.</span></div>
+        <br>
+        <div><span class="t-comment"># Verificar nós do cluster (execute no manager):</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">docker node ls</span></div>
+        <div><span class="t-out">ID       HOSTNAME  STATUS  AVAILABILITY  MANAGER STATUS</span></div>
+        <div><span class="t-out">abc123 * manager1  Ready   Active        Leader</span></div>
+        <div><span class="t-out">def456   worker1   Ready   Active</span></div>
+        <div><span class="t-out">ghi789   worker2   Ready   Active</span></div>
+      </div>
+    </div>
+
+    <h3>Services — A Unidade do Swarm</h3>
+    <p>No Swarm, você não cria containers diretamente — você cria <strong>services</strong>. O Swarm garante que o número de réplicas definido esteja sempre rodando.</p>
+
+    <div class="terminal">
+      <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><div class="terminal-title">docker service</div></div>
+      <div class="terminal-body">
+        <div><span class="t-comment"># Criar um service com 3 réplicas:</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">docker service create \</span></div>
+        <div><span class="t-cmd">  --name minha-app \</span></div>
+        <div><span class="t-cmd">  --replicas 3 \</span></div>
+        <div><span class="t-cmd">  --publish published=80,target=3000 \</span></div>
+        <div><span class="t-cmd">  ghcr.io/meuorg/minha-app:latest</span></div>
+        <br>
+        <div><span class="t-comment"># Listar services:</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">docker service ls</span></div>
+        <div><span class="t-out">ID         NAME       REPLICAS  IMAGE                        PORTS</span></div>
+        <div><span class="t-out">x1y2z3w4   minha-app  3/3       ghcr.io/meuorg/minha-app     *:80->3000/tcp</span></div>
+        <br>
+        <div><span class="t-comment"># Ver onde cada réplica está rodando:</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">docker service ps minha-app</span></div>
+        <div><span class="t-out">ID        NAME          NODE     STATE    DESIRED STATE</span></div>
+        <div><span class="t-out">a1b2c3   minha-app.1  worker1  Running  Running</span></div>
+        <div><span class="t-out">d4e5f6   minha-app.2  worker2  Running  Running</span></div>
+        <div><span class="t-out">g7h8i9   minha-app.3  manager1 Running  Running</span></div>
+        <br>
+        <div><span class="t-comment"># Escalar (de 3 para 5 réplicas):</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">docker service scale minha-app=5</span></div>
+      </div>
+    </div>
+
+    <h3>Rolling Updates — Zero Downtime</h3>
+    <p>Rolling update é a estratégia de atualizar containers um a um (ou em grupos), mantendo a aplicação disponível durante o processo.</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label">Rolling Update — Atualização sem downtime</div>
+      <div class="mermaid">
+graph LR
+    subgraph Antes["Antes (v1)"]
+      C1[🟢 v1]
+      C2[🟢 v1]
+      C3[🟢 v1]
+    end
+
+    subgraph Durante["Durante (mix v1/v2)"]
+      C4[🟢 v1]
+      C5[🟢 v1]
+      C6[🔵 v2]
+    end
+
+    subgraph Depois["Depois (v2)"]
+      C7[🔵 v2]
+      C8[🔵 v2]
+      C9[🔵 v2]
+    end
+
+    Antes -->|update-parallelism=1| Durante -->|healthcheck ok| Depois
+    style C6 fill:#06b6d4,color:#000
+    style C7 fill:#06b6d4,color:#000
+    style C8 fill:#06b6d4,color:#000
+    style C9 fill:#06b6d4,color:#000
+      </div>
+    </div>
+
+    <div class="terminal">
+      <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><div class="terminal-title">rolling update e rollback</div></div>
+      <div class="terminal-body">
+        <div><span class="t-comment"># Atualizar image (rolling update — 1 réplica por vez, espera 10s):</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">docker service update \</span></div>
+        <div><span class="t-cmd">  --image ghcr.io/meuorg/minha-app:v2.0.0 \</span></div>
+        <div><span class="t-cmd">  --update-parallelism 1 \</span></div>
+        <div><span class="t-cmd">  --update-delay 10s \</span></div>
+        <div><span class="t-cmd">  --update-failure-action rollback \</span></div>
+        <div><span class="t-cmd">  minha-app</span></div>
+        <br>
+        <div><span class="t-comment"># Se algo der errado — rollback manual:</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">docker service rollback minha-app</span></div>
+        <div><span class="t-out">minha-app rolled back to previous spec</span></div>
+      </div>
+    </div>
+
+    <h3>Stacks — Compose para o Swarm</h3>
+    <p>Uma <strong>stack</strong> é um conjunto de services definidos em um arquivo <code>docker-compose.yml</code> e implantado no Swarm com um único comando. É o equivalente ao Compose para produção.</p>
+
+    <div class="code-label">docker-stack.yml — App Node.js + Nginx + Redis</div>
+    <pre><code class="language-yaml">version: '3.9'
+
+services:
+  app:
+    image: ghcr.io/meuorg/minha-app:latest
+    deploy:
+      replicas: 3
+      update_config:
+        parallelism: 1       # atualiza 1 réplica por vez
+        delay: 10s
+        failure_action: rollback
+        order: start-first   # sobe nova réplica antes de derrubar antiga
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+    networks:
+      - app-network
+    secrets:
+      - db_password
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgres://app:FILE[/run/secrets/db_password]@db:5432/app
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    deploy:
+      replicas: 2
+      placement:
+        constraints:
+          - node.role == manager   # nginx só nos managers
+    configs:
+      - source: nginx_conf
+        target: /etc/nginx/conf.d/default.conf
+    networks:
+      - app-network
+
+  redis:
+    image: redis:7-alpine
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.redis == true   # só no nó com label redis
+    volumes:
+      - redis-data:/data
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: overlay   # overlay conecta containers em hosts diferentes
+
+volumes:
+  redis-data:
+
+secrets:
+  db_password:
+    external: true   # secret criado previamente com docker secret create
+
+configs:
+  nginx_conf:
+    external: true</code></pre>
+
+    <div class="terminal">
+      <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><div class="terminal-title">deploy de stack</div></div>
+      <div class="terminal-body">
+        <div><span class="t-comment"># Criar secret antes do deploy:</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">echo "minhasenhasupersecreta" | docker secret create db_password -</span></div>
+        <div><span class="t-out">x1y2z3w4v5u6t7s8r9q0</span></div>
+        <br>
+        <div><span class="t-comment"># Deploy da stack (ou atualização se já existir):</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">docker stack deploy -c docker-stack.yml minha-stack</span></div>
+        <div><span class="t-out">Creating network minha-stack_app-network</span></div>
+        <div><span class="t-out">Creating service minha-stack_app</span></div>
+        <div><span class="t-out">Creating service minha-stack_nginx</span></div>
+        <div><span class="t-out">Creating service minha-stack_redis</span></div>
+        <br>
+        <div><span class="t-comment"># Listar services da stack:</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">docker stack services minha-stack</span></div>
+        <div><span class="t-out">NAME                REPLICAS  IMAGE</span></div>
+        <div><span class="t-out">minha-stack_app     3/3       ghcr.io/meuorg/minha-app:latest</span></div>
+        <div><span class="t-out">minha-stack_nginx   2/2       nginx:alpine</span></div>
+        <div><span class="t-out">minha-stack_redis   1/1       redis:7-alpine</span></div>
+        <br>
+        <div><span class="t-comment"># Remover a stack inteira:</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">docker stack rm minha-stack</span></div>
+      </div>
+    </div>
+
+    <h3>Secrets — Credenciais Seguras no Swarm</h3>
+    <p>Secrets no Swarm são armazenados criptografados no Raft log do manager e injetados nos containers como arquivos em <code>/run/secrets/</code>. Nunca ficam em variáveis de ambiente (que podem vazar em logs).</p>
+
+    <div class="terminal">
+      <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><div class="terminal-title">docker secret</div></div>
+      <div class="terminal-body">
+        <div><span class="t-comment"># Criar secrets:</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">echo "minha_senha" | docker secret create db_password -</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">docker secret create ssl_cert ./certificado.pem</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">docker secret ls</span></div>
+        <div><span class="t-out">ID        NAME          CREATED</span></div>
+        <div><span class="t-out">x1y2z3   db_password   2 minutes ago</span></div>
+        <div><span class="t-out">a4b5c6   ssl_cert      1 minute ago</span></div>
+        <br>
+        <div><span class="t-comment"># No container, o secret fica disponível como arquivo:</span></div>
+        <div><span class="t-comment"># cat /run/secrets/db_password → "minha_senha"</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ HANDS-ON -->
+  <div class="section">
+    <div class="section-label">06 · Hands-on</div>
+    <h2>Projeto Prático: API + CI/CD + Swarm Local</h2>
+    <p>Vamos montar do zero um pipeline completo: API Node.js → Registry → Swarm local (simulado com um único nó).</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Crie a aplicação de exemplo</div>
+          <div class="step-desc">Uma API Node.js simples com health check para validar o deploy</div>
+          <pre><code class="language-javascript">// app.js
+const http = require('http')
+const PORT = process.env.PORT || 3000
+const VERSION = process.env.APP_VERSION || '1.0.0'
+
+const server = http.createServer((req, res) => {
+  if (req.url === '/health') {
+    res.writeHead(200, {'Content-Type': 'application/json'})
+    res.end(JSON.stringify({ status: 'ok', version: VERSION }))
+    return
+  }
+  res.writeHead(200, {'Content-Type': 'text/plain'})
+  res.end(`🐳 Olá do Docker Swarm! Versão ${VERSION}\n`)
+})
+
+server.listen(PORT, () => console.log(`Rodando na porta ${PORT} — v${VERSION}`))</code></pre>
+          <pre><code class="language-dockerfile"># Dockerfile
+FROM node:20-alpine
+WORKDIR /app
+COPY app.js .
+EXPOSE 3000
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s \
+  CMD wget -qO- http://localhost:3000/health || exit 1
+CMD ["node", "app.js"]</code></pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Inicialize o Swarm local</div>
+          <div class="step-desc">Com um único nó, o manager também executa tarefas (modo desenvolvimento)</div>
+          <div class="terminal">
+            <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div>
+            <div class="terminal-body">
+              <div><span class="t-prompt">$ </span><span class="t-cmd">docker swarm init</span></div>
+              <div><span class="t-out">Swarm initialized: current node is now a manager.</span></div>
+              <div><span class="t-prompt">$ </span><span class="t-cmd">docker node ls</span></div>
+              <div><span class="t-out">ID          HOSTNAME  STATUS  MANAGER STATUS</span></div>
+              <div><span class="t-out">abc123 *   mypc      Ready   Leader</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Build, tag e push para Docker Hub</div>
+          <div class="terminal">
+            <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div>
+            <div class="terminal-body">
+              <div><span class="t-prompt">$ </span><span class="t-cmd">docker login</span></div>
+              <div><span class="t-prompt">$ </span><span class="t-cmd">docker build -t seuusuario/swarm-demo:v1.0.0 .</span></div>
+              <div><span class="t-prompt">$ </span><span class="t-cmd">docker push seuusuario/swarm-demo:v1.0.0</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Deploy como service no Swarm</div>
+          <div class="terminal">
+            <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div>
+            <div class="terminal-body">
+              <div><span class="t-prompt">$ </span><span class="t-cmd">docker service create \</span></div>
+              <div><span class="t-cmd">  --name swarm-demo \</span></div>
+              <div><span class="t-cmd">  --replicas 3 \</span></div>
+              <div><span class="t-cmd">  --publish 8080:3000 \</span></div>
+              <div><span class="t-cmd">  -e APP_VERSION=v1.0.0 \</span></div>
+              <div><span class="t-cmd">  seuusuario/swarm-demo:v1.0.0</span></div>
+              <br>
+              <div><span class="t-prompt">$ </span><span class="t-cmd">curl localhost:8080</span></div>
+              <div><span class="t-out">🐳 Olá do Docker Swarm! Versão v1.0.0</span></div>
+              <div><span class="t-prompt">$ </span><span class="t-cmd">curl localhost:8080/health</span></div>
+              <div><span class="t-out">{"status":"ok","version":"v1.0.0"}</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <div class="step-title">Simule um rolling update</div>
+          <div class="step-desc">Mude a versão no Dockerfile (APP_VERSION=v2.0.0), faça build e push, depois atualize o service</div>
+          <div class="terminal">
+            <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div>
+            <div class="terminal-body">
+              <div><span class="t-prompt">$ </span><span class="t-cmd">docker build -t seuusuario/swarm-demo:v2.0.0 .</span></div>
+              <div><span class="t-prompt">$ </span><span class="t-cmd">docker push seuusuario/swarm-demo:v2.0.0</span></div>
+              <div><span class="t-prompt">$ </span><span class="t-cmd">docker service update \</span></div>
+              <div><span class="t-cmd">  --image seuusuario/swarm-demo:v2.0.0 \</span></div>
+              <div><span class="t-cmd">  --update-delay 5s \</span></div>
+              <div><span class="t-cmd">  swarm-demo</span></div>
+              <br>
+              <div><span class="t-comment"># Em outro terminal, fique testando durante o update:</span></div>
+              <div><span class="t-prompt">$ </span><span class="t-cmd">watch -n1 "curl -s localhost:8080 | head -1"</span></div>
+              <div><span class="t-out">🐳 Olá do Docker Swarm! Versão v2.0.0</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ PITFALLS -->
+  <div class="section">
+    <div class="section-label">07 · Armadilhas Comuns</div>
+    <h2>⚠️ Erros que Todo Mundo Comete</h2>
+
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Tag "latest" em produção</div>
+      <p>Usar <code>:latest</code> no Swarm é perigoso: cada worker pode baixar versões diferentes dependendo do cache local. Use sempre tags semânticas (<code>:v1.2.3</code>) ou SHA do commit (<code>:sha-abc1234</code>) para garantir reprodutibilidade.</p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Swarm sem múltiplos managers</div>
+      <p>Com um único manager, se ele cair, o cluster inteiro para. Para alta disponibilidade, use 3 ou 5 managers (número ímpar para consenso Raft). Regra: <code>quorum = (n/2) + 1</code></p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Volumes em clusters multi-host</div>
+      <p>Volumes Docker padrão são locais — se o container migrar para outro nó, os dados somem. Para dados persistentes em Swarm, use <strong>NFS, GlusterFS, ou volumes de cloud</strong> (AWS EFS, etc.) que sejam acessíveis de todos os nós.</p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Ignorar healthchecks</div>
+      <p>Sem <code>HEALTHCHECK</code> no Dockerfile, o Swarm considera o container "healthy" assim que inicia, mesmo que a aplicação ainda esteja inicializando. Isso causa falhas em rolling updates. Sempre implemente healthcheck.</p>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════ VÍDEOS -->
+  <div class="section">
+    <div class="section-label">08 · Curadoria de Vídeos</div>
+    <h2>Referências para Assistir</h2>
+    <div class="video-grid">
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">Docker in 100 Seconds</div>
+          <div class="video-channel">Fireship · ~2 min</div>
+          <div class="video-why">Por que assistir: revisão ultrarrápida do ecossistema Docker antes de mergulhar em Swarm — ótimo para fixar o contexto.</div>
+          <a href="https://www.youtube.com/watch?v=Gjnup-PuquQ" target="_blank" class="video-watch">Assistir →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">Docker Swarm Tutorial for Beginners</div>
+          <div class="video-channel">TechWorld with Nana · ~30 min</div>
+          <div class="video-why">Por que assistir: a Nana explica Swarm do zero com exemplos reais, cobrindo nodes, services e stacks com clareza excepcional.</div>
+          <a href="https://www.youtube.com/watch?v=bU2NNFJ-UXA" target="_blank" class="video-watch">Assistir →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">GitHub Actions Docker CI/CD Pipeline</div>
+          <div class="video-channel">TechWorld with Nana · ~25 min</div>
+          <div class="video-why">Por que assistir: pipeline completo com GitHub Actions + GHCR + deploy automatizado — exatamente o workflow desta aula.</div>
+          <a href="https://www.youtube.com/watch?v=R8_veQiYBjI" target="_blank" class="video-watch">Assistir →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">Docker Registry — Push & Pull Your Own Images</div>
+          <div class="video-channel">Bret Fisher Docker and DevOps · ~20 min</div>
+          <div class="video-why">Por que assistir: foca em registries privados, configuração de GHCR e ECR com exemplos práticos de autenticação.</div>
+          <a href="https://www.youtube.com/watch?v=76rX4s73MrM" target="_blank" class="video-watch">Assistir →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ CHECKPOINT -->
+  <div class="checkpoint">
+    <div class="checkpoint-label">🏁 Checkpoint Final</div>
+    <h3>Desafio: Pipeline Completo do Zero</h3>
+    <p>Construa um pipeline CI/CD com Docker Swarm para uma aplicação simples (pode ser a API de exemplo desta aula ou qualquer projeto seu):</p>
+    <ul>
+      <li>Escreva um <code>Dockerfile</code> com HEALTHCHECK</li>
+      <li>Configure o push automático para GHCR via GitHub Actions</li>
+      <li>Inicialize um Swarm local com <code>docker swarm init</code></li>
+      <li>Faça deploy como service com pelo menos 2 réplicas</li>
+      <li>Execute um rolling update (v1 → v2) sem derrubar o serviço</li>
+      <li><strong>Bônus:</strong> Adicione um secret ao service e leia-o na aplicação</li>
+    </ul>
+    <div class="checkpoint-hint">💬 Dica: Use <code>docker service ps minha-app --no-trunc</code> para ver logs de falha durante o rolling update. Se travar em "Preparing", verifique se o pull da imagem está funcionando no nó.</div>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════ PRÓXIMOS PASSOS -->
+  <div class="section">
+    <div class="section-label">09 · Próximos Passos</div>
+    <h2>O que vem depois?</h2>
+    <p>Com Registry, CI/CD e Swarm dominados, você tem um stack de produção real. Na próxima aula, vamos ao n8n avançado — sub-workflows, self-hosting e criação de custom nodes em TypeScript.</p>
+    <a href="n8n-04-avancado.html" class="next-card">
+      <div>
+        <div class="next-card-label">→ Próxima Aula · 34 / 50</div>
+        <div class="next-card-title">n8n Avançado — Sub-workflows, Self-hosting & Custom Nodes</div>
+      </div>
+      <div class="next-arrow">→</div>
+    </a>
+  </div>
+
+  <div class="footer">
+    <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+    <span>🐳 Docker em Produção · Aula 33 / 50</span>
+    <a href="n8n-04-avancado.html">Próxima →</a>
+  </div>
+
+</div>
+
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+
+  // Progress bar
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = (scrollTop / docHeight) * 100;
+    document.getElementById('progressBar').style.width = progress + '%';
+  });
+
+  // highlight.js
+  document.addEventListener('DOMContentLoaded', () => {
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+  });
+</script>
+</body>
+</html>

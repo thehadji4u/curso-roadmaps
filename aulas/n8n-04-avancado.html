@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>n8n Avançado — Sub-workflows, Self-hosting & Custom Nodes · Aula 34</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
+    :root {
+      --bg: #0a0a0f; --surface: #111118; --surface2: #16161f; --border: #1e1e2e;
+      --text: #e8e8f0; --muted: #8585a8;
+      --accent: #10b981; --accent-dim: rgba(16,185,129,0.12); --accent-border: rgba(16,185,129,0.35);
+      --success: #10b981; --warn: #f59e0b; --danger: #ef4444; --info: #06b6d4;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #10b981, #6ee7b7); width: 0%; transition: width 0.1s; }
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #6ee7b7; }
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.06); border-color: var(--accent); }
+    .callout-tip .callout-title { color: var(--accent); }
+    .callout-check { background: rgba(16,185,129,0.06); border-color: var(--success); }
+    .callout-check .callout-title { color: var(--success); }
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(6,182,212,0.2); color: #67e8f9; }
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    @media(max-width:640px){.grid-2,.grid-3{grid-template-columns:1fr;}}
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; text-decoration: none; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-watch { font-size: 12px; color: var(--accent); text-decoration: none; }
+    .video-watch:hover { text-decoration: underline; }
+    .checkpoint { background: linear-gradient(135deg,rgba(16,185,129,0.08),rgba(0,0,0,0)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; margin-bottom: 40px; }
+    .checkpoint-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(255,255,255,0.03); border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; font-size: 14px; }
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+    .footer { display: flex; justify-content: space-between; align-items: center; padding: 24px 0; margin-top: 32px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); }
+    .footer a { color: var(--muted); text-decoration: none; }
+    .footer a:hover { color: var(--text); }
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #6ee7b7; }
+    .terminal { background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .terminal-bar { background: #1a1a1a; padding: 8px 14px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red{background:#ef4444;}.dot-yellow{background:#f59e0b;}.dot-green{background:#10b981;}
+    .terminal-title { font-size: 11px; color: #555; margin-left: 6px; }
+    .terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; }
+    .t-prompt{color:#10b981;}.t-cmd{color:#e8e8f0;}.t-out{color:#8585a8;}.t-comment{color:#555;font-style:italic;}
+    .node-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin: 10px 0; }
+    .node-name { color: var(--accent); font-weight: 700; margin-bottom: 6px; font-size: 14px; }
+    .node-type { font-size: 11px; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .ts-type { color: #79c0ff; }
+    .ts-string { color: #a5d6ff; }
+    .ts-comment { color: #8b949e; font-style: italic; }
+    .ts-keyword { color: #ff7b72; }
+  </style>
+</head>
+<body>
+
+<div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+
+<nav class="top-nav">
+  <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+  <div class="nav-center">
+    <a href="dkr-04-producao-swarm.html" class="nav-prev">← Anterior</a>
+    <div class="nav-position">
+      <span class="track">🔀 n8n</span> · Aula 34 / 50
+    </div>
+    <a href="gh-07-stack-completo.html" class="nav-next">Próxima →</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- ═══════════════════════════════════════════════════════════ HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <span class="hero-badge">🔀 N8N</span>
+      <span>Aula 34 · Prioridade 6</span>
+      <span>⏱ ~35 min</span>
+    </div>
+    <h1>n8n Avançado<br>Sub-workflows, Self-hosting<br>& Custom Nodes</h1>
+    <div class="hero-meta">
+      <span>🔗 Sub-workflows modulares</span>
+      <span>🐳 Self-hosting com Docker</span>
+      <span>🔧 Custom nodes em TypeScript</span>
+    </div>
+    <div class="hero-tags">
+      <span class="tag accent">Sub-workflows</span>
+      <span class="tag accent">Execute Workflow</span>
+      <span class="tag accent">Self-hosting</span>
+      <span class="tag accent">Custom Nodes</span>
+      <span class="tag">Docker Compose</span>
+      <span class="tag">TypeScript</span>
+      <span class="tag">INodeType</span>
+      <span class="tag">Modularização</span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ POR QUE -->
+  <div class="section">
+    <div class="section-label">01 · Motivação</div>
+    <h2>Por que ir além dos workflows básicos?</h2>
+
+    <p>Nas aulas anteriores você criou workflows, integrou APIs e automatizou processos reais. Mas conforme as automações crescem, surgem desafios de <strong>manutenção, reuso e escala</strong>:</p>
+
+    <div class="grid-3" style="margin: 24px 0;">
+      <div class="card-mini">
+        <div style="font-size:1.5rem">🔁</div>
+        <h4>Lógica repetida</h4>
+        <p>A mesma sequência de nodes aparece em 10 workflows diferentes. Quando muda, você edita 10 vezes.</p>
+      </div>
+      <div class="card-mini">
+        <div style="font-size:1.5rem">☁️</div>
+        <h4>Dependência do cloud</h4>
+        <p>n8n.cloud tem limites de execuções e dados passam por servidores de terceiros — problema para dados sensíveis.</p>
+      </div>
+      <div class="card-mini">
+        <div style="font-size:1.5rem">🔌</div>
+        <h4>Integração inexistente</h4>
+        <p>A API que você precisa não tem node no n8n. Ou as opções disponíveis são limitadas demais.</p>
+      </div>
+    </div>
+
+    <div class="callout callout-info">
+      <div class="callout-title">💡 Por que um engenheiro sênior usa isso hoje?</div>
+      Sub-workflows transformam n8n em uma plataforma de automação <em>escalável</em> — workflows reutilizáveis como funções. Self-hosting dá controle total sobre dados e elimina custos recorrentes. Custom nodes permitem integrar qualquer sistema, tornando o n8n extensível como código.
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ ANALOGIA -->
+  <div class="section">
+    <div class="section-label">02 · Analogia do Mundo Real</div>
+    <h2>Funções, Servidor Próprio e Plug-ins</h2>
+    <div class="analogy-card">
+      <div class="analogy-label">🏗️ Analogia</div>
+      <div class="analogy-text">
+        Pense no n8n como uma <strong>empresa de construção</strong>. Os workflows básicos são como construir cada casa do zero — eficiente no início, mas caótico quando escala. Os <strong>sub-workflows são como pré-fabricados</strong>: você cria uma vez a estrutura de "banheiro" e reutiliza em todos os projetos. O <strong>self-hosting é ter sua própria sede</strong> em vez de alugar espaço no escritório compartilhado — mais controle, menos custo mensal. E os <strong>custom nodes são máquinas especializadas</strong> que você fabrica quando o catálogo do fornecedor não tem o que precisa.
+      </div>
+      <div class="analogy-mapping">
+        <div class="analogy-real">🔁 Lógica repetida em vários workflows</div>
+        <div class="analogy-tech">→ Sub-workflow reutilizável</div>
+        <div class="analogy-real">🏢 Escritório alugado (n8n.cloud)</div>
+        <div class="analogy-tech">→ Self-hosting no seu servidor</div>
+        <div class="analogy-real">🔌 API sem node disponível</div>
+        <div class="analogy-tech">→ Custom node em TypeScript</div>
+        <div class="analogy-real">📞 Chamar a pré-fabricados</div>
+        <div class="analogy-tech">→ Execute Workflow node</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════ SUB-WORKFLOWS -->
+  <div class="section">
+    <div class="section-label">03 · Sub-workflows</div>
+    <h2>Modularizando com Sub-workflows</h2>
+
+    <p>Um <strong>sub-workflow</strong> é um workflow n8n que pode ser chamado por outros workflows usando o <strong>Execute Workflow node</strong>. É o equivalente a funções em programação — encapsula lógica, recebe parâmetros e retorna resultados.</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label">Arquitetura com sub-workflows</div>
+      <div class="mermaid">
+graph TB
+    subgraph Main["Workflow Principal"]
+      T[⚡ Trigger<br/>Webhook] --> P[🔄 Processa<br/>dados]
+      P --> SW1["📞 Execute Workflow<br/>enviar-notificacao"]
+      P --> SW2["📞 Execute Workflow<br/>salvar-banco"]
+      SW1 --> R[✅ Resposta]
+      SW2 --> R
+    end
+
+    subgraph Sub1["Sub-workflow: enviar-notificacao"]
+      S1T[📥 When called<br/>by another workflow]
+      S1T --> S1E[📧 Send Email]
+      S1T --> S1S[💬 Slack Message]
+    end
+
+    subgraph Sub2["Sub-workflow: salvar-banco"]
+      S2T[📥 When called<br/>by another workflow]
+      S2T --> S2P[🔄 Transform data]
+      S2P --> S2D[(🗄️ PostgreSQL)]
+    end
+
+    SW1 -.->|chama| Sub1
+    SW2 -.->|chama| Sub2
+
+    style Main fill:#111118,stroke:#10b981
+    style Sub1 fill:#0a0a0f,stroke:#1e1e2e
+    style Sub2 fill:#0a0a0f,stroke:#1e1e2e
+      </div>
+    </div>
+
+    <h3>Como criar um Sub-workflow</h3>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Crie o workflow filho com trigger correto</div>
+          <div class="step-desc">No novo workflow, use o node <strong>"When called by another workflow"</strong> (ou "Execute Workflow Trigger" em versões mais antigas) como ponto de entrada. Configure os campos de entrada esperados.</div>
+          <div class="callout callout-tip" style="margin-top:10px">
+            <div class="callout-title">🔥 Configuração do trigger</div>
+            Em <strong>When called by another workflow</strong> → defina os campos de entrada: Ex: <code>userId</code> (Number), <code>message</code> (String). Esses campos serão validados automaticamente.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Construa a lógica do sub-workflow</div>
+          <div class="step-desc">Adicione os nodes necessários. No final, use um node <strong>Return</strong> (ou simplesmente deixe o último node retornar os dados) para devolver resultado ao workflow pai.</div>
+          <pre><code class="language-javascript">// Exemplo: Último node do sub-workflow (Code node)
+// Retorna resultado formatado para o workflow pai
+return [{
+  json: {
+    success: true,
+    notificationId: $json.id,
+    sentAt: new Date().toISOString(),
+    recipient: $('When called').item.json.userId
+  }
+}]</code></pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Chame o sub-workflow com Execute Workflow</div>
+          <div class="step-desc">No workflow pai, adicione o node <strong>Execute Workflow</strong>. Configure:</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Campo</th><th>Valor</th></tr></thead>
+              <tbody>
+                <tr><td>Source</td><td>Database (seleciona workflow existente)</td></tr>
+                <tr><td>Workflow</td><td>Selecione o sub-workflow pelo nome/ID</td></tr>
+                <tr><td>Wait for completion</td><td>✅ Ativado (para aguardar resultado)</td></tr>
+                <tr><td>Input data</td><td>Campos que você quer passar para o filho</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Acesse o retorno no workflow pai</div>
+          <div class="step-desc">O resultado do sub-workflow fica disponível como <code>$json</code> no próximo node do workflow pai</div>
+          <pre><code class="language-javascript">// No workflow pai, após o Execute Workflow node:
+// Acessar retorno do sub-workflow
+const result = $json  // dados retornados pelo sub-workflow
+
+// Se retornou { success: true, notificationId: "abc" }
+console.log(result.success)        // true
+console.log(result.notificationId) // "abc"
+
+// Passar para próximo step
+return [{ json: { ...result, processedBy: 'main-workflow' } }]</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <h3>Padrões de uso de Sub-workflows</h3>
+
+    <div class="grid-2" style="margin:16px 0;">
+      <div class="node-card">
+        <div class="node-name">🔔 Notificações Centralizadas</div>
+        <div class="node-type">Padrão: Fan-out</div>
+        <p style="font-size:13px;color:var(--muted)">Um único sub-workflow cuida de Email + Slack + WhatsApp. Qualquer workflow que precisa notificar chama este sub-workflow com <code>{ channel, message, recipient }</code>.</p>
+      </div>
+      <div class="node-card">
+        <div class="node-name">🔄 Transformação de Dados</div>
+        <div class="node-type">Padrão: Shared utility</div>
+        <p style="font-size:13px;color:var(--muted)">Lógica complexa de normalização de dados encapsulada. Todos os workflows que precisam converter formatos chamam o mesmo sub-workflow.</p>
+      </div>
+      <div class="node-card">
+        <div class="node-name">🔐 Autenticação/Tokens</div>
+        <div class="node-type">Padrão: Token manager</div>
+        <p style="font-size:13px;color:var(--muted)">Sub-workflow que verifica se o token OAuth ainda é válido, renova se necessário e retorna o token atualizado para o workflow pai.</p>
+      </div>
+      <div class="node-card">
+        <div class="node-name">📊 Relatórios Automáticos</div>
+        <div class="node-type">Padrão: Report builder</div>
+        <p style="font-size:13px;color:var(--muted)">Sub-workflow que recebe dados brutos, monta um relatório formatado (HTML, PDF ou planilha) e retorna a URL do arquivo gerado.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════ SELF-HOSTING -->
+  <div class="section">
+    <div class="section-label">04 · Self-hosting</div>
+    <h2>Rodando n8n no Seu Próprio Servidor</h2>
+
+    <p>Self-hosting significa instalar e manter o n8n na sua própria infraestrutura — um VPS, servidor dedicado ou mesmo um Raspberry Pi. Você tem controle total sobre dados, sem limites de execuções e sem custo mensal crescente.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Aspecto</th><th>n8n.cloud</th><th>Self-hosted</th></tr></thead>
+        <tbody>
+          <tr><td>Custo</td><td><span class="badge badge-yellow">~$20–50/mês</span></td><td><span class="badge badge-green">Custo do servidor (~$5–10/mês VPS)</span></td></tr>
+          <tr><td>Execuções</td><td><span class="badge badge-red">Limitadas por plano</span></td><td><span class="badge badge-green">Ilimitadas</span></td></tr>
+          <tr><td>Controle de dados</td><td><span class="badge badge-red">Terceiros</span></td><td><span class="badge badge-green">100% seu</span></td></tr>
+          <tr><td>Manutenção</td><td><span class="badge badge-green">Zero</span></td><td><span class="badge badge-yellow">Você gerencia atualizações</span></td></tr>
+          <tr><td>Custom nodes</td><td><span class="badge badge-red">Não suportado</span></td><td><span class="badge badge-green">Suportado</span></td></tr>
+          <tr><td>Setup</td><td><span class="badge badge-green">Imediato</span></td><td><span class="badge badge-yellow">~30 min inicial</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Stack de produção com Docker Compose</h3>
+
+    <div class="code-label">docker-compose.yml — n8n + PostgreSQL + Traefik (HTTPS)</div>
+    <pre><code class="language-yaml">version: '3.9'
+
+services:
+  # ── Reverse proxy com SSL automático via Let's Encrypt ──────────
+  traefik:
+    image: traefik:v3.0
+    command:
+      - "--api.insecure=false"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.email=seu@email.com"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik-letsencrypt:/letsencrypt
+    restart: unless-stopped
+
+  # ── Banco de dados PostgreSQL ───────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: n8n
+      POSTGRES_USER: n8n
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}   # variável do .env
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U n8n"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ── n8n ────────────────────────────────────────────────────────
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # Banco de dados
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: postgres
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_DATABASE: n8n
+      DB_POSTGRESDB_USER: n8n
+      DB_POSTGRESDB_PASSWORD: ${POSTGRES_PASSWORD}
+
+      # URL pública (HTTPS via Traefik)
+      N8N_HOST: n8n.seudominio.com
+      N8N_PORT: 5678
+      N8N_PROTOCOL: https
+      WEBHOOK_URL: https://n8n.seudominio.com/
+
+      # Segurança
+      N8N_BASIC_AUTH_ACTIVE: true
+      N8N_BASIC_AUTH_USER: ${N8N_ADMIN_USER}
+      N8N_BASIC_AUTH_PASSWORD: ${N8N_ADMIN_PASSWORD}
+
+      # Timezone
+      GENERIC_TIMEZONE: America/Sao_Paulo
+
+      # Execuções — salvar histórico
+      EXECUTIONS_DATA_SAVE_ON_SUCCESS: all
+      EXECUTIONS_DATA_SAVE_ON_ERROR: all
+      EXECUTIONS_DATA_MAX_AGE: 168   # horas (7 dias)
+
+      # Custom nodes
+      N8N_CUSTOM_EXTENSIONS: "/home/node/.n8n/custom"
+
+    volumes:
+      - n8n-data:/home/node/.n8n
+      - ./custom-nodes:/home/node/.n8n/custom  # pasta de custom nodes
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.n8n.rule=Host(`n8n.seudominio.com`)"
+      - "traefik.http.routers.n8n.entrypoints=websecure"
+      - "traefik.http.routers.n8n.tls.certresolver=letsencrypt"
+      - "traefik.http.services.n8n.loadbalancer.server.port=5678"
+      # Redirecionar HTTP → HTTPS
+      - "traefik.http.routers.n8n-http.rule=Host(`n8n.seudominio.com`)"
+      - "traefik.http.routers.n8n-http.entrypoints=web"
+      - "traefik.http.routers.n8n-http.middlewares=https-redirect"
+      - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
+
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  n8n-data:
+  traefik-letsencrypt:</code></pre>
+
+    <div class="code-label">.env — variáveis de ambiente (NUNCA commite este arquivo)</div>
+    <pre><code class="language-bash">POSTGRES_PASSWORD=minhasenhasuperforte123
+N8N_ADMIN_USER=admin
+N8N_ADMIN_PASSWORD=outrasenhaforte456</code></pre>
+
+    <div class="terminal">
+      <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><div class="terminal-title">deploy no servidor</div></div>
+      <div class="terminal-body">
+        <div><span class="t-comment"># No servidor VPS (Ubuntu 22.04 LTS):</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">apt update && apt install -y docker.io docker-compose-plugin</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">mkdir -p /opt/n8n && cd /opt/n8n</span></div>
+        <div><span class="t-comment"># Suba os arquivos docker-compose.yml e .env para o servidor</span></div>
+        <div><span class="t-comment"># via scp ou git clone</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">docker compose up -d</span></div>
+        <div><span class="t-out">Creating network n8n_default</span></div>
+        <div><span class="t-out">Creating n8n_postgres_1 ... done</span></div>
+        <div><span class="t-out">Creating n8n_traefik_1  ... done</span></div>
+        <div><span class="t-out">Creating n8n_n8n_1      ... done</span></div>
+        <br>
+        <div><span class="t-comment"># Verificar logs:</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">docker compose logs -f n8n</span></div>
+        <div><span class="t-out">n8n ready on https://n8n.seudominio.com</span></div>
+        <br>
+        <div><span class="t-comment"># Atualizar para nova versão:</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">docker compose pull n8n && docker compose up -d n8n</span></div>
+      </div>
+    </div>
+
+    <div class="callout callout-warn">
+      <div class="callout-title">⚠️ Backup automático do PostgreSQL</div>
+      Seus workflows ficam no banco! Configure um backup diário automático:
+      <pre style="margin-top:10px"><code class="language-bash"># crontab -e
+0 2 * * * docker exec n8n_postgres_1 pg_dump -U n8n n8n > /backups/n8n-$(date +%Y%m%d).sql</code></pre>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════ CUSTOM NODES -->
+  <div class="section">
+    <div class="section-label">05 · Custom Nodes</div>
+    <h2>Criando Nodes Customizados em TypeScript</h2>
+
+    <p>Custom nodes são extensões que você escreve em TypeScript e instala no n8n. Eles aparecem na interface como nodes normais e podem fazer qualquer coisa que JavaScript permita — chamadas HTTP, processamento de dados, integração com SDKs.</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label">Arquitetura de um Custom Node</div>
+      <div class="mermaid">
+graph LR
+    A[📝 TypeScript<br/>MeuNode.node.ts] -->|tsc build| B[📦 dist/<br/>MeuNode.node.js]
+    B -->|copia para| C[📁 ~/.n8n/custom/<br/>n8n-nodes-meu-node/]
+    C -->|n8n restart| D[🟢 Node disponível<br/>na interface]
+    D --> E[🔄 Usado em<br/>workflows]
+    style D fill:#10b981,color:#000
+      </div>
+    </div>
+
+    <h3>Estrutura do projeto</h3>
+
+    <div class="terminal">
+      <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><div class="terminal-title">scaffold do projeto</div></div>
+      <div class="terminal-body">
+        <div><span class="t-comment"># Usar o template oficial do n8n:</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">npx n8n-node-dev create</span></div>
+        <div><span class="t-out">? What is the name of your node? MeuNode</span></div>
+        <div><span class="t-out">? What type of node? Regular Node</span></div>
+        <div><span class="t-out">✅ Created MeuNode.node.ts</span></div>
+        <br>
+        <div><span class="t-comment"># Estrutura criada:</span></div>
+        <div><span class="t-out">n8n-nodes-meu-node/</span></div>
+        <div><span class="t-out">├── nodes/</span></div>
+        <div><span class="t-out">│   └── MeuNode/</span></div>
+        <div><span class="t-out">│       ├── MeuNode.node.ts    ← lógica principal</span></div>
+        <div><span class="t-out">│       └── meu-node.svg       ← ícone</span></div>
+        <div><span class="t-out">├── package.json</span></div>
+        <div><span class="t-out">└── tsconfig.json</span></div>
+      </div>
+    </div>
+
+    <h3>Implementação Completa</h3>
+    <p>Vamos criar um custom node que consulta a <strong>ViaCEP API</strong> (busca endereço por CEP brasileiro) — um exemplo real e útil:</p>
+
+    <div class="code-label">nodes/ViaCep/ViaCep.node.ts</div>
+    <pre><code class="language-typescript">import {
+  IExecuteFunctions,
+  INodeExecutionData,
+  INodeType,
+  INodeTypeDescription,
+  NodeOperationError,
+} from 'n8n-workflow';
+
+export class ViaCep implements INodeType {
+  // ── Metadados do node (aparece na UI do n8n) ──────────────────
+  description: INodeTypeDescription = {
+    displayName: 'ViaCEP',
+    name: 'viaCep',
+    icon: 'fa:map-marker-alt',
+    group: ['transform'],
+    version: 1,
+    description: 'Busca endereço a partir de um CEP brasileiro via ViaCEP API',
+    defaults: { name: 'ViaCEP' },
+    inputs: ['main'],
+    outputs: ['main'],
+
+    // ── Campos que aparecem na UI do node ─────────────────────
+    properties: [
+      {
+        displayName: 'CEP',
+        name: 'cep',
+        type: 'string',
+        default: '',
+        placeholder: '01310-100',
+        description: 'CEP a ser consultado (com ou sem hífen)',
+        required: true,
+      },
+      {
+        displayName: 'Usar CEP do item de entrada',
+        name: 'useCepFromInput',
+        type: 'boolean',
+        default: false,
+        description: 'Se ativado, usa o campo "cep" do item de entrada ao invés do valor fixo acima',
+      },
+      {
+        displayName: 'Campo CEP no item',
+        name: 'cepField',
+        type: 'string',
+        default: 'cep',
+        description: 'Nome do campo no item de entrada que contém o CEP',
+        displayOptions: {
+          show: { useCepFromInput: [true] },
+        },
+      },
+    ],
+  };
+
+  // ── Lógica de execução ────────────────────────────────────────
+  async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
+    const items = this.getInputData();
+    const returnData: INodeExecutionData[] = [];
+
+    for (let i = 0; i < items.length; i++) {
+      try {
+        // Pegar o CEP — do parâmetro fixo ou do item de entrada
+        let cep: string;
+        const useCepFromInput = this.getNodeParameter('useCepFromInput', i) as boolean;
+
+        if (useCepFromInput) {
+          const cepField = this.getNodeParameter('cepField', i) as string;
+          cep = items[i].json[cepField] as string;
+        } else {
+          cep = this.getNodeParameter('cep', i) as string;
+        }
+
+        // Limpar CEP (remover hífen e espaços)
+        const cepClean = cep.replace(/\D/g, '');
+
+        if (cepClean.length !== 8) {
+          throw new NodeOperationError(this.getNode(), `CEP inválido: ${cep}`, { itemIndex: i });
+        }
+
+        // Fazer chamada à API ViaCEP
+        const response = await this.helpers.request({
+          method: 'GET',
+          url: `https://viacep.com.br/ws/${cepClean}/json/`,
+          json: true,
+        });
+
+        // ViaCEP retorna { erro: true } quando CEP não existe
+        if (response.erro) {
+          throw new NodeOperationError(this.getNode(), `CEP não encontrado: ${cep}`, { itemIndex: i });
+        }
+
+        // Retornar dados do endereço junto com o item original
+        returnData.push({
+          json: {
+            ...items[i].json,   // mantém dados do item original
+            endereco: {
+              cep: response.cep,
+              logradouro: response.logradouro,
+              complemento: response.complemento,
+              bairro: response.bairro,
+              cidade: response.localidade,
+              estado: response.uf,
+              ibge: response.ibge,
+              ddd: response.ddd,
+            },
+          },
+          pairedItem: { item: i },
+        });
+
+      } catch (error) {
+        // Continue on error = não parar o workflow se um item falhar
+        if (this.continueOnFail()) {
+          returnData.push({
+            json: { ...items[i].json, error: (error as Error).message },
+            pairedItem: { item: i },
+          });
+          continue;
+        }
+        throw error;
+      }
+    }
+
+    return [returnData];
+  }
+}</code></pre>
+
+    <div class="code-label">package.json</div>
+    <pre><code class="language-json">{
+  "name": "n8n-nodes-viacep",
+  "version": "1.0.0",
+  "description": "n8n node para consulta de CEP via ViaCEP API",
+  "keywords": ["n8n-community-node-package"],
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc && npm run copy:icons",
+    "copy:icons": "cp nodes/**/*.svg dist/nodes/**/ 2>/dev/null || true",
+    "dev": "n8n-node-dev build --watch"
+  },
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [],
+    "nodes": ["dist/nodes/ViaCep/ViaCep.node.js"]
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "n8n-node-dev": "^0.9.0",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  }
+}</code></pre>
+
+    <h3>Build e instalação</h3>
+
+    <div class="terminal">
+      <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><div class="terminal-title">build e instalação do custom node</div></div>
+      <div class="terminal-body">
+        <div><span class="t-comment"># Build do TypeScript:</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">npm install && npm run build</span></div>
+        <div><span class="t-out">✅ Compiled to dist/</span></div>
+        <br>
+        <div><span class="t-comment"># Instalar no n8n local:</span></div>
+        <div><span class="t-comment"># Opção 1: copiar para a pasta de custom extensions</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">cp -r . ~/.n8n/custom/n8n-nodes-viacep/</span></div>
+        <br>
+        <div><span class="t-comment"># Opção 2: npm link (desenvolvimento)</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">npm link</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">cd ~/.n8n && npm link n8n-nodes-viacep</span></div>
+        <br>
+        <div><span class="t-comment"># Reiniciar o n8n para carregar o novo node:</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">docker compose restart n8n</span></div>
+        <div><span class="t-comment"># Ou se estiver rodando direto: Ctrl+C e n8n start</span></div>
+        <br>
+        <div><span class="t-comment"># Verificar se o node foi carregado:</span></div>
+        <div><span class="t-prompt">$ </span><span class="t-cmd">docker compose logs n8n | grep -i viacep</span></div>
+        <div><span class="t-out">Loaded custom node: ViaCEP (viaCep)</span></div>
+      </div>
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">🔥 Publicando no npm</div>
+      Para compartilhar com a comunidade, publique no npm com prefixo <code>n8n-nodes-</code>. Qualquer usuário poderá instalar via <strong>Settings → Community Nodes → Install</strong> digitando o nome do pacote. Consulte: <a href="https://docs.n8n.io/integrations/community-nodes/" target="_blank" style="color:var(--accent)">docs.n8n.io/integrations/community-nodes</a>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ HANDS-ON -->
+  <div class="section">
+    <div class="section-label">06 · Hands-on</div>
+    <h2>Projeto Prático: Sistema de Notificações Modulares</h2>
+    <p>Construa um sistema onde qualquer workflow pode enviar notificações via um único sub-workflow centralizado.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Crie o sub-workflow "Enviar Notificação"</div>
+          <div class="step-desc">Novo workflow com trigger "When called by another workflow" e campos: <code>canal</code> (string: email/telegram/slack), <code>mensagem</code> (string), <code>destinatario</code> (string)</div>
+          <pre><code class="language-javascript">// Code node no sub-workflow — roteia para o canal correto
+const { canal, mensagem, destinatario } = $('When called').item.json
+
+// Preparar payload para o próximo node (IF/Switch)
+return [{
+  json: {
+    canal,
+    mensagem,
+    destinatario,
+    timestamp: new Date().toISOString()
+  }
+}]</code></pre>
+          <p style="color:var(--muted);font-size:13px">Adicione um Switch node para rotear por <code>canal</code> → cada saída conecta ao node correto (Send Email, Telegram, etc.)</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Crie o workflow principal</div>
+          <div class="step-desc">Webhook trigger → processa dados → chama o sub-workflow de notificação</div>
+          <pre><code class="language-javascript">// No Execute Workflow node:
+// Source: Database
+// Workflow: "Enviar Notificação" (selecionar)
+// Input Fields:
+{
+  "canal": "telegram",
+  "mensagem": "Novo pedido recebido: #{{ $json.orderId }}",
+  "destinatario": "{{ $json.userId }}"
+}</code></pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Teste com múltiplos canais</div>
+          <div class="step-desc">Chame o mesmo sub-workflow duas vezes com canais diferentes para testar o fan-out</div>
+          <div class="callout callout-check">
+            <div class="callout-title">✅ Critério de sucesso</div>
+            O mesmo sub-workflow deve funcionar tanto para email quanto para telegram, sem duplicar lógica. Modificar o sub-workflow afeta todos os workflows que o chamam automaticamente.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ PITFALLS -->
+  <div class="section">
+    <div class="section-label">07 · Armadilhas Comuns</div>
+    <h2>⚠️ Erros que Todo Mundo Comete</h2>
+
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Sub-workflow sem "When called by another workflow"</div>
+      <p>Se o trigger do sub-workflow for um Webhook ou Schedule, o Execute Workflow node não consegue chamá-lo. Use sempre o trigger correto: <strong>"When called by another workflow"</strong>. Caso contrário, o Execute Workflow retornará erro "Workflow trigger not found".</p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ n8n self-hosted sem HTTPS</div>
+      <p>Webhooks externos (Telegram, GitHub, etc.) exigem HTTPS. Sem SSL, os webhooks não funcionam em produção. Use sempre Traefik ou Nginx com Let's Encrypt. Nunca exponha o n8n na porta 5678 diretamente para a internet sem HTTPS e autenticação.</p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Custom node sem pairedItem</div>
+      <p>Ao criar custom nodes, sempre inclua <code>pairedItem: {'{'} item: i {'}'}</code> no objeto retornado. Sem isso, o n8n não consegue rastrear qual item de entrada gerou qual item de saída, quebrando operações de merge e causando erros confusos.</p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Senhas no docker-compose.yml</div>
+      <p>Nunca coloque senhas diretamente no docker-compose.yml — use sempre variáveis de ambiente via arquivo <code>.env</code> e adicione <code>.env</code> ao <code>.gitignore</code>. Repositórios públicos com senhas são um vetor de ataque clássico.</p>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════ VÍDEOS -->
+  <div class="section">
+    <div class="section-label">08 · Curadoria de Vídeos</div>
+    <h2>Referências para Assistir</h2>
+    <div class="video-grid">
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">n8n Self-Hosting with Docker Tutorial</div>
+          <div class="video-channel">TechWorld with Nana · ~25 min</div>
+          <div class="video-why">Por que assistir: passo a passo completo de self-hosting com Docker Compose e configuração de HTTPS — exatamente o stack desta aula.</div>
+          <a href="https://www.youtube.com/watch?v=1MwSoB0gnM4" target="_blank" class="video-watch">Assistir →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">n8n Sub-Workflows — Modular Automation</div>
+          <div class="video-channel">n8n Official · ~15 min</div>
+          <div class="video-why">Por que assistir: demonstração oficial de como estruturar sub-workflows reutilizáveis com exemplos práticos de uso em produção.</div>
+          <a href="https://www.youtube.com/watch?v=UvFQnDNb1fM" target="_blank" class="video-watch">Assistir →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">Build Custom n8n Nodes (TypeScript)</div>
+          <div class="video-channel">n8n Official · ~20 min</div>
+          <div class="video-why">Por que assistir: tutorial oficial de criação de custom nodes do zero, cobrindo a interface INodeType e publicação no npm.</div>
+          <a href="https://www.youtube.com/watch?v=ixRNvfL6noU" target="_blank" class="video-watch">Assistir →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">n8n in 100 Seconds</div>
+          <div class="video-channel">Fireship · ~2 min</div>
+          <div class="video-why">Por que assistir: revisão rápida do ecossistema n8n antes de mergulhar nos tópicos avançados — ótimo para revisitar o "por quê".</div>
+          <a href="https://www.youtube.com/watch?v=1MwSoB0gnM4" target="_blank" class="video-watch">Assistir →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ CHECKPOINT -->
+  <div class="checkpoint">
+    <div class="checkpoint-label">🏁 Checkpoint Final</div>
+    <h3>Desafio: Automação Modular Completa</h3>
+    <p>Construa um sistema self-hosted de automação usando as três técnicas desta aula:</p>
+    <ul>
+      <li>Faça o self-hosting do n8n com Docker Compose + PostgreSQL em uma VPS (ou localmente)</li>
+      <li>Crie um sub-workflow <strong>"Validar e Enriquecer Lead"</strong> que recebe nome + email + CEP e retorna os dados completos com endereço</li>
+      <li>Crie um workflow principal que recebe um webhook com dados de formulário e chama o sub-workflow</li>
+      <li>Implemente o custom node ViaCEP desta aula e use-o dentro do sub-workflow</li>
+      <li><strong>Bônus:</strong> Publique o custom node no npm com prefixo <code>n8n-nodes-</code></li>
+    </ul>
+    <div class="checkpoint-hint">💬 Dica: Para testar localmente sem domínio, use <code>ngrok http 5678</code> para expor o n8n com HTTPS temporário. O n8n também tem um modo de desenvolvimento com <code>N8N_SECURE_COOKIE=false</code> para HTTP local.</div>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════ PRÓXIMOS PASSOS -->
+  <div class="section">
+    <div class="section-label">09 · Próximos Passos</div>
+    <h2>O que vem depois?</h2>
+    <p>Com sub-workflows, self-hosting e custom nodes dominados, você tem um n8n verdadeiramente profissional. Na próxima aula, vamos integrar tudo no GitHub — Docker, n8n, Python e GitHub Pages num stack completo.</p>
+    <a href="gh-07-stack-completo.html" class="next-card">
+      <div>
+        <div class="next-card-label">→ Próxima Aula · 35 / 50</div>
+        <div class="next-card-title">GitHub no Stack Completo — Docker, n8n, Python & Pages</div>
+      </div>
+      <div class="next-arrow">→</div>
+    </a>
+  </div>
+
+  <div class="footer">
+    <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+    <span>🔀 n8n Avançado · Aula 34 / 50</span>
+    <a href="gh-07-stack-completo.html">Próxima →</a>
+  </div>
+
+</div>
+
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = (scrollTop / docHeight) * 100;
+    document.getElementById('progressBar').style.width = progress + '%';
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+  });
+</script>
+</body>
+</html>
