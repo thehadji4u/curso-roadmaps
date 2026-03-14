@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APIs de LLM — OpenAI, Anthropic &amp; Gemini · Aula 40</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+    :root{--bg:#0a0a0f;--surface:#111118;--surface2:#16161f;--border:#1e1e2e;--text:#e8e8f0;--muted:#8585a8;--accent:#a855f7;--accent-dim:rgba(168,85,247,0.12);--accent-border:rgba(168,85,247,0.35);--success:#10b981;--warn:#f59e0b;--danger:#ef4444;--info:#06b6d4}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:15px;line-height:1.75}
+    .progress-bar-wrap{position:fixed;top:0;left:0;right:0;height:3px;background:var(--border);z-index:1000}
+    .progress-bar-fill{height:100%;background:linear-gradient(90deg,#a855f7,#d8b4fe);width:0%;transition:width 0.1s}
+    .top-nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:12px 32px;background:rgba(10,10,15,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+    .nav-back{text-decoration:none;color:var(--muted);font-size:12px;padding:6px 14px;border:1px solid var(--border);border-radius:6px;transition:all 0.2s}
+    .nav-back:hover{color:var(--text);border-color:rgba(255,255,255,0.15);background:rgba(255,255,255,0.04)}
+    .nav-center{display:flex;align-items:center;gap:10px}
+    .nav-position{font-size:12px;color:var(--muted);letter-spacing:0.06em}
+    .nav-position .track{color:var(--accent);font-weight:600}
+    .nav-prev,.nav-next{display:flex;align-items:center;gap:6px;text-decoration:none;color:var(--muted);font-size:12px;padding:6px 14px;border:1px solid var(--border);border-radius:6px;background:transparent;transition:all 0.2s}
+    .nav-prev:hover,.nav-next:hover{color:var(--text);border-color:rgba(255,255,255,0.15);background:rgba(255,255,255,0.04)}
+    .nav-prev.disabled{opacity:0.3;pointer-events:none}
+    .nav-next{border-color:var(--accent-border);color:var(--accent)}
+    .nav-next:hover{background:var(--accent-dim);color:#d8b4fe}
+    .page{max-width:860px;margin:0 auto;padding:48px 24px 96px}
+    .hero{padding:52px 0 40px;border-bottom:1px solid var(--border);margin-bottom:56px}
+    .hero-eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:20px;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)}
+    .hero-badge{background:var(--accent-dim);border:1px solid var(--accent-border);color:var(--accent);padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600}
+    .hero h1{font-family:'Syne',sans-serif;font-size:clamp(2rem,5vw,3rem);font-weight:800;line-height:1.1;letter-spacing:-0.02em;margin-bottom:20px;background:linear-gradient(135deg,#fff 40%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--muted);margin-bottom:24px}
+    .hero-tags{display:flex;flex-wrap:wrap;gap:8px}
+    .tag{background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--muted);padding:4px 12px;border-radius:4px;font-size:11px;letter-spacing:0.06em}
+    .tag.accent{background:var(--accent-dim);border-color:var(--accent-border);color:var(--accent)}
+    .section{margin-bottom:64px}
+    .section-label{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;font-weight:600}
+    .section h2{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:700;margin-bottom:20px;color:#fff}
+    .section h3{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:700;margin:32px 0 14px;color:#fff}
+    .section h4{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin:20px 0 10px;color:#e0e0f0}
+    .section p{color:var(--text);margin-bottom:16px}
+    .callout{border-radius:8px;padding:18px 20px;margin:20px 0;border-left:3px solid}
+    .callout-title{font-weight:700;margin-bottom:6px;font-size:13px}
+    .callout-info{background:rgba(6,182,212,0.08);border-color:var(--info)}.callout-info .callout-title{color:var(--info)}
+    .callout-warn{background:rgba(245,158,11,0.08);border-color:var(--warn)}.callout-warn .callout-title{color:var(--warn)}
+    .callout-tip{background:rgba(168,85,247,0.06);border-color:var(--accent)}.callout-tip .callout-title{color:var(--accent)}
+    .callout-check{background:rgba(16,185,129,0.06);border-color:var(--success)}.callout-check .callout-title{color:var(--success)}
+    .analogy-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;position:relative;overflow:hidden}
+    .analogy-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),transparent)}
+    .analogy-label{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+    .analogy-text{font-size:15px;color:var(--text);margin-bottom:20px;line-height:1.8}
+    .analogy-mapping{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px}
+    .analogy-real{background:rgba(255,255,255,0.04);border:1px solid var(--border);padding:8px 14px;border-radius:6px;font-size:13px;color:var(--muted)}
+    .analogy-tech{background:var(--accent-dim);border:1px solid var(--accent-border);padding:8px 14px;border-radius:6px;font-size:13px;color:var(--accent)}
+    .mermaid-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px 20px;margin:24px 0;overflow:auto}
+    .mermaid-label{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+    .table-wrap{overflow-x:auto;margin:16px 0}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    thead tr{border-bottom:2px solid var(--accent-border)}
+    thead th{text-align:left;padding:10px 14px;color:var(--accent);font-size:11px;letter-spacing:0.08em;text-transform:uppercase}
+    tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s}
+    tbody tr:hover{background:rgba(255,255,255,0.03)}
+    tbody td{padding:11px 14px;color:var(--text);vertical-align:top}
+    .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+    .badge-green{background:rgba(16,185,129,0.2);color:#34d399}
+    .badge-red{background:rgba(239,68,68,0.2);color:#f87171}
+    .badge-yellow{background:rgba(245,158,11,0.2);color:#fbbf24}
+    .badge-purple{background:rgba(168,85,247,0.2);color:#d8b4fe}
+    .badge-blue{background:rgba(59,130,246,0.2);color:#60a5fa}
+    pre{background:#0d1117 !important;border:1px solid var(--border);border-radius:8px;overflow-x:auto;margin:12px 0;font-size:13px}
+    pre code{font-family:'JetBrains Mono',monospace}
+    .code-label{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);padding:10px 16px 0}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    @media(max-width:640px){.grid-2,.grid-3{grid-template-columns:1fr}}
+    .card-mini{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;transition:border-color 0.2s}
+    .card-mini:hover{border-color:var(--accent-border)}
+    .card-mini h4{color:#fff;font-size:14px;margin:10px 0 6px}
+    .card-mini p{color:var(--muted);font-size:13px;margin:0}
+    .provider-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;margin-bottom:32px;position:relative;overflow:hidden}
+    .provider-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+    .provider-openai::before{background:linear-gradient(90deg,#10a37f,#1a7f64)}
+    .provider-anthropic::before{background:linear-gradient(90deg,#d97706,#f59e0b)}
+    .provider-gemini::before{background:linear-gradient(90deg,#4285f4,#ea4335)}
+    .provider-header{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+    .provider-logo{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0}
+    .provider-logo-openai{background:rgba(16,163,127,0.15);border:1px solid rgba(16,163,127,0.3);color:#10a37f}
+    .provider-logo-anthropic{background:rgba(217,119,6,0.15);border:1px solid rgba(217,119,6,0.3);color:#d97706}
+    .provider-logo-gemini{background:rgba(66,133,244,0.15);border:1px solid rgba(66,133,244,0.3);color:#4285f4}
+    .provider-name{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:#fff}
+    .provider-desc{color:var(--muted);font-size:12px}
+    .video-grid{display:grid;gap:14px}
+    .video-card{display:flex;gap:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;transition:border-color 0.2s}
+    .video-card:hover{border-color:var(--accent-border)}
+    .video-thumb{flex-shrink:0;width:52px;height:52px;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px}
+    .video-info{flex:1}
+    .video-title{font-weight:700;color:#fff;font-size:14px;margin-bottom:4px}
+    .video-channel{color:var(--muted);font-size:12px;margin-bottom:6px}
+    .video-why{color:var(--text);font-size:12px;margin-bottom:10px}
+    .video-watch{font-size:12px;color:var(--accent);text-decoration:none}
+    .video-watch:hover{text-decoration:underline}
+    .checkpoint{background:linear-gradient(135deg,rgba(168,85,247,0.08),rgba(0,0,0,0));border:1px solid var(--accent-border);border-radius:12px;padding:28px;margin-bottom:40px}
+    .checkpoint-label{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;font-weight:600}
+    .checkpoint h3{font-family:'Syne',sans-serif;font-size:1.2rem;color:var(--accent);margin-bottom:12px}
+    .checkpoint p{margin-bottom:14px}
+    .checkpoint ul{padding-left:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+    .checkpoint ul li{color:var(--text);font-size:14px}
+    .checkpoint ul li::before{content:'✦ ';color:var(--accent)}
+    .checkpoint-hint{margin-top:16px;padding:12px 16px;background:rgba(255,255,255,0.03);border-radius:6px;font-size:13px;color:var(--muted)}
+    .pitfall{background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.25);border-radius:10px;padding:20px;margin:16px 0}
+    .pitfall-title{color:#f87171;font-weight:700;margin-bottom:8px;font-size:14px}
+    .next-card{display:flex;align-items:center;justify-content:space-between;padding:22px 24px;background:var(--surface);border:1px solid var(--accent-border);border-radius:10px;text-decoration:none;transition:all 0.2s;margin-top:24px}
+    .next-card:hover{background:var(--accent-dim)}
+    .next-card-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:4px;font-weight:600}
+    .next-card-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:#fff}
+    .next-arrow{font-size:1.5rem;color:var(--accent)}
+    .footer{display:flex;justify-content:space-between;align-items:center;padding:24px 0;margin-top:32px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)}
+    .footer a{color:var(--muted);text-decoration:none}.footer a:hover{color:var(--text)}
+    code:not(.hljs){background:rgba(255,255,255,0.07);border:1px solid var(--border);padding:1px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#d8b4fe}
+    .steps{display:flex;flex-direction:column;gap:20px;margin:20px 0}
+    .step{display:flex;gap:16px}
+    .step-num{flex-shrink:0;width:32px;height:32px;border-radius:50%;background:var(--accent-dim);border:1px solid var(--accent-border);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;margin-top:2px}
+    .step-body{flex:1}
+    .step-title{font-weight:700;color:#fff;margin-bottom:6px;font-size:14px}
+    .step-desc{color:var(--muted);font-size:13px;margin-bottom:10px}
+    .env-block{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px;margin:12px 0;font-size:13px}
+    .env-block .env-key{color:#79c0ff}
+    .env-block .env-val{color:#a5d6ff}
+    .env-block .env-comment{color:#8b949e}
+    .cost-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0}
+    @media(max-width:640px){.cost-grid{grid-template-columns:1fr}}
+    .cost-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;text-align:center}
+    .cost-provider{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+    .cost-amount{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700;color:var(--accent);margin-bottom:4px}
+    .cost-desc{font-size:11px;color:var(--muted)}
+  </style>
+</head>
+<body>
+<div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+<nav class="top-nav">
+  <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+  <div class="nav-center">
+    <a href="ai-03-prompt-eng-avancado.html" class="nav-prev">← Anterior</a>
+    <div class="nav-position"><span class="track">🤖 IA</span> · Aula 40 / 50</div>
+    <a href="n8n-05-ia-agentes.html" class="nav-next">Próxima →</a>
+  </div>
+</nav>
+<div class="page">
+
+  <!-- ── HERO ──────────────────────────────────────────────── -->
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <span class="hero-badge">🤖 INTELIGÊNCIA ARTIFICIAL</span>
+      <span>Aula 40 · Prioridade 8</span>
+      <span>⏱ ~30 min</span>
+    </div>
+    <h1>APIs de LLM —<br>OpenAI, Anthropic &amp; Gemini</h1>
+    <div class="hero-meta">
+      <span>🔑 Autenticação segura</span>
+      <span>⚡ Streaming real-time</span>
+      <span>🔧 Function Calling · Tool Use</span>
+    </div>
+    <div class="hero-tags">
+      <span class="tag accent">OpenAI API</span>
+      <span class="tag accent">Anthropic Claude</span>
+      <span class="tag accent">Google Gemini</span>
+      <span class="tag accent">Streaming</span>
+      <span class="tag">Function Calling</span>
+      <span class="tag">python-dotenv</span>
+      <span class="tag">tenacity</span>
+      <span class="tag">Rate Limiting</span>
+      <span class="tag">Cost Optimization</span>
+    </div>
+  </div>
+
+  <!-- ── 01. POR QUE ISSO IMPORTA ─────────────────────────── -->
+  <div class="section">
+    <div class="section-label">01 · Motivação</div>
+    <h2>Por que integrar APIs de LLM diretamente?</h2>
+    <p>ChatGPT e Claude.ai são interfaces para usuários finais. Um engenheiro sênior vai além: ele <strong>integra capacidades de IA diretamente nas suas aplicações</strong> via API — dando controle total sobre modelo, contexto, temperatura, custo e comportamento.</p>
+    <p>Seja um pipeline de processamento de documentos, um chatbot corporativo, um sistema de análise de código ou um agente autônomo, tudo começa com uma chamada HTTP para um dos três grandes provedores: OpenAI, Anthropic e Google Gemini.</p>
+
+    <div class="callout callout-info">
+      <div class="callout-title">💼 Por que um engenheiro sênior usa APIs de LLM em produção hoje</div>
+      <p style="margin-bottom:8px">Três razões principais movem equipes técnicas a integrar LLMs via API:</p>
+      <ul style="padding-left:16px;color:var(--text);font-size:14px;line-height:2">
+        <li><strong>Automação de tarefas cognitivas</strong> — classificação, extração, sumarização, geração de código: tarefas que antes exigiam humanos agora rodam em lote com custo de centavos.</li>
+        <li><strong>Produto diferenciado</strong> — features como "explique esse erro", "gere um relatório personalizado" ou "resuma este PDF" elevam o valor percebido do produto sem meses de ML custom.</li>
+        <li><strong>Velocidade de experimentação</strong> — trocar o modelo subjacente (GPT-4o → Claude Opus → Gemini) é questão de mudar uma string, permitindo A/B tests de qualidade e custo em horas.</li>
+      </ul>
+    </div>
+
+    <div class="grid-2" style="margin-top:24px">
+      <div class="card-mini">
+        <div style="font-size:1.4rem">🎯</div>
+        <h4>Controle total</h4>
+        <p>Você define system prompt, temperatura, max tokens, stop sequences, seed para reprodutibilidade — nenhuma UI faz isso.</p>
+      </div>
+      <div class="card-mini">
+        <div style="font-size:1.4rem">💰</div>
+        <h4>Custo previsível</h4>
+        <p>Pague por token consumido. Com caching e escolha de modelo certo, o custo real de produção é 10–100× menor que parece.</p>
+      </div>
+      <div class="card-mini">
+        <div style="font-size:1.4rem">🔒</div>
+        <h4>Privacidade e dados</h4>
+        <p>APIs enterprise têm acordos de não-treinamento com seus dados. Vital para projetos corporativos com dados sensíveis.</p>
+      </div>
+      <div class="card-mini">
+        <div style="font-size:1.4rem">🔌</div>
+        <h4>Integração nativa</h4>
+        <p>Encadeie LLMs com databases, filas, webhooks, outros microserviços — impossível via interface web.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 02. ANALOGIA ──────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">02 · Analogia</div>
+    <h2>Especialistas por hora vs. funcionário fixo</h2>
+    <div class="analogy-card">
+      <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
+      <div class="analogy-text">
+        Imagine que você precisa de análises jurídicas, traduções e código revisado para o seu projeto. Você tem duas opções: <strong>contratar um funcionário fixo para cada área</strong> (caro, lento, trabalhista) ou <strong>contratar especialistas por hora via plataforma</strong> — você envia a tarefa, eles entregam em segundos, você paga pelo esforço exato.<br><br>
+        APIs de LLM são exatamente essa plataforma. OpenAI, Anthropic e Gemini são agências com especialistas diferentes — você não precisa "possuir" a inteligência, apenas consumi-la sob demanda. A diferença entre os provedores é como escolher entre advogados: cada um tem seu estilo, especialidade e precificação. Seu trabalho como engenheiro é saber <em>quando chamar qual especialista</em>, <em>como formular o briefing</em> (prompt), e <em>como gerenciar o custo</em>.
+      </div>
+      <div class="analogy-mapping">
+        <div class="analogy-real">📋 Briefing para o especialista</div><div class="analogy-tech">→ System prompt + messages</div>
+        <div class="analogy-real">🏢 Agência de especialistas</div><div class="analogy-tech">→ OpenAI / Anthropic / Google</div>
+        <div class="analogy-real">📞 Ligar para a agência</div><div class="analogy-tech">→ POST /v1/chat/completions</div>
+        <div class="analogy-real">💵 Pagar por hora trabalhada</div><div class="analogy-tech">→ Cobrança por tokens consumidos</div>
+        <div class="analogy-real">⏳ Entrega em tempo real</div><div class="analogy-tech">→ Streaming com SSE chunks</div>
+        <div class="analogy-real">📋 Relatório estruturado</div><div class="analogy-tech">→ Function Calling / Tool Use</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 03. ARQUITETURA GERAL ─────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">03 · Arquitetura</div>
+    <h2>Como uma chamada de API funciona de ponta a ponta</h2>
+    <p>Antes de ver código, entenda o fluxo completo. Toda chamada a uma API de LLM segue o mesmo padrão: sua aplicação usa um SDK para serializar a requisição, enviar via HTTPS com autenticação, e receber a resposta — seja completa (JSON) ou em chunks (streaming SSE).</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label">Arquitetura de chamada — request/response e streaming</div>
+      <div class="mermaid">
+sequenceDiagram
+    participant App as 🖥️ Sua App
+    participant SDK as 📦 SDK Python
+    participant API as 🌐 LLM API
+    participant Model as 🧠 Modelo
+
+    App->>SDK: client.chat.completions.create(...)
+    SDK->>API: POST /v1/chat/completions<br/>(JSON + Bearer API Key)
+    API->>Model: Tokenize + Forward pass
+    Model-->>API: Generated tokens (stream)
+
+    alt Modo Streaming
+        API-->>SDK: SSE chunk 1: {"delta": "Ol"}
+        API-->>SDK: SSE chunk 2: {"delta": "á, "}
+        API-->>SDK: SSE chunk N: {"delta": "mundo"}
+        API-->>SDK: SSE: [DONE]
+        SDK-->>App: Iterador de chunks
+    else Modo Normal
+        API-->>SDK: JSON completo: {"choices": [...]}
+        SDK-->>App: ChatCompletion object
+    end
+
+    App->>App: response.choices[0].message.content
+      </div>
+    </div>
+
+    <div class="callout callout-info">
+      <div class="callout-title">🔍 Conceitos-chave de tokenização</div>
+      <p style="margin:0;font-size:14px">Um <strong>token</strong> é aproximadamente 4 caracteres em inglês (3–4 em português). "Hello world" = 2 tokens. "Olá, como vai você?" ≈ 7 tokens. A contagem de tokens determina o custo e os limites de contexto. Use o <a href="https://platform.openai.com/tokenizer" target="_blank" style="color:var(--accent)">Tokenizer da OpenAI</a> para estimar. Regra prática: 1.000 tokens ≈ 750 palavras ≈ 1,5 páginas A4.</p>
+    </div>
+  </div>
+
+  <!-- ── 04. OPENAI API ────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">04 · OpenAI</div>
+    <h2>OpenAI API — Chat Completions</h2>
+
+    <div class="provider-card provider-openai">
+      <div class="provider-header">
+        <div class="provider-logo provider-logo-openai">O</div>
+        <div>
+          <div class="provider-name">OpenAI</div>
+          <div class="provider-desc">GPT-4o · gpt-4o-mini · o1 · text-embedding-3 · dall-e-3</div>
+        </div>
+      </div>
+      <p>A OpenAI popularizou o formato de <strong>Chat Completions</strong> — uma lista de mensagens com roles (<code>system</code>, <code>user</code>, <code>assistant</code>) que representa o histórico da conversa. O modelo gera a próxima mensagem do assistente com base nesse contexto.</p>
+    </div>
+
+    <h3>Instalação e configuração</h3>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Instalar o SDK</div>
+          <div class="step-desc">A biblioteca oficial <code>openai</code> é mantida pela própria OpenAI com suporte a Python 3.8+.</div>
+          <pre><code class="language-bash">pip install openai python-dotenv</code></pre>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Criar arquivo .env com a API key</div>
+          <div class="step-desc">Nunca coloque chaves no código. Use variáveis de ambiente — mais sobre isso na seção de segurança.</div>
+          <pre><code class="language-bash"># .env (adicione ao .gitignore!)
+OPENAI_API_KEY=sk-proj-...</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <h3>Chat Completions — exemplo básico completo</h3>
+    <p>O endpoint <code>/v1/chat/completions</code> é o coração da API. O parâmetro <code>messages</code> é uma lista de turnos de conversa. O <code>system</code> define a persona e as regras do assistente.</p>
+
+    <pre><code class="language-python">import os
+from openai import OpenAI
+
+client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+        {"role": "system", "content": "Você é um assistente técnico especializado em Python."},
+        {"role": "user", "content": "Explique o que é um decorator em Python."}
+    ],
+    temperature=0.7,   # 0 = determinístico, 2 = caótico; 0.7 é o equilíbrio padrão
+    max_tokens=500     # limite de tokens no output; sem isso o modelo pode gerar muito
+)
+
+# Acessar o conteúdo gerado
+print(response.choices[0].message.content)
+
+# Monitorar uso de tokens (vital para controle de custo)
+print(f"Tokens usados: {response.usage.total_tokens}")
+print(f"  Input:  {response.usage.prompt_tokens}")
+print(f"  Output: {response.usage.completion_tokens}")</code></pre>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">🔥 Pro tip: multi-turn conversation</div>
+      Para manter contexto entre mensagens, accumule o histórico manualmente — a API é <strong>stateless</strong>. Cada chamada recebe todo o histórico do zero.
+      <pre style="margin-top:12px"><code class="language-python">messages = [{"role": "system", "content": "Você é um assistente Python."}]
+
+def chat(user_input: str) -> str:
+    messages.append({"role": "user", "content": user_input})
+    response = client.chat.completions.create(model="gpt-4o", messages=messages)
+    reply = response.choices[0].message.content
+    messages.append({"role": "assistant", "content": reply})  # guardar para próxima chamada
+    return reply
+
+print(chat("O que é uma list comprehension?"))
+print(chat("Me dê um exemplo com filtro."))</code></pre>
+    </div>
+
+    <h3>Streaming — output em tempo real</h3>
+    <p>Sem streaming, o usuário espera o modelo gerar tudo antes de ver qualquer coisa. Com <code>stream=True</code>, cada token chega assim que é gerado — essencial para UX de chatbots.</p>
+
+    <pre><code class="language-python">stream = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "Escreva um poema sobre código limpo."}],
+    stream=True  # ativa SSE (Server-Sent Events)
+)
+
+# Cada chunk chega assim que o modelo gera o próximo pedaço de texto
+for chunk in stream:
+    if chunk.choices[0].delta.content:
+        print(chunk.choices[0].delta.content, end="", flush=True)
+        # flush=True força a impressão imediata — importante em terminais e UIs
+print()  # nova linha ao final</code></pre>
+
+    <h3>Function Calling — integre o LLM com seu código</h3>
+    <p>Function Calling permite que o modelo decida chamar uma função do seu sistema ao invés de responder diretamente. O modelo não executa a função — ele retorna um JSON estruturado com o nome e os argumentos, e você executa.</p>
+
+    <pre><code class="language-python">tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "buscar_clima",
+            "description": "Obtém o clima atual de uma cidade",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "cidade": {"type": "string", "description": "Nome da cidade"},
+                    "unidade": {"type": "string", "enum": ["celsius", "fahrenheit"]}
+                },
+                "required": ["cidade"]
+            }
+        }
+    }
+]
+
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "Qual o clima em São Paulo?"}],
+    tools=tools,
+    tool_choice="auto"  # "auto" = modelo decide; "required" = sempre usa ferramenta
+)
+
+# Checar se o modelo quer chamar uma ferramenta
+message = response.choices[0].message
+if message.tool_calls:
+    tool_call = message.tool_calls[0]
+    function_name = tool_call.function.name    # "buscar_clima"
+    arguments = json.loads(tool_call.function.arguments)  # {"cidade": "São Paulo"}
+
+    # Executar a função real do seu sistema
+    resultado = buscar_clima(**arguments)
+
+    # Enviar o resultado de volta ao modelo para que ele formule a resposta final
+    messages = [
+        {"role": "user", "content": "Qual o clima em São Paulo?"},
+        message,  # mensagem do assistente com o tool_call
+        {
+            "role": "tool",
+            "tool_call_id": tool_call.id,
+            "content": str(resultado)
+        }
+    ]
+    final_response = client.chat.completions.create(model="gpt-4o", messages=messages)
+    print(final_response.choices[0].message.content)</code></pre>
+
+    <div class="callout callout-warn">
+      <div class="callout-title">⚠️ Function Calling não executa código</div>
+      O modelo apenas decide que quer chamar a função e retorna os argumentos em JSON. Você é responsável por executar, tratar erros e retornar o resultado. Isso é intencional — mantém você no controle total das operações.
+    </div>
+  </div>
+
+  <!-- ── 05. ANTHROPIC API ──────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">05 · Anthropic</div>
+    <h2>Anthropic API — Messages com Claude</h2>
+
+    <div class="provider-card provider-anthropic">
+      <div class="provider-header">
+        <div class="provider-logo provider-logo-anthropic">A</div>
+        <div>
+          <div class="provider-name">Anthropic — Claude</div>
+          <div class="provider-desc">claude-opus-4-5 · claude-sonnet-4-5 · claude-haiku-3-5</div>
+        </div>
+      </div>
+      <p>A Anthropic usa a <strong>Messages API</strong> — ligeiramente diferente da OpenAI. O <code>system</code> é um parâmetro de topo (não uma mensagem), e o conteúdo pode ser uma lista de blocos tipados. Claude se destaca em <strong>contextos longos</strong> (200K tokens), raciocínio e seguimento preciso de instruções.</p>
+    </div>
+
+    <h3>Instalação</h3>
+    <pre><code class="language-bash">pip install anthropic python-dotenv</code></pre>
+
+    <h3>Messages API — exemplo completo</h3>
+    <p>Note as diferenças em relação à OpenAI: <code>system</code> é um parâmetro separado, não uma mensagem; <code>max_tokens</code> é obrigatório; e o conteúdo retorna como lista de blocos de conteúdo.</p>
+
+    <pre><code class="language-python">import anthropic
+import os
+
+client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+
+message = client.messages.create(
+    model="claude-opus-4-5",
+    max_tokens=1024,           # obrigatório na API Anthropic — sem valor padrão
+    system="Você é um especialista em arquitetura de software.",  # system separado
+    messages=[
+        {"role": "user", "content": "Quais são os princípios SOLID?"}
+    ]
+)
+
+# Conteúdo é uma lista de blocos — para texto, acessar o primeiro
+print(message.content[0].text)
+
+# Monitorar uso de tokens
+print(f"Input tokens:  {message.usage.input_tokens}")
+print(f"Output tokens: {message.usage.output_tokens}")
+print(f"Stop reason:   {message.stop_reason}")  # "end_turn" | "max_tokens" | "stop_sequence"</code></pre>
+
+    <h3>Turnos multi-round — user e assistant alternados</h3>
+    <pre><code class="language-python"># A Anthropic exige que mensagens alternem entre "user" e "assistant"
+# O primeiro e último devem ser "user"
+message = client.messages.create(
+    model="claude-opus-4-5",
+    max_tokens=1024,
+    system="Você é um professor de Python paciente e detalhado.",
+    messages=[
+        {"role": "user",      "content": "O que é uma classe em Python?"},
+        {"role": "assistant", "content": "Uma classe é um template para criar objetos..."},
+        {"role": "user",      "content": "Pode mostrar um exemplo com herança?"}
+    ]
+)</code></pre>
+
+    <h3>Streaming com context manager</h3>
+    <p>A Anthropic oferece streaming via context manager <code>with client.messages.stream()</code> — mais ergonômico que o loop manual da OpenAI.</p>
+
+    <pre><code class="language-python">with client.messages.stream(
+    model="claude-opus-4-5",
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "Liste 5 padrões de design essenciais."}]
+) as stream:
+    for text in stream.text_stream:
+        print(text, end="", flush=True)
+    print()
+
+    # Após o stream, metadados ficam disponíveis
+    final_message = stream.get_final_message()
+    print(f"\nTokens: {final_message.usage.input_tokens} in / {final_message.usage.output_tokens} out")</code></pre>
+
+    <h3>Tool Use (equivalente ao Function Calling)</h3>
+    <pre><code class="language-python">tools = [
+    {
+        "name": "buscar_documentacao",
+        "description": "Busca na documentação oficial do Python por um termo",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "termo": {
+                    "type": "string",
+                    "description": "Termo a buscar na documentação"
+                }
+            },
+            "required": ["termo"]
+        }
+    }
+]
+
+response = client.messages.create(
+    model="claude-opus-4-5",
+    max_tokens=1024,
+    tools=tools,
+    messages=[{"role": "user", "content": "Como funciona o itertools.groupby?"}]
+)
+
+# Verificar se o modelo quer usar uma ferramenta
+if response.stop_reason == "tool_use":
+    for block in response.content:
+        if block.type == "tool_use":
+            print(f"Ferramenta: {block.name}")
+            print(f"Input: {block.input}")  # {"termo": "itertools.groupby"}</code></pre>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">🔥 Claude para contextos longos</div>
+      Claude Opus 4.5 suporta até 200K tokens de contexto. Isso equivale a ~150.000 palavras — praticamente um romance inteiro. Ideal para análise de documentos jurídicos, bases de código completas, ou históricos longos de conversa.
+    </div>
+  </div>
+
+  <!-- ── 06. GOOGLE GEMINI ──────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">06 · Google Gemini</div>
+    <h2>Google Gemini API — Texto e Multimodal</h2>
+
+    <div class="provider-card provider-gemini">
+      <div class="provider-header">
+        <div class="provider-logo provider-logo-gemini">G</div>
+        <div>
+          <div class="provider-name">Google Gemini</div>
+          <div class="provider-desc">gemini-1.5-pro · gemini-1.5-flash · gemini-2.0-flash · gemini-2.5-pro</div>
+        </div>
+      </div>
+      <p>O Gemini da Google é o único dos três com suporte nativo a <strong>contexto de 1 milhão de tokens</strong> e input multimodal que inclui vídeo e áudio além de imagens. O SDK <code>google-generativeai</code> tem uma interface mais simples que os concorrentes para casos de uso básicos.</p>
+    </div>
+
+    <h3>Instalação</h3>
+    <pre><code class="language-bash">pip install google-generativeai python-dotenv</code></pre>
+
+    <h3>Geração de texto — exemplo básico</h3>
+    <pre><code class="language-python">import google.generativeai as genai
+import os
+
+genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+
+# Instanciar o modelo (pode ser reutilizado)
+model = genai.GenerativeModel("gemini-1.5-pro")
+
+response = model.generate_content("Explique machine learning em 3 parágrafos.")
+print(response.text)
+
+# Informações sobre o uso
+print(f"Candidatos: {len(response.candidates)}")
+print(f"Tokens prompt: {response.usage_metadata.prompt_token_count}")
+print(f"Tokens output: {response.usage_metadata.candidates_token_count}")</code></pre>
+
+    <h3>Multi-turn com histórico — ChatSession</h3>
+    <pre><code class="language-python"># Gemini tem uma abstração de chat com histórico gerenciado automaticamente
+chat = model.start_chat(history=[])
+
+response1 = chat.send_message("Quais são os tipos de ML?")
+print(response1.text)
+
+response2 = chat.send_message("Explique mais sobre aprendizado por reforço.")
+print(response2.text)
+
+# O histórico é mantido automaticamente na sessão
+print(f"\nHistórico com {len(chat.history)} mensagens")</code></pre>
+
+    <h3>Multimodal — texto + imagem</h3>
+    <p>O Gemini pode analisar imagens diretamente junto com texto. Útil para análise de screenshots, gráficos, documentos escaneados e qualquer caso que combine visão e linguagem.</p>
+
+    <pre><code class="language-python">import PIL.Image
+import google.generativeai as genai
+
+genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+model = genai.GenerativeModel("gemini-1.5-pro")
+
+# Carregar uma imagem local
+imagem = PIL.Image.open("grafico_vendas.png")
+
+# O prompt pode combinar texto e imagem na mesma chamada
+response = model.generate_content([
+    "Analise este gráfico de vendas e identifique:",
+    "1. A tendência principal",
+    "2. Picos ou quedas significativos",
+    "3. Uma recomendação de ação",
+    imagem  # a imagem vai junto no mesmo array
+])
+
+print(response.text)
+
+# Com URL remota (sem baixar o arquivo)
+import httpx
+image_url = "https://example.com/chart.png"
+image_data = httpx.get(image_url).content
+
+response = model.generate_content([
+    "Descreva esta imagem em detalhes:",
+    {"mime_type": "image/png", "data": image_data}
+])</code></pre>
+
+    <h3>Streaming com Gemini</h3>
+    <pre><code class="language-python">model = genai.GenerativeModel("gemini-1.5-flash")
+
+# Streaming com generate_content e stream=True
+for chunk in model.generate_content("Escreva um tutorial de asyncio em Python.", stream=True):
+    if chunk.text:
+        print(chunk.text, end="", flush=True)
+print()</code></pre>
+
+    <div class="callout callout-info">
+      <div class="callout-title">💡 Gemini 1.5 Pro — 1 milhão de tokens de contexto</div>
+      Com 1M de tokens, o Gemini pode processar horas de transcrições, bases de código inteiras, ou múltiplos documentos simultâneos. Em março de 2025, o Gemini 2.5 Pro chegou com ainda mais capacidade. Ideal quando você precisa "falar sobre um repositório inteiro" sem fragmentar em chunks.
+    </div>
+  </div>
+
+  <!-- ── 07. TABELA COMPARATIVA ────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">07 · Comparativo</div>
+    <h2>OpenAI vs Anthropic vs Gemini — qual escolher?</h2>
+    <p>A resposta é "depende". Cada provedor tem forças distintas. Na prática, equipes sênior usam múltiplos modelos em paralelo — cada um para o que faz melhor.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>GPT-4o</th>
+            <th>Claude Opus 4.5</th>
+            <th>Gemini 1.5 Pro</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Context Window</strong></td>
+            <td>128K tokens</td>
+            <td>200K tokens</td>
+            <td><span class="badge badge-green">1M tokens</span></td>
+          </tr>
+          <tr>
+            <td><strong>Input ($/1M tok)</strong></td>
+            <td><span class="badge badge-green">$2.50</span></td>
+            <td><span class="badge badge-red">$15.00</span></td>
+            <td>$3.50</td>
+          </tr>
+          <tr>
+            <td><strong>Output ($/1M tok)</strong></td>
+            <td>$10.00</td>
+            <td><span class="badge badge-red">$75.00</span></td>
+            <td>$10.50</td>
+          </tr>
+          <tr>
+            <td><strong>Streaming</strong></td>
+            <td><span class="badge badge-green">✅</span></td>
+            <td><span class="badge badge-green">✅</span></td>
+            <td><span class="badge badge-green">✅</span></td>
+          </tr>
+          <tr>
+            <td><strong>Function / Tool Use</strong></td>
+            <td>✅ Function Calling</td>
+            <td>✅ Tool Use</td>
+            <td>✅ Function Declarations</td>
+          </tr>
+          <tr>
+            <td><strong>Multimodal</strong></td>
+            <td>✅ img + áudio</td>
+            <td>✅ img</td>
+            <td><span class="badge badge-green">✅ img + vídeo + áudio</span></td>
+          </tr>
+          <tr>
+            <td><strong>JSON Mode</strong></td>
+            <td>✅ + Structured Outputs</td>
+            <td>✅</td>
+            <td>✅ response_mime_type</td>
+          </tr>
+          <tr>
+            <td><strong>Melhor para</strong></td>
+            <td>Geral + coding + custo</td>
+            <td>Long context + instruções</td>
+            <td>Multimodal + docs gigantes</td>
+          </tr>
+          <tr>
+            <td><strong>Tier gratuito</strong></td>
+            <td>❌ (pago)</td>
+            <td>❌ (pago)</td>
+            <td><span class="badge badge-green">✅ Generoso</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">🔥 Estratégia de modelo para produção</div>
+      Use <strong>gpt-4o-mini</strong> ou <strong>gemini-1.5-flash</strong> para tarefas de volume (classificação, extração simples) — custo 10–20× menor. Reserve <strong>GPT-4o</strong> ou <strong>Claude Opus</strong> para tarefas críticas que exigem máxima qualidade. Meça a diferença de qualidade antes de assumir que o modelo maior é necessário.
+    </div>
+
+    <h3>Tabela de SDKs e endpoints</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Provedor</th>
+            <th>SDK Python</th>
+            <th>Base URL</th>
+            <th>Endpoint principal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>OpenAI</td>
+            <td><code>openai</code></td>
+            <td><code>https://api.openai.com</code></td>
+            <td><code>POST /v1/chat/completions</code></td>
+          </tr>
+          <tr>
+            <td>Anthropic</td>
+            <td><code>anthropic</code></td>
+            <td><code>https://api.anthropic.com</code></td>
+            <td><code>POST /v1/messages</code></td>
+          </tr>
+          <tr>
+            <td>Google</td>
+            <td><code>google-generativeai</code></td>
+            <td><code>https://generativelanguage.googleapis.com</code></td>
+            <td><code>POST /v1beta/models/{model}:generateContent</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── 08. AUTENTICAÇÃO SEGURA ───────────────────────────── -->
+  <div class="section">
+    <div class="section-label">08 · Segurança</div>
+    <h2>Autenticação segura — nunca hardcode uma API key</h2>
+    <p>Esse ponto parece óbvio, mas chaves de API da OpenAI com billing ativo vazadas em repositórios públicos geram contas de <strong>milhares de dólares em horas</strong>. Isso acontece com frequência — GitHub scans detectam e bots exploram automaticamente.</p>
+
+    <div class="pitfall">
+      <div class="pitfall-title">🚫 NUNCA faça isso</div>
+      <pre><code class="language-python"># ❌ ERRADO — hardcode direto no código
+client = OpenAI(api_key="sk-proj-abc123xyz...")
+
+# ❌ ERRADO — variável no topo do arquivo commitada
+API_KEY = "sk-proj-abc123xyz..."
+client = OpenAI(api_key=API_KEY)
+
+# ❌ ERRADO — em arquivo de config commitado
+# config.json: {"openai_key": "sk-proj-..."}</code></pre>
+    </div>
+
+    <h3>A abordagem correta: variáveis de ambiente + .env</h3>
+    <pre><code class="language-python"># Passo 1: Crie o arquivo .env na raiz do projeto
+# .env (NUNCA commitar — adicione ao .gitignore!)
+# OPENAI_API_KEY=sk-proj-...
+# ANTHROPIC_API_KEY=sk-ant-api03-...
+# GEMINI_API_KEY=AIzaSy...
+
+# Passo 2: Adicione .env ao .gitignore
+# echo ".env" >> .gitignore
+
+# Passo 3: No código Python, use python-dotenv
+from dotenv import load_dotenv
+import os
+
+load_dotenv()  # carrega automaticamente o .env do diretório atual
+
+# Usar os.environ com colchetes — falha explicitamente se a variável não existir
+# Isso é fail-fast intencional: melhor descobrir na inicialização do que em runtime
+openai_key = os.environ["OPENAI_API_KEY"]
+anthropic_key = os.environ["ANTHROPIC_API_KEY"]
+gemini_key = os.environ["GEMINI_API_KEY"]
+
+# Alternativa: os.getenv com valor padrão — mas cuidado, pode esconder erros
+openai_key = os.getenv("OPENAI_API_KEY", "")
+if not openai_key:
+    raise ValueError("OPENAI_API_KEY não definida! Verifique o .env")</code></pre>
+
+    <h3>Em produção: serviços de secret management</h3>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">AWS Secrets Manager / SSM Parameter Store</div>
+          <div class="step-desc">Para aplicações em AWS — chaves injetadas na runtime do container, nunca em variáveis de ambiente hardcoded.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">GitHub Actions Secrets</div>
+          <div class="step-desc">Para CI/CD — configure como secrets no repositório e acesse via <code>${{ secrets.OPENAI_API_KEY }}</code>.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">HashiCorp Vault / Doppler</div>
+          <div class="step-desc">Para ambientes multi-cloud e múltiplos serviços — centraliza e rotaciona segredos automaticamente.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-check">
+      <div class="callout-title">✅ Checklist de segurança mínima</div>
+      <ul style="padding-left:16px;color:var(--text);font-size:14px;line-height:2">
+        <li>✅ <code>.env</code> está no <code>.gitignore</code></li>
+        <li>✅ Nunca use <code>print(api_key)</code> em código de produção</li>
+        <li>✅ Ative alertas de uso no dashboard do provedor</li>
+        <li>✅ Configure limites de gasto mensais (OpenAI: Usage Limits)</li>
+        <li>✅ Use chaves diferentes para dev, staging e produção</li>
+        <li>✅ Rotacione chaves periodicamente (ou quando um desenvolvedor sai)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ── 09. RATE LIMITING E RETRY ────────────────────────── -->
+  <div class="section">
+    <div class="section-label">09 · Resiliência</div>
+    <h2>Rate limiting e retry com exponential backoff</h2>
+    <p>APIs de LLM têm limites de requisições por minuto (RPM) e tokens por minuto (TPM). Em produção, você <em>vai</em> atingir esses limites. A solução padrão é <strong>exponential backoff</strong> com jitter — esperar cada vez mais tempo entre tentativas, com um delay aleatório para evitar thundering herd.</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label">Exponential backoff com jitter</div>
+      <div class="mermaid">
+graph LR
+    REQ[📤 Requisição] --> TRY1[Tentativa 1]
+    TRY1 -- 429 Rate Limit --> W1[⏳ Esperar 4s + jitter]
+    W1 --> TRY2[Tentativa 2]
+    TRY2 -- 500 Server Error --> W2[⏳ Esperar 8s + jitter]
+    W2 --> TRY3[Tentativa 3]
+    TRY3 -- ✅ 200 OK --> RESP[📥 Resposta]
+    TRY3 -- Falha --> W3[⏳ Esperar 16s + jitter]
+    W3 --> TRY4[Tentativa 4]
+    TRY4 -- ✅ 200 OK --> RESP
+    style RESP fill:#10b981,color:#000
+    style W1 fill:#f59e0b,color:#000
+    style W2 fill:#f59e0b,color:#000
+    style W3 fill:#ef4444,color:#fff
+      </div>
+    </div>
+
+    <h3>Implementação com tenacity</h3>
+    <pre><code class="language-python">from tenacity import (
+    retry,
+    stop_after_attempt,
+    wait_exponential,
+    retry_if_exception_type
+)
+from openai import RateLimitError, APIError
+import logging
+
+logger = logging.getLogger(__name__)
+
+@retry(
+    # Quais exceções devem disparar o retry (não tente em erros de autenticação!)
+    retry=retry_if_exception_type((RateLimitError, APIError)),
+    # Esperar: min 4s, max 60s, multiplicando por 2 a cada tentativa
+    wait=wait_exponential(multiplier=1, min=4, max=60),
+    # Desistir após 5 tentativas
+    stop=stop_after_attempt(5),
+    # Log de cada tentativa (útil para debugging em produção)
+    before_sleep=lambda retry_state: logger.warning(
+        f"Tentativa {retry_state.attempt_number} falhou, aguardando {retry_state.next_action.sleep:.1f}s..."
+    )
+)
+def chamar_llm(prompt: str, model: str = "gpt-4o-mini") -> str:
+    """
+    Chama a API da OpenAI com retry automático em caso de rate limit ou erro.
+    Não faz retry em: AuthenticationError, BadRequestError (erros do cliente).
+    """
+    response = client.chat.completions.create(
+        model=model,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return response.choices[0].message.content
+
+
+# Versão assíncrona para aplicações com asyncio
+from tenacity import AsyncRetrying
+
+async def chamar_llm_async(prompt: str) -> str:
+    async for attempt in AsyncRetrying(
+        wait=wait_exponential(min=2, max=30),
+        stop=stop_after_attempt(4)
+    ):
+        with attempt:
+            response = await async_client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": prompt}]
+            )
+            return response.choices[0].message.content</code></pre>
+
+    <div class="callout callout-warn">
+      <div class="callout-title">⚠️ Não faça retry em todos os erros</div>
+      <ul style="padding-left:16px;color:var(--text);font-size:14px;line-height:1.8">
+        <li><strong>RateLimitError (429)</strong> — retry faz sentido, espere e tente de novo</li>
+        <li><strong>APIError (5xx)</strong> — erro do servidor, retry pode resolver</li>
+        <li><strong>AuthenticationError (401)</strong> — chave inválida, retry não adianta</li>
+        <li><strong>BadRequestError (400)</strong> — seu prompt tem problema, retry sem mudança é inútil</li>
+        <li><strong>PermissionDeniedError (403)</strong> — sem acesso ao modelo, retry não resolve</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ── 10. AVALIAÇÃO DE RESPOSTAS ────────────────────────── -->
+  <div class="section">
+    <div class="section-label">10 · Avaliação</div>
+    <h2>Avaliando a qualidade das respostas — LLM-as-Judge</h2>
+    <p>Como você sabe se suas respostas são boas? Métricas clássicas de NLP (BLEU, ROUGE) são ruins para LLMs — textos com mesmas informações têm pontuações baixas por diferença de vocabulário. A abordagem moderna é <strong>LLM-as-Judge</strong>: usar outro LLM (ou o mesmo) para avaliar as respostas.</p>
+
+    <h3>G-Eval — avaliação estruturada por critérios</h3>
+    <pre><code class="language-python">def avaliar_resposta_geval(
+    pergunta: str,
+    resposta: str,
+    criterios: list[str] = None
+) -> dict:
+    """
+    G-Eval: usa um LLM para avaliar a qualidade de uma resposta em múltiplos critérios.
+    Retorna scores 1-5 para cada critério.
+    """
+    if criterios is None:
+        criterios = ["Relevância", "Precisão factual", "Clareza", "Completude"]
+
+    criterios_texto = "\n".join(f"- {c}" for c in criterios)
+
+    prompt = f"""Você é um avaliador especializado. Avalie a resposta abaixo segundo cada critério.
+
+Pergunta: {pergunta}
+
+Resposta avaliada:
+{resposta}
+
+Para cada critério, atribua uma nota de 1 a 5 onde:
+1 = Muito ruim | 3 = Aceitável | 5 = Excelente
+
+Critérios:
+{criterios_texto}
+
+Responda APENAS em JSON:
+{{"scores": {{"Relevância": 4, "Precisão factual": 5, ...}}, "feedback": "..."}}"""
+
+    resultado = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": prompt}],
+        response_format={"type": "json_object"}
+    )
+
+    import json
+    return json.loads(resultado.choices[0].message.content)
+
+
+# Uso:
+avaliacao = avaliar_resposta_geval(
+    pergunta="O que é um decorator em Python?",
+    resposta="Um decorator é uma função que modifica outra função..."
+)
+print(avaliacao)
+# {"scores": {"Relevância": 5, "Precisão factual": 4, "Clareza": 4, "Completude": 3},
+#  "feedback": "Resposta relevante e precisa, mas poderia incluir exemplos."}</code></pre>
+
+    <h3>Ragas — avaliação de pipelines RAG</h3>
+    <pre><code class="language-python"># pip install ragas
+# Ragas avalia pipelines de RAG (Retrieval-Augmented Generation)
+
+from ragas import evaluate
+from ragas.metrics import faithfulness, answer_relevancy, context_precision
+from datasets import Dataset
+
+# Seu dataset de avaliação
+dataset = Dataset.from_dict({
+    "question": ["O que é Python?", "Como funciona GIL?"],
+    "answer": ["Python é uma linguagem...", "O GIL é um lock..."],
+    "contexts": [
+        ["Python é uma linguagem de programação de alto nível..."],
+        ["O Global Interpreter Lock (GIL) é um mutex..."]
+    ],
+    "ground_truth": ["Python é uma linguagem de alto nível...", "GIL é um mecanismo..."]
+})
+
+results = evaluate(
+    dataset,
+    metrics=[faithfulness, answer_relevancy, context_precision]
+)
+
+print(results)
+# {'faithfulness': 0.95, 'answer_relevancy': 0.87, 'context_precision': 0.91}</code></pre>
+  </div>
+
+  <!-- ── 11. COST OPTIMIZATION ─────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">11 · Otimização de custo</div>
+    <h2>Cost optimization — uso eficiente de tokens</h2>
+    <p>O custo de APIs de LLM pode surpreender em produção. Um sistema processando 10.000 documentos/dia com GPT-4o pode custar centenas de dólares diários. A boa notícia: com estratégias simples, você reduz o custo em 80–95% sem perda significativa de qualidade.</p>
+
+    <div class="cost-grid">
+      <div class="cost-card">
+        <div class="cost-provider">GPT-4o</div>
+        <div class="cost-amount">$10k docs</div>
+        <div class="cost-desc">~$50/dia com prompts otimizados</div>
+      </div>
+      <div class="cost-card">
+        <div class="cost-provider">gpt-4o-mini</div>
+        <div class="cost-amount">$10k docs</div>
+        <div class="cost-desc">~$2/dia — 25× mais barato</div>
+      </div>
+      <div class="cost-card">
+        <div class="cost-provider">Gemini Flash</div>
+        <div class="cost-amount">$10k docs</div>
+        <div class="cost-desc">~$0.50/dia — 100× mais barato</div>
+      </div>
+    </div>
+
+    <h3>Estratégia 1: Prompt Compression</h3>
+    <pre><code class="language-python">def comprimir_prompt(texto: str, max_chars: int = 2000) -> str:
+    """
+    Técnicas de compressão de prompt sem perder informação crítica.
+    """
+    # 1. Remover espaços duplos e quebras de linha desnecessárias
+    import re
+    texto = re.sub(r'\s+', ' ', texto).strip()
+
+    # 2. Truncar documentos longos preservando início e fim (mais relevantes)
+    if len(texto) > max_chars:
+        meio = max_chars // 2
+        texto = texto[:meio] + "\n...[conteúdo intermediário omitido]...\n" + texto[-meio:]
+
+    return texto
+
+
+# Remoção automática de tokens irrelevantes com LLMLingua (biblioteca open-source)
+# pip install llmlingua
+from llmlingua import PromptCompressor
+
+compressor = PromptCompressor()
+resultado = compressor.compress_prompt(
+    prompt_longo,
+    ratio=0.5  # comprimir para 50% do tamanho original
+)
+# Mantém ~85-90% da qualidade com metade dos tokens</code></pre>
+
+    <h3>Estratégia 2: Prompt Caching (OpenAI e Anthropic)</h3>
+    <pre><code class="language-python"># OpenAI Prompt Caching — automático para prompts > 1024 tokens
+# Tokens em cache custam 50% menos
+
+# Estruturar o prompt para maximizar cache hits:
+# Coloque a parte estática (system prompt longo, documentos de referência)
+# PRIMEIRO e a parte dinâmica (pergunta do usuário) POR ÚLTIMO
+
+SYSTEM_PROMPT_LONGO = """
+Você é um especialista em análise de contratos jurídicos brasileiros.
+[... 2000 tokens de instruções detalhadas ...]
+"""  # Esta parte vai para o cache automaticamente
+
+def analisar_clausula(clausula: str) -> str:
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {"role": "system", "content": SYSTEM_PROMPT_LONGO},  # cacheado após 1a chamada
+            {"role": "user", "content": clausula}  # único que muda
+        ]
+    )
+    # Verificar cache hits
+    usage = response.usage
+    if hasattr(usage, 'prompt_tokens_details'):
+        cached = usage.prompt_tokens_details.cached_tokens
+        print(f"Cache hit: {cached} tokens em cache (50% de desconto)")
+    return response.choices[0].message.content
+
+
+# Anthropic — cache explícito com cache_control
+message = anthropic_client.messages.create(
+    model="claude-opus-4-5",
+    max_tokens=1024,
+    system=[
+        {
+            "type": "text",
+            "text": SYSTEM_PROMPT_LONGO,
+            "cache_control": {"type": "ephemeral"}  # cache por 5 minutos
+        }
+    ],
+    messages=[{"role": "user", "content": clausula}]
+)</code></pre>
+
+    <h3>Estratégia 3: Escolha dinâmica de modelo por complexidade</h3>
+    <pre><code class="language-python">def escolher_modelo(tarefa: str, complexidade: str = "auto") -> str:
+    """
+    Roteamento inteligente de modelo baseado na complexidade da tarefa.
+    """
+    tarefas_simples = ["classificar", "extrair", "categorizar", "resumir brevemente"]
+    tarefas_complexas = ["raciocinar", "planejar", "debugar", "arquitetar", "analisar profundamente"]
+
+    if complexidade == "auto":
+        tarefa_lower = tarefa.lower()
+        if any(t in tarefa_lower for t in tarefas_simples):
+            complexidade = "baixa"
+        elif any(t in tarefa_lower for t in tarefas_complexas):
+            complexidade = "alta"
+        else:
+            complexidade = "media"
+
+    modelos = {
+        "baixa":  "gpt-4o-mini",     # ~50x mais barato que GPT-4o
+        "media":  "gpt-4o",
+        "alta":   "gpt-4o"           # ou claude-opus para raciocínio avançado
+    }
+
+    return modelos[complexidade]
+
+# Uso:
+model = escolher_modelo("Classifique este email como spam ou não-spam")
+# → "gpt-4o-mini" (tarefa simples)</code></pre>
+  </div>
+
+  <!-- ── 12. CURADORIA DE VÍDEOS ───────────────────────────── -->
+  <div class="section">
+    <div class="section-label">12 · Curadoria</div>
+    <h2>Referências em vídeo</h2>
+    <p>Vídeos específicos para aprofundar o uso de APIs de LLM:</p>
+    <div class="video-grid">
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">OpenAI API Complete Guide for Beginners</div>
+          <div class="video-channel">Traversy Media · ~45 min</div>
+          <div class="video-why">Por que assistir: cobertura completa do endpoint de Chat Completions com exemplos práticos em Python — streaming, function calling e gestão de conversas multi-turn.</div>
+          <a href="https://www.youtube.com/watch?v=uRQH2CFvedY" target="_blank" class="video-watch">Assistir →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">Claude API Tutorial — Anthropic SDK for Python</div>
+          <div class="video-channel">Sam Witteveen · ~30 min</div>
+          <div class="video-why">Por que assistir: demonstra as diferenças arquiteturais entre a Messages API da Anthropic e a Chat Completions da OpenAI, com exemplos de streaming e Tool Use do Claude.</div>
+          <a href="https://www.youtube.com/watch?v=QdDoFfkVkcw" target="_blank" class="video-watch">Assistir →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">Google Gemini API — Full Tutorial with Python</div>
+          <div class="video-channel">Patrick Loeber · ~35 min</div>
+          <div class="video-why">Por que assistir: explora as capacidades multimodais únicas do Gemini — análise de imagens, vídeos e o contexto de 1M tokens que o diferencia dos concorrentes.</div>
+          <a href="https://www.youtube.com/watch?v=0qv_4x1K6hU" target="_blank" class="video-watch">Assistir →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">LLM Cost Optimization Strategies in Production</div>
+          <div class="video-channel">AI Jason · ~25 min</div>
+          <div class="video-why">Por que assistir: técnicas práticas de cost optimization — prompt caching, escolha de modelo, batching e como monitorar custo por feature em produção. Essencial antes de ir a produção.</div>
+          <a href="https://www.youtube.com/watch?v=rNNXq7HdQPk" target="_blank" class="video-watch">Assistir →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 13. PITFALLS ──────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">13 · Armadilhas</div>
+    <h2>Erros comuns ao usar APIs de LLM em produção</h2>
+
+    <div class="pitfall">
+      <div class="pitfall-title">🚫 Não tratar o custo como métrica de produto</div>
+      <p style="color:var(--text);font-size:14px;margin:0">Equipes que não monitoram custo por requisição descobrem contas inesperadas. Instrumente cada chamada com o custo em tokens. Alerte quando superar um threshold (ex: > 2.000 tokens por operação quando o esperado é 500).</p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">🚫 Assumir que o modelo sempre retorna JSON válido</div>
+      <p style="color:var(--text);font-size:14px;margin:4px 0 8px">Mesmo com <code>response_format={"type": "json_object"}</code>, o conteúdo pode ser JSON válido mas semanticamente errado. Sempre valide com Pydantic ou marshmallow.</p>
+      <pre><code class="language-python">from pydantic import BaseModel, ValidationError
+
+class Resultado(BaseModel):
+    score: int
+    categoria: str
+
+try:
+    parsed = Resultado.model_validate_json(response_text)
+except ValidationError as e:
+    # Log o erro e a resposta original para debugging
+    logger.error(f"JSON inválido do LLM: {e}\nResposta: {response_text}")
+    # Fallback ou re-tentativa com prompt diferente</code></pre>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">🚫 Context window overflow silencioso</div>
+      <p style="color:var(--text);font-size:14px;margin:0">Quando a conversa acumula mais tokens que o contexto suportado, a API silenciosamente trunca as mensagens mais antigas. Implemente gerenciamento explícito de contexto em chats longos — resuma ou comprima o histórico periodicamente.</p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">🚫 Temperature 0 para criatividade, Temperature 1+ para extração</div>
+      <p style="color:var(--text);font-size:14px;margin:0">Use <code>temperature=0</code> para extração de dados, classificação e geração de código — você quer determinismo. Use <code>temperature=0.7–1.0</code> para escrita criativa, brainstorming e diversidade de respostas. A maioria dos bugs de "respostas inconsistentes" vem de temperature alta em tarefas estruturadas.</p>
+    </div>
+  </div>
+
+  <!-- ── CHECKPOINT ────────────────────────────────────────── -->
+  <div class="checkpoint">
+    <div class="checkpoint-label">🏁 Checkpoint Final</div>
+    <h3>Desafio: Abstração multi-provider com fallback automático</h3>
+    <p>Construa uma classe <code>LLMClient</code> que abstraia OpenAI, Anthropic e Gemini com as seguintes funcionalidades:</p>
+    <ul>
+      <li>Método <code>generate(prompt, provider="openai")</code> que funciona nos 3 provedores</li>
+      <li>Retry automático com tenacity em caso de rate limit</li>
+      <li>Fallback automático: se OpenAI falhar, tentar Anthropic; se falhar, tentar Gemini</li>
+      <li>Log de custo estimado em tokens para cada chamada</li>
+      <li>Autenticação via <code>.env</code> com falha explícita se a chave não existir</li>
+      <li><strong>Bônus:</strong> Implement cache local com <code>diskcache</code> para evitar chamadas repetidas ao mesmo prompt</li>
+    </ul>
+    <div class="checkpoint-hint">💬 Dica: Comece criando uma interface abstrata (classe base ou Protocol) com o método <code>generate</code>. Depois implemente uma subclasse por provedor. O fallback pode ser um decorator ou um wrapper que tenta cada provedor em ordem. Meça a diferença de latência e custo entre os provedores para o mesmo prompt.</div>
+  </div>
+
+  <!-- ── PRÓXIMA AULA ───────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-label">14 · Próximos Passos</div>
+    <h2>O que vem depois?</h2>
+    <p>Com as APIs de LLM dominadas — autenticação, streaming, function calling e otimização de custo — chegou a hora de construir sistemas mais complexos: <strong>agentes autônomos com n8n</strong>. Vamos combinar os LLMs que você aprendeu aqui com fluxos de automação, ferramentas externas e loops de raciocínio para criar agentes que executam tarefas reais sem intervenção humana.</p>
+    <a href="n8n-05-ia-agentes.html" class="next-card">
+      <div>
+        <div class="next-card-label">→ Próxima Aula · 41 / 50</div>
+        <div class="next-card-title">IA + Agentes Autônomos com n8n</div>
+      </div>
+      <div class="next-arrow">→</div>
+    </a>
+  </div>
+
+  <div class="footer">
+    <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+    <span>🤖 APIs de LLM · Aula 40 / 50</span>
+    <a href="n8n-05-ia-agentes.html">Próxima →</a>
+  </div>
+</div>
+
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+  window.addEventListener('scroll', () => {
+    const p = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+    document.getElementById('progressBar').style.width = p + '%';
+  });
+  document.addEventListener('DOMContentLoaded', () => {
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+  });
+</script>
+</body>
+</html>

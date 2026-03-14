@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prompt Engineering — Fundamentos · Aula 38</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+    :root{--bg:#0a0a0f;--surface:#111118;--surface2:#16161f;--border:#1e1e2e;--text:#e8e8f0;--muted:#8585a8;--accent:#a855f7;--accent-dim:rgba(168,85,247,0.12);--accent-border:rgba(168,85,247,0.35);--success:#10b981;--warn:#f59e0b;--danger:#ef4444;--info:#06b6d4}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:15px;line-height:1.75}
+    .progress-bar-wrap{position:fixed;top:0;left:0;right:0;height:3px;background:var(--border);z-index:1000}
+    .progress-bar-fill{height:100%;background:linear-gradient(90deg,#a855f7,#d8b4fe);width:0%;transition:width 0.1s}
+    .top-nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:12px 32px;background:rgba(10,10,15,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+    .nav-back{text-decoration:none;color:var(--muted);font-size:12px;letter-spacing:0.05em;padding:6px 14px;border:1px solid var(--border);border-radius:6px;transition:all 0.2s}
+    .nav-back:hover{color:var(--text);border-color:rgba(255,255,255,0.15);background:rgba(255,255,255,0.04)}
+    .nav-center{display:flex;align-items:center;gap:10px}
+    .nav-position{font-size:12px;color:var(--muted);letter-spacing:0.06em}
+    .nav-position .track{color:var(--accent);font-weight:600}
+    .nav-prev,.nav-next{display:flex;align-items:center;gap:6px;text-decoration:none;color:var(--muted);font-size:12px;letter-spacing:0.05em;padding:6px 14px;border:1px solid var(--border);border-radius:6px;background:transparent;transition:all 0.2s}
+    .nav-prev:hover,.nav-next:hover{color:var(--text);border-color:rgba(255,255,255,0.15);background:rgba(255,255,255,0.04)}
+    .nav-prev.disabled{opacity:0.3;pointer-events:none}
+    .nav-next{border-color:var(--accent-border);color:var(--accent)}
+    .nav-next:hover{background:var(--accent-dim);color:#d8b4fe}
+    .page{max-width:860px;margin:0 auto;padding:48px 24px 96px}
+    .hero{padding:52px 0 40px;border-bottom:1px solid var(--border);margin-bottom:56px}
+    .hero-eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:20px;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)}
+    .hero-badge{background:var(--accent-dim);border:1px solid var(--accent-border);color:var(--accent);padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600}
+    .hero h1{font-family:'Syne',sans-serif;font-size:clamp(2rem,5vw,3rem);font-weight:800;line-height:1.1;letter-spacing:-0.02em;margin-bottom:20px;background:linear-gradient(135deg,#fff 40%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--muted);margin-bottom:24px}
+    .hero-tags{display:flex;flex-wrap:wrap;gap:8px}
+    .tag{background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--muted);padding:4px 12px;border-radius:4px;font-size:11px;letter-spacing:0.06em}
+    .tag.accent{background:var(--accent-dim);border-color:var(--accent-border);color:var(--accent)}
+    .section{margin-bottom:64px}
+    .section-label{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;font-weight:600}
+    .section h2{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:700;margin-bottom:20px;color:#fff}
+    .section h3{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:700;margin:32px 0 14px;color:#fff}
+    .section p{color:var(--text);margin-bottom:16px}
+    .callout{border-radius:8px;padding:18px 20px;margin:20px 0;border-left:3px solid}
+    .callout-title{font-weight:700;margin-bottom:6px;font-size:13px}
+    .callout-info{background:rgba(6,182,212,0.08);border-color:var(--info)}.callout-info .callout-title{color:var(--info)}
+    .callout-warn{background:rgba(245,158,11,0.08);border-color:var(--warn)}.callout-warn .callout-title{color:var(--warn)}
+    .callout-tip{background:rgba(168,85,247,0.06);border-color:var(--accent)}.callout-tip .callout-title{color:var(--accent)}
+    .callout-check{background:rgba(16,185,129,0.06);border-color:var(--success)}.callout-check .callout-title{color:var(--success)}
+    .analogy-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;position:relative;overflow:hidden}
+    .analogy-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),transparent)}
+    .analogy-label{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+    .analogy-text{font-size:15px;color:var(--text);margin-bottom:20px;line-height:1.8}
+    .analogy-mapping{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px}
+    .analogy-real{background:rgba(255,255,255,0.04);border:1px solid var(--border);padding:8px 14px;border-radius:6px;font-size:13px;color:var(--muted)}
+    .analogy-tech{background:var(--accent-dim);border:1px solid var(--accent-border);padding:8px 14px;border-radius:6px;font-size:13px;color:var(--accent)}
+    .mermaid-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px 20px;margin:24px 0;overflow:auto}
+    .mermaid-label{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+    .table-wrap{overflow-x:auto;margin:16px 0}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    thead tr{border-bottom:2px solid var(--accent-border)}
+    thead th{text-align:left;padding:10px 14px;color:var(--accent);font-size:11px;letter-spacing:0.08em;text-transform:uppercase}
+    tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s}
+    tbody tr:hover{background:rgba(255,255,255,0.03)}
+    tbody td{padding:11px 14px;color:var(--text);vertical-align:top}
+    .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+    .badge-green{background:rgba(16,185,129,0.2);color:#34d399}
+    .badge-red{background:rgba(239,68,68,0.2);color:#f87171}
+    .badge-yellow{background:rgba(245,158,11,0.2);color:#fbbf24}
+    .badge-purple{background:rgba(168,85,247,0.2);color:#d8b4fe}
+    pre{background:#0d1117 !important;border:1px solid var(--border);border-radius:8px;overflow-x:auto;margin:12px 0;font-size:13px}
+    pre code{font-family:'JetBrains Mono',monospace}
+    .code-label{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);padding:10px 16px 0}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    @media(max-width:640px){.grid-2,.grid-3{grid-template-columns:1fr}}
+    .card-mini{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;transition:border-color 0.2s}
+    .card-mini:hover{border-color:var(--accent-border)}
+    .card-mini h4{color:#fff;font-size:14px;margin:10px 0 6px}
+    .card-mini p{color:var(--muted);font-size:13px;margin:0}
+    .video-grid{display:grid;gap:14px}
+    .video-card{display:flex;gap:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;transition:border-color 0.2s}
+    .video-card:hover{border-color:var(--accent-border)}
+    .video-thumb{flex-shrink:0;width:52px;height:52px;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px}
+    .video-info{flex:1}
+    .video-title{font-weight:700;color:#fff;font-size:14px;margin-bottom:4px}
+    .video-channel{color:var(--muted);font-size:12px;margin-bottom:6px}
+    .video-why{color:var(--text);font-size:12px;margin-bottom:10px}
+    .video-watch{font-size:12px;color:var(--accent);text-decoration:none}
+    .video-watch:hover{text-decoration:underline}
+    .checkpoint{background:linear-gradient(135deg,rgba(168,85,247,0.08),rgba(0,0,0,0));border:1px solid var(--accent-border);border-radius:12px;padding:28px;margin-bottom:40px}
+    .checkpoint-label{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;font-weight:600}
+    .checkpoint h3{font-family:'Syne',sans-serif;font-size:1.2rem;color:var(--accent);margin-bottom:12px}
+    .checkpoint p{margin-bottom:14px}
+    .checkpoint ul{padding-left:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+    .checkpoint ul li{color:var(--text);font-size:14px}
+    .checkpoint ul li::before{content:'✦ ';color:var(--accent)}
+    .checkpoint-hint{margin-top:16px;padding:12px 16px;background:rgba(255,255,255,0.03);border-radius:6px;font-size:13px;color:var(--muted)}
+    .pitfall{background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.25);border-radius:10px;padding:20px;margin:16px 0}
+    .pitfall-title{color:#f87171;font-weight:700;margin-bottom:8px;font-size:14px}
+    .next-card{display:flex;align-items:center;justify-content:space-between;padding:22px 24px;background:var(--surface);border:1px solid var(--accent-border);border-radius:10px;text-decoration:none;transition:all 0.2s;margin-top:24px}
+    .next-card:hover{background:var(--accent-dim)}
+    .next-card-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:4px;font-weight:600}
+    .next-card-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:#fff}
+    .next-arrow{font-size:1.5rem;color:var(--accent)}
+    .footer{display:flex;justify-content:space-between;align-items:center;padding:24px 0;margin-top:32px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)}
+    .footer a{color:var(--muted);text-decoration:none}.footer a:hover{color:var(--text)}
+    code:not(.hljs){background:rgba(255,255,255,0.07);border:1px solid var(--border);padding:1px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#d8b4fe}
+    .prompt-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin:12px 0;position:relative}
+    .prompt-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;border-radius:3px 0 0 3px;background:var(--accent)}
+    .prompt-label{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;font-weight:600}
+    .prompt-bad{border-color:rgba(239,68,68,0.3)}
+    .prompt-bad::before{background:#ef4444}
+    .prompt-bad .prompt-label{color:#f87171}
+    .prompt-good{border-color:rgba(16,185,129,0.3)}
+    .prompt-good::before{background:#10b981}
+    .prompt-good .prompt-label{color:#34d399}
+    .technique-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px;border-left:3px solid var(--accent)}
+    .technique-name{color:var(--accent);font-weight:700;font-size:14px;margin-bottom:6px}
+    .technique-when{font-size:11px;color:var(--muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.08em}
+  </style>
+</head>
+<body>
+<div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+<nav class="top-nav">
+  <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+  <div class="nav-center">
+    <a href="ai-01-como-llms-funcionam.html" class="nav-prev">← Anterior</a>
+    <div class="nav-position"><span class="track">🤖 IA</span> · Aula 38 / 50</div>
+    <a href="ai-03-prompt-eng-avancado.html" class="nav-next">Próxima →</a>
+  </div>
+</nav>
+<div class="page">
+
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <span class="hero-badge">🤖 INTELIGÊNCIA ARTIFICIAL</span>
+      <span>Aula 38 · Prioridade 7</span>
+      <span>⏱ ~30 min</span>
+    </div>
+    <h1>Prompt Engineering<br>Fundamentos</h1>
+    <div class="hero-meta">
+      <span>🎯 Zero-shot · Few-shot · CoT</span>
+      <span>🎭 Role prompting</span>
+      <span>⚙️ System vs User prompt</span>
+    </div>
+    <div class="hero-tags">
+      <span class="tag accent">Zero-shot</span>
+      <span class="tag accent">Few-shot</span>
+      <span class="tag accent">Chain-of-Thought</span>
+      <span class="tag accent">Role prompting</span>
+      <span class="tag">System prompt</span>
+      <span class="tag">Instruction tuning</span>
+      <span class="tag">Output format</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 · Motivação</div>
+    <h2>Por que Prompt Engineering importa?</h2>
+    <p>O mesmo modelo de IA pode dar respostas completamente diferentes dependendo de como você formula a instrução. Prompt Engineering é a habilidade de <strong>comunicar intenção com precisão</strong> para um LLM — a diferença entre um assistente medíocre e um especialista virtual.</p>
+    <div class="grid-3" style="margin:24px 0">
+      <div class="card-mini"><div style="font-size:1.5rem">💰</div><h4>ROI imediato</h4><p>Um prompt bem feito economiza iterações, reduz tokens e entrega resultado direto na primeira tentativa.</p></div>
+      <div class="card-mini"><div style="font-size:1.5rem">🔬</div><h4>Técnica, não magia</h4><p>Prompt Engineering tem princípios concretos e técnicas testadas cientificamente em papers.</p></div>
+      <div class="card-mini"><div style="font-size:1.5rem">🏗️</div><h4>Base para agentes</h4><p>Tudo que vem depois — RAG, agentes, function calling — depende de saber prompting bem.</p></div>
+    </div>
+    <div class="callout callout-info">
+      <div class="callout-title">💡 Por que um engenheiro sênior domina isso?</div>
+      Prompt Engineering determina a qualidade de produtos de IA. Um engenheiro que sabe prompting bem pode fazer um modelo de $0.01/1k tokens superar um de $0.30/1k tokens — 30x mais barato, mesma qualidade.
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 · Analogia</div>
+    <h2>O Assistente Brilhante mas Literal</h2>
+    <div class="analogy-card">
+      <div class="analogy-label">🧑‍💼 Analogia</div>
+      <div class="analogy-text">Imagine contratar um <strong>assistente brilhante mas extremamente literal</strong>. Se você diz "me ajuda com esse documento", ele não sabe se quer resumo, revisão, tradução ou formatação. Mas se você diz "você é revisor sênior de textos técnicos, revise o parágrafo a seguir focando em clareza e precisão técnica, entregue como lista de sugestões", o resultado é profissional. O modelo tem o conhecimento — você tem que dar o contexto, o papel, o formato e o objetivo.</div>
+      <div class="analogy-mapping">
+        <div class="analogy-real">👤 Dar papel/cargo ao assistente</div><div class="analogy-tech">→ Role prompting</div>
+        <div class="analogy-real">📋 Mostrar exemplos do que quer</div><div class="analogy-tech">→ Few-shot prompting</div>
+        <div class="analogy-real">🧠 Pedir para pensar em voz alta</div><div class="analogy-tech">→ Chain-of-Thought</div>
+        <div class="analogy-real">📏 Definir formato de entrega</div><div class="analogy-tech">→ Output format instruction</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">03 · System vs User Prompt</div>
+    <h2>Anatomia de uma Conversa com LLM</h2>
+    <p>A maioria das APIs de LLM tem dois (ou três) tipos de mensagem: <strong>system</strong>, <strong>user</strong> e <strong>assistant</strong>. Entender a diferença é fundamental.</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label">Estrutura de mensagens na API</div>
+      <div class="mermaid">
+graph TB
+    S["⚙️ SYSTEM PROMPT<br/>Instruções permanentes do desenvolvedor<br/>'Você é um assistente de código Python...'"]
+    U["👤 USER MESSAGE<br/>Input do usuário<br/>'Como faço um decorator?'"]
+    A["🤖 ASSISTANT MESSAGE<br/>Resposta do modelo<br/>'Um decorator em Python é...'"]
+    S --> U --> A
+    style S fill:#a855f7,color:#000
+    style U fill:#06b6d4,color:#000
+    style A fill:#10b981,color:#000
+      </div>
+    </div>
+
+    <pre><code class="language-python">from openai import OpenAI
+client = OpenAI()
+
+response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[
+        {
+            "role": "system",
+            "content": """Você é um especialista em Python com 15 anos de experiência.
+Suas respostas são:
+- Concisas e diretas (máximo 3 parágrafos)
+- Sempre incluem exemplo de código executável
+- Usam boas práticas (type hints, docstrings)
+- Em português do Brasil"""
+        },
+        {
+            "role": "user",
+            "content": "Como funciona o decorator @property?"
+        }
+    ]
+)</code></pre>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">🔥 System prompt é o seu contrato com o modelo</div>
+      O system prompt define a "persona" e as regras permanentes. Invista tempo nele — um bom system prompt elimina a necessidade de repetir instruções em cada mensagem do usuário.
+    </div>
+
+    <h3>Anatomia de um System Prompt eficaz</h3>
+    <div class="prompt-card prompt-bad">
+      <div class="prompt-label">❌ System prompt fraco</div>
+      <pre style="margin:0;border:none"><code class="language-text">Você é um assistente útil.</code></pre>
+    </div>
+    <div class="prompt-card prompt-good">
+      <div class="prompt-label">✅ System prompt forte</div>
+      <pre style="margin:0;border:none"><code class="language-text">## Papel
+Você é um revisor de código Python sênior na empresa Acme Corp.
+
+## Responsabilidades
+- Revisar código quanto a: bugs, performance, segurança e legibilidade
+- Sugerir refatorações baseadas em PEP 8 e boas práticas modernas (Python 3.11+)
+
+## Formato de resposta
+Sempre responda com:
+1. **Resumo** (1-2 frases)
+2. **Problemas encontrados** (lista numerada, cada item com severidade: 🔴 crítico / 🟡 aviso / 🟢 sugestão)
+3. **Código corrigido** (bloco Python completo)
+
+## Restrições
+- Não modifique a lógica de negócio, apenas a qualidade do código
+- Se o código estiver bom, diga explicitamente "Nenhum problema encontrado"
+- Responda sempre em português</code></pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">04 · Técnicas Fundamentais</div>
+    <h2>Zero-shot, Few-shot e Chain-of-Thought</h2>
+
+    <div class="technique-card" style="margin-bottom:16px">
+      <div class="technique-name">🎯 Zero-shot</div>
+      <div class="technique-when">Quando usar: tarefas simples e bem definidas, modelos grandes (GPT-4, Claude 3.5)</div>
+      <p style="font-size:13px;color:var(--text);margin-bottom:10px">Instrução direta sem exemplos. Funciona bem quando o modelo já foi treinado extensivamente naquele tipo de tarefa.</p>
+      <pre><code class="language-text">Classifique o sentimento do texto como Positivo, Negativo ou Neutro.
+
+Texto: "A entrega chegou antes do prazo e o produto superou minhas expectativas!"
+Sentimento:</code></pre>
+    </div>
+
+    <div class="technique-card" style="margin-bottom:16px">
+      <div class="technique-name">📚 Few-shot</div>
+      <div class="technique-when">Quando usar: formato específico, tarefas incomuns, quando zero-shot falha consistentemente</div>
+      <p style="font-size:13px;color:var(--text);margin-bottom:10px">Fornece 2-5 exemplos de entrada → saída antes da pergunta real. O modelo aprende o padrão pelos exemplos.</p>
+      <pre><code class="language-text">Extraia o produto e preço de cada texto. Formato: PRODUTO | PREÇO
+
+Texto: "Comprei um notebook Dell por R$ 3.200,00 no shopping"
+Extração: Notebook Dell | R$ 3.200,00
+
+Texto: "Meu celular Samsung custou 1850 reais"
+Extração: Celular Samsung | R$ 1.850,00
+
+Texto: "Adquiri uma televisão LG 55 polegadas por dois mil e quinhentos"
+Extração:</code></pre>
+    </div>
+
+    <div class="technique-card" style="margin-bottom:16px">
+      <div class="technique-name">🧠 Chain-of-Thought (CoT)</div>
+      <div class="technique-when">Quando usar: problemas de raciocínio, matemática, lógica multi-passo, debugging</div>
+      <p style="font-size:13px;color:var(--text);margin-bottom:10px">Peça ao modelo para "pensar passo a passo" antes de dar a resposta final. Reduz erros em até 40% em tarefas de raciocínio.</p>
+      <pre><code class="language-text">Resolva o problema abaixo. Pense passo a passo antes de dar a resposta final.
+
+Problema: Uma API recebe 1.200 requisições por minuto.
+Cada requisição custa 0.002 tokens em média e o limite de rate é
+800k tokens por hora. Estamos dentro do limite?
+
+Raciocínio passo a passo:</code></pre>
+      <pre><code class="language-text">## Resposta do modelo com CoT:
+
+Vou calcular passo a passo:
+
+**Passo 1:** Requisições por hora
+1.200 req/min × 60 min = 72.000 req/hora
+
+**Passo 2:** Tokens por hora
+72.000 req × 0.002 tokens/req = 144 tokens/hora
+
+**Passo 3:** Comparar com o limite
+144 tokens/hora vs 800.000 tokens/hora de limite
+
+**Conclusão:** Sim, estamos muito dentro do limite (apenas 0,018% do limite).</code></pre>
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">🔥 "Let's think step by step" — o prompt mais poderoso</div>
+      Adicionar apenas "Pense passo a passo" ou "Let's think step by step" ao final do prompt melhora significativamente a acurácia em tarefas de raciocínio. É grátis e funciona em todos os modelos.
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">05 · Role Prompting</div>
+    <h2>Role Prompting — Dando Persona ao Modelo</h2>
+    <p>Atribuir um papel específico ao modelo ativa padrões de resposta associados a esse papel no treinamento. "Você é um médico" faz o modelo ser mais cauteloso; "Você é um hacker ético" faz o modelo ser mais técnico e direto.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Persona</th><th>Efeito</th><th>Exemplo de uso</th></tr></thead>
+        <tbody>
+          <tr><td><code>Especialista sênior em X</code></td><td>Respostas técnicas, sem explicações básicas</td><td>Code review, arquitetura</td></tr>
+          <tr><td><code>Professor universitário de X</code></td><td>Explicações didáticas, progressivas, com exemplos</td><td>Aprender conceitos novos</td></tr>
+          <tr><td><code>Advogado do diabo</code></td><td>Questiona suposições, aponta falhas no argumento</td><td>Revisar planos, ideias</td></tr>
+          <tr><td><code>Editor técnico do NYT</code></td><td>Prioriza clareza, elimina jargão desnecessário</td><td>Revisar documentação</td></tr>
+          <tr><td><code>Usuário leigo de 60 anos</code></td><td>Aponta onde a explicação é confusa ou técnica demais</td><td>Testar UX copy</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <pre><code class="language-python"># Combinando role + task + format + constraints
+system_prompt = """
+## Papel
+Você é um arquiteto de software sênior com experiência em sistemas distribuídos de alta escala.
+
+## Tarefa ao receber código
+Analise o código fornecido e identifique:
+1. Problemas de performance em escala
+2. Single points of failure
+3. Problemas de segurança
+
+## Formato obrigatório
+```
+### Análise de Performance
+[lista de problemas]
+
+### Resiliência
+[lista de problemas]
+
+### Segurança
+[lista de problemas]
+
+### Recomendação principal
+[1 frase com a mudança mais impactante]
+```
+
+## Estilo
+- Direto e técnico (audiência: engenheiros sêniors)
+- Referencie padrões do setor (CAP theorem, circuit breaker, etc.)
+- Em português
+"""</code></pre>
+  </div>
+
+  <div class="section">
+    <div class="section-label">06 · Controle de Output</div>
+    <h2>Controlando o Formato da Resposta</h2>
+    <p>Especificar o formato de saída elimina pós-processamento e torna a integração em código muito mais simples.</p>
+
+    <pre><code class="language-python">## Exemplo: forçar JSON estruturado
+
+prompt = """
+Analise o seguinte texto e extraia as entidades mencionadas.
+
+Texto: "João Silva, CEO da TechBR em São Paulo, anunciou parceria com a Microsoft."
+
+Retorne APENAS um JSON válido neste formato exato:
+{
+  "pessoas": ["nome1", "nome2"],
+  "organizacoes": ["org1", "org2"],
+  "locais": ["local1"],
+  "cargos": [{"pessoa": "nome", "cargo": "titulo"}]
+}
+
+Não inclua explicações, apenas o JSON."""
+
+# Com GPT-4o, você também pode usar response_format:
+response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[{"role": "user", "content": prompt}],
+    response_format={"type": "json_object"}  # garante JSON válido
+)</code></pre>
+
+    <h3>Templates de prompt reutilizáveis</h3>
+    <pre><code class="language-python">from string import Template
+
+# Template genérico para análise de código
+CODE_REVIEW_TEMPLATE = Template("""
+Você é um $role com $years anos de experiência em $language.
+
+Revise o código abaixo focando em: $focus_areas
+
+Código:
+```$language
+$code
+```
+
+Formato de resposta:
+$output_format
+""")
+
+# Usar o template
+prompt = CODE_REVIEW_TEMPLATE.substitute(
+    role="desenvolvedor Python sênior",
+    years="10",
+    language="python",
+    focus_areas="performance, legibilidade e type hints",
+    code=my_code,
+    output_format="- Lista de pontos de melhoria\n- Código refatorado"
+)</code></pre>
+  </div>
+
+  <div class="section">
+    <div class="section-label">07 · Armadilhas</div>
+    <h2>⚠️ Erros Comuns em Prompting</h2>
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Prompt ambíguo — instrução que pode ser interpretada de várias formas</div>
+      <p><em>"Melhore meu texto"</em> → O modelo não sabe se quer gramática, estilo, concisão ou estrutura. Seja específico: <em>"Corrija erros gramaticais e melhore a clareza sem mudar o tom informal. Máximo 150 palavras."</em></p>
+    </div>
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Instruções negativas ("não faça X")</div>
+      <p>LLMs têm dificuldade com negações. "Não use linguagem técnica" é menos eficaz que "use linguagem simples, nível ensino médio". Reformule negações como afirmações do que você QUER.</p>
+    </div>
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Prompt enorme sem estrutura</div>
+      <p>Um prompt de 2 páginas sem seções claras confunde o modelo. Use cabeçalhos (##), listas (-) e separadores. O modelo processa melhor quando a instrução está bem estruturada.</p>
+    </div>
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Não testar variações</div>
+      <p>Pequenas mudanças de wording podem mudar drasticamente o resultado. Teste pelo menos 3-5 variações do mesmo prompt antes de usar em produção. Use temperature=0.0 para resultados reproduzíveis nos testes.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">08 · Curadoria</div>
+    <h2>Referências para Assistir</h2>
+    <div class="video-grid">
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">Prompt Engineering Guide — Full Course</div>
+          <div class="video-channel">DAIR.AI · ~2h</div>
+          <div class="video-why">Por que assistir: guia completo cobrindo todas as técnicas com exemplos práticos — referência técnica do setor.</div>
+          <a href="https://www.youtube.com/watch?v=_ZvnD73m40o" target="_blank" class="video-watch">Assistir →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">ChatGPT Prompt Engineering for Developers</div>
+          <div class="video-channel">DeepLearning.AI (Andrew Ng) · ~2h</div>
+          <div class="video-why">Por que assistir: curso gratuito do Andrew Ng focado em desenvolvedores — melhor introdução prática existente.</div>
+          <a href="https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/" target="_blank" class="video-watch">Assistir →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">Chain-of-Thought Prompting Explained</div>
+          <div class="video-channel">Yannic Kilcher · ~20 min</div>
+          <div class="video-why">Por que assistir: análise do paper original de CoT com experimentos reais — entenda o porquê funciona.</div>
+          <a href="https://www.youtube.com/watch?v=H4YK_7MAckk" target="_blank" class="video-watch">Assistir →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="checkpoint">
+    <div class="checkpoint-label">🏁 Checkpoint Final</div>
+    <h3>Desafio: Construir um Assistente Especializado</h3>
+    <p>Crie um assistente de code review usando as técnicas desta aula:</p>
+    <ul>
+      <li>Escreva um system prompt com role, responsabilidades, formato e restrições</li>
+      <li>Implemente few-shot com 2 exemplos de código → revisão esperada</li>
+      <li>Adicione CoT: peça ao modelo para analisar antes de dar o veredito</li>
+      <li>Force output JSON com campos: <code>score</code>, <code>issues</code>, <code>suggestions</code></li>
+      <li><strong>Bônus:</strong> Compare a qualidade da resposta com e sem CoT no mesmo código</li>
+    </ul>
+    <div class="checkpoint-hint">💬 Dica: Comece simples — system prompt de 3 linhas, depois itere. Teste com código intencialmente ruim para ver se o modelo detecta os problemas.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">09 · Próximos Passos</div>
+    <h2>O que vem depois?</h2>
+    <p>Com os fundamentos dominados, passamos às técnicas avançadas: Tree-of-Thought, Self-Consistency, ReAct, JSON mode e defesa contra jailbreaks.</p>
+    <a href="ai-03-prompt-eng-avancado.html" class="next-card">
+      <div>
+        <div class="next-card-label">→ Próxima Aula · 39 / 50</div>
+        <div class="next-card-title">Prompt Engineering Avançado — ToT, ReAct & JSON mode</div>
+      </div>
+      <div class="next-arrow">→</div>
+    </a>
+  </div>
+
+  <div class="footer">
+    <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+    <span>🤖 Prompt Engineering Fundamentos · Aula 38 / 50</span>
+    <a href="ai-03-prompt-eng-avancado.html">Próxima →</a>
+  </div>
+</div>
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+  window.addEventListener('scroll', () => { const p=(window.scrollY/(document.documentElement.scrollHeight-window.innerHeight))*100; document.getElementById('progressBar').style.width=p+'%'; });
+  document.addEventListener('DOMContentLoaded', () => { if(typeof hljs!=='undefined') hljs.highlightAll(); });
+</script>
+</body>
+</html>
