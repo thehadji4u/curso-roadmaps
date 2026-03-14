@@ -131,8 +131,8 @@ Todos os HTMLs ficam em `outputs/aulas/` com o nome exato da coluna **Arquivo**.
 |---|---|---|---|---|---|
 | `42-AI-05` | `[x]` | 🤖 IA | Embeddings & Vector Stores | Embeddings · similaridade cosseno · Pinecone/Chroma/Qdrant/pgvector | `ai-05-embeddings-vectorstores.html` |
 | `43-AI-06` | `[x]` | 🤖 IA | Pipeline RAG Completo | Chunking · ingestão → busca → rerank → geração · Avaliação de RAG · RAGAS | `ai-06-rag-pipeline.html` |
-| `44-AI-07` | `[ ]` | 🤖 IA | Agentes — Function Calling, ReAct & Memória | Function Calling · ReAct pattern · Memória · LangChain · LlamaIndex · Assistants API | `ai-07-agentes-tools.html` |
-| `45-DKR-05` | `[ ]` | 🐳 Docker | Kubernetes & Helm | Kubernetes básico · pods · deployments · services · ingress · Helm | `dkr-05-kubernetes-helm.html` |
+| `44-AI-07` | `[x]` | 🤖 IA | Agentes — Function Calling, ReAct & Memória | Function Calling · ReAct pattern · Memória · LangChain · LlamaIndex · Assistants API | `ai-07-agentes-tools.html` |
+| `45-DKR-05` | `[x]` | 🐳 Docker | Kubernetes & Helm | Kubernetes básico · pods · deployments · services · ingress · Helm | `dkr-05-kubernetes-helm.html` |
 
 ---
 

@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agentes — Function Calling, ReAct &amp; Memória · Aula 44</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #a855f7;
+      --accent-dim: rgba(168,85,247,0.15);
+      --accent-border: rgba(168,85,247,0.35);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #c084fc); width: 0%; transition: width 0.1s; }
+
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; cursor: default; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #c084fc; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.08); border-color: var(--success); }
+    .callout-tip .callout-title { color: var(--success); }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(88,166,255,0.2); color: #79c0ff; }
+    .badge-purple { background: rgba(168,85,247,0.2); color: #c084fc; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-info a { font-size: 12px; color: var(--accent); text-decoration: none; }
+    .video-info a:hover { text-decoration: underline; }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(168,85,247,0.08), rgba(192,132,252,0.04)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(168,85,247,0.06); border-radius: 6px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; }
+
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #c084fc; }
+
+    .terminal { background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .terminal-bar { background: #1a1a1a; padding: 8px 14px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ef4444; } .dot-yellow { background: #f59e0b; } .dot-green { background: #10b981; }
+    .terminal-title { font-size: 11px; color: #555; margin-left: 6px; }
+    .terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; }
+    .t-prompt { color: #10b981; } .t-cmd { color: #e8e8f0; } .t-out { color: #8585a8; } .t-comment { color: #444; font-style: italic; }
+
+    .react-loop { display: flex; flex-direction: column; gap: 0; }
+    .react-step { display: flex; gap: 16px; padding: 16px 20px; border-left: 2px solid var(--border); margin-left: 16px; position: relative; }
+    .react-step::before { content: ''; position: absolute; left: -7px; top: 20px; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
+    .react-step:last-child { border-left-color: transparent; }
+    .react-step-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; margin-bottom: 4px; }
+    .react-thought .react-step-label { color: #a855f7; }
+    .react-action .react-step-label { color: #10b981; }
+    .react-obs .react-step-label { color: #06b6d4; }
+    .react-final .react-step-label { color: #f59e0b; }
+    .react-step-content { color: var(--text); font-size: 13px; }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar"></div>
+  </div>
+
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="ai-06-rag-pipeline.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">🤖 IA</span> · Aula 44 / 50
+      </div>
+      <a href="dkr-05-kubernetes-helm.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>🤖 IA</span>
+        <span class="hero-badge">Aula 44</span>
+      </div>
+      <h1>Agentes — Function Calling, ReAct &amp; Memória</h1>
+      <div class="hero-meta">
+        <span>⏱ ~35 min de leitura</span>
+        <span>🎯 Avançado</span>
+        <span>🔧 Hands-on incluído</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">Function Calling</span>
+        <span class="tag accent">ReAct</span>
+        <span class="tag accent">LangChain Agents</span>
+        <span class="tag accent">Tool Use</span>
+        <span class="tag accent">Memória</span>
+        <span class="tag">Assistants API</span>
+        <span class="tag">LlamaIndex</span>
+        <span class="tag">agentes autônomos</span>
+      </div>
+    </div>
+
+    <!-- 1. POR QUE IMPORTA -->
+    <div class="section">
+      <div class="section-label">// motivação</div>
+      <h2>Por que isso importa?</h2>
+      <p>LLMs convencionais respondem perguntas. <strong>Agentes</strong> fazem coisas: buscam informações em tempo real, executam código, chamam APIs externas, tomam decisões iterativas e completam tarefas complexas de múltiplos passos — sem intervenção humana em cada etapa.</p>
+      <p>Essa é a diferença entre um chatbot e um <em>sistema de IA autônomo</em>. Um engenheiro sênior usa agentes para substituir scripts frágeis por pipelines que raciocinam sobre o que fazer a seguir.</p>
+
+      <div class="grid-2" style="margin-top:24px;">
+        <div class="card-mini">
+          <div style="font-size:24px;">🔍</div>
+          <h4>Pesquisa Autônoma</h4>
+          <p>Agente busca, lê e sintetiza informações de múltiplas fontes sob demanda</p>
+        </div>
+        <div class="card-mini">
+          <div style="font-size:24px;">💻</div>
+          <h4>Execução de Código</h4>
+          <p>Gera, executa e itera sobre código Python para resolver problemas analíticos</p>
+        </div>
+        <div class="card-mini">
+          <div style="font-size:24px;">🔗</div>
+          <h4>Integração de APIs</h4>
+          <p>Consulta CRMs, calendários, bancos de dados e serviços externos de forma autônoma</p>
+        </div>
+        <div class="card-mini">
+          <div style="font-size:24px;">🧠</div>
+          <h4>Memória Persistente</h4>
+          <p>Lembra de preferências, contexto anterior e histórico de interações entre sessões</p>
+        </div>
+      </div>
+
+      <div class="callout callout-info" style="margin-top:24px;">
+        <div class="callout-title">💡 Chain vs Agente</div>
+        Uma <strong>chain</strong> executa passos fixos em ordem definida em tempo de design. Um <strong>agente</strong> decide dinamicamente quais ferramentas usar, em que ordem, e quantas vezes — com base no raciocínio sobre o problema.
+      </div>
+    </div>
+
+    <!-- 2. ANALOGIA -->
+    <div class="section">
+      <div class="section-label">// analogia</div>
+      <h2>Analogia do Mundo Real</h2>
+      <div class="analogy-card">
+        <div class="analogy-label">🎯 Assistente Executivo vs Secretária de Script</div>
+        <div class="analogy-text">
+          Um sistema de IA tradicional é como uma <strong>secretária que segue um roteiro fixo</strong>: "recepcione o cliente, anote o nome, transfira para o ramal 201." Qualquer situação fora do roteiro a paralisa.<br><br>
+          Um <strong>agente de IA</strong> é como um <em>assistente executivo sênior</em>: você diz "resolva o problema do cliente" e ele decide por conta própria se precisa ligar, pesquisar, consultar o manual, escalar para outro departamento ou fazer tudo isso em sequência.
+        </div>
+        <div class="analogy-mapping">
+          <div class="analogy-real">🎯 Objetivo do chefe</div>
+          <div class="analogy-tech">input do usuário</div>
+          <div class="analogy-real">🛠 Ferramentas (telefone, email, CRM)</div>
+          <div class="analogy-tech">Tools (funções, APIs, vector stores)</div>
+          <div class="analogy-real">🧠 Raciocínio do assistente</div>
+          <div class="analogy-tech">ReAct loop (Thought → Action → Observation)</div>
+          <div class="analogy-real">📓 Bloco de notas do assistente</div>
+          <div class="analogy-tech">Memória (buffer, summary, vector)</div>
+          <div class="analogy-real">⏱ Limite de horas de trabalho</div>
+          <div class="analogy-tech">max_iterations / timeout</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. FUNCTION CALLING -->
+    <div class="section">
+      <div class="section-label">// conceito central</div>
+      <h2>Function Calling — O LLM chama funções reais</h2>
+      <p>Function Calling (OpenAI) / Tool Use (Anthropic) é o mecanismo pelo qual o LLM decide, com base na conversa, <strong>quando e como invocar funções externas</strong> que você definiu. O LLM não executa a função — ele gera um JSON estruturado com o nome da função e os argumentos; seu código faz a chamada real e devolve o resultado.</p>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// fluxo de function calling</div>
+        <div class="mermaid">
+sequenceDiagram
+    participant U as Usuário
+    participant LLM as LLM (GPT-4o)
+    participant App as Seu Código
+    participant F as Função/API
+
+    U->>App: "Qual o clima em SP e quanto é 15% de R$890?"
+    App->>LLM: mensagens + definições das tools
+    LLM->>App: tool_call: buscar_clima(cidade="São Paulo")
+    App->>F: executa buscar_clima("São Paulo")
+    F-->>App: {"temp": 28, "cond": "nublado"}
+    App->>LLM: tool_result + tool_call: calcular("0.15 * 890")
+    LLM->>App: tool_call: calcular("0.15 * 890")
+    App->>F: executa calcular("0.15 * 890")
+    F-->>App: {"resultado": 133.5}
+    App->>LLM: tool_result
+    LLM->>U: "São Paulo: 28°C nublado. 15% de R$890 = R$133,50"
+        </div>
+      </div>
+
+      <h3>Implementação com OpenAI</h3>
+      <div class="code-label">python — function_calling_openai.py</div>
+      <pre><code class="language-python">import json, os
+from openai import OpenAI
+
+client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+
+# 1. Definir as ferramentas disponíveis
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "buscar_clima",
+            "description": "Retorna o clima atual de uma cidade brasileira",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "cidade": {
+                        "type": "string",
+                        "description": "Nome da cidade, ex: São Paulo, Curitiba"
+                    },
+                    "unidade": {
+                        "type": "string",
+                        "enum": ["celsius", "fahrenheit"],
+                        "description": "Unidade de temperatura (padrão: celsius)"
+                    }
+                },
+                "required": ["cidade"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "calcular",
+            "description": "Calcula expressões matemáticas. Input: expressão como '2 + 2 * 10'",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "expressao": {"type": "string", "description": "Expressão matemática"}
+                },
+                "required": ["expressao"]
+            }
+        }
+    }
+]
+
+# 2. Implementações reais das funções
+def buscar_clima(cidade: str, unidade: str = "celsius") -> dict:
+    # Em produção: chame a API OpenWeatherMap, WeatherAPI etc.
+    mock = {
+        "São Paulo": {"temp": 28, "condicao": "parcialmente nublado", "umidade": 72},
+        "Curitiba":  {"temp": 16, "condicao": "chuvoso",              "umidade": 88},
+        "Rio de Janeiro": {"temp": 33, "condicao": "ensolarado",     "umidade": 65},
+    }
+    return mock.get(cidade, {"temp": 25, "condicao": "dados indisponíveis"})
+
+def calcular(expressao: str) -> dict:
+    try:
+        # ATENÇÃO: use ast.literal_eval ou numexpr em produção
+        resultado = eval(expressao, {"__builtins__": {}})
+        return {"resultado": resultado, "expressao": expressao}
+    except Exception as e:
+        return {"erro": str(e)}
+
+# 3. Loop do agente
+def executar_agente(pergunta: str) -> str:
+    mensagens = [{"role": "user", "content": pergunta}]
+
+    while True:
+        resposta = client.chat.completions.create(
+            model="gpt-4o",
+            messages=mensagens,
+            tools=tools,
+            tool_choice="auto"   # LLM decide se e qual tool usar
+        )
+
+        msg = resposta.choices[0].message
+
+        # Sem tool calls = resposta final em linguagem natural
+        if not msg.tool_calls:
+            return msg.content
+
+        # Adiciona a mensagem do assistente (com tool_calls) ao contexto
+        mensagens.append(msg)
+
+        # Executa cada tool call e adiciona o resultado
+        for tc in msg.tool_calls:
+            nome = tc.function.name
+            args = json.loads(tc.function.arguments)
+
+            if nome == "buscar_clima":
+                resultado = buscar_clima(**args)
+            elif nome == "calcular":
+                resultado = calcular(**args)
+            else:
+                resultado = {"erro": f"Tool '{nome}' não encontrada"}
+
+            mensagens.append({
+                "role": "tool",
+                "tool_call_id": tc.id,
+                "content": json.dumps(resultado, ensure_ascii=False)
+            })
+
+# Uso
+print(executar_agente("Qual o clima em São Paulo e Curitiba? E quanto é 15% de R$890?"))
+</code></pre>
+
+      <h3>Implementação com Anthropic (Tool Use)</h3>
+      <div class="code-label">python — tool_use_anthropic.py</div>
+      <pre><code class="language-python">import anthropic, json, os
+
+client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+
+tools = [
+    {
+        "name": "buscar_clima",
+        "description": "Retorna o clima atual de uma cidade",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "cidade": {"type": "string", "description": "Nome da cidade"}
+            },
+            "required": ["cidade"]
+        }
+    }
+]
+
+mensagens = [{"role": "user", "content": "Como está o clima no Rio de Janeiro?"}]
+
+while True:
+    resp = client.messages.create(
+        model="claude-opus-4-5",
+        max_tokens=1024,
+        tools=tools,
+        messages=mensagens
+    )
+
+    if resp.stop_reason == "end_turn":
+        for bloco in resp.content:
+            if hasattr(bloco, "text"):
+                print(bloco.text)
+        break
+
+    if resp.stop_reason == "tool_use":
+        mensagens.append({"role": "assistant", "content": resp.content})
+
+        resultados = []
+        for bloco in resp.content:
+            if bloco.type == "tool_use":
+                resultado = buscar_clima(bloco.input["cidade"])
+                resultados.append({
+                    "type": "tool_result",
+                    "tool_use_id": bloco.id,
+                    "content": json.dumps(resultado, ensure_ascii=False)
+                })
+
+        mensagens.append({"role": "user", "content": resultados})
+</code></pre>
+    </div>
+
+    <!-- 4. REACT -->
+    <div class="section">
+      <div class="section-label">// padrão de raciocínio</div>
+      <h2>Padrão ReAct — Reasoning + Acting</h2>
+      <p>ReAct é um loop de raciocínio onde o agente alterna entre <strong>pensar</strong> (Thought), <strong>agir</strong> (Action) e <strong>observar</strong> (Observation) — repetindo até ter confiança suficiente para dar a resposta final. Cada ciclo adiciona informação ao contexto.</p>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// ciclo react</div>
+        <div class="mermaid">
+flowchart TD
+    A([💬 Pergunta do usuário]) --> B
+    B[💭 Thought\nAnalisa o que precisa fazer] --> C
+    C[⚡ Action\nEscolhe e invoca uma tool] --> D
+    D[👁 Observation\nRecebe resultado da tool] --> E{Tenho informação\nsuficiente?}
+    E -->|Não — preciso de mais dados| B
+    E -->|Sim| F([✅ Final Answer])
+
+    style B fill:#1e1030,stroke:#a855f7,color:#e8e8f0
+    style C fill:#0f2a1e,stroke:#10b981,color:#e8e8f0
+    style D fill:#0a1f2a,stroke:#06b6d4,color:#e8e8f0
+    style F fill:#1e1030,stroke:#a855f7,color:#e8e8f0
+        </div>
+      </div>
+
+      <p style="margin-top:16px;">Exemplo de trace ReAct para a pergunta <em>"Quem criou Python e há quantos anos?"</em>:</p>
+
+      <div class="react-loop" style="margin:24px 0;">
+        <div class="react-step react-thought">
+          <div>
+            <div class="react-step-label">💭 Thought 1</div>
+            <div class="react-step-content">Preciso saber quem criou Python. Vou buscar na Wikipedia.</div>
+          </div>
+        </div>
+        <div class="react-step react-action">
+          <div>
+            <div class="react-step-label">⚡ Action</div>
+            <div class="react-step-content"><code>wikipedia("Python programming language creator")</code></div>
+          </div>
+        </div>
+        <div class="react-step react-obs">
+          <div>
+            <div class="react-step-label">👁 Observation</div>
+            <div class="react-step-content">"Python foi criado por Guido van Rossum. A primeira versão foi lançada em 1991."</div>
+          </div>
+        </div>
+        <div class="react-step react-thought">
+          <div>
+            <div class="react-step-label">💭 Thought 2</div>
+            <div class="react-step-content">Sei o criador (1991). Agora preciso calcular quantos anos se passaram até 2025.</div>
+          </div>
+        </div>
+        <div class="react-step react-action">
+          <div>
+            <div class="react-step-label">⚡ Action</div>
+            <div class="react-step-content"><code>calcular("2025 - 1991")</code></div>
+          </div>
+        </div>
+        <div class="react-step react-obs">
+          <div>
+            <div class="react-step-label">👁 Observation</div>
+            <div class="react-step-content"><code>{"resultado": 34}</code></div>
+          </div>
+        </div>
+        <div class="react-step react-final">
+          <div>
+            <div class="react-step-label">✅ Final Answer</div>
+            <div class="react-step-content">Python foi criado por <strong>Guido van Rossum</strong> e lançado em 1991 — há <strong>34 anos</strong>.</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Agente ReAct com LangChain</h3>
+      <div class="code-label">python — react_agent_langchain.py</div>
+      <pre><code class="language-python">from langchain.agents import create_react_agent, AgentExecutor
+from langchain_openai import ChatOpenAI
+from langchain.tools import Tool
+from langchain import hub
+import wikipedia, os
+
+llm = ChatOpenAI(model="gpt-4o", temperature=0)
+
+# Ferramentas
+def buscar_wikipedia(query: str) -> str:
+    """Busca definições e fatos na Wikipedia em português."""
+    wikipedia.set_lang("pt")
+    try:
+        return wikipedia.summary(query, sentences=4)
+    except wikipedia.exceptions.DisambiguationError as e:
+        return f"Ambíguo. Opções: {e.options[:3]}"
+    except Exception:
+        return "Informação não encontrada."
+
+def calcular(expressao: str) -> str:
+    """Calcula expressões matemáticas simples. Ex: '2025 - 1991'"""
+    try:
+        return str(eval(expressao, {"__builtins__": {}}))
+    except Exception as e:
+        return f"Erro no cálculo: {e}"
+
+tools = [
+    Tool(
+        name="wikipedia",
+        func=buscar_wikipedia,
+        description="Útil para buscar fatos, definições, histórico e informações gerais. "
+                    "Input: termo ou frase de busca em português."
+    ),
+    Tool(
+        name="calculadora",
+        func=calcular,
+        description="Para cálculos matemáticos. Input: expressão como '2025 - 1991' ou '(15/100) * 890'."
+    ),
+]
+
+# Prompt ReAct padrão (do LangChain Hub)
+prompt = hub.pull("hwchase17/react")
+
+agent = create_react_agent(llm, tools, prompt)
+executor = AgentExecutor(
+    agent=agent,
+    tools=tools,
+    verbose=True,        # mostra o trace Thought/Action/Observation
+    max_iterations=6,    # evita loops infinitos
+    handle_parsing_errors=True
+)
+
+resposta = executor.invoke({
+    "input": "Quem criou Python e em que ano? Quantos anos se passaram desde então até 2025?"
+})
+
+print("\n=== RESPOSTA FINAL ===")
+print(resposta["output"])
+</code></pre>
+    </div>
+
+    <!-- 5. MEMÓRIA -->
+    <div class="section">
+      <div class="section-label">// estado e contexto</div>
+      <h2>Memória de Agentes</h2>
+      <p>LLMs são stateless por natureza — cada chamada começa do zero. Memória é a camada que preserva contexto entre turnos de conversa ou entre sessões distintas.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Duração</th>
+              <th>Armazenamento</th>
+              <th>Tokens consumidos</th>
+              <th>Melhor para</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Window Buffer</strong></td>
+              <td>Sessão</td>
+              <td>RAM</td>
+              <td>Médio (N últimas msgs)</td>
+              <td>Chat simples, suporte</td>
+            </tr>
+            <tr>
+              <td><strong>Summary Memory</strong></td>
+              <td>Sessão</td>
+              <td>RAM</td>
+              <td>Baixo (resumo automático)</td>
+              <td>Conversas longas</td>
+            </tr>
+            <tr>
+              <td><strong>Entity Memory</strong></td>
+              <td>Sessão</td>
+              <td>RAM</td>
+              <td>Médio</td>
+              <td>Lembrar pessoas/entidades</td>
+            </tr>
+            <tr>
+              <td><strong>VectorDB Memory</strong></td>
+              <td>Persistente</td>
+              <td>Vector Store</td>
+              <td>Variável (busca semântica)</td>
+              <td>Histórico longo e rico</td>
+            </tr>
+            <tr>
+              <td><strong>Redis/Postgres</strong></td>
+              <td>Persistente</td>
+              <td>BD externo</td>
+              <td>Baixo</td>
+              <td>Produção multi-usuário</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Window Buffer Memory — prática</h3>
+      <div class="code-label">python — memoria_agente.py</div>
+      <pre><code class="language-python">from langchain.memory import ConversationBufferWindowMemory
+from langchain.chains import ConversationChain
+from langchain_openai import ChatOpenAI
+
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
+
+# Guarda apenas as últimas 5 mensagens (janela deslizante)
+memory = ConversationBufferWindowMemory(k=5, return_messages=True)
+
+chain = ConversationChain(llm=llm, memory=memory, verbose=False)
+
+# Conversa com memória
+chain.predict(input="Olá! Meu nome é Ana e trabalho com análise de dados.")
+chain.predict(input="Estou tentando aprender Python para automação.")
+chain.predict(input="Tenho 3 anos de experiência com Excel.")
+resposta = chain.predict(input="Com base no que sabe sobre mim, qual curso você recomendaria?")
+print(resposta)
+# Vai mencionar: Ana, análise de dados, Python, Excel
+
+# Ver o histórico em memória
+print("\n--- Histórico ---")
+for msg in memory.chat_memory.messages:
+    role = "Usuário" if msg.type == "human" else "IA"
+    print(f"{role}: {msg.content[:80]}...")
+</code></pre>
+
+      <h3>Memória com Vector Store (busca semântica no histórico)</h3>
+      <div class="code-label">python — memoria_vetorial.py</div>
+      <pre><code class="language-python">from langchain.memory import VectorStoreRetrieverMemory
+from langchain_community.vectorstores import Chroma
+from langchain_openai import OpenAIEmbeddings
+
+# Vector store para guardar memórias importantes
+embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+vectorstore = Chroma(
+    embedding_function=embeddings,
+    persist_directory="./agent_memory_db"
+)
+retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+memory = VectorStoreRetrieverMemory(retriever=retriever)
+
+# Salvar contexto importante
+memory.save_context(
+    {"input": "Meu framework favorito é FastAPI"},
+    {"output": "Anotei! FastAPI com Pydantic é excelente para APIs REST."}
+)
+memory.save_context(
+    {"input": "Prefiro código limpo com type hints"},
+    {"output": "Ótimo hábito! Type hints facilitam manutenção e IDEs."}
+)
+memory.save_context(
+    {"input": "Trabalho num projeto de e-commerce"},
+    {"output": "Entendido. E-commerce tem desafios de escalabilidade interessantes."}
+)
+
+# Recuperar memórias relevantes semanticamente
+contexto = memory.load_memory_variables(
+    {"prompt": "Qual tecnologia usar para construir a API do meu projeto?"}
+)
+print(contexto["history"])
+# Vai retornar as memórias sobre FastAPI e e-commerce — as mais relevantes
+</code></pre>
+    </div>
+
+    <!-- 6. OPENAI ASSISTANTS API -->
+    <div class="section">
+      <div class="section-label">// api gerenciada</div>
+      <h2>OpenAI Assistants API</h2>
+      <p>A Assistants API da OpenAI oferece um agente <em>fully managed</em>: você não gerencia o loop, as tools ou a memória manualmente. A API cuida de tudo, persistindo threads de conversa na infraestrutura da OpenAI.</p>
+
+      <div class="callout callout-info">
+        <div class="callout-title">💡 Quando usar Assistants API vs LangChain?</div>
+        Use <strong>Assistants API</strong> para MVPs rápidos, quando não precisa de flexibilidade máxima e quer zero infraestrutura.
+        Use <strong>LangChain/LlamaIndex</strong> quando precisa de controle total sobre tools, memória customizada, vector stores proprietários ou rodar 100% self-hosted.
+      </div>
+
+      <div class="code-label">python — assistants_api.py</div>
+      <pre><code class="language-python">from openai import OpenAI
+import time, os
+
+client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+
+# Criar assistente (persistido na OpenAI — faça apenas uma vez)
+assistente = client.beta.assistants.create(
+    name="Tutor de Python",
+    instructions="""Você é um tutor especializado em Python e engenharia de software.
+    Explique conceitos com exemplos práticos e código executável.
+    Sempre responda em português brasileiro.
+    Use code_interpreter para demonstrar e testar código quando útil.""",
+    model="gpt-4o",
+    tools=[
+        {"type": "code_interpreter"},  # executa Python real
+        {"type": "file_search"}        # busca em arquivos enviados
+    ]
+)
+print(f"Assistente criado: {assistente.id}")
+
+# Criar thread (uma por conversa/usuário)
+thread = client.beta.threads.create()
+
+# Adicionar pergunta
+client.beta.threads.messages.create(
+    thread_id=thread.id,
+    role="user",
+    content="Mostre-me como calcular a série de Fibonacci com e sem memoização. Compare a performance."
+)
+
+# Disparar execução
+run = client.beta.threads.runs.create(
+    thread_id=thread.id,
+    assistant_id=assistente.id
+)
+
+# Aguardar conclusão com polling
+while run.status in ["queued", "in_progress", "requires_action"]:
+    time.sleep(1)
+    run = client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id)
+    print(f"  Status: {run.status}")
+
+# Exibir resposta
+msgs = client.beta.threads.messages.list(thread_id=thread.id, order="desc")
+for msg in msgs.data:
+    if msg.role == "assistant":
+        for bloco in msg.content:
+            if bloco.type == "text":
+                print(bloco.text.value)
+        break
+
+# Continuar a conversa (thread persiste)
+client.beta.threads.messages.create(
+    thread_id=thread.id,
+    role="user",
+    content="Agora mostre como fazer o mesmo com generators."
+)
+</code></pre>
+    </div>
+
+    <!-- 7. COMPARATIVO -->
+    <div class="section">
+      <div class="section-label">// comparativo</div>
+      <h2>Frameworks de Agentes — Quando usar cada um</h2>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Framework</th>
+              <th>Filosofia</th>
+              <th>Curva</th>
+              <th>Melhor para</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>LangChain Agents</strong></td>
+              <td>Chain + Tools + Memory</td>
+              <td><span class="badge badge-yellow">Média</span></td>
+              <td>Prototipagem rápida, ecossistema amplo de tools</td>
+            </tr>
+            <tr>
+              <td><strong>LlamaIndex Agents</strong></td>
+              <td>Dados + RAG first</td>
+              <td><span class="badge badge-green">Baixa</span></td>
+              <td>Q&amp;A sobre documentos, pipelines de dados</td>
+            </tr>
+            <tr>
+              <td><strong>OpenAI Assistants</strong></td>
+              <td>Fully managed, zero infra</td>
+              <td><span class="badge badge-green">Baixa</span></td>
+              <td>MVPs rápidos, code interpreter, file search</td>
+            </tr>
+            <tr>
+              <td><strong>CrewAI</strong></td>
+              <td>Roles + Goals declarativos</td>
+              <td><span class="badge badge-yellow">Média</span></td>
+              <td>Times de agentes com papéis definidos</td>
+            </tr>
+            <tr>
+              <td><strong>LangGraph</strong></td>
+              <td>Grafo de estados explícito</td>
+              <td><span class="badge badge-red">Alta</span></td>
+              <td>Fluxos complexos, ciclos, human-in-the-loop</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 8. PITFALLS -->
+    <div class="section">
+      <div class="section-label">// armadilhas</div>
+      <h2>⚠️ Armadilhas Comuns</h2>
+
+      <div class="pitfall">
+        <div class="pitfall-title">🔁 Loop infinito sem max_iterations</div>
+        Se o agente não consegue completar a tarefa, continua tentando ferramentas indefinidamente — consumindo tokens e dinheiro. <strong>Sempre defina</strong> <code>max_iterations=5</code> e <code>max_execution_time=30</code>.
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">📝 Tool description vaga</div>
+        O LLM escolhe qual tool usar baseado APENAS na <code>description</code>. Descrição ruim = escolha errada. Seja preciso: "quando usar", "formato do input", "o que retorna".
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">🔑 Memory session_id compartilhado</div>
+        Sem <code>session_id</code> único por usuário, todos compartilham a mesma memória. Ana vai receber contexto do João. Use <code>session_id=str(user_id)</code> ou <code>session_id=str(uuid4())</code>.
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚡ Ferramentas destrutivas sem confirmação</div>
+        Nunca exponha tools como <code>deletar_registro()</code>, <code>enviar_email_em_massa()</code> ou <code>dropar_tabela()</code> sem um passo de confirmação humana. Use <strong>human-in-the-loop</strong> para ações irreversíveis.
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">💥 Tool levanta Exception</div>
+        Se sua função Python lança uma exceção, o agente para. Sempre retorne um <code>dict</code> com <code>"erro"</code> em vez de levantar — o agente pode se recuperar e tentar outra abordagem.
+      </div>
+    </div>
+
+    <!-- 9. VÍDEOS -->
+    <div class="section">
+      <div class="section-label">// curadoria</div>
+      <h2>Vídeos Recomendados</h2>
+      <div class="video-grid">
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">LangChain Agents — Full Tutorial</div>
+            <div class="video-channel">Sam Witteveen · ~30 min</div>
+            <div class="video-why">Por que assistir: Cobre ReAct agents, tools customizadas e AgentExecutor do zero com exemplos reais.</div>
+            <a href="https://www.youtube.com/watch?v=jSP-gSEyVeI" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">OpenAI Function Calling in Python</div>
+            <div class="video-channel">Patrick Loeber · ~25 min</div>
+            <div class="video-why">Por que assistir: Explica o protocolo de function calling passo a passo, com loop completo e múltiplas tools.</div>
+            <a href="https://www.youtube.com/watch?v=0lOSvOoF2to" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Build an AI Agent from Scratch</div>
+            <div class="video-channel">Dave Ebbelaar · ~45 min</div>
+            <div class="video-why">Por que assistir: Constrói um agente completo sem frameworks, ideal para entender o que acontece por baixo do LangChain.</div>
+            <a href="https://www.youtube.com/watch?v=bZzyPscbtI8" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">OpenAI Assistants API — Complete Guide</div>
+            <div class="video-channel">AI Jason · ~35 min</div>
+            <div class="video-why">Por que assistir: Walktrhough completo da Assistants API com code interpreter, file search e threads persistentes.</div>
+            <a href="https://www.youtube.com/watch?v=5rcjGjgJNQc" target="_blank">Assistir →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10. CHECKPOINT -->
+    <div class="section">
+      <div class="checkpoint">
+        <h3>🏁 Checkpoint — Agente de Pesquisa Multi-Tool</h3>
+        <p>Construa um agente de pesquisa que combina raciocínio com ferramentas reais:</p>
+        <ul>
+          <li>Implemente 3 tools: <code>buscar_wikipedia</code>, <code>calcular</code> e <code>verificar_data_atual</code></li>
+          <li>Crie o agente com LangChain ReAct (verbose=True para ver o trace)</li>
+          <li>Adicione Window Buffer Memory com as últimas 5 mensagens</li>
+          <li>Teste com a pergunta: "Quem inventou o telefone e há quantos anos isso aconteceu?"</li>
+          <li>Teste com: "Qual é a raiz quadrada de 144 mais o número de lados de um hexágono?"</li>
+          <li>Verifique que o agente para em no máximo 6 iterações</li>
+        </ul>
+        <div class="checkpoint-hint">💬 Dica: Execute com <code>verbose=True</code> e observe o trace completo Thought → Action → Observation. É a melhor forma de debugar e entender o comportamento do agente.</div>
+      </div>
+    </div>
+
+    <!-- 11. PRÓXIMOS PASSOS -->
+    <div class="section">
+      <div class="section-label">// próximos passos</div>
+      <h2>O que vem a seguir?</h2>
+      <p>Com agentes dominados, chegou a hora de colocar tudo em produção com orquestração de containers em escala enterprise.</p>
+      <a href="dkr-05-kubernetes-helm.html" class="next-card">
+        <div>
+          <div class="next-card-label">Próxima aula · Aula 45</div>
+          <div class="next-card-title">Kubernetes &amp; Helm</div>
+        </div>
+        <div class="next-arrow">→</div>
+      </a>
+    </div>
+
+  </div><!-- /page -->
+
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+    hljs.highlightAll();
+    const bar = document.getElementById('progressBar');
+    window.addEventListener('scroll', () => {
+      const p = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+      bar.style.width = p + '%';
+    });
+  </script>
+</body>
+</html>
