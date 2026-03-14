@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Playwright &amp; Fundamentos de Automação · Aula 46</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #f97316;
+      --accent-dim: rgba(249,115,22,0.15);
+      --accent-border: rgba(249,115,22,0.35);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #fb923c); width: 0%; transition: width 0.1s; }
+
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; cursor: default; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #fb923c; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.08); border-color: var(--success); }
+    .callout-tip .callout-title { color: var(--success); }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-orange { background: rgba(249,115,22,0.2); color: #fb923c; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-info a { font-size: 12px; color: var(--accent); text-decoration: none; }
+    .video-info a:hover { text-decoration: underline; }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(249,115,22,0.08), rgba(251,146,60,0.04)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(249,115,22,0.06); border-radius: 6px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; }
+
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #fb923c; }
+
+    .terminal { background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .terminal-bar { background: #1a1a1a; padding: 8px 14px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ef4444; } .dot-yellow { background: #f59e0b; } .dot-green { background: #10b981; }
+    .terminal-title { font-size: 11px; color: #555; margin-left: 6px; }
+    .terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; }
+    .t-prompt { color: #10b981; } .t-cmd { color: #e8e8f0; } .t-out { color: #8585a8; } .t-comment { color: #444; font-style: italic; }
+
+    .selector-demo { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+    .selector-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+    .selector-type { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+    .selector-example { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #a5d6ff; margin-bottom: 4px; }
+    .selector-desc { font-size: 12px; color: var(--muted); }
+    @media (max-width: 640px) { .selector-demo { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar"></div>
+  </div>
+
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="dkr-05-kubernetes-helm.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">🦀 OpenClaw</span> · Aula 46 / 50
+      </div>
+      <a href="oc-02-setup-core.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>🦀 OpenClaw</span>
+        <span class="hero-badge">Aula 46</span>
+      </div>
+      <h1>Playwright &amp; Fundamentos de Automação</h1>
+      <div class="hero-meta">
+        <span>⏱ ~35 min de leitura</span>
+        <span>🎯 Intermediário</span>
+        <span>🔧 Hands-on incluído</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">Playwright</span>
+        <span class="tag accent">Browser Automation</span>
+        <span class="tag accent">CSS Selectors</span>
+        <span class="tag accent">XPath</span>
+        <span class="tag accent">HTTP Intercept</span>
+        <span class="tag">Web Scraping</span>
+        <span class="tag">Puppeteer</span>
+        <span class="tag">Page Object Model</span>
+      </div>
+    </div>
+
+    <!-- 1. POR QUE IMPORTA -->
+    <div class="section">
+      <div class="section-label">// motivação</div>
+      <h2>Por que isso importa?</h2>
+      <p>Nem toda informação está disponível via API. Muitos sistemas legados, portais governamentais, plataformas de e-commerce e aplicações empresariais só expõem dados através da interface web. <strong>Automação de browser</strong> permite interagir com qualquer site exatamente como um humano faria — e processar os resultados programaticamente.</p>
+      <p>Playwright é a ferramenta moderna de referência: suporta Chromium, Firefox e WebKit, tem API async nativa, auto-waits inteligentes e é mantido pela Microsoft. Um engenheiro sênior usa Playwright para testes E2E, scraping estruturado, automação de tarefas repetitivas e integração com sistemas sem API.</p>
+
+      <div class="grid-2" style="margin-top:24px;">
+        <div class="card-mini">
+          <div style="font-size:24px;">🧪</div>
+          <h4>Testes E2E</h4>
+          <p>Simula o usuário real: clica, preenche formulários, navega — garante que o fluxo completo funciona.</p>
+        </div>
+        <div class="card-mini">
+          <div style="font-size:24px;">📊</div>
+          <h4>Scraping Estruturado</h4>
+          <p>Extrai dados de sites dinâmicos (JavaScript-heavy) que ferramentas simples como requests não conseguem.</p>
+        </div>
+        <div class="card-mini">
+          <div style="font-size:24px;">🤖</div>
+          <h4>Automação de Tarefas</h4>
+          <p>Preenche formulários, faz uploads, gera relatórios — tarefas manuais repetitivas eliminadas.</p>
+        </div>
+        <div class="card-mini">
+          <div style="font-size:24px;">🔍</div>
+          <h4>Monitoramento</h4>
+          <p>Monitora preços, disponibilidade de produtos, mudanças em páginas com alertas automáticos.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. ANALOGIA -->
+    <div class="section">
+      <div class="section-label">// analogia</div>
+      <h2>Analogia do Mundo Real</h2>
+      <div class="analogy-card">
+        <div class="analogy-label">🎮 O Controle Remoto Universal</div>
+        <div class="analogy-text">
+          Playwright é como um <strong>controle remoto universal de alta precisão</strong> para qualquer site. Em vez de você sentar na frente do computador e clicar manualmente, você programa o controle: "vá para esta URL, espere o botão aparecer, clique nele, preencha este campo com este valor, aguarde o resultado e extraia esse texto." O controle executa tudo com precisão milimétrica, 24/7, sem errar.
+        </div>
+        <div class="analogy-mapping">
+          <div class="analogy-real">🕹 Controle remoto</div>
+          <div class="analogy-tech">Playwright (driver do browser)</div>
+          <div class="analogy-real">📺 Televisor</div>
+          <div class="analogy-tech">Browser (Chromium/Firefox/WebKit)</div>
+          <div class="analogy-real">📍 Botão específico no controle</div>
+          <div class="analogy-tech">CSS Selector / XPath (localizador)</div>
+          <div class="analogy-real">⏳ Esperar a tela carregar</div>
+          <div class="analogy-tech">Auto-wait / waitForSelector</div>
+          <div class="analogy-real">📋 Roteiro de ações</div>
+          <div class="analogy-tech">Script Playwright</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. INSTALAÇÃO -->
+    <div class="section">
+      <div class="section-label">// setup</div>
+      <h2>Instalação e Primeiro Script</h2>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Instalar Playwright</div>
+            <div class="step-desc">Instala a biblioteca + os browsers (Chromium, Firefox, WebKit)</div>
+            <div class="terminal">
+              <div class="terminal-bar">
+                <div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div>
+                <div class="terminal-title">bash</div>
+              </div>
+              <div class="terminal-body">
+                <span class="t-prompt">$</span> <span class="t-cmd">pip install playwright</span><br>
+                <span class="t-prompt">$</span> <span class="t-cmd">playwright install</span><br>
+                <span class="t-out">Downloading Chromium 121.0.6167.57... ✓</span><br>
+                <span class="t-out">Downloading Firefox 121.0... ✓</span><br>
+                <span class="t-out">Downloading WebKit 17.4... ✓</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Primeiro script — capturar título de uma página</div>
+            <div class="step-desc">Abre o browser, navega, extrai dados, fecha</div>
+            <div class="code-label">python — primeiro_script.py</div>
+            <pre><code class="language-python">from playwright.sync_api import sync_playwright
+
+with sync_playwright() as p:
+    # Abre browser (headless=False para ver a janela)
+    browser = p.chromium.launch(headless=True)
+    page = browser.new_page()
+
+    # Navega para a URL
+    page.goto("https://example.com")
+
+    # Extrai o título
+    titulo = page.title()
+    print(f"Título: {titulo}")
+
+    # Extrai texto de um elemento
+    texto = page.locator("h1").text_content()
+    print(f"H1: {texto}")
+
+    # Captura screenshot
+    page.screenshot(path="screenshot.png")
+
+    browser.close()
+</code></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Versão Async (recomendada para produção)</div>
+            <div class="step-desc">Mais eficiente — permite múltiplas páginas em paralelo</div>
+            <div class="code-label">python — async_playwright.py</div>
+            <pre><code class="language-python">import asyncio
+from playwright.async_api import async_playwright
+
+async def main():
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        page = await browser.new_page()
+
+        await page.goto("https://quotes.toscrape.com")
+
+        # Extrai todas as citações
+        citacoes = await page.locator(".quote .text").all_text_contents()
+        autores = await page.locator(".quote .author").all_text_contents()
+
+        for citacao, autor in zip(citacoes, autores):
+            print(f"{autor}: {citacao[:60]}...")
+
+        await browser.close()
+
+asyncio.run(main())
+</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. SELETORES -->
+    <div class="section">
+      <div class="section-label">// localização de elementos</div>
+      <h2>Seletores CSS e XPath</h2>
+      <p>Para interagir com um elemento da página, você precisa <em>localizá-lo</em> primeiro. Playwright suporta CSS selectors, XPath, texto e locators semânticos (recomendado para testes).</p>
+
+      <div class="selector-demo">
+        <div class="selector-card">
+          <div class="selector-type">CSS — por ID</div>
+          <div class="selector-example">#meu-botao</div>
+          <div class="selector-desc">Elemento com id="meu-botao". Mais rápido e preciso.</div>
+        </div>
+        <div class="selector-card">
+          <div class="selector-type">CSS — por classe</div>
+          <div class="selector-example">.produto-card</div>
+          <div class="selector-desc">Todos os elementos com class="produto-card".</div>
+        </div>
+        <div class="selector-card">
+          <div class="selector-type">CSS — atributo</div>
+          <div class="selector-example">input[name="email"]</div>
+          <div class="selector-desc">Input com atributo name igual a "email".</div>
+        </div>
+        <div class="selector-card">
+          <div class="selector-type">CSS — filho direto</div>
+          <div class="selector-example">ul.menu > li:first-child</div>
+          <div class="selector-desc">Primeiro li filho direto de ul.menu.</div>
+        </div>
+        <div class="selector-card">
+          <div class="selector-type">XPath — texto exato</div>
+          <div class="selector-example">//button[text()='Enviar']</div>
+          <div class="selector-desc">Botão que contém exatamente o texto "Enviar".</div>
+        </div>
+        <div class="selector-card">
+          <div class="selector-type">XPath — contém texto</div>
+          <div class="selector-example">//a[contains(@href, '/produto')]</div>
+          <div class="selector-desc">Links cujo href contém "/produto".</div>
+        </div>
+        <div class="selector-card">
+          <div class="selector-type">Playwright — por role</div>
+          <div class="selector-example">get_by_role("button", name="Login")</div>
+          <div class="selector-desc">Semântico e resistente a mudanças de CSS. Preferido para testes.</div>
+        </div>
+        <div class="selector-card">
+          <div class="selector-type">Playwright — por texto</div>
+          <div class="selector-example">get_by_text("Ver mais detalhes")</div>
+          <div class="selector-desc">Qualquer elemento com esse texto visível.</div>
+        </div>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Como encontrar o seletor certo</div>
+        No Chrome: botão direito no elemento → Inspecionar → botão direito no HTML → Copy → Copy selector. Para XPath: Copy → Copy XPath. Valide no console do DevTools com <code>$$(".meu-seletor")</code>.
+      </div>
+    </div>
+
+    <!-- 5. AÇÕES PRINCIPAIS -->
+    <div class="section">
+      <div class="section-label">// interações</div>
+      <h2>Ações Essenciais do Playwright</h2>
+
+      <div class="code-label">python — acoes_playwright.py</div>
+      <pre><code class="language-python">from playwright.sync_api import sync_playwright
+
+with sync_playwright() as p:
+    browser = p.chromium.launch(headless=False)
+    page = browser.new_page()
+
+    # === NAVEGAÇÃO ===
+    page.goto("https://exemplo.com")
+    page.go_back()
+    page.go_forward()
+    page.reload()
+
+    # === CLIQUES ===
+    page.click("#botao-login")
+    page.locator("button.submit").click()
+    page.get_by_role("button", name="Entrar").click()
+    page.locator(".item").nth(2).click()       # terceiro item da lista
+    page.locator(".link").first.click()        # primeiro link
+
+    # === FORMULÁRIOS ===
+    page.fill("#email", "usuario@email.com")
+    page.fill("#senha", "minha_senha_123")
+    page.press("#senha", "Enter")              # pressiona Enter
+
+    page.select_option("#estado", "SP")        # dropdown por valor
+    page.check("#aceito-termos")               # checkbox
+    page.uncheck("#newsletter")
+
+    # === AGUARDAR ELEMENTOS ===
+    page.wait_for_selector(".resultado", state="visible")
+    page.wait_for_load_state("networkidle")    # aguarda rede quieta
+    page.wait_for_url("**/dashboard")         # aguarda URL mudar
+
+    # === EXTRAÇÃO DE DADOS ===
+    titulo = page.title()
+    texto = page.locator("h1").text_content()
+    href  = page.locator("a.voltar").get_attribute("href")
+    html  = page.locator(".conteudo").inner_html()
+
+    # Lista de elementos
+    itens = page.locator(".produto").all()
+    for item in itens:
+        nome  = item.locator(".nome").text_content()
+        preco = item.locator(".preco").text_content()
+        print(f"{nome}: {preco}")
+
+    # === SCROLL ===
+    page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+    page.locator(".carregar-mais").scroll_into_view_if_needed()
+
+    # === SCREENSHOT E PDF ===
+    page.screenshot(path="pagina.png", full_page=True)
+    page.pdf(path="relatorio.pdf")
+
+    browser.close()
+</code></pre>
+
+      <h3>Contextos e múltiplas abas</h3>
+      <div class="code-label">python — multiplas_abas.py</div>
+      <pre><code class="language-python">with sync_playwright() as p:
+    browser = p.chromium.launch()
+
+    # Contexto = sessão isolada (cookies, localStorage próprios)
+    contexto = browser.new_context(
+        viewport={"width": 1280, "height": 720},
+        user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        locale="pt-BR",
+        timezone_id="America/Sao_Paulo"
+    )
+
+    # Múltiplas abas no mesmo contexto (compartilham cookies)
+    aba1 = contexto.new_page()
+    aba2 = contexto.new_page()
+
+    aba1.goto("https://site.com/login")
+    aba1.fill("#user", "admin")
+    aba1.fill("#pass", "senha")
+    aba1.click("#entrar")
+    aba1.wait_for_url("**/dashboard")
+
+    # aba2 já está autenticada (mesmo contexto/cookies)
+    aba2.goto("https://site.com/relatorios")
+    dados = aba2.locator(".tabela tr").all_text_contents()
+
+    contexto.close()
+</code></pre>
+    </div>
+
+    <!-- 6. HTTP INTERCEPT -->
+    <div class="section">
+      <div class="section-label">// interceptação de rede</div>
+      <h2>HTTP Intercept — Capturar e Modificar Requisições</h2>
+      <p>Uma das funcionalidades mais poderosas do Playwright: interceptar as requisições de rede da página. Útil para capturar chamadas de API, bloquear recursos desnecessários (imagens, fontes) e acelerar o scraping.</p>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// fluxo de interceptação de requisições</div>
+        <div class="mermaid">
+sequenceDiagram
+    participant Script as Playwright Script
+    participant Page as Página
+    participant Net as Rede
+
+    Script->>Page: page.route("**/api/**", handler)
+    Page->>Net: fetch("/api/produtos")
+    Net->>Script: interceptado pelo handler
+    Script->>Script: analisa / modifica / captura
+    Script->>Net: route.continue() ou route.fulfill()
+    Net-->>Page: resposta (original ou mockada)
+        </div>
+      </div>
+
+      <div class="code-label">python — http_intercept.py</div>
+      <pre><code class="language-python">import json
+from playwright.sync_api import sync_playwright
+
+dados_api = []
+
+def capturar_resposta(response):
+    """Captura respostas JSON de chamadas à API."""
+    if "/api/produtos" in response.url and response.status == 200:
+        try:
+            dados = response.json()
+            dados_api.extend(dados.get("items", []))
+            print(f"  Capturados {len(dados.get('items', []))} itens da API")
+        except Exception:
+            pass
+
+with sync_playwright() as p:
+    browser = p.chromium.launch(headless=True)
+
+    # Contexto com bloqueio de recursos desnecessários (2-5x mais rápido)
+    contexto = browser.new_context()
+    page = contexto.new_page()
+
+    # Bloquear imagens, fontes e CSS (não precisamos deles para dados)
+    page.route("**/*.{png,jpg,jpeg,gif,webp,svg}", lambda r: r.abort())
+    page.route("**/*.{woff,woff2,ttf,eot}", lambda r: r.abort())
+
+    # Interceptar respostas da API
+    page.on("response", capturar_resposta)
+
+    # Navegar e interagir — as chamadas de API serão capturadas
+    page.goto("https://site-exemplo.com/produtos")
+
+    # Clicar em "próxima página" várias vezes para paginação
+    for pagina in range(1, 6):
+        page.wait_for_selector(".produto-card", state="visible")
+        print(f"Página {pagina}: {len(page.locator('.produto-card').all())} cards visíveis")
+
+        proximo = page.locator("button.proxima-pagina")
+        if proximo.is_visible() and proximo.is_enabled():
+            proximo.click()
+            page.wait_for_load_state("networkidle")
+        else:
+            break
+
+    print(f"\nTotal capturado via API: {len(dados_api)} produtos")
+    for item in dados_api[:3]:
+        print(f"  - {item.get('nome', 'N/A')}: R$ {item.get('preco', 'N/A')}")
+
+    browser.close()
+</code></pre>
+
+      <h3>Mockar respostas de API (ideal para testes)</h3>
+      <div class="code-label">python — mock_api.py</div>
+      <pre><code class="language-python">def mock_produtos(route):
+    """Substitui a resposta real por dados controlados."""
+    route.fulfill(
+        status=200,
+        content_type="application/json",
+        body=json.dumps({
+            "items": [
+                {"id": 1, "nome": "Produto Mock A", "preco": 99.90},
+                {"id": 2, "nome": "Produto Mock B", "preco": 149.90},
+            ],
+            "total": 2
+        })
+    )
+
+with sync_playwright() as p:
+    browser = p.chromium.launch()
+    page = browser.new_page()
+
+    # Interceptar e substituir chamada específica
+    page.route("**/api/produtos*", mock_produtos)
+
+    page.goto("https://loja.exemplo.com")
+    # A página vai receber os dados mockados — útil para testes determinísticos
+</code></pre>
+    </div>
+
+    <!-- 7. SCRAPING ESTRUTURADO -->
+    <div class="section">
+      <div class="section-label">// caso de uso real</div>
+      <h2>Scraping Estruturado — Exemplo Completo</h2>
+      <p>Extraindo dados de um e-commerce com paginação, esperando carregamento dinâmico e exportando para JSON/CSV.</p>
+
+      <div class="code-label">python — scraper_ecommerce.py</div>
+      <pre><code class="language-python">import asyncio, json, csv
+from dataclasses import dataclass, asdict
+from playwright.async_api import async_playwright
+
+@dataclass
+class Produto:
+    nome: str
+    preco: float
+    avaliacao: float
+    num_avaliacoes: int
+    url: str
+
+async def extrair_produtos_pagina(page) -> list[Produto]:
+    """Extrai todos os produtos da página atual."""
+    await page.wait_for_selector(".product-item", state="visible")
+
+    items = await page.locator(".product-item").all()
+    produtos = []
+
+    for item in items:
+        try:
+            nome = await item.locator(".product-name").text_content()
+            preco_texto = await item.locator(".price").text_content()
+            preco = float(preco_texto.replace("R$", "").replace(".", "").replace(",", ".").strip())
+
+            avaliacao_texto = await item.locator(".rating").get_attribute("data-score") or "0"
+            num_aval_texto = await item.locator(".review-count").text_content() or "0"
+            num_avaliacoes = int(''.join(filter(str.isdigit, num_aval_texto)) or 0)
+
+            url_relativa = await item.locator("a").get_attribute("href")
+            url = f"https://loja.exemplo.com{url_relativa}"
+
+            produtos.append(Produto(
+                nome=nome.strip(),
+                preco=preco,
+                avaliacao=float(avaliacao_texto),
+                num_avaliacoes=num_avaliacoes,
+                url=url
+            ))
+        except Exception as e:
+            print(f"  ⚠ Erro ao extrair produto: {e}")
+
+    return produtos
+
+async def scrape_loja(url_base: str, max_paginas: int = 10) -> list[Produto]:
+    todos_produtos = []
+
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        contexto = await browser.new_context(
+            user_agent="Mozilla/5.0 (compatible; MeuBot/1.0)",
+            viewport={"width": 1280, "height": 720}
+        )
+
+        # Bloquear mídia para acelerar
+        page = await contexto.new_page()
+        await page.route("**/*.{png,jpg,jpeg,gif,webp}", lambda r: r.abort())
+
+        await page.goto(url_base)
+
+        for num_pagina in range(1, max_paginas + 1):
+            print(f"Processando página {num_pagina}...")
+            produtos = await extrair_produtos_pagina(page)
+            todos_produtos.extend(produtos)
+            print(f"  {len(produtos)} produtos extraídos (total: {len(todos_produtos)})")
+
+            # Verificar se existe próxima página
+            proximo = page.locator("a.next-page, button[aria-label='Próxima página']")
+            if not await proximo.is_visible() or not await proximo.is_enabled():
+                print("Última página alcançada.")
+                break
+
+            await proximo.click()
+            await page.wait_for_load_state("networkidle")
+            await asyncio.sleep(1)  # Respeitar o servidor
+
+        await browser.close()
+
+    return todos_produtos
+
+async def main():
+    produtos = await scrape_loja("https://loja.exemplo.com/categoria/eletronicos")
+
+    # Salvar como JSON
+    with open("produtos.json", "w", encoding="utf-8") as f:
+        json.dump([asdict(p) for p in produtos], f, ensure_ascii=False, indent=2)
+
+    # Salvar como CSV
+    with open("produtos.csv", "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=["nome", "preco", "avaliacao", "num_avaliacoes", "url"])
+        writer.writeheader()
+        writer.writerows([asdict(p) for p in produtos])
+
+    print(f"\n✅ {len(produtos)} produtos salvos em produtos.json e produtos.csv")
+
+asyncio.run(main())
+</code></pre>
+    </div>
+
+    <!-- 8. PLAYWRIGHT vs PUPPETEER -->
+    <div class="section">
+      <div class="section-label">// comparativo</div>
+      <h2>Playwright vs Puppeteer vs Selenium</h2>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Playwright</th>
+              <th>Puppeteer</th>
+              <th>Selenium</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Browsers suportados</td>
+              <td>Chromium, Firefox, WebKit</td>
+              <td>Chromium (Chrome/Edge)</td>
+              <td>Todos (via WebDriver)</td>
+            </tr>
+            <tr>
+              <td>Linguagens</td>
+              <td>Python, JS, Java, C#</td>
+              <td>JavaScript/TypeScript</td>
+              <td>Python, Java, C#, Ruby...</td>
+            </tr>
+            <tr>
+              <td>Auto-wait</td>
+              <td><span class="badge badge-green">Nativo e inteligente</span></td>
+              <td><span class="badge badge-yellow">Básico</span></td>
+              <td><span class="badge badge-yellow">Manual (WebDriverWait)</span></td>
+            </tr>
+            <tr>
+              <td>HTTP Intercept</td>
+              <td><span class="badge badge-green">Completo</span></td>
+              <td><span class="badge badge-green">Completo</span></td>
+              <td><span class="badge badge-yellow">Limitado</span></td>
+            </tr>
+            <tr>
+              <td>Multi-tab/contexto</td>
+              <td><span class="badge badge-green">Excelente</span></td>
+              <td><span class="badge badge-yellow">Parcial</span></td>
+              <td><span class="badge badge-yellow">Complexo</span></td>
+            </tr>
+            <tr>
+              <td>Manutenção</td>
+              <td>Microsoft (ativa)</td>
+              <td>Google (ativa)</td>
+              <td>Selenium HQ (ativa)</td>
+            </tr>
+            <tr>
+              <td>Melhor para</td>
+              <td>Testes E2E + scraping moderno</td>
+              <td>Automação Chrome/Node.js</td>
+              <td>Compatibilidade legada</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-info">
+        <div class="callout-title">💡 Recomendação 2025</div>
+        Para novos projetos Python, use <strong>Playwright</strong>. Auto-wait inteligente elimina 80% dos problemas de flakiness. Para Node.js, Puppeteer ainda é uma boa escolha. Selenium só faz sentido para manter projetos legados ou quando precisa de suporte a browsers muito antigos.
+      </div>
+    </div>
+
+    <!-- 9. PITFALLS -->
+    <div class="section">
+      <div class="section-label">// armadilhas</div>
+      <h2>⚠️ Armadilhas Comuns</h2>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⏱ Race conditions — clicar antes de carregar</div>
+        <code>page.click(".botao")</code> imediatamente após <code>page.goto()</code> pode falhar se o botão ainda não existe no DOM. Use sempre <code>page.wait_for_selector(".botao")</code> ou confie no auto-wait nativo dos locators do Playwright.
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">🚫 Bloqueio por anti-bot</div>
+        Sites com Cloudflare, Akamai ou PerimeterX detectam automação por: User-Agent genérico, ausência de cookies reais, velocidade sobre-humana e fingerprinting do browser. Soluções: user-agent realista, delays aleatórios, <code>stealth</code> plugins, <code>playwright-stealth</code>.
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">🔍 Seletor frágil baseado em posição</div>
+        <code>.container > div:nth-child(3) > span</code> quebra com qualquer mudança de layout. Prefira IDs, atributos <code>data-testid</code>, roles ARIA ou texto visível — mais estáveis a mudanças de UI.
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">💾 Não fechar o browser em caso de erro</div>
+        Se o script lança exceção antes de <code>browser.close()</code>, processos do Chromium ficam zumbis. Use sempre <code>with sync_playwright() as p:</code> (context manager) ou <code>try/finally</code>.
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚖️ Aspectos legais e éticos</div>
+        Verifique o <code>robots.txt</code> e os Termos de Serviço do site antes de automatizar. Dados pessoais coletados via scraping podem violar a LGPD. Respeite rate limits e não sobrecarregue servidores.
+      </div>
+    </div>
+
+    <!-- 10. VÍDEOS -->
+    <div class="section">
+      <div class="section-label">// curadoria</div>
+      <h2>Vídeos Recomendados</h2>
+      <div class="video-grid">
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Playwright Python Tutorial — Full Course</div>
+            <div class="video-channel">Arjan Codes · ~1h</div>
+            <div class="video-why">Por que assistir: Cobre Playwright do zero com Python de forma profissional, incluindo Page Object Model e boas práticas.</div>
+            <a href="https://www.youtube.com/watch?v=AJcNMVbKPyo" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Web Scraping with Playwright</div>
+            <div class="video-channel">John Watson Rooney · ~30 min</div>
+            <div class="video-why">Por que assistir: Focado especificamente em scraping de sites dinâmicos com JavaScript, com exemplos reais.</div>
+            <a href="https://www.youtube.com/watch?v=H2-5ecFwHHQ" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Playwright in 100 Seconds</div>
+            <div class="video-channel">Fireship · ~2 min</div>
+            <div class="video-why">Por que assistir: Visão geral rápida e direta do que Playwright faz — ideal para revisar conceitos rapidamente.</div>
+            <a href="https://www.youtube.com/watch?v=wGr5rz8WKNE" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Python Web Scraping — Advanced Techniques</div>
+            <div class="video-channel">Tech With Tim · ~45 min</div>
+            <div class="video-why">Por que assistir: Técnicas avançadas de scraping incluindo bypass de proteções básicas, paginação e exportação de dados.</div>
+            <a href="https://www.youtube.com/watch?v=XVv6mJpFOb0" target="_blank">Assistir →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 11. CHECKPOINT -->
+    <div class="section">
+      <div class="checkpoint">
+        <h3>🏁 Checkpoint — Scraper de Notícias</h3>
+        <p>Construa um scraper que extrai as manchetes do <strong>G1</strong> ou <strong>UOL Notícias</strong>:</p>
+        <ul>
+          <li>Abrir a página principal do portal de notícias</li>
+          <li>Extrair os títulos, subtítulos e links das 10 primeiras manchetes</li>
+          <li>Para cada manchete, acessar a página da notícia e extrair o texto do primeiro parágrafo</li>
+          <li>Bloquear imagens e fontes para acelerar (pelo menos 2x)</li>
+          <li>Capturar screenshot da página principal</li>
+          <li>Salvar tudo em <code>noticias.json</code> com: <code>{titulo, subtitulo, url, primeiro_paragrafo}</code></li>
+        </ul>
+        <div class="checkpoint-hint">💬 Dica: Use <code>page.wait_for_load_state("domcontentloaded")</code> em vez de "networkidle" para portais de notícias — eles carregam anúncios infinitamente. Implemente <code>try/except</code> em cada extração individual para não perder todo o resultado por um erro em uma notícia.</div>
+      </div>
+    </div>
+
+    <!-- 12. PRÓXIMOS PASSOS -->
+    <div class="section">
+      <div class="section-label">// próximos passos</div>
+      <h2>O que vem a seguir?</h2>
+      <p>Com os fundamentos do Playwright dominados, vamos ao OpenClaw — a camada de automação inteligente que combina browser automation com fluxos estruturados de scraping e autenticação.</p>
+      <a href="oc-02-setup-core.html" class="next-card">
+        <div>
+          <div class="next-card-label">Próxima aula · Aula 47</div>
+          <div class="next-card-title">OpenClaw — Setup &amp; Tarefas Core</div>
+        </div>
+        <div class="next-arrow">→</div>
+      </a>
+    </div>
+
+  </div><!-- /page -->
+
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+    hljs.highlightAll();
+    const bar = document.getElementById('progressBar');
+    window.addEventListener('scroll', () => {
+      const p = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+      bar.style.width = p + '%';
+    });
+  </script>
+</body>
+</html>
