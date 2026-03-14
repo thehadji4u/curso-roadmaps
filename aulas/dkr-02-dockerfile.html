@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Docker — Dockerfile & Boas Práticas · Aula 18</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #06b6d4;
+      --accent-dim: rgba(6,182,212,0.12);
+      --accent-border: rgba(6,182,212,0.35);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #58a6ff;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #67e8f9); width: 0%; transition: width 0.1s; }
+
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; cursor: default; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #67e8f9; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(88,166,255,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.08); border-color: var(--success); }
+    .callout-tip .callout-title { color: var(--success); }
+    .callout-check { background: rgba(6,182,212,0.08); border-color: var(--accent); }
+    .callout-check .callout-title { color: var(--accent); }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(88,166,255,0.2); color: #79c0ff; }
+    .badge-cyan { background: rgba(6,182,212,0.2); color: #67e8f9; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+    .pillar-badge { font-size: 11px; padding: 3px 10px; border-radius: 4px; font-weight: 600; }
+
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-info a { font-size: 12px; color: var(--accent); text-decoration: none; }
+    .video-info a:hover { text-decoration: underline; }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(6,182,212,0.08), rgba(103,232,249,0.04)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(6,182,212,0.06); border-radius: 6px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; }
+
+    .glossary-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .glossary-term { color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+    .glossary-def { color: var(--muted); font-size: 13px; }
+
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #67e8f9; }
+
+    /* Terminal */
+    .terminal { background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .terminal-bar { background: #1a1a1a; padding: 8px 14px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ef4444; } .dot-yellow { background: #f59e0b; } .dot-green { background: #10b981; }
+    .terminal-title { font-size: 11px; color: #555; margin-left: 6px; }
+    .terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; }
+    .t-prompt { color: #10b981; } .t-cmd { color: #e8e8f0; } .t-out { color: #8585a8; } .t-comment { color: #444; font-style: italic; }
+
+    /* Layer diagram */
+    .layer-stack { display: flex; flex-direction: column; gap: 0; margin: 20px 0; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+    .layer { padding: 14px 20px; display: flex; align-items: center; gap: 14px; border-bottom: 1px solid var(--border); transition: background 0.2s; }
+    .layer:last-child { border-bottom: none; }
+    .layer:hover { background: rgba(6,182,212,0.05); }
+    .layer-num { flex-shrink: 0; width: 28px; height: 28px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
+    .layer-name { font-weight: 700; color: #fff; font-size: 13px; min-width: 120px; }
+    .layer-cmd { color: var(--accent); font-size: 12px; min-width: 140px; font-family: 'JetBrains Mono', monospace; }
+    .layer-desc { color: var(--muted); font-size: 12px; }
+    .layer.base { background: rgba(16,185,129,0.05); }
+    .layer.cached { background: rgba(6,182,212,0.03); }
+    .layer.app { background: rgba(88,166,255,0.05); }
+
+    /* Comparison blocks */
+    .compare-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+    @media (max-width: 640px) { .compare-wrap { grid-template-columns: 1fr; } }
+    .compare-block { border-radius: 10px; overflow: hidden; }
+    .compare-header { padding: 10px 16px; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; }
+    .compare-header.bad { background: rgba(239,68,68,0.15); color: #f87171; }
+    .compare-header.good { background: rgba(16,185,129,0.15); color: #34d399; }
+    .compare-block pre { margin: 0; border-radius: 0 0 10px 10px; }
+
+    /* Size indicator */
+    .size-bar-wrap { margin: 20px 0; }
+    .size-bar-item { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .size-bar-label { font-size: 12px; color: var(--muted); min-width: 120px; }
+    .size-bar-track { flex: 1; height: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+    .size-bar-fill { height: 100%; display: flex; align-items: center; padding-left: 8px; font-size: 11px; font-weight: 700; border-radius: 4px; }
+    .size-bar-fill.huge { background: rgba(239,68,68,0.3); color: #f87171; width: 100%; }
+    .size-bar-fill.big { background: rgba(245,158,11,0.3); color: #fbbf24; width: 60%; }
+    .size-bar-fill.medium { background: rgba(88,166,255,0.3); color: #79c0ff; width: 35%; }
+    .size-bar-fill.small { background: rgba(16,185,129,0.3); color: #34d399; width: 18%; }
+    .size-bar-fill.tiny { background: rgba(6,182,212,0.3); color: #67e8f9; width: 8%; }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar"></div>
+  </div>
+
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="dkr-01-conceitos-containers.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">🐳 Docker</span> · Aula 18 / 50
+      </div>
+      <a href="dkr-03-compose-redes.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>🐳 Docker</span>
+        <span class="hero-badge">Aula 18</span>
+      </div>
+      <h1>Dockerfile & Boas Práticas</h1>
+      <div class="hero-meta">
+        <span>⏱ ~40 min de leitura</span>
+        <span>🎯 Intermediário</span>
+        <span>🔧 Hands-on incluído</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">Dockerfile</span>
+        <span class="tag accent">image optimization</span>
+        <span class="tag accent">layer caching</span>
+        <span class="tag accent">health checks</span>
+        <span class="tag accent">segurança</span>
+        <span class="tag">.dockerignore</span>
+        <span class="tag">multi-stage builds</span>
+        <span class="tag">non-root user</span>
+        <span class="tag">COPY vs ADD</span>
+      </div>
+    </div>
+
+    <!-- 1. POR QUE IMPORTA -->
+    <div class="section">
+      <div class="section-label">// MOTIVAÇÃO</div>
+      <h2>Por que isso importa?</h2>
+      <p>
+        Qualquer pessoa com Google consegue escrever um Dockerfile. Mas um Dockerfile <em>ruim</em> gera imagens de 1 GB que demoram 10 minutos para buildar, que contêm vulnerabilidades críticas e que quebram silenciosamente em produção sem nenhum sinal. A diferença entre um container que "funciona no meu laptop" e um que <strong>roda de forma confiável em produção por meses</strong> está inteiramente no Dockerfile.
+      </p>
+      <p>
+        Nesta aula vamos aprender a escrever Dockerfiles que são rápidos de buildar (layer caching inteligente), pequenos (imagens mínimas), seguros (sem root, sem segredos expostos) e resilientes (health checks). Essas práticas são o que separa um DevOps júnior de um sênior.
+      </p>
+      <div class="callout callout-info">
+        <div class="callout-title">💼 Por que um engenheiro sênior se preocupa com cada byte do Dockerfile</div>
+        Em um pipeline de CI/CD com 50 builds por dia, uma imagem de 200 MB vs 1 GB representa horas de diferença em tempo de deploy. Um container rodando como root é uma vulnerabilidade de segurança crítica. Um health check mal configurado significa que o orchestrator (Kubernetes, ECS) não consegue detectar quando a aplicação travou. Cada instrução do Dockerfile tem consequências reais de custo, velocidade e segurança.
+      </div>
+    </div>
+
+    <!-- 2. ANALOGIA -->
+    <div class="section">
+      <div class="section-label">// ANALOGIA</div>
+      <h2>Antes do código: uma analogia</h2>
+      <div class="analogy-card">
+        <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
+        <div class="analogy-text">
+          Pense num Dockerfile como uma <strong>receita de bolo profissional de uma confeitaria</strong>. Uma receita amadora lista os ingredientes e diz "misture tudo e asse". Já a receita de um chef Michelin detalha: a temperatura exata, a ordem de adição dos ingredientes, os ingredientes mínimos necessários (sem desperdício), os checkpoints de verificação ("espete um palito no minuto 25") e as instruções de segurança alimentar ("higienize as mãos antes").
+          <br><br>
+          A receita <em>amadora</em> produz um bolo. A receita <em>profissional</em> produz um bolo consistente, mais rápido, mais barato e que pode ser reproduzido por qualquer confeiteiro do mundo com o mesmo resultado. O Dockerfile é exatamente essa receita — e escrever bem essa receita é o que diferencia uma imagem de produção de uma imagem de "funciona aqui".
+        </div>
+        <div class="analogy-mapping">
+          <span class="analogy-real">📋 Receita com lista de passos</span>
+          <span class="analogy-tech">→ Dockerfile (instrução por instrução)</span>
+          <span class="analogy-real">🧁 Cada camada de montagem do bolo</span>
+          <span class="analogy-tech">→ Cada instrução = uma layer de imagem</span>
+          <span class="analogy-real">🥚 Ingredientes pré-pesados e organizados</span>
+          <span class="analogy-tech">→ Base image já com dependências do SO</span>
+          <span class="analogy-real">🍰 Bolo finalizado pronto para entrega</span>
+          <span class="analogy-tech">→ Docker image pronta para deploy</span>
+          <span class="analogy-real">✅ Palito para testar se está cozido</span>
+          <span class="analogy-tech">→ HEALTHCHECK no container</span>
+          <span class="analogy-real">🙅 Chef não lambe os dedos na cozinha</span>
+          <span class="analogy-tech">→ Container roda como non-root user</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. CONCEITO CENTRAL: ANATOMIA DO DOCKERFILE -->
+    <div class="section">
+      <div class="section-label">// CONCEITO CENTRAL</div>
+      <h2>Anatomia de um Dockerfile</h2>
+      <p>
+        Um Dockerfile é uma sequência de instruções que o Docker executa de cima para baixo para construir uma imagem. Cada instrução cria uma nova <strong>layer (camada)</strong> imutável, empilhada sobre a anterior. O Docker reutiliza layers do cache sempre que possível — o que torna a <em>ordem das instruções</em> fundamental para builds rápidos.
+      </p>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">Fluxo de Build: Dockerfile → Image → Container</div>
+        <div class="mermaid">
+flowchart LR
+    DF["📄 Dockerfile"] -->|docker build| B{"Build Process"}
+    B --> L1["Layer 1\nFROM base"]
+    L1 --> L2["Layer 2\nRUN apt-get"]
+    L2 --> L3["Layer 3\nCOPY requirements"]
+    L3 --> L4["Layer 4\nRUN pip install"]
+    L4 --> L5["Layer 5\nCOPY app code"]
+    L5 --> IMG["🏷️ Docker Image\n(read-only)"]
+    IMG -->|docker run| C1["🟢 Container 1"]
+    IMG -->|docker run| C2["🟢 Container 2"]
+    IMG -->|docker run| C3["🟢 Container 3"]
+    style DF fill:#16161f,stroke:#1e1e2e,color:#e8e8f0
+    style IMG fill:#0a3a4a,stroke:#06b6d4,color:#67e8f9
+    style C1 fill:#0a2a1a,stroke:#10b981,color:#34d399
+    style C2 fill:#0a2a1a,stroke:#10b981,color:#34d399
+    style C3 fill:#0a2a1a,stroke:#10b981,color:#34d399
+        </div>
+      </div>
+
+      <h3>Instruções Fundamentais</h3>
+      <div class="layer-stack">
+        <div class="layer base">
+          <div class="layer-num">1</div>
+          <div class="layer-name">FROM</div>
+          <div class="layer-cmd">FROM python:3.12-slim</div>
+          <div class="layer-desc">Define a imagem base. <strong>Obrigatória</strong> — sempre a primeira instrução. Escolha a menor imagem que atenda suas necessidades.</div>
+        </div>
+        <div class="layer cached">
+          <div class="layer-num">2</div>
+          <div class="layer-name">WORKDIR</div>
+          <div class="layer-cmd">WORKDIR /app</div>
+          <div class="layer-desc">Define o diretório de trabalho dentro do container. Cria o diretório se não existir. Use sempre em vez de <code>RUN mkdir && cd</code>.</div>
+        </div>
+        <div class="layer cached">
+          <div class="layer-num">3</div>
+          <div class="layer-name">COPY / ADD</div>
+          <div class="layer-cmd">COPY requirements.txt .</div>
+          <div class="layer-desc">Copia arquivos do host para a imagem. <code>COPY</code> é preferível — apenas copia. <code>ADD</code> tem comportamentos extras (extrai tarballs, baixa URLs) — use somente quando necessário.</div>
+        </div>
+        <div class="layer cached">
+          <div class="layer-num">4</div>
+          <div class="layer-name">RUN</div>
+          <div class="layer-cmd">RUN pip install -r requirements.txt</div>
+          <div class="layer-desc">Executa comandos durante o build. Cada <code>RUN</code> separado cria uma nova layer. Encadeie comandos com <code>&&</code> para reduzir layers e tamanho.</div>
+        </div>
+        <div class="layer app">
+          <div class="layer-num">5</div>
+          <div class="layer-name">ENV</div>
+          <div class="layer-cmd">ENV PORT=8000</div>
+          <div class="layer-desc">Define variáveis de ambiente disponíveis no build e em runtime. Use para configurações não-sensíveis. Nunca para senhas ou tokens.</div>
+        </div>
+        <div class="layer app">
+          <div class="layer-num">6</div>
+          <div class="layer-name">EXPOSE</div>
+          <div class="layer-cmd">EXPOSE 8000</div>
+          <div class="layer-desc">Documenta qual porta o container usa. <strong>Não publica a porta</strong> — é apenas metadado para quem lê o Dockerfile e para ferramentas como Docker Compose.</div>
+        </div>
+        <div class="layer app">
+          <div class="layer-num">7</div>
+          <div class="layer-name">USER</div>
+          <div class="layer-cmd">USER appuser</div>
+          <div class="layer-desc">Define o usuário para execução. <strong>Essencial para segurança</strong> — o processo não deve rodar como root. Crie um usuário sem privilégios antes desta instrução.</div>
+        </div>
+        <div class="layer app">
+          <div class="layer-num">8</div>
+          <div class="layer-name">HEALTHCHECK</div>
+          <div class="layer-cmd">HEALTHCHECK CMD curl -f http://localhost:8000/health</div>
+          <div class="layer-desc">Define como o Docker/orchestrator verifica se o container está saudável. Containers com falha no health check recebem status <code>unhealthy</code> e são reiniciados.</div>
+        </div>
+        <div class="layer app">
+          <div class="layer-num">9</div>
+          <div class="layer-name">CMD / ENTRYPOINT</div>
+          <div class="layer-cmd">CMD ["python", "app.py"]</div>
+          <div class="layer-desc"><code>CMD</code> define o comando padrão (pode ser sobrescrito em <code>docker run</code>). <code>ENTRYPOINT</code> define o executável fixo. Prefira a forma JSON array <code>["cmd", "arg"]</code> — evita interpretação por shell.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. LAYER CACHING -->
+    <div class="section">
+      <div class="section-label">// OTIMIZAÇÃO</div>
+      <h2>Layer Caching — a regra de ouro</h2>
+      <p>
+        O Docker reutiliza layers do cache quando uma instrução e todos os seus inputs são idênticos ao build anterior. Quando uma layer muda, <strong>todas as layers subsequentes são invalidadas e reexecutadas</strong>. Isso torna a ordem das instruções crítica para performance.
+      </p>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ A Regra de Ouro do Cache</div>
+        Coloque instruções que mudam raramente no topo e instruções que mudam frequentemente no fundo. O código da aplicação muda a cada commit — ele deve ser o último a ser copiado. As dependências mudam menos — instale-as antes.
+      </div>
+
+      <div class="compare-wrap">
+        <div class="compare-block">
+          <div class="compare-header bad">❌ Ordem ruim — rebuilda tudo sempre</div>
+          <pre><code class="language-dockerfile">FROM python:3.12-slim
+WORKDIR /app
+
+# Copia TUDO de uma vez
+COPY . .
+
+# Instala dependências DEPOIS de copiar o código
+# Toda vez que qualquer arquivo mudar,
+# o pip install é reexecutado!
+RUN pip install -r requirements.txt
+
+CMD ["python", "app.py"]</code></pre>
+        </div>
+        <div class="compare-block">
+          <div class="compare-header good">✅ Ordem correta — aproveita cache</div>
+          <pre><code class="language-dockerfile">FROM python:3.12-slim
+WORKDIR /app
+
+# 1. Copia APENAS o arquivo de dependências
+COPY requirements.txt .
+
+# 2. Instala dependências (cacheia se o arquivo não mudou)
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 3. Copia o código por último (muda com frequência)
+COPY . .
+
+CMD ["python", "app.py"]</code></pre>
+        </div>
+      </div>
+
+      <p>Com a ordem correta, a cada novo commit o Docker pula todas as layers de instalação de dependências e rebuild apenas a camada do código — um build que antes demorava 4 minutos passa a demorar 8 segundos.</p>
+    </div>
+
+    <!-- 5. ESCOLHA DA BASE IMAGE -->
+    <div class="section">
+      <div class="section-label">// OTIMIZAÇÃO</div>
+      <h2>Escolhendo a Imagem Base Certa</h2>
+      <p>
+        A escolha da imagem base é a decisão mais impactante para o tamanho final da imagem. Veja a diferença para uma aplicação Python simples:
+      </p>
+
+      <div class="size-bar-wrap">
+        <div class="size-bar-item">
+          <span class="size-bar-label">python:3.12</span>
+          <div class="size-bar-track"><div class="size-bar-fill huge">~1.0 GB</div></div>
+        </div>
+        <div class="size-bar-item">
+          <span class="size-bar-label">python:3.12-bullseye</span>
+          <div class="size-bar-track"><div class="size-bar-fill big">~830 MB</div></div>
+        </div>
+        <div class="size-bar-item">
+          <span class="size-bar-label">python:3.12-slim</span>
+          <div class="size-bar-track"><div class="size-bar-fill medium">~130 MB</div></div>
+        </div>
+        <div class="size-bar-item">
+          <span class="size-bar-label">python:3.12-alpine</span>
+          <div class="size-bar-track"><div class="size-bar-fill small">~55 MB</div></div>
+        </div>
+        <div class="size-bar-item">
+          <span class="size-bar-label">gcr.io/distroless/python3</span>
+          <div class="size-bar-track"><div class="size-bar-fill tiny">~20 MB</div></div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Variante</th><th>Tamanho</th><th>Base OS</th><th>Quando usar</th><th>Cuidado</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>python:3.12</code></td>
+              <td><span class="badge badge-red">~1 GB</span></td>
+              <td>Debian Bookworm completo</td>
+              <td>Desenvolvimento inicial</td>
+              <td>Muito grande para produção</td>
+            </tr>
+            <tr>
+              <td><code>python:3.12-slim</code></td>
+              <td><span class="badge badge-yellow">~130 MB</span></td>
+              <td>Debian mínimo</td>
+              <td>Produção geral <span class="badge badge-green">Recomendado</span></td>
+              <td>Sem gcc — pode precisar para algumas libs C</td>
+            </tr>
+            <tr>
+              <td><code>python:3.12-alpine</code></td>
+              <td><span class="badge badge-green">~55 MB</span></td>
+              <td>Alpine Linux (musl libc)</td>
+              <td>Quando tamanho é crítico</td>
+              <td>Incompatibilidades com libs que usam glibc</td>
+            </tr>
+            <tr>
+              <td><code>distroless/python3</code></td>
+              <td><span class="badge badge-cyan">~20 MB</span></td>
+              <td>Sem shell, sem apt</td>
+              <td>Segurança máxima em produção</td>
+              <td>Sem shell para debug — use multi-stage</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Pro tip — Pin de versão</div>
+        Sempre fixe a versão exata da imagem base: <code>python:3.12.3-slim-bookworm</code> em vez de <code>python:3.12-slim</code>. Tags mutáveis como <code>latest</code> ou <code>3.12-slim</code> podem mudar sem aviso, quebrando seus builds. Em produção, use o digest SHA: <code>python@sha256:abc123...</code>
+      </div>
+    </div>
+
+    <!-- 6. DOCKERFILE COMPLETO OTIMIZADO -->
+    <div class="section">
+      <div class="section-label">// CÓDIGO COMENTADO</div>
+      <h2>Dockerfile Completo — Python API com Boas Práticas</h2>
+      <p>
+        Veja um Dockerfile de produção completo com todas as práticas aplicadas: cache otimizado, usuário não-root, health check, .dockerignore e instruções comentadas.
+      </p>
+
+      <div class="code-label">Dockerfile — API Python/FastAPI</div>
+      <pre><code class="language-dockerfile"># ─── Estágio de Build ────────────────────────────────────────────────────────
+# Usamos slim para ter compiladores disponíveis durante o build
+FROM python:3.12.3-slim-bookworm AS builder
+
+# Variáveis para desabilitar bytecode e buffering (boa prática em containers)
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+WORKDIR /app
+
+# ── Instalar dependências do sistema (somente o necessário) ──────────────────
+# Encadeamos em um único RUN para minimizar layers
+# --no-install-recommends evita instalar pacotes desnecessários
+# Limpamos o cache do apt na mesma layer para não inflar a imagem
+RUN apt-get update && apt-get install -y \
+    --no-install-recommends \
+    gcc \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# ── Dependências Python ───────────────────────────────────────────────────────
+# Copiamos APENAS o arquivo de requirements ANTES do código da aplicação
+# Isso garante que o pip install seja cacheado quando o código mudar
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# ─── Estágio Final (imagem de produção) ──────────────────────────────────────
+# Partimos de uma imagem limpa, sem os compiladores do estágio anterior
+FROM python:3.12.3-slim-bookworm AS production
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PORT=8000
+
+WORKDIR /app
+
+# ── Copiar apenas os pacotes instalados do estágio de build ──────────────────
+# Não copiamos os compiladores (gcc etc.) — apenas as libs Python instaladas
+COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
+
+# ── Criar usuário sem privilégios ────────────────────────────────────────────
+# NUNCA rode a aplicação como root em produção
+# --no-create-home e --disabled-password minimizam a superfície de ataque
+RUN groupadd --gid 1001 appgroup && \
+    useradd --uid 1001 --gid 1001 --no-create-home --shell /bin/false appuser
+
+# ── Copiar o código da aplicação por último ──────────────────────────────────
+# Esta é a camada que muda com mais frequência — fica por último para
+# maximizar o aproveitamento do cache das layers anteriores
+COPY --chown=appuser:appgroup . .
+
+# ── Mudar para usuário sem privilégios ───────────────────────────────────────
+USER appuser
+
+# ── Documentar porta (não publica — apenas metadado) ─────────────────────────
+EXPOSE 8000
+
+# ── Health check ─────────────────────────────────────────────────────────────
+# --interval: verifica a cada 30s
+# --timeout: desiste após 10s sem resposta
+# --start-period: aguarda 40s antes de começar a verificar (tempo de startup)
+# --retries: declara unhealthy após 3 falhas consecutivas
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" \
+    || exit 1
+
+# ── Comando de inicialização ─────────────────────────────────────────────────
+# Forma JSON array (sem shell intermediário) — melhor para tratamento de sinais
+# O processo recebe SIGTERM diretamente, permitindo shutdown gracioso
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]</code></pre>
+
+      <div class="code-label">.dockerignore — sempre inclua este arquivo</div>
+      <pre><code class="language-text"># Controle de versão
+.git
+.gitignore
+
+# Ambientes virtuais Python (não copiar para a imagem!)
+.venv
+venv
+env
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Testes e cobertura
+.pytest_cache
+.coverage
+htmlcov/
+tests/
+
+# Documentação
+docs/
+*.md
+README*
+
+# Docker (evitar recursão)
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# CI/CD e configuração local
+.github/
+.env
+.env.*
+*.env
+
+# IDEs e editores
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Builds e artefatos
+dist/
+build/
+*.egg-info/</code></pre>
+    </div>
+
+    <!-- 7. MULTI-STAGE BUILDS -->
+    <div class="section">
+      <div class="section-label">// TÉCNICA AVANÇADA</div>
+      <h2>Multi-Stage Builds — o segredo das imagens pequenas</h2>
+      <p>
+        Multi-stage builds permitem usar múltiplos <code>FROM</code> num único Dockerfile. O estágio final copia apenas o que precisa dos estágios anteriores — sem trazer compiladores, dependências de desenvolvimento ou arquivos temporários de build.
+      </p>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">Multi-Stage Build: Build Stage vs Production Stage</div>
+        <div class="mermaid">
+flowchart TD
+    subgraph "Estágio 1: builder (descartado)"
+        B1["FROM python:3.12-slim AS builder"] --> B2["apt-get install gcc libpq-dev"]
+        B2 --> B3["COPY requirements.txt"]
+        B3 --> B4["RUN pip install (com compiladores)"]
+        B4 --> B5["Resultado: 450 MB\n(com gcc, headers, cache)"]
+    end
+
+    subgraph "Estágio 2: production (imagem final)"
+        P1["FROM python:3.12-slim AS production"] --> P2["COPY --from=builder\nsite-packages only"]
+        P2 --> P3["COPY app code"]
+        P3 --> P4["USER appuser"]
+        P4 --> P5["Resultado: 130 MB\n(sem compiladores)"]
+    end
+
+    B4 -->|"COPY --from=builder\n(só as libs instaladas)"| P2
+
+    style B5 fill:#3a1010,stroke:#ef4444,color:#f87171
+    style P5 fill:#0a3a1a,stroke:#10b981,color:#34d399
+        </div>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Multi-stage para Go, Node e Java</div>
+        Multi-stage brilha especialmente em linguagens compiladas. Para Go: compile no primeiro estágio, copie apenas o binário para uma imagem <code>scratch</code> (vazia!) ou <code>distroless</code> — resultado final pode ser menor que 20 MB. Para Node.js: instale <code>devDependencies</code> no estágio de build, copie apenas <code>node_modules</code> de produção. Para Java: compile com JDK completo, rode com JRE mínimo.
+      </div>
+    </div>
+
+    <!-- 8. HEALTH CHECKS -->
+    <div class="section">
+      <div class="section-label">// RESILIÊNCIA</div>
+      <h2>Health Checks — containers que se auto-monitoram</h2>
+      <p>
+        Um container "rodando" (<code>docker ps</code> mostra <code>Up</code>) não significa que a aplicação dentro está funcional. O processo pode estar travado em deadlock, com o banco de dados desconectado, ou com memória esgotada. O <code>HEALTHCHECK</code> ensina o Docker a distinguir um container <em>saudável</em> de um container <em>vivo mas disfuncional</em>.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Parâmetro</th><th>Padrão</th><th>Significado</th><th>Recomendação</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>--interval</code></td>
+              <td>30s</td>
+              <td>Frequência das verificações</td>
+              <td>30s para produção, 10s para desenvolvimento</td>
+            </tr>
+            <tr>
+              <td><code>--timeout</code></td>
+              <td>30s</td>
+              <td>Tempo máximo aguardado por resposta</td>
+              <td>5–10s — aplicações lentas podem mascarar problemas</td>
+            </tr>
+            <tr>
+              <td><code>--start-period</code></td>
+              <td>0s</td>
+              <td>Janela de graça no startup</td>
+              <td>Ajuste para o tempo real de boot da sua aplicação</td>
+            </tr>
+            <tr>
+              <td><code>--retries</code></td>
+              <td>3</td>
+              <td>Falhas consecutivas para declarar <code>unhealthy</code></td>
+              <td>3 para evitar falsos positivos por picos de carga</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="code-label">Exemplos de HEALTHCHECK por tipo de aplicação</div>
+      <pre><code class="language-dockerfile"># API HTTP — endpoint /health dedicado (mais comum)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# API HTTP — sem curl (usando Python puro, mais portável)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
+
+# Worker sem HTTP — verificar se processo está respondendo
+HEALTHCHECK --interval=60s --timeout=30s --start-period=120s --retries=2 \
+    CMD python healthcheck.py || exit 1
+
+# PostgreSQL — verificar se o banco aceita conexões
+HEALTHCHECK --interval=10s --timeout=5s --start-period=30s --retries=5 \
+    CMD pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} || exit 1
+
+# Redis — verificar se responde a PING
+HEALTHCHECK --interval=10s --timeout=3s --retries=5 \
+    CMD redis-cli ping | grep PONG || exit 1</code></pre>
+    </div>
+
+    <!-- 9. SEGURANÇA -->
+    <div class="section">
+      <div class="section-label">// SEGURANÇA</div>
+      <h2>Segurança em Dockerfiles</h2>
+      <p>
+        Containers inseguros são vetores de ataque frequentes. Um atacante que compromete um processo root dentro de um container tem chances muito maiores de escapar para o host. As práticas abaixo reduzem drasticamente a superfície de ataque.
+      </p>
+
+      <h3>1. Nunca rode como root</h3>
+      <div class="compare-wrap">
+        <div class="compare-block">
+          <div class="compare-header bad">❌ Processo roda como root (padrão!)</div>
+          <pre><code class="language-dockerfile">FROM python:3.12-slim
+WORKDIR /app
+COPY . .
+RUN pip install -r requirements.txt
+# Sem USER = processo roda como root (uid 0)
+CMD ["python", "app.py"]</code></pre>
+        </div>
+        <div class="compare-block">
+          <div class="compare-header good">✅ Processo roda como usuário dedicado</div>
+          <pre><code class="language-dockerfile">FROM python:3.12-slim
+WORKDIR /app
+RUN groupadd --gid 1001 appgroup && \
+    useradd --uid 1001 --gid 1001 \
+    --no-create-home --shell /bin/false appuser
+COPY --chown=appuser:appgroup . .
+RUN pip install -r requirements.txt
+USER appuser
+CMD ["python", "app.py"]</code></pre>
+        </div>
+      </div>
+
+      <h3>2. Nunca embutir segredos no Dockerfile</h3>
+      <div class="pitfall">
+        <div class="pitfall-title">🚨 Segredos no Dockerfile ficam na imagem para sempre</div>
+        <p>Mesmo que você faça <code>RUN rm -rf /tmp/secret</code> em uma layer posterior, o segredo ainda está visível na layer onde foi criado. Qualquer pessoa com acesso à imagem pode extraí-lo com <code>docker history</code> ou inspecionando as layers.</p>
+      </div>
+
+      <div class="compare-wrap">
+        <div class="compare-block">
+          <div class="compare-header bad">❌ Segredo gravado na imagem</div>
+          <pre><code class="language-dockerfile"># NUNCA faça isso!
+ENV DATABASE_URL=postgresql://user:senha123@db/prod
+RUN pip install ... --extra-index-url https://token@pypi.company.com</code></pre>
+        </div>
+        <div class="compare-block">
+          <div class="compare-header good">✅ Segredo injetado em runtime</div>
+          <pre><code class="language-dockerfile"># Variável sem valor padrão = injetada no docker run
+ENV DATABASE_URL=""
+# Em runtime:
+# docker run -e DATABASE_URL=$DB_URL myimage
+# Ou use Docker secrets / Vault</code></pre>
+        </div>
+      </div>
+
+      <h3>3. Use <code>--mount=type=secret</code> para segredos no build</h3>
+      <p>Quando você precisa de credenciais <em>durante o build</em> (ex: PyPI privado, npm registry privado), use BuildKit secrets — eles nunca são armazenados nas layers:</p>
+      <div class="code-label">Dockerfile com BuildKit secrets</div>
+      <pre><code class="language-dockerfile"># syntax=docker/dockerfile:1
+FROM python:3.12-slim
+WORKDIR /app
+COPY requirements.txt .
+# O segredo é montado temporariamente apenas durante este RUN
+# e nunca fica gravado na imagem
+RUN --mount=type=secret,id=pip_token \
+    pip install --extra-index-url https://$(cat /run/secrets/pip_token)@pypi.company.com/simple/ \
+    -r requirements.txt</code></pre>
+      <div class="code-label">Build com o segredo</div>
+      <pre><code class="language-bash">docker build --secret id=pip_token,env=PIP_TOKEN .</code></pre>
+
+      <div class="table-wrap" style="margin-top:32px;">
+        <table>
+          <thead>
+            <tr><th>Prática</th><th>Impacto</th><th>Como implementar</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Non-root user</td>
+              <td><span class="badge badge-red">Crítico</span></td>
+              <td><code>useradd</code> + <code>USER</code></td>
+            </tr>
+            <tr>
+              <td>Sem segredos na imagem</td>
+              <td><span class="badge badge-red">Crítico</span></td>
+              <td>ENV em runtime, BuildKit secrets para build</td>
+            </tr>
+            <tr>
+              <td>Pin de versão da base image</td>
+              <td><span class="badge badge-yellow">Alto</span></td>
+              <td><code>FROM python:3.12.3-slim-bookworm</code></td>
+            </tr>
+            <tr>
+              <td>.dockerignore completo</td>
+              <td><span class="badge badge-yellow">Alto</span></td>
+              <td>Excluir <code>.env</code>, <code>.git</code>, credenciais</td>
+            </tr>
+            <tr>
+              <td>Imagem mínima (slim/distroless)</td>
+              <td><span class="badge badge-yellow">Alto</span></td>
+              <td>Menos pacotes = menos CVEs potenciais</td>
+            </tr>
+            <tr>
+              <td>Scan de vulnerabilidades</td>
+              <td><span class="badge badge-blue">Médio</span></td>
+              <td><code>docker scout cves myimage</code></td>
+            </tr>
+            <tr>
+              <td>Filesystem read-only</td>
+              <td><span class="badge badge-blue">Médio</span></td>
+              <td><code>docker run --read-only</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 10. HANDS-ON -->
+    <div class="section">
+      <div class="section-label">// HANDS-ON</div>
+      <h2>Passo a Passo — Dockerizando uma API FastAPI</h2>
+      <p>Vamos construir uma API Python completa com Dockerfile otimizado, do zero. Você vai executar isso na sua máquina agora.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Criar a estrutura do projeto</div>
+            <div class="step-desc">Crie os arquivos da API FastAPI de exemplo:</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal</span></div>
+              <div class="terminal-body">
+                <div><span class="t-prompt">$</span> <span class="t-cmd">mkdir fastapi-docker && cd fastapi-docker</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">touch main.py requirements.txt Dockerfile .dockerignore</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Escrever a aplicação</div>
+            <div class="step-desc">Conteúdo do <code>main.py</code>:</div>
+            <pre><code class="language-python">from fastapi import FastAPI
+import time
+
+app = FastAPI(title="Docker Demo API")
+start_time = time.time()
+
+@app.get("/")
+def root():
+    return {"message": "API funcionando!", "uptime_seconds": int(time.time() - start_time)}
+
+@app.get("/health")
+def health():
+    """Endpoint usado pelo HEALTHCHECK do Docker"""
+    return {"status": "healthy", "uptime_seconds": int(time.time() - start_time)}</code></pre>
+            <div class="step-desc" style="margin-top:12px;">Conteúdo do <code>requirements.txt</code>:</div>
+            <pre><code class="language-text">fastapi==0.111.0
+uvicorn[standard]==0.29.0</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Escrever o Dockerfile otimizado</div>
+            <div class="step-desc">Crie o <code>Dockerfile</code> com todas as boas práticas:</div>
+            <pre><code class="language-dockerfile">FROM python:3.12.3-slim-bookworm
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+RUN groupadd --gid 1001 appgroup && \
+    useradd --uid 1001 --gid 1001 --no-create-home --shell /bin/false appuser
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY --chown=appuser:appgroup . .
+
+USER appuser
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Criar o .dockerignore</div>
+            <div class="step-desc">Evitar copiar arquivos desnecessários para a imagem:</div>
+            <pre><code class="language-text">.git
+.venv
+venv
+__pycache__
+*.pyc
+.env
+.env.*
+Dockerfile*
+.dockerignore
+*.md</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Buildar e testar a imagem</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal</span></div>
+              <div class="terminal-body">
+                <div><span class="t-prompt">$</span> <span class="t-cmd">docker build -t fastapi-demo:v1 .</span></div>
+                <div class="t-out">[+] Building 18.3s</div>
+                <div class="t-out"> => [1/7] FROM python:3.12.3-slim-bookworm</div>
+                <div class="t-out"> => [4/7] RUN pip install --no-cache-dir -r requirements.txt</div>
+                <div class="t-out"> => exporting to image</div>
+                <br>
+                <div class="t-comment"># Verificar tamanho da imagem</div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">docker images fastapi-demo</span></div>
+                <div class="t-out">REPOSITORY     TAG   SIZE</div>
+                <div class="t-out">fastapi-demo   v1    <span style="color:#34d399">~185 MB</span></div>
+                <br>
+                <div class="t-comment"># Rodar o container</div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">docker run -d -p 8000:8000 --name api-demo fastapi-demo:v1</span></div>
+                <br>
+                <div class="t-comment"># Verificar health status (aguarde ~20s)</div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">docker inspect --format='{{.State.Health.Status}}' api-demo</span></div>
+                <div class="t-out" style="color:#34d399">healthy</div>
+                <br>
+                <div class="t-comment"># Testar a API</div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">curl http://localhost:8000/health</span></div>
+                <div class="t-out">{"status":"healthy","uptime_seconds":23}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <div class="step-title">Verificar que o container NÃO roda como root</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal</span></div>
+              <div class="terminal-body">
+                <div><span class="t-prompt">$</span> <span class="t-cmd">docker exec api-demo whoami</span></div>
+                <div class="t-out" style="color:#34d399">appuser</div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">docker exec api-demo id</span></div>
+                <div class="t-out">uid=1001(appuser) gid=1001(appgroup) groups=1001(appgroup)</div>
+                <br>
+                <div class="t-comment"># Testar que o cache de layers funciona — 2º build deve ser muito mais rápido</div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">echo "# comment" >> main.py && docker build -t fastapi-demo:v2 .</span></div>
+                <div class="t-out">[+] Building 1.8s <span style="color:#34d399"># ← 10x mais rápido! Layers de dependência cacheadas</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 11. ARMADILHAS -->
+    <div class="section">
+      <div class="section-label">// PITFALLS</div>
+      <h2>⚠️ Armadilhas Comuns</h2>
+
+      <div class="pitfall">
+        <div class="pitfall-title">1. Usar ENTRYPOINT sem CMD (ou vice-versa de forma errada)</div>
+        <p><code>ENTRYPOINT ["uvicorn"]</code> sem <code>CMD</code> significa que você sempre executa uvicorn, mas sem argumentos. A combinação correta é <code>ENTRYPOINT</code> para o executável fixo e <code>CMD</code> para argumentos padrão sobrescrevíveis. Ou simplesmente use apenas <code>CMD</code> para máxima flexibilidade.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">2. RUN apt-get update e install em linhas separadas</div>
+        <p>Se você fizer <code>RUN apt-get update</code> em uma layer e <code>RUN apt-get install</code> em outra, o Docker pode cachear o <code>update</code> e usar uma versão desatualizada dos repositórios. Sempre encadeie: <code>RUN apt-get update && apt-get install -y ...</code></p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">3. Usar ADD quando COPY basta</div>
+        <p><code>ADD</code> tem comportamentos implícitos — extrai archives (.tar, .gz) automaticamente e pode baixar URLs remotas. Esses efeitos colaterais tornam o build imprevisível e mais difícil de auditar. Use <code>COPY</code> por padrão; use <code>ADD</code> apenas quando você explicitamente quer a extração de tarballs.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">4. HEALTHCHECK com curl — mas a imagem não tem curl</div>
+        <p>Imagens <code>slim</code> e <code>alpine</code> geralmente não incluem <code>curl</code>. Duas soluções: instale curl explicitamente no Dockerfile (adiciona ~5 MB), ou use a forma com Python puro (<code>urllib.request</code>) que já está disponível em qualquer imagem Python.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">5. Copiar .env para dentro da imagem sem .dockerignore</div>
+        <p>Sem um <code>.dockerignore</code>, o <code>COPY . .</code> inclui todos os arquivos do diretório — incluindo <code>.env</code> com senhas, chaves de API e tokens. Sempre crie um <code>.dockerignore</code> antes de qualquer <code>COPY . .</code> e inclua <code>.env</code> e <code>.env.*</code> nele.</p>
+      </div>
+    </div>
+
+    <!-- 12. TABELA COMPARATIVA CMD vs ENTRYPOINT -->
+    <div class="section">
+      <div class="section-label">// REFERÊNCIA</div>
+      <h2>CMD vs ENTRYPOINT — quando usar cada um</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Instrução</th><th>Sobrescrevível em <code>docker run</code></th><th>Caso de uso principal</th><th>Exemplo</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>CMD</code></td>
+              <td><span class="badge badge-green">Sim — completamente</span></td>
+              <td>Aplicações onde o comando completo pode variar</td>
+              <td><code>CMD ["python", "app.py"]</code></td>
+            </tr>
+            <tr>
+              <td><code>ENTRYPOINT</code></td>
+              <td><span class="badge badge-yellow">Apenas com --entrypoint</span></td>
+              <td>Containers que se comportam como um executável</td>
+              <td><code>ENTRYPOINT ["nginx", "-g", "daemon off;"]</code></td>
+            </tr>
+            <tr>
+              <td><code>ENTRYPOINT</code> + <code>CMD</code></td>
+              <td><span class="badge badge-cyan">CMD sobrescrevível (argumentos)</span></td>
+              <td>Executável fixo com argumentos padrão sobrescrevíveis</td>
+              <td><code>ENTRYPOINT ["uvicorn"]</code> + <code>CMD ["main:app", "--port", "8000"]</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 13. VÍDEOS -->
+    <div class="section">
+      <div class="section-label">// CURADORIA</div>
+      <h2>Vídeos Recomendados</h2>
+      <div class="video-grid">
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Docker in 100 Seconds</div>
+            <div class="video-channel">Fireship · ~2 min</div>
+            <div class="video-why">Por que assistir: Overview perfeito do ecossistema Docker — mostra o Dockerfile, build e run em 100 segundos com animações claras. Ótimo para solidificar o mental model antes de mergulhar nas boas práticas.</div>
+            <a href="https://www.youtube.com/watch?v=Gjnup-PuquQ" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Docker Best Practices with Bret Fisher</div>
+            <div class="video-channel">TechWorld with Nana · ~45 min</div>
+            <div class="video-why">Por que assistir: Cobre as principais boas práticas de Dockerfile usadas em produção — layer caching, imagens mínimas, non-root user, health checks — com exemplos reais de repositórios open-source.</div>
+            <a href="https://www.youtube.com/watch?v=8vXoMqWgbQQ" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Multi-stage Docker Builds</div>
+            <div class="video-channel">TechWorld with Nana · ~20 min</div>
+            <div class="video-why">Por que assistir: Explica multi-stage builds com exemplos em Go e Node.js, mostrando a diferença de tamanho na prática — antes e depois com <code>docker images</code>. Essencial para produção.</div>
+            <a href="https://www.youtube.com/watch?v=zpkqNPwEzac" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Docker Security Best Practices</div>
+            <div class="video-channel">Bret Fisher Docker and DevOps · ~30 min</div>
+            <div class="video-why">Por que assistir: Aprofunda segurança em containers — non-root, secrets, scan de vulnerabilidades com Docker Scout, e as armadilhas mais comuns em Dockerfiles de produção.</div>
+            <a href="https://www.youtube.com/watch?v=JE2PJbbpjsM" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 14. GLOSSÁRIO -->
+    <div class="section">
+      <div class="section-label">// GLOSSÁRIO</div>
+      <h2>Termos desta Aula</h2>
+      <div class="glossary-item">
+        <div class="glossary-term">Layer (Camada)</div>
+        <div class="glossary-def">Resultado imutável de cada instrução do Dockerfile. Layers são empilhadas e compartilhadas entre imagens — se duas imagens usam a mesma base, elas compartilham aquelas layers no disco.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Layer Cache</div>
+        <div class="glossary-def">Mecanismo que reutiliza layers já computadas quando a instrução e seus inputs são idênticos. A invalidação do cache propaga para todas as layers subsequentes.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Multi-stage Build</div>
+        <div class="glossary-def">Técnica que usa múltiplos FROM em um Dockerfile. Permite usar ferramentas de build (compiladores, npm) apenas no estágio de build, copiando apenas os artefatos necessários para a imagem final.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">HEALTHCHECK</div>
+        <div class="glossary-def">Instrução que define como o Docker verifica periodicamente se o container está funcionando corretamente. Estados possíveis: <code>starting</code>, <code>healthy</code>, <code>unhealthy</code>.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Non-root container</div>
+        <div class="glossary-def">Container cujo processo principal roda como um usuário sem privilégios (uid != 0). Prática de segurança fundamental — limita o impacto de vulnerabilidades na aplicação.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">.dockerignore</div>
+        <div class="glossary-def">Arquivo similar ao <code>.gitignore</code> que lista arquivos e pastas a serem excluídos do contexto de build. Reduz tamanho da imagem e evita vazar segredos acidentalmente.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">BuildKit</div>
+        <div class="glossary-def">Backend de build moderno do Docker (padrão desde Docker 23). Oferece builds paralelos, cache avançado, builds multiplataforma e suporte a segredos que não ficam gravados nas layers.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Distroless</div>
+        <div class="glossary-def">Imagens que contêm apenas o runtime da linguagem — sem shell, sem package manager, sem utilitários Unix. Produzidas pelo Google. Superfície de ataque mínima para produção.</div>
+      </div>
+    </div>
+
+    <!-- CHECKPOINT -->
+    <div class="section">
+      <div class="checkpoint">
+        <h3>🏁 Checkpoint — Desafio Final</h3>
+        <p>Dockerize uma aplicação Python de sua escolha (pode ser um script simples que processa dados, um servidor Flask ou a API FastAPI da aula) seguindo <strong>todas as boas práticas desta aula</strong>:</p>
+        <ul>
+          <li>Dockerfile com layer caching otimizado (requirements antes do código)</li>
+          <li>Imagem base <code>slim</code> ou menor — verifique o tamanho com <code>docker images</code></li>
+          <li>Usuário dedicado non-root com <code>useradd</code> e instrução <code>USER</code></li>
+          <li>HEALTHCHECK funcional (verifique com <code>docker inspect --format='{{.State.Health.Status}}'</code>)</li>
+          <li><code>.dockerignore</code> excluindo <code>.git</code>, <code>.env</code>, <code>__pycache__</code> e venv</li>
+          <li>Comprove o cache de layers fazendo dois builds e medindo o tempo do segundo</li>
+          <li>Bônus: Implemente multi-stage build e compare o tamanho antes/depois</li>
+        </ul>
+        <div class="checkpoint-hint">💬 Dica: use <code>docker history minha-imagem</code> para inspecionar todas as layers geradas e ver o tamanho de cada uma. E <code>docker scout cves minha-imagem</code> para checar vulnerabilidades conhecidas — ótimo para entender o impacto da escolha da base image.</div>
+      </div>
+    </div>
+
+    <!-- PRÓXIMOS PASSOS -->
+    <div class="section">
+      <div class="section-label">// PRÓXIMA AULA</div>
+      <h2>O que vem a seguir?</h2>
+      <p style="margin-bottom:20px;">Com Dockerfiles bem escritos e imagens otimizadas, o próximo passo é orquestrar múltiplos containers juntos. O Docker Compose permite definir toda a infraestrutura da aplicação — API, banco de dados, cache, workers — em um único arquivo declarativo, com redes privadas, variáveis de ambiente e volumes configurados.</p>
+      <a href="dkr-03-compose-redes.html" class="next-card">
+        <div>
+          <div class="next-card-label">Próxima Aula • 🐳 Docker</div>
+          <div class="next-card-title">Docker Compose & Redes</div>
+        </div>
+        <div class="next-arrow">→</div>
+      </a>
+    </div>
+
+  </div>
+
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+    document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+
+    const bar = document.getElementById('progressBar');
+    window.addEventListener('scroll', () => {
+      const scrollTop = document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const progress = (scrollTop / scrollHeight) * 100;
+      bar.style.width = progress + '%';
+    });
+  </script>
+</body>
+</html>

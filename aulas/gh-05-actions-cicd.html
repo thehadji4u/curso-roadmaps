@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub Actions — CI/CD Completo · Aula 20</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #58a6ff;
+      --accent-dim: rgba(88,166,255,0.12);
+      --accent-border: rgba(88,166,255,0.35);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #79c0ff); width: 0%; transition: width 0.1s; }
+
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; cursor: default; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #79c0ff; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.08); border-color: var(--success); }
+    .callout-tip .callout-title { color: var(--success); }
+    .callout-check { background: rgba(88,166,255,0.08); border-color: var(--accent); }
+    .callout-check .callout-title { color: var(--accent); }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(88,166,255,0.2); color: #79c0ff; }
+    .badge-cyan { background: rgba(6,182,212,0.2); color: #67e8f9; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+    .pillar-badge { font-size: 11px; padding: 3px 10px; border-radius: 4px; font-weight: 600; }
+
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-info a { font-size: 12px; color: var(--accent); text-decoration: none; }
+    .video-info a:hover { text-decoration: underline; }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(88,166,255,0.08), rgba(121,192,255,0.04)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(88,166,255,0.06); border-radius: 6px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; }
+
+    .glossary-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .glossary-term { color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+    .glossary-def { color: var(--muted); font-size: 13px; }
+
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #79c0ff; }
+
+    /* Terminal */
+    .terminal { background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .terminal-bar { background: #1a1a1a; padding: 8px 14px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ef4444; } .dot-yellow { background: #f59e0b; } .dot-green { background: #10b981; }
+    .terminal-title { font-size: 11px; color: #555; margin-left: 6px; }
+    .terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; }
+    .t-prompt { color: #10b981; } .t-cmd { color: #e8e8f0; } .t-out { color: #8585a8; } .t-comment { color: #444; font-style: italic; }
+
+    /* Pipeline visual */
+    .pipeline { display: flex; align-items: center; gap: 0; margin: 20px 0; flex-wrap: wrap; }
+    .pipeline-stage { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; min-width: 110px; text-align: center; position: relative; transition: border-color 0.2s; }
+    .pipeline-stage:hover { border-color: var(--accent-border); }
+    .pipeline-stage-icon { font-size: 20px; margin-bottom: 4px; }
+    .pipeline-stage-name { font-size: 11px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+    .pipeline-stage-time { font-size: 10px; color: var(--muted); }
+    .pipeline-stage.pass { border-color: rgba(16,185,129,0.4); background: rgba(16,185,129,0.04); }
+    .pipeline-stage.fail { border-color: rgba(239,68,68,0.4); background: rgba(239,68,68,0.04); }
+    .pipeline-arrow { color: var(--accent); font-size: 18px; padding: 0 6px; flex-shrink: 0; }
+
+    /* Job status badges */
+    .job-status { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; }
+    .job-pass { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+    .job-fail { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+    .job-skip { background: rgba(133,133,168,0.15); color: #8585a8; border: 1px solid rgba(133,133,168,0.3); }
+    .job-run { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+
+    /* Compare blocks */
+    .compare-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+    @media (max-width: 640px) { .compare-wrap { grid-template-columns: 1fr; } }
+    .compare-block { border-radius: 10px; overflow: hidden; }
+    .compare-header { padding: 10px 16px; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; }
+    .compare-header.bad { background: rgba(239,68,68,0.15); color: #f87171; }
+    .compare-header.good { background: rgba(16,185,129,0.15); color: #34d399; }
+    .compare-block pre { margin: 0; border-radius: 0 0 10px 10px; }
+
+    /* Workflow anatomy */
+    .yaml-anatomy { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 20px 0; }
+    .yaml-anatomy-header { padding: 10px 20px; background: rgba(88,166,255,0.08); border-bottom: 1px solid var(--border); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+
+    /* Secrets panel */
+    .secrets-path { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; font-size: 13px; margin: 12px 0; display: flex; align-items: center; gap: 10px; }
+    .secrets-path-icon { font-size: 16px; }
+    .secrets-path-text { color: var(--muted); }
+    .secrets-path-text strong { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar"></div>
+  </div>
+
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="dkr-03-compose-redes.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">🐙 GitHub</span> · Aula 20 / 50
+      </div>
+      <a href="n8n-01-setup-workflow.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>🐙 GitHub</span>
+        <span class="hero-badge">Aula 20</span>
+      </div>
+      <h1>GitHub Actions — CI/CD Completo</h1>
+      <div class="hero-meta">
+        <span>⏱ ~50 min de leitura</span>
+        <span>🎯 Intermediário–Avançado</span>
+        <span>🔧 Hands-on incluído</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">workflows</span>
+        <span class="tag accent">YAML</span>
+        <span class="tag accent">CI — testes automáticos</span>
+        <span class="tag accent">CD — deploy automático</span>
+        <span class="tag accent">secrets</span>
+        <span class="tag">runners</span>
+        <span class="tag">jobs & steps</span>
+        <span class="tag">matrix strategy</span>
+        <span class="tag">marketplace actions</span>
+        <span class="tag">cache de dependências</span>
+      </div>
+    </div>
+
+    <!-- 1. POR QUE IMPORTA -->
+    <div class="section">
+      <div class="section-label">// MOTIVAÇÃO</div>
+      <h2>Por que isso importa?</h2>
+      <p>
+        Todo time de engenharia que opera com velocidade e confiança tem uma coisa em comum: <strong>ninguém faz deploy manual</strong>. Cada push de código dispara automaticamente uma bateria de testes, uma verificação de qualidade, uma build da imagem Docker e, se tudo passar, o deploy para o servidor — sem intervenção humana, sem esquecimentos, sem "funciona no meu computador".
+      </p>
+      <p>
+        O GitHub Actions é a ferramenta que viabiliza esse fluxo diretamente no GitHub, sem precisar de servidores externos como Jenkins ou CircleCI. É gratuito para repositórios públicos e tem planos generosos para privados. Mais importante: os workflows vivem <em>no próprio repositório</em>, versionados em Git, revisados em pull requests como qualquer outro código.
+      </p>
+      <div class="callout callout-info">
+        <div class="callout-title">💼 Por que um engenheiro sênior domina GitHub Actions</div>
+        CI/CD não é "nice to have" — é a fundação de qualidade de software. Sem ele, bugs que teriam sido pegos por testes automatizados chegam a produção. Deploys demoram horas e são estressantes. Com um pipeline bem construído, você faz dezenas de deploys por dia com confiança. Um dev sênior sabe configurar o pipeline inteiro: testes em paralelo, cache de dependências para builds rápidos, deploy condicional por branch e gestão segura de segredos.
+      </div>
+    </div>
+
+    <!-- 2. ANALOGIA -->
+    <div class="section">
+      <div class="section-label">// ANALOGIA</div>
+      <h2>Antes do código: uma analogia</h2>
+      <div class="analogy-card">
+        <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
+        <div class="analogy-text">
+          Pense numa <strong>linha de montagem de automóveis</strong>. Quando um novo componente chega à fábrica, ele não vai direto para o carro do cliente. Ele passa por uma esteira automática com estações de inspeção: verificação de dimensões, teste de resistência, pintura, controle de qualidade final — e só então, se aprovado em cada etapa, é instalado no veículo e entregue.
+          <br><br>
+          O GitHub Actions é essa <strong>esteira de montagem do seu código</strong>. Cada push é o componente que entra na fábrica. Os <em>jobs</em> são as estações de inspeção. Os <em>steps</em> são as operações de cada estação. Os <em>runners</em> são os robôs que executam cada etapa. E o deploy é a entrega do produto final aprovado — automaticamente, sem precisar de um operário humano em cada etapa.
+        </div>
+        <div class="analogy-mapping">
+          <span class="analogy-real">🏭 Linha de montagem completa</span>
+          <span class="analogy-tech">→ Workflow (.yml)</span>
+          <span class="analogy-real">📦 Componente novo chegando</span>
+          <span class="analogy-tech">→ Push / Pull Request (trigger)</span>
+          <span class="analogy-real">🔧 Estação de inspeção</span>
+          <span class="analogy-tech">→ Job (ex: test, build, deploy)</span>
+          <span class="analogy-real">⚙️ Operação dentro da estação</span>
+          <span class="analogy-tech">→ Step (ex: run tests, docker push)</span>
+          <span class="analogy-real">🤖 Robô que executa a operação</span>
+          <span class="analogy-tech">→ Runner (ubuntu-latest)</span>
+          <span class="analogy-real">✅ Aprovado em todos os controles</span>
+          <span class="analogy-tech">→ Deploy disparado automaticamente</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. CONCEITO CENTRAL: ANATOMIA DO WORKFLOW -->
+    <div class="section">
+      <div class="section-label">// CONCEITO CENTRAL</div>
+      <h2>Anatomia de um Workflow</h2>
+      <p>
+        Um workflow é um arquivo YAML localizado em <code>.github/workflows/nome.yml</code> no seu repositório. Ele define <strong>quando</strong> rodar (trigger), <strong>onde</strong> rodar (runner) e <strong>o que</strong> fazer (jobs e steps).
+      </p>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">Hierarquia: Workflow → Jobs → Steps</div>
+        <div class="mermaid">
+graph TD
+    WF["📄 Workflow\n(.github/workflows/ci.yml)"]
+    TR["⚡ Triggers\non: push, pull_request, schedule"]
+    J1["💼 Job: test\nruns-on: ubuntu-latest"]
+    J2["💼 Job: build\nneeds: test"]
+    J3["💼 Job: deploy\nneeds: build"]
+
+    S1["▶ Step: Checkout code\nuses: actions/checkout@v4"]
+    S2["▶ Step: Setup Python\nuses: actions/setup-python@v5"]
+    S3["▶ Step: Install deps\nrun: pip install -r requirements.txt"]
+    S4["▶ Step: Run tests\nrun: pytest --cov"]
+
+    S5["▶ Step: Build Docker image\nrun: docker build"]
+    S6["▶ Step: Push to registry\nrun: docker push"]
+
+    S7["▶ Step: Deploy to server\nrun: ssh deploy.sh"]
+
+    WF --> TR
+    TR --> J1
+    TR --> J2
+    TR --> J3
+    J1 --> S1 --> S2 --> S3 --> S4
+    J2 --> S5 --> S6
+    J3 --> S7
+
+    style WF fill:#0a1a3a,stroke:#58a6ff,color:#79c0ff
+    style J1 fill:#0a2a1a,stroke:#10b981,color:#34d399
+    style J2 fill:#16161f,stroke:#1e1e2e,color:#8585a8
+    style J3 fill:#3a2a0a,stroke:#f59e0b,color:#fbbf24
+        </div>
+      </div>
+
+      <h3>Os 5 blocos fundamentais</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Bloco</th><th>O que é</th><th>Exemplo</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>on:</code></td>
+              <td>Trigger — o que dispara o workflow</td>
+              <td><code>push</code>, <code>pull_request</code>, <code>schedule</code>, <code>workflow_dispatch</code></td>
+            </tr>
+            <tr>
+              <td><code>jobs:</code></td>
+              <td>Unidades de trabalho paralelas (ou sequenciais com <code>needs</code>)</td>
+              <td><code>test</code>, <code>build</code>, <code>deploy</code></td>
+            </tr>
+            <tr>
+              <td><code>runs-on:</code></td>
+              <td>Runner — máquina virtual onde o job executa</td>
+              <td><code>ubuntu-latest</code>, <code>windows-latest</code>, <code>macos-latest</code></td>
+            </tr>
+            <tr>
+              <td><code>steps:</code></td>
+              <td>Sequência de comandos dentro de um job</td>
+              <td><code>uses: actions/checkout@v4</code>, <code>run: pytest</code></td>
+            </tr>
+            <tr>
+              <td><code>env:</code> / <code>secrets:</code></td>
+              <td>Variáveis de ambiente e segredos criptografados</td>
+              <td><code>${{ secrets.DOCKER_TOKEN }}</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 4. TRIGGERS -->
+    <div class="section">
+      <div class="section-label">// TRIGGERS</div>
+      <h2>Triggers — quando o workflow roda</h2>
+      <p>
+        O bloco <code>on:</code> define os eventos que disparam o workflow. Você pode combinar múltiplos triggers e filtrar por branches, tags ou caminhos de arquivos.
+      </p>
+
+      <div class="code-label">Principais triggers — referência completa</div>
+      <pre><code class="language-yaml">on:
+  # ── Push de código ────────────────────────────────────────────
+  push:
+    branches:
+      - main          # Só na branch main
+      - 'release/**'  # Qualquer branch com prefixo release/
+    paths:
+      - 'src/**'      # Só quando arquivos em src/ mudam
+      - '**.py'       # Só quando arquivos .py mudam
+    tags:
+      - 'v*'          # Qualquer tag começando com v (ex: v1.2.3)
+
+  # ── Pull Requests ─────────────────────────────────────────────
+  pull_request:
+    branches:
+      - main          # PRs apontando para main
+    types:
+      - opened        # PR criado
+      - synchronize   # Novo commit no PR
+      - reopened      # PR reaberto
+
+  # ── Agendamento (cron) ────────────────────────────────────────
+  schedule:
+    - cron: '0 2 * * *'    # Toda noite às 2h UTC (ex: backup, scan de segurança)
+    - cron: '0 9 * * 1-5'  # Dias úteis às 9h UTC
+
+  # ── Disparo manual pela interface do GitHub ───────────────────
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy'
+        required: true
+        default: 'staging'
+        type: choice
+        options: [staging, production]
+
+  # ── Disparado por outro workflow ──────────────────────────────
+  workflow_call:
+    inputs:
+      version:
+        type: string
+        required: true</code></pre>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Pro tip — paths-ignore para evitar loops</div>
+        Use <code>paths-ignore</code> para não disparar o workflow quando apenas documentação ou arquivos de config mudam: <code>paths-ignore: ['**.md', '.github/**', 'docs/**']</code>. Evita gastar minutos gratuitos em pushes que não afetam o código.
+      </div>
+    </div>
+
+    <!-- 5. WORKFLOW CI COMPLETO -->
+    <div class="section">
+      <div class="section-label">// CI — INTEGRAÇÃO CONTÍNUA</div>
+      <h2>Pipeline de CI — testes automáticos completo</h2>
+      <p>
+        O objetivo do CI é garantir que cada mudança no código não quebra nada. O pipeline roda testes, verifica formatação, analisa cobertura e reporta tudo diretamente no Pull Request.
+      </p>
+
+      <div class="pipeline">
+        <div class="pipeline-stage pass">
+          <div class="pipeline-stage-icon">📥</div>
+          <div class="pipeline-stage-name">Checkout</div>
+          <div class="pipeline-stage-time">~5s</div>
+        </div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-stage pass">
+          <div class="pipeline-stage-icon">🐍</div>
+          <div class="pipeline-stage-name">Setup Python</div>
+          <div class="pipeline-stage-time">~10s</div>
+        </div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-stage pass">
+          <div class="pipeline-stage-icon">📦</div>
+          <div class="pipeline-stage-name">Install deps</div>
+          <div class="pipeline-stage-time">~30s (cache)</div>
+        </div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-stage pass">
+          <div class="pipeline-stage-icon">🎨</div>
+          <div class="pipeline-stage-name">Lint & Format</div>
+          <div class="pipeline-stage-time">~10s</div>
+        </div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-stage pass">
+          <div class="pipeline-stage-icon">🧪</div>
+          <div class="pipeline-stage-name">Tests + Coverage</div>
+          <div class="pipeline-stage-time">~45s</div>
+        </div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-stage pass">
+          <div class="pipeline-stage-icon">✅</div>
+          <div class="pipeline-stage-name">Report</div>
+          <div class="pipeline-stage-time">~5s</div>
+        </div>
+      </div>
+
+      <div class="code-label">.github/workflows/ci.yml — pipeline CI completo com cache</div>
+      <pre><code class="language-yaml">name: CI — Testes & Qualidade
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+# Cancela runs anteriores do mesmo PR para economizar minutos
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  # ─── Job 1: Lint & Formatação ───────────────────────────────────────────────
+  lint:
+    name: 🎨 Lint & Format
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Instalar ferramentas de lint
+        run: pip install ruff black isort
+
+      - name: Verificar formatação com Black
+        run: black --check .
+
+      - name: Verificar imports com isort
+        run: isort --check-only .
+
+      - name: Lint com Ruff
+        run: ruff check .
+
+  # ─── Job 2: Testes ─────────────────────────────────────────────────────────
+  test:
+    name: 🧪 Testes
+    runs-on: ubuntu-latest
+    needs: lint   # Só roda se lint passar
+
+    # Matrix: testa em múltiplas versões do Python simultaneamente
+    strategy:
+      fail-fast: false   # Continua testando outras versões se uma falhar
+      matrix:
+        python-version: ['3.11', '3.12']
+
+    # Serviços auxiliares (sobem como containers no runner)
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-${{ matrix.python-version }}-pip-${{ hashFiles('**/requirements*.txt') }}
+
+      - name: Instalar dependências
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      - name: Rodar testes com cobertura
+        env:
+          DATABASE_URL: postgresql://testuser:testpass@localhost:5432/testdb
+          REDIS_URL: redis://localhost:6379/0
+          SECRET_KEY: ci-test-secret-key
+        run: |
+          pytest \
+            --cov=app \
+            --cov-report=xml \
+            --cov-report=term-missing \
+            --cov-fail-under=80 \
+            -v \
+            --tb=short
+
+      - name: Upload coverage para Codecov
+        uses: codecov/codecov-action@v4
+        if: matrix.python-version == '3.12'   # Sobe cobertura apenas uma vez
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+          fail_ci_if_error: false</code></pre>
+    </div>
+
+    <!-- 6. PIPELINE CD — DEPLOY -->
+    <div class="section">
+      <div class="section-label">// CD — ENTREGA CONTÍNUA</div>
+      <h2>Pipeline de CD — build Docker e deploy automático</h2>
+      <p>
+        O CD só roda após o CI passar e apenas na branch <code>main</code>. Ele builda a imagem Docker, publica no registry e faz o deploy no servidor. O segredo está no uso de <code>needs</code> e condicionais <code>if</code> para garantir que só código validado chega a produção.
+      </p>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">Fluxo CI/CD completo — do push ao deploy</div>
+        <div class="mermaid">
+flowchart LR
+    PUSH["git push\nmain"] --> CI
+
+    subgraph CI["CI — Qualidade"]
+        LINT["🎨 Lint\n(ruff, black)"]
+        TEST["🧪 Tests\n(pytest + coverage)"]
+        LINT --> TEST
+    end
+
+    CI -->|"✅ Todos os jobs passaram"| CD
+
+    subgraph CD["CD — Entrega"]
+        BUILD["🐳 Docker Build\n& Push to GHCR"]
+        DEPLOY["🚀 Deploy\n(SSH + docker compose pull)"]
+        BUILD --> DEPLOY
+    end
+
+    CD --> LIVE["🌐 Produção\nAtualizada"]
+
+    CI -->|"❌ Algum job falhou"| BLOCK["🚫 Deploy\nbloqueado\nPR rejeitado"]
+
+    style PUSH fill:#16161f,stroke:#1e1e2e,color:#e8e8f0
+    style LIVE fill:#0a2a1a,stroke:#10b981,color:#34d399
+    style BLOCK fill:#3a1010,stroke:#ef4444,color:#f87171
+        </div>
+      </div>
+
+      <div class="code-label">.github/workflows/cd.yml — build Docker + deploy via SSH</div>
+      <pre><code class="language-yaml">name: CD — Build & Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:   # Permite disparo manual pela interface do GitHub
+
+# Garante que apenas um deploy roda por vez
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false   # NÃO cancela deploy em andamento
+
+jobs:
+
+  # ─── Job: Build & Push Docker Image ─────────────────────────────────────────
+  build:
+    name: 🐳 Build & Push
+    runs-on: ubuntu-latest
+
+    # Exporta outputs para o job de deploy
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tags }}
+      image-digest: ${{ steps.build-push.outputs.digest }}
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      # Login no GitHub Container Registry (GHCR)
+      - name: Login no GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}   # Automático — sem configuração!
+
+      # Gera tags automáticas: latest + SHA do commit + versão semântica
+      - name: Extrair metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix=sha-
+            type=semver,pattern={{version}}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+
+      # Habilita BuildKit com cache do GitHub Actions
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Build e push com cache entre runs (builds muito mais rápidos!)
+      - name: Build e Push
+        id: build-push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha        # Usa cache do GitHub Actions
+          cache-to: type=gha,mode=max # Salva cache para próximo run
+
+  # ─── Job: Deploy no servidor ─────────────────────────────────────────────────
+  deploy:
+    name: 🚀 Deploy
+    runs-on: ubuntu-latest
+    needs: build   # Só roda se build passar
+    environment: production   # Requer aprovação manual se configurado
+
+    steps:
+      - name: Checkout código (para docker-compose.yml)
+        uses: actions/checkout@v4
+
+      # Deploy via SSH: conecta no servidor, puxa nova imagem e reinicia
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            # Navegar para o diretório do projeto
+            cd /opt/myapp
+
+            # Login no GHCR para puxar a imagem privada
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            # Baixar nova imagem e restartar apenas o serviço da API
+            docker compose pull api
+            docker compose up -d --no-deps api
+
+            # Verificar se subiu corretamente
+            docker compose ps api
+
+            # Limpar imagens antigas (economiza disco)
+            docker image prune -f
+
+      # Notifica o PR/commit com link para o deploy
+      - name: Comentar no commit
+        uses: actions/github-script@v7
+        if: always()
+        with:
+          script: |
+            const status = '${{ job.status }}' === 'success' ? '✅' : '❌';
+            github.rest.repos.createCommitComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: context.sha,
+              body: `${status} Deploy para produção: **${{ job.status }}**`
+            })</code></pre>
+    </div>
+
+    <!-- 7. SECRETS -->
+    <div class="section">
+      <div class="section-label">// SEGURANÇA</div>
+      <h2>Secrets — gerenciando credenciais com segurança</h2>
+      <p>
+        Secrets são variáveis criptografadas armazenadas no GitHub — nunca expostas em logs, nunca visíveis em texto plano, mascaradas automaticamente se acidentalmente impressas. São acessadas no workflow via <code>${{ secrets.NOME_DO_SECRET }}</code>.
+      </p>
+
+      <div class="secrets-path">
+        <div class="secrets-path-icon">🔐</div>
+        <div class="secrets-path-text">Acesse via: <strong>Settings</strong> → <strong>Secrets and variables</strong> → <strong>Actions</strong> → <strong>New repository secret</strong></div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Escopo</th><th>Onde configurar</th><th>Acesso</th><th>Quando usar</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Repository secret</strong></td>
+              <td>Settings do repositório</td>
+              <td>Todos os workflows do repo</td>
+              <td>Credenciais específicas do projeto</td>
+            </tr>
+            <tr>
+              <td><strong>Environment secret</strong></td>
+              <td>Settings → Environments</td>
+              <td>Só jobs com <code>environment:</code> definido</td>
+              <td><span class="badge badge-green">Recomendado</span> para staging/produção — permite aprovação manual</td>
+            </tr>
+            <tr>
+              <td><strong>Organization secret</strong></td>
+              <td>Org Settings → Secrets</td>
+              <td>Vários repositórios da org</td>
+              <td>Credenciais compartilhadas entre projetos</td>
+            </tr>
+            <tr>
+              <td><code>GITHUB_TOKEN</code></td>
+              <td>Automático — sempre disponível</td>
+              <td>Qualquer workflow</td>
+              <td>Push para GHCR, comentar em PRs, criar releases</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Secrets NÃO são passados para PRs de forks</div>
+        Por segurança, workflows disparados por Pull Requests de forks externos não têm acesso aos secrets do repositório. Isso evita que contribuidores maliciosos criem PRs para exfiltrar suas credenciais. Use <code>pull_request_target</code> com extrema cautela se precisar desse caso de uso — e nunca execute código do fork com acesso a secrets.
+      </div>
+
+      <div class="code-label">Usando secrets no workflow</div>
+      <pre><code class="language-yaml">jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production   # Habilita environment secrets + aprovação manual
+
+    steps:
+      - name: Login no Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}    # Token de acesso, não senha!
+
+      - name: Deploy com variáveis de ambiente
+        env:
+          # Injetar secret como variável de ambiente do step
+          DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+          API_KEY: ${{ secrets.EXTERNAL_API_KEY }}
+        run: |
+          echo "Iniciando deploy..."
+          # secrets.DATABASE_URL não aparece no log — mascarado automaticamente!
+          ./scripts/deploy.sh
+
+      # ⚠️ NUNCA faça isso — expõe o secret no log:
+      # - run: echo ${{ secrets.MY_SECRET }}
+      # Use variável de ambiente como no step acima!</code></pre>
+    </div>
+
+    <!-- 8. MARKETPLACE & ACTIONS REUTILIZÁVEIS -->
+    <div class="section">
+      <div class="section-label">// MARKETPLACE</div>
+      <h2>Marketplace de Actions — não reinvente a roda</h2>
+      <p>
+        O GitHub Marketplace tem mais de 20.000 Actions prontas para as tarefas mais comuns. Em vez de escrever scripts para instalar Python, fazer login no Docker ou enviar notificação no Slack, você usa Actions testadas pela comunidade com uma única linha.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Action</th><th>O que faz</th><th>Uso típico</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>actions/checkout@v4</code></td>
+              <td>Clona o repositório no runner</td>
+              <td>Primeiro step de quase todo workflow</td>
+            </tr>
+            <tr>
+              <td><code>actions/setup-python@v5</code></td>
+              <td>Instala e configura Python (com cache de pip)</td>
+              <td>Projetos Python</td>
+            </tr>
+            <tr>
+              <td><code>actions/setup-node@v4</code></td>
+              <td>Instala e configura Node.js</td>
+              <td>Projetos JavaScript/TypeScript</td>
+            </tr>
+            <tr>
+              <td><code>actions/cache@v4</code></td>
+              <td>Cacheia pastas entre runs (pip, npm, gradle)</td>
+              <td>Acelerar builds em 80%+</td>
+            </tr>
+            <tr>
+              <td><code>docker/build-push-action@v5</code></td>
+              <td>Build e push de imagem Docker com cache BuildKit</td>
+              <td>Pipelines com Docker</td>
+            </tr>
+            <tr>
+              <td><code>docker/login-action@v3</code></td>
+              <td>Login em qualquer registry (GHCR, Docker Hub, ECR)</td>
+              <td>Antes do push de imagem</td>
+            </tr>
+            <tr>
+              <td><code>appleboy/ssh-action@v1</code></td>
+              <td>Executa comandos via SSH num servidor remoto</td>
+              <td>Deploy em VPS / servidor próprio</td>
+            </tr>
+            <tr>
+              <td><code>codecov/codecov-action@v4</code></td>
+              <td>Envia relatório de cobertura para o Codecov</td>
+              <td>Após rodar testes com cobertura</td>
+            </tr>
+            <tr>
+              <td><code>softprops/action-gh-release@v2</code></td>
+              <td>Cria GitHub Release com changelog automático</td>
+              <td>Automatizar releases por tag</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Sempre fixe a versão da Action com SHA ou tag de versão maior</div>
+        <code>uses: actions/checkout@v4</code> é seguro (tag de versão major). Evite <code>@main</code> ou <code>@latest</code> — o conteúdo pode mudar a qualquer momento e comprometer a segurança do seu pipeline. Para máxima segurança em repositórios corporativos, fixe o SHA completo: <code>uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683</code>.
+      </div>
+    </div>
+
+    <!-- 9. ESTRATÉGIAS AVANÇADAS -->
+    <div class="section">
+      <div class="section-label">// AVANÇADO</div>
+      <h2>Técnicas Avançadas</h2>
+
+      <h3>Matrix Strategy — testes em múltiplos ambientes em paralelo</h3>
+      <p>
+        Matrix permite rodar o mesmo job com diferentes combinações de parâmetros simultaneamente — múltiplas versões de Python, múltiplos SOs, múltiplas configurações de banco. O que seria um teste sequencial de 15 minutos vira 3 minutos em paralelo.
+      </p>
+
+      <div class="code-label">Matrix: Python 3.11 e 3.12 × Ubuntu e macOS</div>
+      <pre><code class="language-yaml">jobs:
+  test:
+    strategy:
+      fail-fast: false    # Não cancela as outras combinações se uma falhar
+      matrix:
+        python-version: ['3.11', '3.12']
+        os: [ubuntu-latest, macos-latest]
+        # Excluir combinação específica:
+        exclude:
+          - os: macos-latest
+            python-version: '3.11'
+        # Adicionar combinação extra com variáveis extras:
+        include:
+          - os: ubuntu-latest
+            python-version: '3.12'
+            experimental: true
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: pytest -v</code></pre>
+
+      <h3>Reusable Workflows — workflows como funções</h3>
+      <p>
+        Workflows reutilizáveis permitem extrair pipelines comuns (build Docker, deploy, etc.) em arquivos separados e chamá-los de outros workflows — exatamente como funções em programação.
+      </p>
+
+      <div class="compare-wrap">
+        <div class="compare-block">
+          <div class="compare-header bad">❌ Duplicação em cada workflow</div>
+          <pre><code class="language-yaml"># ci.yml — duplica o build
+jobs:
+  build:
+    steps:
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v5
+        # ... 20 linhas repetidas em cada workflow</code></pre>
+        </div>
+        <div class="compare-block">
+          <div class="compare-header good">✅ Reusable workflow centralizado</div>
+          <pre><code class="language-yaml"># ci.yml — chama o workflow reutilizável
+jobs:
+  build:
+    uses: ./.github/workflows/docker-build.yml
+    with:
+      image-name: myapp
+      push: true
+    secrets: inherit   # Passa os secrets automaticamente</code></pre>
+        </div>
+      </div>
+
+      <h3>Environments com aprovação manual</h3>
+      <p>
+        Para deploy em produção, você pode exigir aprovação de um revisor antes do job de deploy rodar. Configure em <strong>Settings → Environments → production → Required reviewers</strong>.
+      </p>
+
+      <pre><code class="language-yaml">jobs:
+  deploy-prod:
+    runs-on: ubuntu-latest
+    environment: production   # ← Pausa aqui e aguarda aprovação dos revisores
+    needs: [test, build]
+
+    steps:
+      - name: Deploy para produção
+        run: ./scripts/deploy-prod.sh</code></pre>
+    </div>
+
+    <!-- 10. HANDS-ON -->
+    <div class="section">
+      <div class="section-label">// HANDS-ON</div>
+      <h2>Passo a Passo — Configurando CI/CD em um projeto real</h2>
+      <p>Vamos criar um pipeline completo do zero para uma API Python. Você precisará de um repositório no GitHub.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Criar estrutura do projeto e o repositório</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal</span></div>
+              <div class="terminal-body">
+                <div><span class="t-prompt">$</span> <span class="t-cmd">mkdir actions-demo && cd actions-demo</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git init && git branch -M main</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">mkdir -p .github/workflows app tests</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">touch app/main.py tests/test_main.py requirements.txt requirements-dev.txt Dockerfile</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Criar a aplicação e os testes</div>
+            <div class="step-desc">Conteúdo do <code>app/main.py</code>:</div>
+            <pre><code class="language-python">from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+def root():
+    return {"status": "ok", "version": "1.0.0"}
+
+@app.get("/health")
+def health():
+    return {"status": "healthy"}
+
+def soma(a: int, b: int) -> int:
+    return a + b</code></pre>
+            <div class="step-desc" style="margin-top:12px;">Conteúdo do <code>tests/test_main.py</code>:</div>
+            <pre><code class="language-python">from fastapi.testclient import TestClient
+from app.main import app, soma
+
+client = TestClient(app)
+
+def test_root():
+    response = client.get("/")
+    assert response.status_code == 200
+    assert response.json()["status"] == "ok"
+
+def test_health():
+    response = client.get("/health")
+    assert response.status_code == 200
+    assert response.json()["status"] == "healthy"
+
+def test_soma():
+    assert soma(2, 3) == 5
+    assert soma(-1, 1) == 0
+    assert soma(0, 0) == 0</code></pre>
+            <div class="step-desc" style="margin-top:12px;">Conteúdo do <code>requirements.txt</code> e <code>requirements-dev.txt</code>:</div>
+            <pre><code class="language-text"># requirements.txt
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+
+# requirements-dev.txt
+pytest==8.2.0
+pytest-cov==5.0.0
+httpx==0.27.0
+ruff==0.4.4
+black==24.4.2</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Criar o workflow de CI</div>
+            <div class="step-desc">Crie o arquivo <code>.github/workflows/ci.yml</code>:</div>
+            <pre><code class="language-yaml">name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: 🧪 Testes Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/requirements*.txt') }}
+
+      - name: Instalar dependências
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      - name: Lint com Ruff
+        run: ruff check .
+
+      - name: Verificar formatação com Black
+        run: black --check .
+
+      - name: Rodar testes com cobertura
+        run: |
+          pytest tests/ \
+            --cov=app \
+            --cov-report=term-missing \
+            --cov-fail-under=80 \
+            -v
+
+  build-check:
+    name: 🐳 Verificar Docker Build
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build (sem push — apenas verifica)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Primeiro push e ver o pipeline rodar</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal</span></div>
+              <div class="terminal-body">
+                <div class="t-comment"># Crie o repositório no GitHub (via CLI ou interface web)</div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">gh repo create actions-demo --public --push --source=.</span></div>
+                <br>
+                <div class="t-comment"># OU manualmente:</div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git add .</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git commit -m "feat: add API with CI pipeline"</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git remote add origin https://github.com/seu-user/actions-demo.git</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git push -u origin main</span></div>
+                <br>
+                <div class="t-out">Acesse: github.com/seu-user/actions-demo/actions</div>
+                <div class="t-out">Você verá o workflow rodando em tempo real! ✅</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Testar o bloqueio do pipeline — fazer um teste falhar</div>
+            <div class="step-desc">Quebre um teste intencionalmente para ver o CI bloqueando o merge:</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal</span></div>
+              <div class="terminal-body">
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git checkout -b feat/test-ci-block</span></div>
+                <div class="t-comment"># Edite tests/test_main.py — mude soma(2,3) == 5 para == 99</div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git add . && git commit -m "test: intentional failure"</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">git push origin feat/test-ci-block</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">gh pr create --title "Test CI block" --body "Teste de CI falhando"</span></div>
+                <div class="t-out">→ O PR fica com ❌ — merge bloqueado pelo CI</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <div class="step-title">Configurar Branch Protection Rules</div>
+            <div class="step-desc">Para garantir que o CI seja obrigatório antes de mergear:</div>
+            <p style="font-size:13px;color:var(--muted);">Acesse <strong>Settings → Branches → Add rule</strong> para a branch <code>main</code> e habilite:</p>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:6px;margin-top:8px;">
+              <li style="font-size:13px;color:var(--text);">✦ <strong>Require a pull request before merging</strong></li>
+              <li style="font-size:13px;color:var(--text);">✦ <strong>Require status checks to pass</strong> → selecione os jobs do CI</li>
+              <li style="font-size:13px;color:var(--text);">✦ <strong>Require branches to be up to date</strong></li>
+              <li style="font-size:13px;color:var(--text);">✦ <strong>Do not allow bypassing the above settings</strong></li>
+            </ul>
+            <div class="callout callout-check" style="margin-top:12px;">
+              <div class="callout-title">✅ Agora ninguém consegue fazer merge sem os testes passarem — nem você!</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 11. ARMADILHAS -->
+    <div class="section">
+      <div class="section-label">// PITFALLS</div>
+      <h2>⚠️ Armadilhas Comuns</h2>
+
+      <div class="pitfall">
+        <div class="pitfall-title">1. Gastar minutos com workflows desnecessários</div>
+        <p>Cada push dispara workflows que consomem os minutos gratuitos (2.000/mês no plano Free). Use <code>paths-ignore</code> para não rodar CI em mudanças de documentação, use <code>concurrency</code> para cancelar runs anteriores do mesmo PR, e use <code>if: github.ref == 'refs/heads/main'</code> para limitar jobs pesados à branch main.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">2. Usar @latest ou @main em actions de terceiros</div>
+        <p>Actions com <code>@latest</code> podem ser atualizadas com código malicioso (supply chain attack). Sempre use tags de versão major (<code>@v4</code>) como mínimo, ou SHA completo para ambientes de alta segurança. Verifique se a action é oficial (<code>actions/</code>) ou tem boa reputação na comunidade.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">3. Secrets visíveis em logs</div>
+        <p>Nunca faça <code>echo ${{ secrets.MINHA_SENHA }}</code> diretamente — mesmo que o GitHub mascare o valor, é um hábito perigoso. Injete sempre via variável de ambiente no bloco <code>env:</code> do step. E revise os logs de runs anteriores se suspeitar que um secret vazou.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">4. Jobs de deploy sem concurrency — deploys sobrepostos</div>
+        <p>Se dois pushes acontecem em sequência rápida, dois jobs de deploy podem rodar simultaneamente, gerando estado inconsistente em produção. Sempre adicione <code>concurrency: group: deploy-production</code> com <code>cancel-in-progress: false</code> (não cancele um deploy já em andamento — espere terminar).</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">5. Usar run: sem shell explícito para scripts longos</div>
+        <p>O bloco <code>run:</code> usa <code>bash -e</code> por padrão no Linux — qualquer comando que retorna código de erro diferente de zero aborta o step. Isso é bom! Mas para scripts complexos com condicionais, prefira criar um arquivo <code>.sh</code> e chamar com <code>run: bash scripts/deploy.sh</code> para melhor legibilidade e testabilidade.</p>
+      </div>
+    </div>
+
+    <!-- 12. TABELA DE REFERÊNCIA -->
+    <div class="section">
+      <div class="section-label">// REFERÊNCIA</div>
+      <h2>Expressões e Contextos — cheat sheet</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Expressão</th><th>Valor</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>${{ github.sha }}</code></td><td>SHA do commit que disparou o workflow</td></tr>
+            <tr><td><code>${{ github.ref }}</code></td><td>Ref completa: <code>refs/heads/main</code></td></tr>
+            <tr><td><code>${{ github.ref_name }}</code></td><td>Branch ou tag: <code>main</code></td></tr>
+            <tr><td><code>${{ github.actor }}</code></td><td>Username de quem disparou o workflow</td></tr>
+            <tr><td><code>${{ github.repository }}</code></td><td><code>owner/repo-name</code></td></tr>
+            <tr><td><code>${{ github.event_name }}</code></td><td><code>push</code>, <code>pull_request</code>, etc.</td></tr>
+            <tr><td><code>${{ runner.os }}</code></td><td><code>Linux</code>, <code>Windows</code>, <code>macOS</code></td></tr>
+            <tr><td><code>${{ job.status }}</code></td><td><code>success</code>, <code>failure</code>, <code>cancelled</code></td></tr>
+            <tr><td><code>${{ secrets.NOME }}</code></td><td>Valor do secret configurado no repositório</td></tr>
+            <tr><td><code>${{ env.NOME }}</code></td><td>Variável de ambiente definida no workflow</td></tr>
+            <tr><td><code>${{ steps.ID.outputs.NOME }}</code></td><td>Output de um step anterior com id definido</td></tr>
+            <tr><td><code>${{ needs.JOB.outputs.NOME }}</code></td><td>Output de um job anterior via <code>needs</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-wrap" style="margin-top:32px;">
+        <table>
+          <thead>
+            <tr><th>Condição <code>if:</code></th><th>Quando usa</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>if: github.ref == 'refs/heads/main'</code></td><td>Apenas na branch main</td></tr>
+            <tr><td><code>if: startsWith(github.ref, 'refs/tags/v')</code></td><td>Apenas em tags de versão</td></tr>
+            <tr><td><code>if: always()</code></td><td>Roda mesmo se steps anteriores falharam</td></tr>
+            <tr><td><code>if: failure()</code></td><td>Roda apenas se algum step anterior falhou</td></tr>
+            <tr><td><code>if: github.event_name == 'push'</code></td><td>Apenas em push (não em PR)</td></tr>
+            <tr><td><code>if: contains(github.event.head_commit.message, '[skip ci]')</code></td><td>Pular CI por mensagem no commit</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 13. VÍDEOS -->
+    <div class="section">
+      <div class="section-label">// CURADORIA</div>
+      <h2>Vídeos Recomendados</h2>
+      <div class="video-grid">
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">GitHub Actions in 100 Seconds</div>
+            <div class="video-channel">Fireship · ~2 min</div>
+            <div class="video-why">Por que assistir: O melhor overview de GitHub Actions em 2 minutos — mostra o conceito de workflows, jobs e steps com animações que fixam o mental model antes de mergulhar nos detalhes.</div>
+            <a href="https://www.youtube.com/watch?v=eB0nUzAI7M8" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">GitHub Actions Tutorial — TechWorld with Nana</div>
+            <div class="video-channel">TechWorld with Nana · ~1h32</div>
+            <div class="video-why">Por que assistir: O curso mais completo e bem avaliado sobre GitHub Actions — cobre desde o básico até CI/CD completo com Docker, com exemplos reais e explicações claras de cada conceito.</div>
+            <a href="https://www.youtube.com/watch?v=R8_veQiYBjI" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">CI/CD Pipeline com GitHub Actions e Docker</div>
+            <div class="video-channel">Traversy Media · ~45 min</div>
+            <div class="video-why">Por que assistir: Demonstra um pipeline CI/CD completo com GitHub Actions — testes automáticos, build de imagem Docker, push para GHCR e deploy. Hands-on do início ao fim com projeto real.</div>
+            <a href="https://www.youtube.com/watch?v=X3F3El_yvFg" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">GitHub Actions Security Best Practices</div>
+            <div class="video-channel">GitHub · ~30 min</div>
+            <div class="video-why">Por que assistir: Vídeo oficial do GitHub focado em segurança de workflows — como evitar supply chain attacks, gestão correta de secrets, permissões mínimas e proteção contra PRs maliciosos de forks.</div>
+            <a href="https://www.youtube.com/watch?v=bKMSoABYil4" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 14. GLOSSÁRIO -->
+    <div class="section">
+      <div class="section-label">// GLOSSÁRIO</div>
+      <h2>Termos desta Aula</h2>
+      <div class="glossary-item">
+        <div class="glossary-term">CI — Integração Contínua</div>
+        <div class="glossary-def">Prática de integrar mudanças de código frequentemente, com testes automáticos rodando a cada integração para detectar problemas rapidamente.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">CD — Entrega / Deployment Contínuo</div>
+        <div class="glossary-def">Extensão do CI que automatiza também a etapa de deploy: código aprovado vai automaticamente para staging (Entrega Contínua) ou produção (Deployment Contínuo).</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Workflow</div>
+        <div class="glossary-def">Arquivo YAML em <code>.github/workflows/</code> que define todo o pipeline — triggers, jobs, steps. Versionado no Git como qualquer outro código.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Runner</div>
+        <div class="glossary-def">Máquina virtual (hospedada pelo GitHub ou self-hosted) que executa os jobs. GitHub oferece Ubuntu, Windows e macOS. Cada job roda numa instância limpa e descartável.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Job</div>
+        <div class="glossary-def">Unidade de trabalho que roda num runner. Jobs rodam em paralelo por padrão; use <code>needs:</code> para sequenciamento. Cada job começa do zero — sem estado do job anterior.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Step</div>
+        <div class="glossary-def">Menor unidade do pipeline — um comando (<code>run:</code>) ou uma Action (<code>uses:</code>). Steps dentro de um job compartilham o mesmo ambiente e filesystem.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Action</div>
+        <div class="glossary-def">Pacote reutilizável de automação publicado no Marketplace. Referenciado com <code>uses: owner/repo@version</code>. Pode ser de JavaScript, Docker ou composite steps.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">GITHUB_TOKEN</div>
+        <div class="glossary-def">Secret automático gerado pelo GitHub para cada run de workflow. Tem permissões para operações no repositório (push, comentar em PRs, criar releases, push no GHCR) sem configuração manual.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Matrix Strategy</div>
+        <div class="glossary-def">Recurso que multiplica um job com diferentes combinações de parâmetros (versões, SOs, configs) rodando em paralelo. Transforma N testes sequenciais em 1 run paralelo.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Environment</div>
+        <div class="glossary-def">Configuração de deployment com nome (staging, production) que pode ter secrets próprios, URL de deployment e revisores obrigatórios que aprovam antes do job rodar.</div>
+      </div>
+    </div>
+
+    <!-- CHECKPOINT -->
+    <div class="section">
+      <div class="checkpoint">
+        <h3>🏁 Checkpoint — Desafio Final</h3>
+        <p>Configure um pipeline CI/CD completo em um repositório público no GitHub com <strong>pelo menos dois workflows</strong>:</p>
+        <ul>
+          <li>Workflow de CI com matrix strategy (Python 3.11 e 3.12) rodando em push e pull_request</li>
+          <li>Testes com pytest e verificação de cobertura mínima de 80% (<code>--cov-fail-under=80</code>)</li>
+          <li>Lint e verificação de formatação (ruff + black) bloqueando o merge se falharem</li>
+          <li>Cache de pip usando <code>actions/cache@v4</code> — meça a diferença de tempo entre 1º e 2º run</li>
+          <li>Workflow de CD que builda a imagem Docker e publica no GHCR (GitHub Container Registry)</li>
+          <li>O CD deve rodar apenas na branch <code>main</code> e somente após o CI passar (<code>needs</code>)</li>
+          <li>Bônus: Configure Branch Protection Rules na main exigindo status checks obrigatórios</li>
+        </ul>
+        <div class="checkpoint-hint">💬 Dica: use <code>workflow_dispatch</code> no seu workflow de CD para poder disparar manualmente durante o desenvolvimento sem precisar fazer push real. E explore a aba Actions no GitHub — ela mostra logs em tempo real, tempos de cada step e permite re-rodar jobs específicos sem novo push.</div>
+      </div>
+    </div>
+
+    <!-- PRÓXIMOS PASSOS -->
+    <div class="section">
+      <div class="section-label">// PRÓXIMA AULA</div>
+      <h2>O que vem a seguir?</h2>
+      <p style="margin-bottom:20px;">Com CI/CD dominado, abrimos uma nova trilha: automação low-code com n8n. Enquanto o GitHub Actions automatiza o ciclo de vida do código, o n8n automatiza processos de negócio — integrando APIs, serviços SaaS e sistemas internos em workflows visuais. Você vai instalar, criar seu primeiro workflow e entender quando usar automação visual versus código.</p>
+      <a href="n8n-01-setup-workflow.html" class="next-card">
+        <div>
+          <div class="next-card-label">Próxima Aula • 🔀 n8n</div>
+          <div class="next-card-title">n8n — Setup & Primeiro Workflow</div>
+        </div>
+        <div class="next-arrow">→</div>
+      </a>
+    </div>
+
+  </div>
+
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+    document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+
+    const bar = document.getElementById('progressBar');
+    window.addEventListener('scroll', () => {
+      const scrollTop = document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const progress = (scrollTop / scrollHeight) * 100;
+      bar.style.width = progress + '%';
+    });
+  </script>
+</body>
+</html>

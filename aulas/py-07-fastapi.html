@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FastAPI — API REST do Zero · Aula 26</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #3b82f6;
+      --accent-dim: rgba(59,130,246,0.15);
+      --accent-border: rgba(59,130,246,0.35);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #60a5fa); width: 0%; transition: width 0.1s; }
+
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; cursor: default; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #60a5fa; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.08); border-color: var(--success); }
+    .callout-tip .callout-title { color: var(--success); }
+    .callout-danger { background: rgba(239,68,68,0.08); border-color: var(--danger); }
+    .callout-danger .callout-title { color: var(--danger); }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(59,130,246,0.2); color: #60a5fa; }
+    .badge-purple { background: rgba(168,85,247,0.2); color: #c084fc; }
+    .badge-cyan { background: rgba(6,182,212,0.2); color: #22d3ee; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+    .pillar-badge { font-size: 11px; padding: 3px 10px; border-radius: 4px; font-weight: 600; }
+
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; text-decoration: none; color: inherit; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-watch { font-size: 12px; color: var(--accent); }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(96,165,250,0.04)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; margin-bottom: 40px; }
+    .checkpoint-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; font-weight: 600; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(59,130,246,0.06); border-radius: 6px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; }
+
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #60a5fa; }
+
+    .terminal { background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .terminal-bar { background: #1a1a1a; padding: 8px 14px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ef4444; } .dot-yellow { background: #f59e0b; } .dot-green { background: #10b981; }
+    .terminal-title { font-size: 11px; color: #555; margin-left: 6px; }
+    .terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; }
+    .t-prompt { color: #10b981; } .t-cmd { color: #e8e8f0; } .t-out { color: #8585a8; } .t-comment { color: #444; font-style: italic; }
+
+    /* Request/Response flow */
+    .req-flow { display: flex; flex-direction: column; gap: 2px; margin: 20px 0; }
+    .req-step { display: flex; gap: 14px; align-items: flex-start; padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+    .req-step:not(:last-child) { border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-bottom: none; }
+    .req-step:not(:first-child) { border-top-left-radius: 0; border-top-right-radius: 0; }
+    .req-icon { flex-shrink: 0; width: 28px; height: 28px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 13px; margin-top: 2px; }
+    .req-body { flex: 1; }
+    .req-title { font-weight: 700; color: #fff; font-size: 13px; margin-bottom: 3px; }
+    .req-desc { color: var(--muted); font-size: 12px; }
+
+    .footer { margin-top: 80px; padding-top: 24px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--muted); }
+    .footer a { color: var(--accent); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 640px) {
+      .top-nav { padding: 10px 16px; }
+      .page { padding: 32px 16px 80px; }
+      .analogy-mapping { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress"></div></div>
+
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="py-06-pandas-numpy.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">🐍 Python</span> · Aula 26 / 50
+      </div>
+      <a href="py-08-backend-completo.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>🐍 Python · Back-end</span>
+        <span class="hero-badge">Aula 26</span>
+      </div>
+      <h1>FastAPI — API REST do Zero</h1>
+      <div class="hero-meta">
+        <span>⏱ 35 min de leitura</span>
+        <span>🎯 Intermediário</span>
+        <span>🔧 Hands-on incluído</span>
+        <span>🐍 Python 3.10+</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">FastAPI</span>
+        <span class="tag">Pydantic</span>
+        <span class="tag">Uvicorn</span>
+        <span class="tag">OpenAPI / Swagger</span>
+        <span class="tag">async/await</span>
+        <span class="tag">Dependency Injection</span>
+        <span class="tag">REST</span>
+      </div>
+    </div>
+
+    <!-- 1. POR QUE ISSO IMPORTA -->
+    <div class="section">
+      <div class="section-label">// motivação</div>
+      <h2>Por que FastAPI mudou o back-end Python?</h2>
+      <p>
+        Durante anos, Flask e Django dominaram o back-end Python. Flask era minimalista mas sem tipagem; Django era completo mas pesado. Em 2018, Sebastián Ramírez lançou o FastAPI e reescreveu as regras: velocidade comparável ao Node.js e Go, validação automática de dados, documentação Swagger gerada sem esforço e suporte nativo a <code>async/await</code>.
+      </p>
+      <p>
+        Hoje, FastAPI é usado por empresas como Microsoft, Uber e Netflix em produção. Qualquer API moderna em Python — seja um microsserviço, um backend de aplicação ou um endpoint de IA — é candidata a ser construída com FastAPI.
+      </p>
+      <div class="callout callout-info">
+        <div class="callout-title">💼 Por que um engenheiro sênior usa FastAPI hoje</div>
+        <p>A combinação de <strong>tipagem estática + validação automática via Pydantic</strong> elimina uma classe inteira de bugs de runtime. O Swagger gerado automaticamente serve como contrato vivo da API para o time de front-end. E <code>async/await</code> nativo permite lidar com dezenas de requisições simultâneas sem overhead de threads — essencial em APIs que consomem outros serviços ou bancos de dados assíncronos.</p>
+      </div>
+    </div>
+
+    <!-- 2. ANALOGIA -->
+    <div class="section">
+      <div class="section-label">// analogia</div>
+      <h2>Antes do código: uma analogia</h2>
+      <div class="analogy-card">
+        <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
+        <div class="analogy-text">
+          Pense num restaurante de alto padrão. O <strong>cardápio</strong> lista exatamente o que você pode pedir (rotas disponíveis). O <strong>garçom</strong> valida seu pedido — se você tentar pedir algo fora do cardápio, ele recusa imediatamente (Pydantic). A <strong>cozinha</strong> pode preparar vários pratos ao mesmo tempo sem parar tudo para esperar um bife (async). E o <strong>menu degustação que o maître mostra</strong> é o Swagger: uma visão completa de tudo que a casa oferece, interativa.
+        </div>
+        <div class="analogy-mapping">
+          <span class="analogy-real">📋 Cardápio</span>
+          <span class="analogy-tech">→ Rotas da API</span>
+          <span class="analogy-real">🧑‍🍳 Garçom validando pedido</span>
+          <span class="analogy-tech">→ Pydantic validando dados</span>
+          <span class="analogy-real">🍽️ Cozinha paralela</span>
+          <span class="analogy-tech">→ async/await</span>
+          <span class="analogy-real">📖 Menu degustação</span>
+          <span class="analogy-tech">→ Swagger / OpenAPI</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. CONCEITO CENTRAL -->
+    <div class="section">
+      <div class="section-label">// conceito</div>
+      <h2>Como o FastAPI funciona internamente</h2>
+      <p>
+        FastAPI é construído sobre dois pilares: <strong>Starlette</strong> (framework ASGI assíncrono) e <strong>Pydantic</strong> (validação de dados via type hints). Quando você define uma rota com anotações de tipo, o FastAPI automaticamente: valida a entrada, converte os tipos, gera a documentação e serializa a resposta.
+      </p>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// ciclo de vida de uma requisição FastAPI</div>
+        <div class="mermaid">
+graph LR
+    A[HTTP Request] --> B[Uvicorn ASGI]
+    B --> C[FastAPI Router]
+    C --> D{Middleware}
+    D --> E[Pydantic\nValidation]
+    E -->|válido| F[Dependency\nInjection]
+    E -->|inválido| G[422\nUnprocessable]
+    F --> H[Handler\nFunction]
+    H --> I[Pydantic\nResponse Model]
+    I --> J[JSON Response]
+    style E fill:#1e3a5f,stroke:#3b82f6,color:#93c5fd
+    style H fill:#1e3a5f,stroke:#3b82f6,color:#93c5fd
+    style G fill:#3b1f1f,stroke:#ef4444,color:#fca5a5
+        </div>
+      </div>
+
+      <h3>Os três conceitos-chave</h3>
+      <div class="grid-2">
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(59,130,246,0.2);color:#60a5fa;">01</span>
+          <h4>Path Operations</h4>
+          <p>Decorators <code>@app.get</code>, <code>@app.post</code>, <code>@app.put</code>, <code>@app.delete</code> mapeiam URLs para funções Python. Cada função recebe parâmetros tipados do path, query string ou body.</p>
+        </div>
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(16,185,129,0.2);color:#4ade80;">02</span>
+          <h4>Pydantic Models</h4>
+          <p>Classes que herdam de <code>BaseModel</code> definem o schema dos dados. FastAPI usa essas classes para validar entrada, serializar saída e gerar a documentação OpenAPI automaticamente.</p>
+        </div>
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(168,85,247,0.2);color:#c084fc;">03</span>
+          <h4>Dependency Injection</h4>
+          <p>Sistema elegante para compartilhar lógica entre rotas: conexões com banco, usuário autenticado, configurações. Use <code>Depends()</code> para injetar dependências sem acoplamento.</p>
+        </div>
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(245,158,11,0.2);color:#fbbf24;">04</span>
+          <h4>Async por padrão</h4>
+          <p>Handlers podem ser <code>async def</code> (recomendado para I/O) ou <code>def</code> (executado em thread pool). Nunca misture chamadas bloqueantes dentro de <code>async def</code>.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. TABELA COMPARATIVA -->
+    <div class="section">
+      <div class="section-label">// comparação</div>
+      <h2>FastAPI vs Flask vs Django REST</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Critério</th>
+              <th>FastAPI</th>
+              <th>Flask + Flask-RESTful</th>
+              <th>Django REST Framework</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Performance</strong></td>
+              <td><span class="badge badge-green">Muito alta</span> (ASGI async)</td>
+              <td><span class="badge badge-yellow">Média</span> (WSGI sync)</td>
+              <td><span class="badge badge-yellow">Média</span> (WSGI sync)</td>
+            </tr>
+            <tr>
+              <td><strong>Validação de dados</strong></td>
+              <td><span class="badge badge-green">Automática</span> via Pydantic</td>
+              <td><span class="badge badge-red">Manual</span> ou marshmallow</td>
+              <td><span class="badge badge-blue">Serializers</span> verbosos</td>
+            </tr>
+            <tr>
+              <td><strong>Documentação</strong></td>
+              <td><span class="badge badge-green">Automática</span> OpenAPI/Swagger</td>
+              <td><span class="badge badge-red">Manual</span> ou plugin</td>
+              <td><span class="badge badge-yellow">Parcial</span> via drf-spectacular</td>
+            </tr>
+            <tr>
+              <td><strong>Type hints</strong></td>
+              <td><span class="badge badge-green">Core feature</span></td>
+              <td><span class="badge badge-red">Opcional</span></td>
+              <td><span class="badge badge-red">Opcional</span></td>
+            </tr>
+            <tr>
+              <td><strong>Curva de aprendizado</strong></td>
+              <td><span class="badge badge-green">Baixa</span></td>
+              <td><span class="badge badge-green">Baixa</span></td>
+              <td><span class="badge badge-red">Alta</span></td>
+            </tr>
+            <tr>
+              <td><strong>Async nativo</strong></td>
+              <td><span class="badge badge-green">Sim</span></td>
+              <td><span class="badge badge-red">Não</span></td>
+              <td><span class="badge badge-red">Não</span></td>
+            </tr>
+            <tr>
+              <td><strong>Ideal para</strong></td>
+              <td>APIs modernas, microsserviços, IA</td>
+              <td>Protótipos, apps pequenos</td>
+              <td>Projetos enterprise legados</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 5. HANDS-ON -->
+    <div class="section">
+      <div class="section-label">// prática</div>
+      <h2>Mãos na massa — sua primeira API em 10 minutos</h2>
+      <p>Vamos construir uma API de lista de tarefas (To-Do) do zero. Cada passo é executável no seu terminal.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Criar ambiente virtual e instalar dependências</div>
+            <div class="step-desc">Sempre use um venv para isolar as dependências do projeto.</div>
+            <div class="terminal">
+              <div class="terminal-bar">
+                <span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span>
+                <span class="terminal-title">bash</span>
+              </div>
+              <div class="terminal-body">
+                <span class="t-prompt">$ </span><span class="t-cmd">mkdir todo-api && cd todo-api</span><br>
+                <span class="t-prompt">$ </span><span class="t-cmd">python -m venv .venv</span><br>
+                <span class="t-prompt">$ </span><span class="t-cmd">source .venv/bin/activate</span> <span class="t-comment"># Windows: .venv\Scripts\activate</span><br>
+                <span class="t-prompt">$ </span><span class="t-cmd">pip install fastapi uvicorn[standard]</span><br>
+                <span class="t-out">Successfully installed fastapi-0.110.0 uvicorn-0.27.0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Criar o arquivo principal <code>main.py</code></div>
+            <div class="step-desc">Uma API mínima funcional com uma rota GET.</div>
+            <div class="code-label">// main.py</div>
+            <pre><code class="language-python">from fastapi import FastAPI
+
+app = FastAPI(
+    title="Todo API",
+    description="API de tarefas construída com FastAPI",
+    version="1.0.0"
+)
+
+@app.get("/")
+async def root():
+    return {"message": "Todo API funcionando!"}
+
+@app.get("/health")
+async def health():
+    return {"status": "ok"}</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Iniciar o servidor de desenvolvimento</div>
+            <div class="step-desc"><code>--reload</code> reinicia automaticamente ao salvar arquivos.</div>
+            <div class="terminal">
+              <div class="terminal-bar">
+                <span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span>
+                <span class="terminal-title">bash</span>
+              </div>
+              <div class="terminal-body">
+                <span class="t-prompt">$ </span><span class="t-cmd">uvicorn main:app --reload</span><br>
+                <span class="t-out">INFO:     Uvicorn running on http://127.0.0.1:8000</span><br>
+                <span class="t-out">INFO:     Started reloader process</span><br>
+                <span class="t-comment"># Acesse: http://localhost:8000/docs  ← Swagger UI</span><br>
+                <span class="t-comment"># Acesse: http://localhost:8000/redoc ← ReDoc</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Explorar o Swagger automático</div>
+            <div class="step-desc">Abra <strong>http://localhost:8000/docs</strong> no browser. Você verá toda a documentação interativa gerada automaticamente. Clique em qualquer endpoint e use o botão "Try it out" para testar.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. CÓDIGO COMENTADO COMPLETO -->
+    <div class="section">
+      <div class="section-label">// código</div>
+      <h2>API completa com Pydantic, CRUD e Dependency Injection</h2>
+      <p>Veja o padrão de uma API real: modelos Pydantic separados para criação/leitura, IDs gerados automaticamente, erros HTTP tratados com <code>HTTPException</code> e uma dependência compartilhada.</p>
+
+      <div class="code-label">// main.py — API completa</div>
+      <pre><code class="language-python">from fastapi import FastAPI, HTTPException, Depends, status
+from pydantic import BaseModel, Field
+from typing import Optional
+from datetime import datetime
+import uuid
+
+app = FastAPI(title="Todo API", version="1.0.0")
+
+# ── MODELOS PYDANTIC ──────────────────────────────────────
+# Schema de criação — só o que o usuário envia
+class TodoCreate(BaseModel):
+    title: str = Field(..., min_length=1, max_length=200,
+                       description="Título da tarefa")
+    description: Optional[str] = Field(None, max_length=1000)
+    priority: int = Field(default=1, ge=1, le=5,
+                          description="Prioridade de 1 a 5")
+
+# Schema de atualização — todos opcionais
+class TodoUpdate(BaseModel):
+    title: Optional[str] = Field(None, min_length=1, max_length=200)
+    description: Optional[str] = None
+    priority: Optional[int] = Field(None, ge=1, le=5)
+    completed: Optional[bool] = None
+
+# Schema de resposta — o que a API retorna
+class TodoResponse(BaseModel):
+    id: str
+    title: str
+    description: Optional[str]
+    priority: int
+    completed: bool
+    created_at: datetime
+
+    class Config:
+        # Permite criar a partir de objetos ORM futuramente
+        from_attributes = True
+
+# ── "BANCO DE DADOS" em memória (substituir por SQLAlchemy na Aula 27)
+todos_db: dict[str, dict] = {}
+
+# ── DEPENDENCY — simula uma verificação de API key ────────
+def get_current_user(x_api_key: str = None):
+    """
+    Em produção, aqui ficaria autenticação JWT.
+    Por ora, aceita qualquer chave para demonstrar o padrão.
+    """
+    return {"user_id": "demo-user", "role": "user"}
+
+# ── ROTAS ─────────────────────────────────────────────────
+
+@app.get("/todos", response_model=list[TodoResponse], tags=["todos"])
+async def list_todos(
+    completed: Optional[bool] = None,    # query param opcional
+    priority: Optional[int] = None,       # filtro por prioridade
+    user=Depends(get_current_user)        # dependency injection
+):
+    """Lista todas as tarefas com filtros opcionais."""
+    items = list(todos_db.values())
+
+    if completed is not None:
+        items = [t for t in items if t["completed"] == completed]
+    if priority is not None:
+        items = [t for t in items if t["priority"] == priority]
+
+    return items
+
+@app.post("/todos", response_model=TodoResponse,
+          status_code=status.HTTP_201_CREATED, tags=["todos"])
+async def create_todo(todo: TodoCreate, user=Depends(get_current_user)):
+    """Cria uma nova tarefa. Pydantic valida automaticamente os campos."""
+    new_id = str(uuid.uuid4())
+    todo_dict = {
+        "id": new_id,
+        **todo.model_dump(),   # converte Pydantic → dict
+        "completed": False,
+        "created_at": datetime.utcnow()
+    }
+    todos_db[new_id] = todo_dict
+    return todo_dict
+
+@app.get("/todos/{todo_id}", response_model=TodoResponse, tags=["todos"])
+async def get_todo(todo_id: str):
+    """Busca uma tarefa pelo ID. Retorna 404 se não encontrada."""
+    if todo_id not in todos_db:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Tarefa '{todo_id}' não encontrada"
+        )
+    return todos_db[todo_id]
+
+@app.patch("/todos/{todo_id}", response_model=TodoResponse, tags=["todos"])
+async def update_todo(todo_id: str, updates: TodoUpdate):
+    """Atualização parcial (PATCH). Só altera os campos enviados."""
+    if todo_id not in todos_db:
+        raise HTTPException(status_code=404, detail="Tarefa não encontrada")
+
+    todo = todos_db[todo_id]
+    # exclude_unset=True ignora campos não enviados
+    update_data = updates.model_dump(exclude_unset=True)
+    todo.update(update_data)
+    todos_db[todo_id] = todo
+    return todo
+
+@app.delete("/todos/{todo_id}", status_code=status.HTTP_204_NO_CONTENT,
+            tags=["todos"])
+async def delete_todo(todo_id: str):
+    """Remove uma tarefa. Retorna 204 No Content em caso de sucesso."""
+    if todo_id not in todos_db:
+        raise HTTPException(status_code=404, detail="Tarefa não encontrada")
+    del todos_db[todo_id]
+    # 204 não tem body — não retornar nada</code></pre>
+
+      <h3>Entendendo Pydantic na prática</h3>
+      <p>Pydantic é a espinha dorsal da validação no FastAPI. Veja o que acontece quando dados inválidos chegam:</p>
+      <div class="code-label">// testando validação via curl</div>
+      <pre><code class="language-bash"># Requisição com dados inválidos
+curl -X POST http://localhost:8000/todos \
+  -H "Content-Type: application/json" \
+  -d '{"title": "", "priority": 10}'
+
+# FastAPI retorna automaticamente:
+# HTTP 422 Unprocessable Entity
+# {
+#   "detail": [
+#     {"loc": ["body", "title"], "msg": "String should have at least 1 character"},
+#     {"loc": ["body", "priority"], "msg": "Input should be less than or equal to 5"}
+#   ]
+# }</code></pre>
+    </div>
+
+    <!-- 7. ARQUITETURA SUGERIDA -->
+    <div class="section">
+      <div class="section-label">// arquitetura</div>
+      <h2>Estrutura de projeto profissional</h2>
+      <p>Para APIs maiores, organize o código assim — separe responsabilidades desde o início:</p>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// estrutura de pastas recomendada</div>
+        <div class="mermaid">
+graph TD
+    A[todo-api/] --> B[main.py\napp + config]
+    A --> C[routers/\ntodos.py, users.py]
+    A --> D[models/\nschemas Pydantic]
+    A --> E[services/\nlógica de negócio]
+    A --> F[db/\nSQLAlchemy models]
+    A --> G[core/\nconfig, security, deps]
+    A --> H[tests/\npytest]
+    style A fill:#1e3a5f,stroke:#3b82f6,color:#93c5fd
+    style C fill:#163624,stroke:#10b981,color:#6ee7b7
+    style D fill:#163624,stroke:#10b981,color:#6ee7b7
+        </div>
+      </div>
+
+      <div class="code-label">// routers/todos.py — separando rotas</div>
+      <pre><code class="language-python">from fastapi import APIRouter
+
+router = APIRouter(prefix="/todos", tags=["todos"])
+
+@router.get("/")
+async def list_todos():
+    ...
+
+# Em main.py:
+from routers import todos
+app.include_router(todos.router)  # registra o router</code></pre>
+    </div>
+
+    <!-- 8. PITFALLS -->
+    <div class="section">
+      <div class="section-label">// armadilhas</div>
+      <h2>Erros comuns e como evitar</h2>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Misturar código bloqueante em async def</div>
+        <p>Chamar funções bloqueantes (como <code>requests.get()</code> ou operações síncronas de banco) dentro de <code>async def</code> trava o event loop inteiro. Use <code>httpx</code> (async) em vez de <code>requests</code>, e SQLAlchemy async em vez do síncrono.</p>
+        <pre><code class="language-python"># ❌ ERRADO — bloqueia o event loop
+@app.get("/data")
+async def get_data():
+    response = requests.get("https://api.externa.com")  # bloqueante!
+    return response.json()
+
+# ✅ CORRETO — usa cliente async
+import httpx
+@app.get("/data")
+async def get_data():
+    async with httpx.AsyncClient() as client:
+        response = await client.get("https://api.externa.com")
+    return response.json()</code></pre>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Reutilizar o mesmo modelo para criação e resposta</div>
+        <p>Sempre crie modelos separados: <code>XCreate</code> (entrada sem id/created_at), <code>XResponse</code> (saída completa). Nunca exponha campos como <code>password</code> ou <code>hashed_password</code> no modelo de resposta.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Não usar response_model</div>
+        <p>Sem <code>response_model</code>, o FastAPI retorna todos os campos do dict/objeto — incluindo dados sensíveis. Sempre declare o modelo de resposta explicitamente para ter controle total do output.</p>
+      </div>
+    </div>
+
+    <!-- 9. VÍDEOS -->
+    <div class="section">
+      <div class="section-label">// curadoria</div>
+      <h2>Referências em vídeo</h2>
+      <div class="video-grid">
+        <a class="video-card" href="https://www.youtube.com/watch?v=0RS9W8MtZe4" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">FastAPI Course for Beginners</div>
+            <div class="video-channel">freeCodeCamp · 1h 09min</div>
+            <div class="video-why">Por que assistir: visão completa do zero, com Pydantic, CRUD e banco SQLite integrado.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+        <a class="video-card" href="https://www.youtube.com/watch?v=7t2alSnE2-I" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">FastAPI in 100 Seconds</div>
+            <div class="video-channel">Fireship · 2min</div>
+            <div class="video-why">Por que assistir: overview visual rápido dos conceitos principais antes de mergulhar no código.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+        <a class="video-card" href="https://www.youtube.com/watch?v=SORiTsvnU28" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">FastAPI Full Course — With Auth &amp; Database</div>
+            <div class="video-channel">Amigoscode · 3h 15min</div>
+            <div class="video-why">Por que assistir: projeto completo com PostgreSQL, SQLAlchemy, JWT auth e deploy — ideal para ver a aula 26 e 27 integradas.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+        <a class="video-card" href="https://www.youtube.com/watch?v=pkdgbell57r0" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Pydantic v2 — Full Tutorial</div>
+            <div class="video-channel">ArjanCodes · 28min</div>
+            <div class="video-why">Por que assistir: Pydantic v2 tem mudanças significativas. Este vídeo cobre validators, model_config e os novos padrões.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- CHECKPOINT -->
+    <div class="checkpoint">
+      <div class="checkpoint-label">// desafio</div>
+      <h3>🏁 Checkpoint — valide seu aprendizado</h3>
+      <p>Construa uma API de <strong>catálogo de filmes</strong> com FastAPI. Deve ter:</p>
+      <ul>
+        <li>Modelo Pydantic <code>MovieCreate</code> com título, ano (1888–2030), nota (0.0–10.0) e gênero</li>
+        <li>Modelo separado <code>MovieResponse</code> com id e created_at gerados automaticamente</li>
+        <li>Endpoints: <code>GET /movies</code>, <code>POST /movies</code>, <code>GET /movies/{id}</code>, <code>DELETE /movies/{id}</code></li>
+        <li>Filtro por gênero via query param: <code>GET /movies?genre=action</code></li>
+        <li>HTTPException com 404 para filmes inexistentes</li>
+        <li>Swagger funcional em <code>/docs</code> com todos os endpoints documentados</li>
+      </ul>
+      <div class="checkpoint-hint">💬 Dica: Use um <code>dict</code> em memória como banco por enquanto — na próxima aula adicionamos SQLAlchemy. Teste tudo via Swagger antes de qualquer cliente HTTP externo.</div>
+    </div>
+
+    <!-- PRÓXIMA AULA -->
+    <a href="py-08-backend-completo.html" class="next-card">
+      <div>
+        <div class="next-card-label">Próxima aula →</div>
+        <div class="next-card-title">Python Back-end Completo — SQLAlchemy, JWT & pytest</div>
+      </div>
+      <div class="next-arrow">→</div>
+    </a>
+
+    <div class="footer">
+      <span>🐍 Python · Aula 26 / 50</span>
+      <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+    </div>
+
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+    mermaid.initialize({
+      startOnLoad: true, theme: 'dark',
+      themeVariables: {
+        primaryColor: '#1e3a5f', primaryTextColor: '#e8e8f0',
+        primaryBorderColor: '#3b82f6', lineColor: '#8585a8',
+        background: '#111118', mainBkg: '#16161f', nodeBorder: '#3b82f6'
+      }
+    });
+    window.addEventListener('scroll', () => {
+      const p = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+      document.getElementById('progress').style.width = p + '%';
+    });
+  </script>
+</body>
+</html>

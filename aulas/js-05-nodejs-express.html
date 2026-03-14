@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Node.js & Express — API REST · Aula 28</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #f59e0b;
+      --accent-dim: rgba(245,158,11,0.15);
+      --accent-border: rgba(245,158,11,0.35);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #fcd34d); width: 0%; transition: width 0.1s; }
+
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #fcd34d; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.08); border-color: var(--success); }
+    .callout-tip .callout-title { color: var(--success); }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(59,130,246,0.2); color: #60a5fa; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+    .pillar-badge { font-size: 11px; padding: 3px 10px; border-radius: 4px; font-weight: 600; }
+
+    .middleware-stack { display: flex; flex-direction: column; gap: 2px; margin: 20px 0; }
+    .mw-item { display: flex; gap: 16px; align-items: center; padding: 12px 18px; border-radius: 8px; }
+    .mw-item:first-child { border-radius: 8px 8px 0 0; }
+    .mw-item:last-child { border-radius: 0 0 8px 8px; }
+    .mw-num { flex-shrink: 0; width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+    .mw-label { font-weight: 700; font-size: 13px; }
+    .mw-desc { color: var(--muted); font-size: 12px; }
+
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; text-decoration: none; color: inherit; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-watch { font-size: 12px; color: var(--accent); }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(252,211,77,0.04)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; margin-bottom: 40px; }
+    .checkpoint-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; font-weight: 600; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(245,158,11,0.06); border-radius: 6px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; }
+
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #fcd34d; }
+
+    .terminal { background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .terminal-bar { background: #1a1a1a; padding: 8px 14px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ef4444; } .dot-yellow { background: #f59e0b; } .dot-green { background: #10b981; }
+    .terminal-title { font-size: 11px; color: #555; margin-left: 6px; }
+    .terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; }
+    .t-prompt { color: #10b981; } .t-cmd { color: #e8e8f0; } .t-out { color: #8585a8; } .t-comment { color: #444; font-style: italic; }
+
+    .footer { margin-top: 80px; padding-top: 24px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--muted); }
+    .footer a { color: var(--accent); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 640px) {
+      .top-nav { padding: 10px 16px; }
+      .page { padding: 32px 16px 80px; }
+      .analogy-mapping { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress"></div></div>
+
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="py-08-backend-completo.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">⚡ JavaScript</span> · Aula 28 / 50
+      </div>
+      <a href="n8n-03-integracoes.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>⚡ JavaScript · Back-end</span>
+        <span class="hero-badge">Aula 28</span>
+      </div>
+      <h1>Node.js & Express — API REST</h1>
+      <div class="hero-meta">
+        <span>⏱ 35 min de leitura</span>
+        <span>🎯 Intermediário</span>
+        <span>🔧 Hands-on incluído</span>
+        <span>⚡ Node.js 20+</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">Node.js</span>
+        <span class="tag">Express</span>
+        <span class="tag">Fastify</span>
+        <span class="tag">REST API</span>
+        <span class="tag">Middleware</span>
+        <span class="tag">CORS</span>
+        <span class="tag">dotenv</span>
+      </div>
+    </div>
+
+    <!-- 1. POR QUE ISSO IMPORTA -->
+    <div class="section">
+      <div class="section-label">// motivação</div>
+      <h2>JavaScript no servidor — por que Node.js importa</h2>
+      <p>
+        Antes do Node.js, JavaScript vivia confinado ao browser. Em 2009, Ryan Dahl mudou tudo ao usar o engine V8 do Chrome para criar um runtime JavaScript no servidor. A proposta era ousada: um único processo assíncrono que lida com milhares de conexões simultâneas sem criar threads para cada uma.
+      </p>
+      <p>
+        Hoje, Node.js roda em 85% das empresas listadas na Forbes 500 que usam JavaScript no back-end. Express — seu framework web mais popular — tem mais de 30 milhões de downloads semanais. E Fastify cresce rapidamente como alternativa de alta performance. Conhecer esse ecossistema é obrigatório para qualquer dev JavaScript moderno.
+      </p>
+      <div class="callout callout-info">
+        <div class="callout-title">💼 Por que um engenheiro sênior usa Node.js hoje</div>
+        <p>Microsserviços leves, APIs de edge computing, BFFs (Backend for Frontend) e ferramentas de linha de comando são casos de uso naturais para Node.js. A vantagem de compartilhar código (types, validação, utilitários) entre front e back — possível só com JavaScript — é um diferencial real em times full-stack.</p>
+      </div>
+    </div>
+
+    <!-- 2. ANALOGIA -->
+    <div class="section">
+      <div class="section-label">// analogia</div>
+      <h2>Antes do código: uma analogia</h2>
+      <div class="analogy-card">
+        <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
+        <div class="analogy-text">
+          Imagine um <strong>call center com um único atendente muito eficiente</strong>. Em vez de colocar uma pessoa para cada ligação (modelo threaded), esse atendente recebe uma ligação, diz "aguarde, vou verificar", coloca em espera, atende outra, volta para a primeira quando a resposta chegou. Nunca fica bloqueado esperando — sempre produtivo. Isso é o <strong>Event Loop do Node.js</strong>. O <strong>Express</strong> é o roteiro de atendimento: para cada tipo de chamada (rota), há um script pronto. O <strong>middleware</strong> é o checklist que todo atendente segue antes de transferir: verificou identidade? Logou o horário? Autorizou o acesso?
+        </div>
+        <div class="analogy-mapping">
+          <span class="analogy-real">📞 Atendente único eficiente</span>
+          <span class="analogy-tech">→ Event Loop (single thread)</span>
+          <span class="analogy-real">📋 Roteiro de atendimento</span>
+          <span class="analogy-tech">→ Express Router</span>
+          <span class="analogy-real">✅ Checklist pré-atendimento</span>
+          <span class="analogy-tech">→ Middleware pipeline</span>
+          <span class="analogy-real">⏸️ "Aguarde, verificando..."</span>
+          <span class="analogy-tech">→ async/await / callbacks</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. NODE.JS CORE -->
+    <div class="section">
+      <div class="section-label">// conceito 1</div>
+      <h2>Node.js — o runtime e seu Event Loop</h2>
+      <p>
+        Node.js usa um modelo de I/O não-bloqueante baseado em eventos. Operações lentas (disco, rede, banco de dados) não travam o processo — Node delega ao SO e continua executando outras tarefas. Quando a operação termina, o callback/promise é colocado na fila e processado.
+      </p>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// event loop simplificado</div>
+        <div class="mermaid">
+graph LR
+    A[Requisição HTTP] --> B[Event Loop]
+    B --> C{I/O necessário?}
+    C -->|Sim| D[Delega ao SO\nlibuv]
+    C -->|Não| E[Executa callback\nimediatamente]
+    D --> F[SO executa\nem background]
+    F --> G[Coloca na\nCallback Queue]
+    G --> B
+    E --> H[Resposta ao\nCliente]
+    style B fill:#3d2a00,stroke:#f59e0b,color:#fcd34d
+        </div>
+      </div>
+
+      <h3>Módulos nativos essenciais</h3>
+      <div class="grid-2">
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(245,158,11,0.2);color:#fbbf24;">fs</span>
+          <h4>File System</h4>
+          <p>Leitura e escrita de arquivos. Use sempre a versão <code>fs/promises</code> (async) — nunca <code>fs.readFileSync</code> em servidor.</p>
+        </div>
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(16,185,129,0.2);color:#4ade80;">http</span>
+          <h4>HTTP Server</h4>
+          <p>Cria servidores HTTP sem framework. Express é construído sobre ele. Raramente usado diretamente, mas importante entender.</p>
+        </div>
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(168,85,247,0.2);color:#c084fc;">path</span>
+          <h4>Path</h4>
+          <p>Manipulação de caminhos de arquivo cross-platform. Use <code>path.join()</code> — nunca concatene strings de path manualmente.</p>
+        </div>
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(6,182,212,0.2);color:#22d3ee;">events</span>
+          <h4>EventEmitter</h4>
+          <p>Base do padrão Observer no Node.js. Streams, HTTP, WebSockets — todos herdam de EventEmitter. Entender isso desvenda o Node.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. EXPRESS -->
+    <div class="section">
+      <div class="section-label">// conceito 2</div>
+      <h2>Express — o framework minimalista</h2>
+      <p>
+        Express adiciona uma camada de abstração sobre o <code>http</code> nativo: roteamento declarativo, sistema de middleware e utilitários de resposta. É minimalista por design — você escolhe o que adicionar.
+      </p>
+
+      <h3>O pipeline de middleware</h3>
+      <p>Toda requisição no Express passa por uma cadeia de funções middleware antes de chegar ao handler. Cada middleware pode processar, modificar, ou encerrar a requisição.</p>
+
+      <div class="middleware-stack">
+        <div class="mw-item" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);">
+          <div class="mw-num" style="background:rgba(245,158,11,0.2);color:#fbbf24;">1</div>
+          <div>
+            <div class="mw-label" style="color:#fcd34d;">morgan — Logger</div>
+            <div class="mw-desc">Loga cada requisição: método, URL, status, tempo. Imprescindível para debug em produção.</div>
+          </div>
+        </div>
+        <div class="mw-item" style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.15);border-top:none;">
+          <div class="mw-num" style="background:rgba(16,185,129,0.2);color:#4ade80;">2</div>
+          <div>
+            <div class="mw-label" style="color:#6ee7b7;">cors — Cross-Origin</div>
+            <div class="mw-desc">Permite requisições de outros domínios (ex: front-end em outra porta/domínio). Sem isso, o browser bloqueia.</div>
+          </div>
+        </div>
+        <div class="mw-item" style="background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);border-top:none;">
+          <div class="mw-num" style="background:rgba(59,130,246,0.2);color:#60a5fa;">3</div>
+          <div>
+            <div class="mw-label" style="color:#93c5fd;">express.json() — Body Parser</div>
+            <div class="mw-desc">Converte o body JSON da requisição em <code>req.body</code>. Sem ele, <code>req.body</code> é undefined.</div>
+          </div>
+        </div>
+        <div class="mw-item" style="background:rgba(168,85,247,0.06);border:1px solid rgba(168,85,247,0.15);border-top:none;">
+          <div class="mw-num" style="background:rgba(168,85,247,0.2);color:#c084fc;">4</div>
+          <div>
+            <div class="mw-label" style="color:#d8b4fe;">Auth Middleware — JWT</div>
+            <div class="mw-desc">Verifica o token Bearer, popula <code>req.user</code>. Aplicado seletivamente por rota.</div>
+          </div>
+        </div>
+        <div class="mw-item" style="background:rgba(245,158,11,0.04);border:1px solid rgba(245,158,11,0.1);border-top:none;">
+          <div class="mw-num" style="background:rgba(245,158,11,0.15);color:#fbbf24;">5</div>
+          <div>
+            <div class="mw-label" style="color:#fcd34d;">Route Handler</div>
+            <div class="mw-desc">Finalmente executa a lógica da rota e envia a resposta.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-label">// server.js — setup completo Express</div>
+      <pre><code class="language-javascript">import express from 'express'
+import cors from 'cors'
+import morgan from 'morgan'
+import dotenv from 'dotenv'
+import { todosRouter } from './routes/todos.js'
+import { authRouter } from './routes/auth.js'
+import { errorHandler } from './middleware/errorHandler.js'
+
+dotenv.config()  // carrega .env para process.env
+
+const app = express()
+const PORT = process.env.PORT || 3000
+
+// ── MIDDLEWARE GLOBAL ──────────────────────────────────
+app.use(morgan('dev'))                    // log de requisições
+app.use(cors({ origin: process.env.CORS_ORIGIN }))
+app.use(express.json({ limit: '10kb' })) // evita payloads gigantes
+
+// ── ROTAS ─────────────────────────────────────────────
+app.use('/api/todos', todosRouter)
+app.use('/api/auth', authRouter)
+
+// Rota de health check — usada por Docker/k8s
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', uptime: process.uptime() })
+})
+
+// ── ERROR HANDLER (deve ser o último middleware) ───────
+app.use(errorHandler)
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`)
+})</code></pre>
+    </div>
+
+    <!-- 5. ROTAS E CRUD -->
+    <div class="section">
+      <div class="section-label">// código</div>
+      <h2>CRUD completo com Express Router</h2>
+      <p>Express Router permite modularizar as rotas em arquivos separados. Cada recurso tem seu próprio router, com handlers async envoltos em <code>try/catch</code>.</p>
+
+      <div class="code-label">// routes/todos.js — Router com CRUD completo</div>
+      <pre><code class="language-javascript">import { Router } from 'express'
+import { authenticate } from '../middleware/auth.js'
+import { validate } from '../middleware/validate.js'
+import { createTodoSchema, updateTodoSchema } from '../schemas/todo.js'
+
+export const todosRouter = Router()
+
+// Storage em memória (substituir por ORM depois)
+const todos = new Map()
+
+// GET /api/todos — lista com filtros
+todosRouter.get('/', authenticate, async (req, res, next) => {
+  try {
+    const { completed, priority } = req.query
+    let items = [...todos.values()]
+
+    if (completed !== undefined)
+      items = items.filter(t => t.completed === (completed === 'true'))
+    if (priority)
+      items = items.filter(t => t.priority === Number(priority))
+
+    res.json({ data: items, total: items.length })
+  } catch (err) {
+    next(err)  // passa para o errorHandler
+  }
+})
+
+// POST /api/todos — criação com validação
+todosRouter.post('/', authenticate, validate(createTodoSchema), async (req, res, next) => {
+  try {
+    const todo = {
+      id: crypto.randomUUID(),
+      ...req.body,
+      completed: false,
+      ownerId: req.user.id,
+      createdAt: new Date().toISOString()
+    }
+    todos.set(todo.id, todo)
+    res.status(201).json(todo)
+  } catch (err) {
+    next(err)
+  }
+})
+
+// GET /api/todos/:id — busca por ID
+todosRouter.get('/:id', authenticate, async (req, res, next) => {
+  try {
+    const todo = todos.get(req.params.id)
+    if (!todo) {
+      return res.status(404).json({ error: 'Tarefa não encontrada' })
+    }
+    res.json(todo)
+  } catch (err) {
+    next(err)
+  }
+})
+
+// PATCH /api/todos/:id — atualização parcial
+todosRouter.patch('/:id', authenticate, validate(updateTodoSchema), async (req, res, next) => {
+  try {
+    const todo = todos.get(req.params.id)
+    if (!todo) return res.status(404).json({ error: 'Não encontrada' })
+
+    const updated = { ...todo, ...req.body }
+    todos.set(req.params.id, updated)
+    res.json(updated)
+  } catch (err) {
+    next(err)
+  }
+})
+
+// DELETE /api/todos/:id
+todosRouter.delete('/:id', authenticate, async (req, res, next) => {
+  try {
+    if (!todos.has(req.params.id)) {
+      return res.status(404).json({ error: 'Não encontrada' })
+    }
+    todos.delete(req.params.id)
+    res.status(204).send()
+  } catch (err) {
+    next(err)
+  }
+})</code></pre>
+
+      <div class="code-label">// middleware/auth.js — verificação JWT</div>
+      <pre><code class="language-javascript">import jwt from 'jsonwebtoken'
+
+export function authenticate(req, res, next) {
+  const auth = req.headers.authorization
+  if (!auth?.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Token não fornecido' })
+  }
+
+  try {
+    const token = auth.slice(7)  // remove "Bearer "
+    req.user = jwt.verify(token, process.env.JWT_SECRET)
+    next()  // passa para o próximo middleware/handler
+  } catch {
+    res.status(401).json({ error: 'Token inválido ou expirado' })
+  }
+}</code></pre>
+
+      <div class="code-label">// middleware/errorHandler.js — tratamento centralizado</div>
+      <pre><code class="language-javascript">/**
+ * Error handler global — deve ser registrado APÓS todas as rotas.
+ * Express identifica como error handler pela assinatura (err, req, res, next).
+ */
+export function errorHandler(err, req, res, next) {
+  console.error(err.stack)
+
+  // Erros de validação (Zod, Joi...)
+  if (err.name === 'ZodError') {
+    return res.status(422).json({
+      error: 'Dados inválidos',
+      details: err.errors
+    })
+  }
+
+  // Erro genérico
+  const status = err.status || err.statusCode || 500
+  res.status(status).json({
+    error: err.message || 'Erro interno do servidor'
+  })
+}</code></pre>
+
+      <h3>Validação com Zod</h3>
+      <div class="code-label">// schemas/todo.js — schemas de validação</div>
+      <pre><code class="language-javascript">import { z } from 'zod'
+
+export const createTodoSchema = z.object({
+  title: z.string().min(1).max(200),
+  description: z.string().max(1000).optional(),
+  priority: z.number().int().min(1).max(5).default(1)
+})
+
+export const updateTodoSchema = createTodoSchema.partial().extend({
+  completed: z.boolean().optional()
+})
+
+// middleware/validate.js
+export const validate = (schema) => (req, res, next) => {
+  try {
+    req.body = schema.parse(req.body)  // valida e transforma
+    next()
+  } catch (err) {
+    next(err)  // passa ZodError para o errorHandler
+  }
+}</code></pre>
+    </div>
+
+    <!-- 6. EXPRESS vs FASTIFY -->
+    <div class="section">
+      <div class="section-label">// comparação</div>
+      <h2>Express vs Fastify — quando usar cada um</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Critério</th><th>Express</th><th>Fastify</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Performance</strong></td>
+              <td><span class="badge badge-yellow">~14k req/s</span></td>
+              <td><span class="badge badge-green">~30k req/s</span></td>
+            </tr>
+            <tr>
+              <td><strong>Ecosistema</strong></td>
+              <td><span class="badge badge-green">Enorme</span> (30M downloads/semana)</td>
+              <td><span class="badge badge-yellow">Crescendo</span> rapidamente</td>
+            </tr>
+            <tr>
+              <td><strong>Schema/Validação</strong></td>
+              <td>Manual (Zod, Joi via middleware)</td>
+              <td><span class="badge badge-green">JSON Schema nativo</span></td>
+            </tr>
+            <tr>
+              <td><strong>TypeScript</strong></td>
+              <td><span class="badge badge-yellow">Tipos externos</span> @types/express</td>
+              <td><span class="badge badge-green">First-class</span></td>
+            </tr>
+            <tr>
+              <td><strong>Curva de aprendizado</strong></td>
+              <td><span class="badge badge-green">Muito baixa</span></td>
+              <td><span class="badge badge-yellow">Média</span></td>
+            </tr>
+            <tr>
+              <td><strong>Ideal para</strong></td>
+              <td>Projetos legados, prototipagem rápida, times júnior</td>
+              <td>Microsserviços de alta performance, projetos novos</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Pro tip: comece com Express, migre quando necessário</div>
+        <p>Para aprender, Express é imbatível pela clareza. Para projetos novos com performance crítica, Fastify vale o investimento. O conhecimento de middleware, roteamento e REST é 100% transferível entre os dois.</p>
+      </div>
+    </div>
+
+    <!-- 7. HANDS-ON -->
+    <div class="section">
+      <div class="section-label">// prática</div>
+      <h2>Mãos na massa — do zero ao servidor</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Criar projeto com ES Modules</div>
+            <div class="step-desc">Node 20+ suporta ES Modules nativamente. Adicione <code>"type": "module"</code> no package.json.</div>
+            <div class="terminal">
+              <div class="terminal-bar"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span><span class="terminal-title">bash</span></div>
+              <div class="terminal-body">
+                <span class="t-prompt">$ </span><span class="t-cmd">mkdir express-api && cd express-api</span><br>
+                <span class="t-prompt">$ </span><span class="t-cmd">npm init -y</span><br>
+                <span class="t-prompt">$ </span><span class="t-cmd">npm install express cors morgan dotenv zod jsonwebtoken</span><br>
+                <span class="t-prompt">$ </span><span class="t-cmd">npm install -D nodemon</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Configurar package.json</div>
+            <pre><code class="language-json">{
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js"
+  }
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Criar .env com variáveis de ambiente</div>
+            <pre><code class="language-bash">PORT=3000
+JWT_SECRET=meu-segredo-super-longo-e-aleatorio
+CORS_ORIGIN=http://localhost:5173</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Iniciar em modo desenvolvimento</div>
+            <div class="terminal">
+              <div class="terminal-bar"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span><span class="terminal-title">bash</span></div>
+              <div class="terminal-body">
+                <span class="t-prompt">$ </span><span class="t-cmd">npm run dev</span><br>
+                <span class="t-out">🚀 Server running on http://localhost:3000</span><br>
+                <span class="t-comment"># Testar no terminal:</span><br>
+                <span class="t-prompt">$ </span><span class="t-cmd">curl http://localhost:3000/health</span><br>
+                <span class="t-out">{"status":"ok","uptime":1.234}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. PITFALLS -->
+    <div class="section">
+      <div class="section-label">// armadilhas</div>
+      <h2>Erros comuns</h2>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Esquecer next(err) no catch de handlers async</div>
+        <p>Em handlers assíncronos, erros dentro de <code>try/catch</code> devem ser passados para <code>next(err)</code> — caso contrário o Express não os captura e a requisição fica pendurada. Considere usar um wrapper <code>asyncHandler</code> para eliminar o boilerplate.</p>
+        <pre><code class="language-javascript">// Wrapper que encapsula qualquer handler async
+const asyncHandler = fn => (req, res, next) => {
+  Promise.resolve(fn(req, res, next)).catch(next)
+}
+
+// Uso:
+router.get('/', asyncHandler(async (req, res) => {
+  const data = await someAsyncOperation()
+  res.json(data)
+  // qualquer throw chega automaticamente no errorHandler
+}))</code></pre>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Registrar error handler antes das rotas</div>
+        <p>O error handler global DEVE ser o último middleware registrado — após todas as rotas. Express identifica error handlers pela assinatura de 4 parâmetros <code>(err, req, res, next)</code>, mas a ordem de registro é o que determina se ele é chamado.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ CORS muito permissivo em produção</div>
+        <p>Nunca use <code>cors()</code> sem configuração em produção — isso permite qualquer origem. Configure explicitamente: <code>cors({ origin: ['https://seuapp.com'] })</code>. Em desenvolvimento, use uma variável de ambiente para o origin.</p>
+      </div>
+    </div>
+
+    <!-- 9. VÍDEOS -->
+    <div class="section">
+      <div class="section-label">// curadoria</div>
+      <h2>Referências em vídeo</h2>
+      <div class="video-grid">
+        <a class="video-card" href="https://www.youtube.com/watch?v=Oe421EPjeBE" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Node.js and Express.js — Full Course</div>
+            <div class="video-channel">freeCodeCamp · 8h 16min</div>
+            <div class="video-why">Por que assistir: referência definitiva. Cobre Node.js, Express, middleware, rotas, REST API e muito mais do zero.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+        <a class="video-card" href="https://www.youtube.com/watch?v=SccSCuHhOw0" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Node.js in 100 Seconds</div>
+            <div class="video-channel">Fireship · 2min</div>
+            <div class="video-why">Por que assistir: entende a essência do Event Loop e do modelo não-bloqueante em 2 minutos antes de mergulhar no código.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+        <a class="video-card" href="https://www.youtube.com/watch?v=7H_QH9nipNs" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Build a REST API with Express &amp; Zod</div>
+            <div class="video-channel">Traversy Media · 1h 20min</div>
+            <div class="video-why">Por que assistir: projeto completo usando o mesmo padrão desta aula — Express, Zod para validação e estrutura de projeto modular.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+        <a class="video-card" href="https://www.youtube.com/watch?v=qwfE7fSVaZM" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">What is Fastify? (And why you should use it)</div>
+            <div class="video-channel">Theo - t3.gg · 18min</div>
+            <div class="video-why">Por que assistir: comparação honesta entre Express e Fastify, casos de uso reais e por que Fastify está ganhando espaço.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- CHECKPOINT -->
+    <div class="checkpoint">
+      <div class="checkpoint-label">// desafio</div>
+      <h3>🏁 Checkpoint — valide seu aprendizado</h3>
+      <p>Construa uma API REST de <strong>biblioteca de livros</strong> com Node.js e Express:</p>
+      <ul>
+        <li>Rota <code>GET /api/books</code> com filtro por gênero via query param</li>
+        <li>Rota <code>POST /api/books</code> com validação Zod (título, autor, ano, gênero)</li>
+        <li>Rota <code>GET /api/books/:id</code> retornando 404 se não encontrado</li>
+        <li>Rota <code>DELETE /api/books/:id</code> protegida por autenticação JWT</li>
+        <li>Middleware de log com morgan e error handler global</li>
+        <li>Variáveis de ambiente via dotenv para PORT e JWT_SECRET</li>
+      </ul>
+      <div class="checkpoint-hint">💬 Dica: organize em pastas <code>routes/</code>, <code>middleware/</code> e <code>schemas/</code> desde o início. Use o <code>asyncHandler</code> wrapper para evitar try/catch repetitivo em cada handler.</div>
+    </div>
+
+    <!-- PRÓXIMA AULA -->
+    <a href="n8n-03-integracoes.html" class="next-card">
+      <div>
+        <div class="next-card-label">Próxima aula →</div>
+        <div class="next-card-title">n8n — Integrações Reais com Google Sheets, Telegram & Banco</div>
+      </div>
+      <div class="next-arrow">→</div>
+    </a>
+
+    <div class="footer">
+      <span>⚡ JavaScript · Aula 28 / 50</span>
+      <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+    </div>
+
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+    mermaid.initialize({
+      startOnLoad: true, theme: 'dark',
+      themeVariables: {
+        primaryColor: '#3d2a00', primaryTextColor: '#e8e8f0',
+        primaryBorderColor: '#f59e0b', lineColor: '#8585a8',
+        background: '#111118', mainBkg: '#16161f', nodeBorder: '#f59e0b'
+      }
+    });
+    window.addEventListener('scroll', () => {
+      const p = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+      document.getElementById('progress').style.width = p + '%';
+    });
+  </script>
+</body>
+</html>

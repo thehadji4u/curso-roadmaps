@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>n8n — Setup & Primeiro Workflow · Aula 21</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #10b981;
+      --accent-dim: rgba(16,185,129,0.12);
+      --accent-border: rgba(16,185,129,0.35);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+      --purple: #a855f7;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #34d399); width: 0%; transition: width 0.1s; }
+
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; cursor: default; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #34d399; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.08); border-color: var(--success); }
+    .callout-tip .callout-title { color: var(--success); }
+    .callout-check { background: rgba(16,185,129,0.08); border-color: var(--accent); }
+    .callout-check .callout-title { color: var(--accent); }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(88,166,255,0.2); color: #79c0ff; }
+    .badge-cyan { background: rgba(6,182,212,0.2); color: #67e8f9; }
+    .badge-purple { background: rgba(168,85,247,0.2); color: #c084fc; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    @media (max-width: 640px) { .grid-3 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+    .pillar-badge { font-size: 11px; padding: 3px 10px; border-radius: 4px; font-weight: 600; }
+
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-info a { font-size: 12px; color: var(--accent); text-decoration: none; }
+    .video-info a:hover { text-decoration: underline; }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(52,211,153,0.04)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(16,185,129,0.06); border-radius: 6px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; }
+
+    .glossary-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .glossary-term { color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+    .glossary-def { color: var(--muted); font-size: 13px; }
+
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #34d399; }
+
+    /* Terminal */
+    .terminal { background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .terminal-bar { background: #1a1a1a; padding: 8px 14px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ef4444; } .dot-yellow { background: #f59e0b; } .dot-green { background: #10b981; }
+    .terminal-title { font-size: 11px; color: #555; margin-left: 6px; }
+    .terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; }
+    .t-prompt { color: #10b981; } .t-cmd { color: #e8e8f0; } .t-out { color: #8585a8; } .t-comment { color: #444; font-style: italic; }
+
+    /* n8n canvas mockup */
+    .n8n-canvas { background: #1a1a2e; border: 1px solid var(--border); border-radius: 12px; padding: 32px 24px; margin: 24px 0; position: relative; overflow: hidden; }
+    .n8n-canvas::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 24px 24px; pointer-events: none; }
+    .n8n-canvas-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 20px; }
+    .n8n-flow { display: flex; align-items: center; gap: 0; flex-wrap: wrap; justify-content: center; gap: 8px; }
+    .n8n-node { background: var(--surface2); border: 2px solid var(--border); border-radius: 10px; padding: 14px 18px; min-width: 120px; text-align: center; position: relative; transition: all 0.2s; cursor: default; }
+    .n8n-node:hover { border-color: var(--accent-border); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+    .n8n-node.trigger { border-color: rgba(245,158,11,0.5); background: rgba(245,158,11,0.05); }
+    .n8n-node.action { border-color: rgba(16,185,129,0.4); background: rgba(16,185,129,0.04); }
+    .n8n-node.logic { border-color: rgba(168,85,247,0.4); background: rgba(168,85,247,0.05); }
+    .n8n-node.output { border-color: rgba(88,166,255,0.4); background: rgba(88,166,255,0.05); }
+    .n8n-node-icon { font-size: 22px; margin-bottom: 6px; }
+    .n8n-node-name { font-size: 11px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+    .n8n-node-type { font-size: 10px; color: var(--muted); }
+    .n8n-connector { display: flex; align-items: center; color: var(--muted); font-size: 16px; padding: 0 2px; }
+    .n8n-dot-in { width: 8px; height: 8px; border-radius: 50%; background: var(--border); border: 2px solid var(--muted); position: absolute; left: -5px; top: 50%; transform: translateY(-50%); }
+    .n8n-dot-out { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); border: 2px solid var(--accent); position: absolute; right: -5px; top: 50%; transform: translateY(-50%); }
+
+    /* Trigger cards */
+    .trigger-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 16px 0; }
+    @media (max-width: 600px) { .trigger-grid { grid-template-columns: 1fr; } }
+    .trigger-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; display: flex; gap: 14px; align-items: flex-start; transition: border-color 0.2s; }
+    .trigger-card:hover { border-color: var(--accent-border); }
+    .trigger-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+    .trigger-name { font-weight: 700; color: #fff; font-size: 13px; margin-bottom: 3px; }
+    .trigger-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+    .trigger-example { font-size: 11px; color: var(--accent); margin-top: 6px; }
+
+    /* Install method tabs */
+    .install-tabs { display: flex; gap: 8px; margin-bottom: 0; flex-wrap: wrap; }
+    .install-tab { padding: 6px 16px; border-radius: 6px 6px 0 0; font-size: 12px; font-weight: 600; cursor: default; border: 1px solid var(--border); border-bottom: none; }
+    .install-tab.active { background: var(--surface); color: var(--accent); border-color: var(--accent-border); }
+    .install-tab.inactive { background: transparent; color: var(--muted); }
+
+    /* Compare */
+    .compare-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+    @media (max-width: 640px) { .compare-wrap { grid-template-columns: 1fr; } }
+    .compare-block { border-radius: 10px; overflow: hidden; }
+    .compare-header { padding: 10px 16px; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; }
+    .compare-header.n8n { background: rgba(16,185,129,0.15); color: #34d399; }
+    .compare-header.code { background: rgba(88,166,255,0.15); color: #79c0ff; }
+    .compare-block pre { margin: 0; border-radius: 0 0 10px 10px; }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar"></div>
+  </div>
+
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="gh-05-actions-cicd.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">🔀 n8n</span> · Aula 21 / 50
+      </div>
+      <a href="n8n-02-nodes-logica.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>🔀 n8n</span>
+        <span class="hero-badge">Aula 21</span>
+      </div>
+      <h1>n8n — Setup & Primeiro Workflow</h1>
+      <div class="hero-meta">
+        <span>⏱ ~40 min de leitura</span>
+        <span>🎯 Iniciante</span>
+        <span>🔧 Hands-on incluído</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">instalação</span>
+        <span class="tag accent">interface</span>
+        <span class="tag accent">nodes</span>
+        <span class="tag accent">triggers</span>
+        <span class="tag accent">primeiro workflow</span>
+        <span class="tag">self-hosted</span>
+        <span class="tag">Docker</span>
+        <span class="tag">webhook trigger</span>
+        <span class="tag">schedule trigger</span>
+        <span class="tag">expressions</span>
+      </div>
+    </div>
+
+    <!-- 1. POR QUE IMPORTA -->
+    <div class="section">
+      <div class="section-label">// MOTIVAÇÃO</div>
+      <h2>Por que isso importa?</h2>
+      <p>
+        Quantas horas por semana você gasta em tarefas repetitivas? Copiar dados de uma planilha para um sistema, enviar e-mails de relatório toda segunda-feira, monitorar uma API e notificar o time quando algo muda, sincronizar contatos entre CRMs? Cada uma dessas tarefas é um workflow esperando para ser automatizado — e a maioria delas não exige uma linha de código.
+      </p>
+      <p>
+        O n8n (<em>nodemation</em>) é uma plataforma de automação <strong>open-source, self-hosted e com interface visual</strong> que conecta centenas de serviços e APIs em fluxos de trabalho. Diferente de Zapier ou Make, você pode rodar na sua própria infraestrutura, ter controle total dos dados e estender com JavaScript quando precisar de lógica customizada.
+      </p>
+      <div class="callout callout-info">
+        <div class="callout-title">💼 Por que um engenheiro usa n8n (e não só código)</div>
+        n8n não substitui código — ele complementa. Para integrações entre APIs conhecidas (Slack + Google Sheets + GitHub + Notion), construir em n8n é 10x mais rápido que escrever código do zero. Para automações de negócio que mudam frequentemente, uma interface visual é mais fácil de manter. Engenheiros seniores sabem quando usar a ferramenta certa: n8n para glue logic entre serviços, código para lógica de domínio complexa.
+      </div>
+    </div>
+
+    <!-- 2. ANALOGIA -->
+    <div class="section">
+      <div class="section-label">// ANALOGIA</div>
+      <h2>Antes do código: uma analogia</h2>
+      <div class="analogy-card">
+        <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
+        <div class="analogy-text">
+          Pense num <strong>encanamento inteligente da sua casa</strong>. A água (dados) entra por diferentes fontes — torneira da cozinha, chuveiro, jardim. Cada cômodo tem registros e válvulas (lógica) que controlam o fluxo. Alguns canos levam a um filtro (transformação), outros para o aquecedor (processamento), e finalmente a água chega onde precisa — pia, máquina de lavar, jardim — no formato certo.
+          <br><br>
+          O n8n é esse sistema de encanamento para dados. Os <em>triggers</em> são as torneiras que iniciam o fluxo. Os <em>nodes</em> são as válvulas, filtros e transformadores que processam os dados ao longo do caminho. As <em>connections</em> são os canos que ligam tudo. E o workflow completo garante que a informação chegue ao destino certo, no formato certo, na hora certa — automaticamente, sem você ter que abrir nenhuma torneira manualmente.
+        </div>
+        <div class="analogy-mapping">
+          <span class="analogy-real">🚿 Torneira que inicia o fluxo</span>
+          <span class="analogy-tech">→ Trigger node (Webhook, Schedule, etc.)</span>
+          <span class="analogy-real">🔧 Válvula que controla o fluxo</span>
+          <span class="analogy-tech">→ IF / Switch node (lógica condicional)</span>
+          <span class="analogy-real">🔄 Filtro que transforma a água</span>
+          <span class="analogy-tech">→ Set / Code node (transformar dados)</span>
+          <span class="analogy-real">🚰 Cano que liga dois pontos</span>
+          <span class="analogy-tech">→ Connection entre nodes</span>
+          <span class="analogy-real">🏁 Destino final da água</span>
+          <span class="analogy-tech">→ Action node final (Slack, Email, DB)</span>
+          <span class="analogy-real">📋 Projeto do encanamento completo</span>
+          <span class="analogy-tech">→ Workflow salvo no n8n</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. n8n vs ALTERNATIVAS -->
+    <div class="section">
+      <div class="section-label">// CONTEXTO</div>
+      <h2>n8n no ecossistema de automação</h2>
+      <p>
+        Existem várias plataformas de automação. Entender as diferenças ajuda a escolher a ferramenta certa para cada situação.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Plataforma</th><th>Modelo</th><th>Código</th><th>Self-hosted</th><th>Preço</th><th>Melhor para</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>n8n</strong></td>
+              <td>Visual + código</td>
+              <td><span class="badge badge-green">JavaScript nativo</span></td>
+              <td><span class="badge badge-green">Sim — open source</span></td>
+              <td>Free self-hosted / pago cloud</td>
+              <td>Devs que querem controle total</td>
+            </tr>
+            <tr>
+              <td>Zapier</td>
+              <td>Visual (low-code)</td>
+              <td><span class="badge badge-yellow">Limitado</span></td>
+              <td><span class="badge badge-red">Não</span></td>
+              <td>$20–$599/mês</td>
+              <td>Não-técnicos, integrações simples</td>
+            </tr>
+            <tr>
+              <td>Make (Integromat)</td>
+              <td>Visual</td>
+              <td><span class="badge badge-yellow">Limitado</span></td>
+              <td><span class="badge badge-red">Não</span></td>
+              <td>$9–$299/mês</td>
+              <td>Fluxos visuais complexos</td>
+            </tr>
+            <tr>
+              <td>Apache Airflow</td>
+              <td>Código (Python DAGs)</td>
+              <td><span class="badge badge-green">Python total</span></td>
+              <td><span class="badge badge-green">Sim</span></td>
+              <td>Free (infra própria)</td>
+              <td>Data engineers, pipelines de dados</td>
+            </tr>
+            <tr>
+              <td>Prefect / Temporal</td>
+              <td>Código</td>
+              <td><span class="badge badge-green">Python/Go</span></td>
+              <td><span class="badge badge-green">Sim</span></td>
+              <td>Free tier + pago</td>
+              <td>Workflows de dados críticos</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Pro tip — n8n + código = combo perfeito</div>
+        Use n8n para orquestrar o fluxo entre serviços (receber webhook → processar → enviar para Slack) e o <strong>Code node</strong> para qualquer lógica customizada em JavaScript dentro do workflow. Você tem o melhor dos dois mundos: velocidade de montagem visual com poder de código quando necessário.
+      </div>
+    </div>
+
+    <!-- 4. CONCEITO CENTRAL: ANATOMIA DA INTERFACE -->
+    <div class="section">
+      <div class="section-label">// CONCEITO CENTRAL</div>
+      <h2>Anatomia do n8n — interface e conceitos</h2>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">Arquitetura do n8n — do trigger ao resultado</div>
+        <div class="mermaid">
+flowchart LR
+    subgraph "Trigger (como começa)"
+        T1["⏰ Schedule\nCron"]
+        T2["🌐 Webhook\nHTTP POST"]
+        T3["📧 Email\nIMAP"]
+        T4["🔔 App Event\nGitHub, Slack..."]
+    end
+
+    subgraph "Processing (o que acontece)"
+        N1["🔄 Set\nTransformar dados"]
+        N2["🔀 IF / Switch\nLógica condicional"]
+        N3["💻 Code\nJavaScript custom"]
+        N4["🔁 Loop\nIterar items"]
+    end
+
+    subgraph "Output (onde vai)"
+        O1["💬 Slack\nEnviar mensagem"]
+        O2["📊 Google Sheets\nAtualizar planilha"]
+        O3["🗄️ Database\nInserir registro"]
+        O4["📨 HTTP Request\nChamar API"]
+    end
+
+    T1 & T2 & T3 & T4 --> N1
+    N1 --> N2
+    N2 -->|"true"| N3
+    N2 -->|"false"| N4
+    N3 & N4 --> O1 & O2 & O3 & O4
+
+    style T1 fill:#3a2a0a,stroke:#f59e0b,color:#fbbf24
+    style T2 fill:#3a2a0a,stroke:#f59e0b,color:#fbbf24
+    style T3 fill:#3a2a0a,stroke:#f59e0b,color:#fbbf24
+    style T4 fill:#3a2a0a,stroke:#f59e0b,color:#fbbf24
+    style O1 fill:#0a1a3a,stroke:#58a6ff,color:#79c0ff
+    style O2 fill:#0a1a3a,stroke:#58a6ff,color:#79c0ff
+    style O3 fill:#0a1a3a,stroke:#58a6ff,color:#79c0ff
+    style O4 fill:#0a1a3a,stroke:#58a6ff,color:#79c0ff
+        </div>
+      </div>
+
+      <h3>O Canvas — onde tudo acontece</h3>
+      <p>O canvas é a área principal onde você arrasta e conecta nodes para construir workflows. Veja um workflow de exemplo visual:</p>
+
+      <div class="n8n-canvas">
+        <div class="n8n-canvas-label">Canvas — Workflow: "Notificar time no Slack quando PR é aberto"</div>
+        <div class="n8n-flow">
+          <div class="n8n-node trigger">
+            <div class="n8n-dot-out"></div>
+            <div class="n8n-node-icon">🔔</div>
+            <div class="n8n-node-name">GitHub Trigger</div>
+            <div class="n8n-node-type">Pull Request opened</div>
+          </div>
+          <div class="n8n-connector">──▶</div>
+          <div class="n8n-node action">
+            <div class="n8n-dot-in"></div>
+            <div class="n8n-dot-out"></div>
+            <div class="n8n-node-icon">🔄</div>
+            <div class="n8n-node-name">Set Node</div>
+            <div class="n8n-node-type">Formatar mensagem</div>
+          </div>
+          <div class="n8n-connector">──▶</div>
+          <div class="n8n-node logic">
+            <div class="n8n-dot-in"></div>
+            <div class="n8n-dot-out"></div>
+            <div class="n8n-node-icon">🔀</div>
+            <div class="n8n-node-name">IF Node</div>
+            <div class="n8n-node-type">É draft?</div>
+          </div>
+          <div class="n8n-connector">──▶</div>
+          <div class="n8n-node output">
+            <div class="n8n-dot-in"></div>
+            <div class="n8n-node-icon">💬</div>
+            <div class="n8n-node-name">Slack</div>
+            <div class="n8n-node-type">Send message</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Estrutura de dados — items e JSON</h3>
+      <p>
+        Todo node no n8n trabalha com uma lista de <strong>items</strong>. Cada item é um objeto JSON com dois campos: <code>json</code> (os dados) e opcionalmente <code>binary</code> (arquivos). Quando um node produz múltiplos items (ex: busca 10 registros no banco), o próximo node processa cada item individualmente por padrão.
+      </p>
+
+      <div class="code-label">Estrutura de um item no n8n</div>
+      <pre><code class="language-json">// O que flui entre os nodes é sempre um array de items:
+[
+  {
+    "json": {
+      "id": 42,
+      "title": "Fix bug in auth module",
+      "author": "maria.dev",
+      "labels": ["bug", "priority-high"],
+      "created_at": "2024-01-15T10:30:00Z"
+    }
+  },
+  {
+    "json": {
+      "id": 43,
+      "title": "Add unit tests for payment service",
+      "author": "joao.eng",
+      "labels": ["enhancement"],
+      "created_at": "2024-01-15T11:00:00Z"
+    }
+  }
+]</code></pre>
+
+      <div class="callout callout-info">
+        <div class="callout-title">💡 Expressions — acessando dados entre nodes</div>
+        Para usar dados do node anterior, use a sintaxe de expression com duplas chaves: <code>{{ $json.title }}</code> acessa o campo <code>title</code> do item atual. <code>{{ $node["GitHub Trigger"].json.author }}</code> acessa dados de um node específico pelo nome. Você pode usar qualquer expressão JavaScript válida dentro das chaves.
+      </div>
+    </div>
+
+    <!-- 5. TIPOS DE TRIGGERS -->
+    <div class="section">
+      <div class="section-label">// TRIGGERS</div>
+      <h2>Tipos de Triggers — como um workflow começa</h2>
+      <p>
+        Todo workflow precisa de um ponto de entrada. Os triggers definem <em>quando</em> e <em>por que</em> o workflow é iniciado. Escolher o trigger certo é a primeira decisão ao criar qualquer automação.
+      </p>
+
+      <div class="trigger-grid">
+        <div class="trigger-card">
+          <div class="trigger-icon">⏰</div>
+          <div>
+            <div class="trigger-name">Schedule Trigger</div>
+            <div class="trigger-desc">Executa o workflow em horários definidos via cron ou intervalos. Não precisa de evento externo.</div>
+            <div class="trigger-example">Exemplos: relatório todo dia às 9h, limpeza semanal, sync horária de dados</div>
+          </div>
+        </div>
+        <div class="trigger-card">
+          <div class="trigger-icon">🌐</div>
+          <div>
+            <div class="trigger-name">Webhook Trigger</div>
+            <div class="trigger-desc">Expõe uma URL HTTP que dispara o workflow quando recebe uma requisição POST/GET. Trigger mais versátil.</div>
+            <div class="trigger-example">Exemplos: receber eventos de GitHub, Stripe, formulários web, qualquer serviço com webhook</div>
+          </div>
+        </div>
+        <div class="trigger-card">
+          <div class="trigger-icon">📧</div>
+          <div>
+            <div class="trigger-name">Email Trigger (IMAP)</div>
+            <div class="trigger-desc">Monitora uma caixa de e-mail e dispara quando novos e-mails chegam, com filtros por assunto ou remetente.</div>
+            <div class="trigger-example">Exemplos: processar pedidos por email, alertas de monitoramento, suporte ao cliente</div>
+          </div>
+        </div>
+        <div class="trigger-card">
+          <div class="trigger-icon">🔔</div>
+          <div>
+            <div class="trigger-name">App Triggers nativos</div>
+            <div class="trigger-desc">Triggers específicos de cada integração — GitHub, Slack, Notion, Airtable. Gerenciam polling ou webhooks automaticamente.</div>
+            <div class="trigger-example">Exemplos: novo PR no GitHub, nova linha no Airtable, mensagem em canal do Slack</div>
+          </div>
+        </div>
+        <div class="trigger-card">
+          <div class="trigger-icon">▶️</div>
+          <div>
+            <div class="trigger-name">Manual Trigger</div>
+            <div class="trigger-desc">Disparado clicando em "Execute workflow" na interface. Essencial para desenvolvimento e testes.</div>
+            <div class="trigger-example">Usos: testar workflows em desenvolvimento, executar ações únicas sob demanda</div>
+          </div>
+        </div>
+        <div class="trigger-card">
+          <div class="trigger-icon">🔗</div>
+          <div>
+            <div class="trigger-name">Execute Workflow Trigger</div>
+            <div class="trigger-desc">Permite que outro workflow chame este como sub-rotina, passando dados como parâmetros.</div>
+            <div class="trigger-example">Modularizar automações grandes em sub-workflows reutilizáveis</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Webhook Trigger é o mais poderoso</div>
+        Com o Webhook Trigger, você expõe uma URL única no formato <code>https://seu-n8n.com/webhook/uuid</code>. Qualquer serviço que suporta webhooks (GitHub, Stripe, Typeform, HubSpot, praticamente tudo) pode chamar essa URL e disparar seu workflow com os dados do evento. É a cola universal entre qualquer SaaS e sua automação.
+      </div>
+    </div>
+
+    <!-- 6. INSTALAÇÃO -->
+    <div class="section">
+      <div class="section-label">// INSTALAÇÃO</div>
+      <h2>Instalando o n8n — 3 formas</h2>
+
+      <div class="grid-3">
+        <div class="card-mini" style="border-color:var(--accent-border);">
+          <span class="pillar-badge" style="background:var(--accent-dim);color:var(--accent);">🐳 Docker</span>
+          <h4>Recomendado para dev</h4>
+          <p>Um comando, zero configuração, fácil de atualizar e remover. Persistência via volume nomeado.</p>
+        </div>
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(255,255,255,0.08);color:var(--muted);">📦 npm</span>
+          <h4>Global no sistema</h4>
+          <p>Instala como pacote global Node.js. Boa para uso local sem Docker. Precisa de Node 18+.</p>
+        </div>
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(255,255,255,0.08);color:var(--muted);">☁️ n8n Cloud</span>
+          <h4>Sem infraestrutura</h4>
+          <p>Versão gerenciada pelo próprio n8n. 14 dias grátis. Boa para validar antes de self-host.</p>
+        </div>
+      </div>
+
+      <h3>Instalação via Docker (recomendada)</h3>
+      <div class="terminal">
+        <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal</span></div>
+        <div class="terminal-body">
+          <div class="t-comment"># Forma simples — roda e abre no browser</div>
+          <div><span class="t-prompt">$</span> <span class="t-cmd">docker run -it --rm \</span></div>
+          <div style="padding-left:24px;"><span class="t-cmd">--name n8n \</span></div>
+          <div style="padding-left:24px;"><span class="t-cmd">-p 5678:5678 \</span></div>
+          <div style="padding-left:24px;"><span class="t-cmd">-v n8n_data:/home/node/.n8n \</span></div>
+          <div style="padding-left:24px;"><span class="t-cmd">docker.n8n.io/n8nio/n8n</span></div>
+          <br>
+          <div class="t-out">info: Editor is now accessible via: http://localhost:5678/</div>
+          <div class="t-out">info: Initializing n8n process...</div>
+        </div>
+      </div>
+
+      <h3>Instalação via Docker Compose (persistente e configurável)</h3>
+      <div class="code-label">docker-compose.yml para n8n self-hosted</div>
+      <pre><code class="language-yaml">services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      # URL base (importante para webhooks funcionarem)
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=http://localhost:5678/
+
+      # Autenticação básica (habilite em produção!)
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=senha_segura
+
+      # Timezone
+      - GENERIC_TIMEZONE=America/Sao_Paulo
+
+      # Executores (important para performance)
+      - EXECUTIONS_PROCESS=main
+
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+volumes:
+  n8n_data:</code></pre>
+
+      <div class="terminal">
+        <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal</span></div>
+        <div class="terminal-body">
+          <div><span class="t-prompt">$</span> <span class="t-cmd">docker compose up -d</span></div>
+          <div class="t-out">[+] Running 2/2</div>
+          <div class="t-out"> ✔ Volume n8n_data  Created</div>
+          <div class="t-out"> ✔ Container n8n    Started</div>
+          <br>
+          <div class="t-comment"># Acesse o editor</div>
+          <div><span class="t-prompt">$</span> <span class="t-cmd">open http://localhost:5678</span></div>
+        </div>
+      </div>
+
+      <h3>Instalação via npm (alternativa)</h3>
+      <div class="terminal">
+        <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal</span></div>
+        <div class="terminal-body">
+          <div class="t-comment"># Requer Node.js 18+ — verifique com: node --version</div>
+          <div><span class="t-prompt">$</span> <span class="t-cmd">npm install n8n -g</span></div>
+          <div><span class="t-prompt">$</span> <span class="t-cmd">n8n</span></div>
+          <div class="t-out">Editor is now accessible via: http://localhost:5678/</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. TOUR DA INTERFACE -->
+    <div class="section">
+      <div class="section-label">// INTERFACE</div>
+      <h2>Tour pela Interface do n8n</h2>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Área</th><th>Localização</th><th>Para que serve</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>🏠 <strong>Dashboard</strong></td>
+              <td>Tela inicial ao abrir</td>
+              <td>Lista todos os workflows, execuções recentes, status de cada workflow (ativo/inativo)</td>
+            </tr>
+            <tr>
+              <td>🎨 <strong>Canvas</strong></td>
+              <td>Ao abrir um workflow</td>
+              <td>Área de trabalho principal — arrastar nodes, conectar, configurar. Zoom com scroll, pan com click+drag</td>
+            </tr>
+            <tr>
+              <td>➕ <strong>Node Panel</strong></td>
+              <td>Clique no "+" ou pressione Tab</td>
+              <td>Busca e lista todos os nodes disponíveis (400+ integrações). Pesquise por nome do serviço</td>
+            </tr>
+            <tr>
+              <td>⚙️ <strong>Node Config</strong></td>
+              <td>Click em qualquer node</td>
+              <td>Painel lateral com todos os parâmetros do node selecionado — campos, credenciais, opções</td>
+            </tr>
+            <tr>
+              <td>🔑 <strong>Credentials</strong></td>
+              <td>Settings → Credentials</td>
+              <td>Gerencia credenciais de APIs (tokens, OAuth, senhas) de forma centralizada e segura</td>
+            </tr>
+            <tr>
+              <td>📋 <strong>Executions</strong></td>
+              <td>Menu lateral</td>
+              <td>Histórico de todas as execuções com status, duração, dados de entrada/saída de cada node</td>
+            </tr>
+            <tr>
+              <td>🔍 <strong>Debug Panel</strong></td>
+              <td>Após executar — click no node</td>
+              <td>Mostra exatamente quais dados entraram e saíram de cada node na última execução</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Dica de produtividade — atalhos do canvas</div>
+        <strong>Ctrl/Cmd + A</strong>: seleciona todos os nodes · <strong>Ctrl/Cmd + C/V</strong>: copia e cola nodes (inclusive entre abas) · <strong>Delete</strong>: remove node selecionado · <strong>Duplo clique no canvas</strong>: abre o node panel · <strong>Ctrl + Scroll</strong>: zoom · <strong>F</strong>: centraliza o workflow no canvas.
+      </div>
+    </div>
+
+    <!-- 8. PRIMEIRO WORKFLOW HANDS-ON -->
+    <div class="section">
+      <div class="section-label">// HANDS-ON</div>
+      <h2>Passo a Passo — Construindo o Primeiro Workflow</h2>
+      <p>
+        Vamos construir um workflow real: <strong>toda hora, buscar uma frase motivacional de uma API pública e enviar para um webhook de teste</strong>. Você vai aprender Schedule Trigger, HTTP Request node, Set node e como visualizar os dados em cada etapa.
+      </p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Subir o n8n e criar um novo workflow</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal</span></div>
+              <div class="terminal-body">
+                <div><span class="t-prompt">$</span> <span class="t-cmd">docker run -it --rm -p 5678:5678 -v n8n_data:/home/node/.n8n docker.n8n.io/n8nio/n8n</span></div>
+                <div class="t-out">Editor disponível em: http://localhost:5678/</div>
+              </div>
+            </div>
+            <p style="font-size:13px;color:var(--muted);margin-top:8px;">Acesse <strong>http://localhost:5678</strong>, complete o cadastro inicial e clique em <strong>"+ New Workflow"</strong>. Renomeie para "Frases Motivacionais".</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Adicionar o Schedule Trigger</div>
+            <div class="step-desc">Clique no "+" no centro do canvas → busque "Schedule" → selecione "Schedule Trigger". Configure:</div>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:6px;margin-top:8px;">
+              <li style="font-size:13px;color:var(--text);">✦ <strong>Trigger Interval:</strong> <code>Hours</code></li>
+              <li style="font-size:13px;color:var(--text);">✦ <strong>Hours Between Triggers:</strong> <code>1</code></li>
+            </ul>
+            <p style="font-size:13px;color:var(--muted);margin-top:10px;">Para testar agora sem esperar 1 hora, clique em <strong>"Execute Node"</strong> para disparar manualmente.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Adicionar o HTTP Request node</div>
+            <div class="step-desc">Clique no "+" na saída do Schedule Trigger → busque "HTTP Request". Configure:</div>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:6px;margin-top:8px;">
+              <li style="font-size:13px;color:var(--text);">✦ <strong>Method:</strong> <code>GET</code></li>
+              <li style="font-size:13px;color:var(--text);">✦ <strong>URL:</strong> <code>https://zenquotes.io/api/random</code></li>
+              <li style="font-size:13px;color:var(--text);">✦ <strong>Response Format:</strong> <code>JSON</code></li>
+            </ul>
+            <p style="font-size:13px;color:var(--muted);margin-top:10px;">Clique em <strong>"Execute Node"</strong>. Você verá o Output com a frase retornada pela API no painel de dados.</p>
+            <pre><code class="language-json">// Output do HTTP Request:
+[
+  {
+    "json": {
+      "q": "The only way to do great work is to love what you do.",
+      "a": "Steve Jobs",
+      "h": "&lt;blockquote&gt;...&lt;/blockquote&gt;"
+    }
+  }
+]</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Adicionar o Set node para formatar os dados</div>
+            <div class="step-desc">Clique no "+" na saída do HTTP Request → busque "Set". Configure os campos:</div>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:6px;margin-top:8px;">
+              <li style="font-size:13px;color:var(--text);">✦ Clique em <strong>"Add Field"</strong></li>
+              <li style="font-size:13px;color:var(--text);">✦ Name: <code>frase</code> · Value: <code>{{ $json.q }}</code></li>
+              <li style="font-size:13px;color:var(--text);">✦ Name: <code>autor</code> · Value: <code>{{ $json.a }}</code></li>
+              <li style="font-size:13px;color:var(--text);">✦ Name: <code>timestamp</code> · Value: <code>{{ $now.toISO() }}</code></li>
+              <li style="font-size:13px;color:var(--text);">✦ Name: <code>mensagem</code> · Value: <code>💡 {{ $json.q }} — {{ $json.a }}</code></li>
+            </ul>
+            <div class="callout callout-check" style="margin-top:12px;">
+              <div class="callout-title">✅ Note como {{ $json.q }} acessa o dado do node anterior</div>
+              Essas expressões são avaliadas dinamicamente. O <code>$json</code> se refere ao output do node imediatamente anterior. O <code>$now</code> é uma variável built-in do n8n para a data/hora atual.
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Adicionar o node de saída — HTTP Request para webhook.site</div>
+            <div class="step-desc">Para ver o resultado sem precisar configurar Slack/email, vamos usar o webhook.site como destino temporário:</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Browser</span></div>
+              <div class="terminal-body">
+                <div class="t-comment"># Acesse webhook.site e copie a URL única gerada</div>
+                <div class="t-out">https://webhook.site → copie a URL no topo da página</div>
+              </div>
+            </div>
+            <p style="font-size:13px;color:var(--muted);margin-top:8px;">Adicione outro <strong>HTTP Request node</strong> após o Set:</p>
+            <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:6px;margin-top:8px;">
+              <li style="font-size:13px;color:var(--text);">✦ <strong>Method:</strong> <code>POST</code></li>
+              <li style="font-size:13px;color:var(--text);">✦ <strong>URL:</strong> <code>https://webhook.site/sua-url-aqui</code></li>
+              <li style="font-size:13px;color:var(--text);">✦ <strong>Send Body:</strong> JSON · Content: <code>{{ $json }}</code></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <div class="step-title">Executar o workflow completo e ativar</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">n8n Editor</span></div>
+              <div class="terminal-body">
+                <div class="t-comment"># Clique em "Execute Workflow" (botão no topo)</div>
+                <div class="t-out">✅ Workflow ran successfully</div>
+                <div class="t-out">Schedule Trigger  →  1 item</div>
+                <div class="t-out">HTTP Request     →  1 item (frase buscada)</div>
+                <div class="t-out">Set              →  1 item (dados formatados)</div>
+                <div class="t-out">HTTP Request 1   →  1 item (enviado para webhook)</div>
+                <br>
+                <div class="t-comment"># Para rodar automaticamente todo hora: salve e ative o toggle</div>
+                <div class="t-out">🟢 Workflow Active — rodará a cada hora</div>
+              </div>
+            </div>
+            <p style="font-size:13px;color:var(--muted);margin-top:10px;">Verifique o <strong>webhook.site</strong> — você verá o payload JSON com a frase formatada chegando. No painel de <strong>Executions</strong> do n8n, você pode ver o histórico com dados de entrada/saída de cada node.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9. SEGUNDO WORKFLOW: WEBHOOK -->
+    <div class="section">
+      <div class="section-label">// SEGUNDO WORKFLOW</div>
+      <h2>Workflow com Webhook Trigger</h2>
+      <p>
+        Agora vamos criar um workflow que recebe dados via HTTP POST — o padrão usado por formulários, GitHub, Stripe e praticamente todo SaaS.
+      </p>
+
+      <div class="code-label">Workflow: Receber formulário e salvar dados formatados</div>
+
+      <div class="n8n-canvas">
+        <div class="n8n-canvas-label">Workflow Webhook — Receber dados → Validar → Responder</div>
+        <div class="n8n-flow">
+          <div class="n8n-node trigger">
+            <div class="n8n-dot-out"></div>
+            <div class="n8n-node-icon">🌐</div>
+            <div class="n8n-node-name">Webhook</div>
+            <div class="n8n-node-type">POST /registro</div>
+          </div>
+          <div class="n8n-connector">──▶</div>
+          <div class="n8n-node logic">
+            <div class="n8n-dot-in"></div>
+            <div class="n8n-dot-out"></div>
+            <div class="n8n-node-icon">🔀</div>
+            <div class="n8n-node-name">IF</div>
+            <div class="n8n-node-type">email válido?</div>
+          </div>
+          <div class="n8n-connector">──▶</div>
+          <div class="n8n-node action">
+            <div class="n8n-dot-in"></div>
+            <div class="n8n-dot-out"></div>
+            <div class="n8n-node-icon">🔄</div>
+            <div class="n8n-node-name">Set</div>
+            <div class="n8n-node-type">Formatar lead</div>
+          </div>
+          <div class="n8n-connector">──▶</div>
+          <div class="n8n-node output">
+            <div class="n8n-dot-in"></div>
+            <div class="n8n-node-icon">↩️</div>
+            <div class="n8n-node-name">Respond</div>
+            <div class="n8n-node-type">HTTP Response</div>
+          </div>
+        </div>
+      </div>
+
+      <p>Configure o Webhook node com <strong>HTTP Method: POST</strong> e <strong>Path: /registro</strong>. O n8n gera a URL completa automaticamente. Para testar:</p>
+
+      <div class="terminal">
+        <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal — testando o webhook</span></div>
+        <div class="terminal-body">
+          <div class="t-comment"># Enviar dados para o webhook do n8n</div>
+          <div><span class="t-prompt">$</span> <span class="t-cmd">curl -X POST http://localhost:5678/webhook/registro \</span></div>
+          <div style="padding-left:24px;"><span class="t-cmd">-H "Content-Type: application/json" \</span></div>
+          <div style="padding-left:24px;"><span class="t-cmd">-d '{"nome": "Maria Dev", "email": "maria@example.com", "interesse": "Python"}'</span></div>
+          <br>
+          <div class="t-out">{"success": true, "mensagem": "Lead registrado!", "id": "lead_abc123"}</div>
+        </div>
+      </div>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Webhook de teste vs produção</div>
+        Durante o desenvolvimento, o n8n gera duas URLs para cada Webhook node: a URL de <strong>teste</strong> (só funciona com o workflow em modo "listening" no editor) e a URL de <strong>produção</strong> (funciona com o workflow ativo). Sempre use a URL de teste durante o desenvolvimento — ela aparece quando você clica em "Listen for test event".
+      </div>
+    </div>
+
+    <!-- 10. EXPRESSÕES E DADOS -->
+    <div class="section">
+      <div class="section-label">// EXPRESSÕES</div>
+      <h2>Expressões — a linguagem do n8n</h2>
+      <p>
+        Expressões permitem referenciar dados dinâmicos de nodes anteriores, usar funções JavaScript e acessar variáveis do sistema. Elas são escritas dentro de <code>{{ }}</code> em qualquer campo de texto do n8n.
+      </p>
+
+      <div class="code-label">Expressões mais usadas — referência rápida</div>
+      <pre><code class="language-javascript">// ── Acessar dados do node anterior ──────────────────────────────
+{{ $json.campo }}                    // Campo do item atual
+{{ $json.usuario.nome }}             // Campo aninhado
+{{ $json.tags[0] }}                  // Primeiro item de array
+
+// ── Referenciar node específico pelo nome ──────────────────────
+{{ $node["Nome do Node"].json.campo }}
+{{ $("HTTP Request").item.json.status }}   // Sintaxe alternativa
+
+// ── Variáveis built-in ─────────────────────────────────────────
+{{ $now }}                           // DateTime atual (objeto Luxon)
+{{ $now.toISO() }}                   // "2024-01-15T10:30:00.000Z"
+{{ $now.toFormat('dd/MM/yyyy') }}    // "15/01/2024"
+{{ $workflow.id }}                   // ID do workflow
+{{ $execution.id }}                  // ID da execução atual
+{{ $itemIndex }}                     // Índice do item atual no loop
+
+// ── JavaScript dentro das expressões ──────────────────────────
+{{ $json.nome.toUpperCase() }}
+{{ $json.valor * 1.1 }}              // Cálculos
+{{ $json.email.includes('@') ? 'válido' : 'inválido' }}
+{{ $json.tags.join(', ') }}          // Array para string
+{{ JSON.stringify($json) }}          // Converter para string JSON
+
+// ── Acessar dados de múltiplos items ──────────────────────────
+{{ $items().length }}                // Total de items na execução
+{{ $items("HTTP Request").length }}  // Items de um node específico</code></pre>
+
+      <div class="compare-wrap">
+        <div class="compare-block">
+          <div class="compare-header n8n">✅ n8n com expressões</div>
+          <pre><code class="language-javascript">// No campo "Message" do Slack node:
+"🚀 Novo PR de {{ $json.user.login }}: 
+{{ $json.pull_request.title }}
+Branch: {{ $json.pull_request.head.ref }} → {{ $json.pull_request.base.ref }}
+Link: {{ $json.pull_request.html_url }}"</code></pre>
+        </div>
+        <div class="compare-block">
+          <div class="compare-header code">⚙️ Equivalente em código Python</div>
+          <pre><code class="language-python">message = (
+    f"🚀 Novo PR de {data['user']['login']}: "
+    f"{data['pull_request']['title']}\n"
+    f"Branch: {data['pull_request']['head']['ref']} "
+    f"→ {data['pull_request']['base']['ref']}\n"
+    f"Link: {data['pull_request']['html_url']}"
+)
+slack_client.chat_postMessage(
+    channel="#dev", text=message
+)</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- 11. ARMADILHAS -->
+    <div class="section">
+      <div class="section-label">// PITFALLS</div>
+      <h2>⚠️ Armadilhas Comuns</h2>
+
+      <div class="pitfall">
+        <div class="pitfall-title">1. WEBHOOK_URL errada — webhooks não funcionam externamente</div>
+        <p>A variável <code>WEBHOOK_URL</code> define o endereço base das URLs de webhook geradas pelo n8n. Se você configurar como <code>localhost</code>, os webhooks só funcionam de dentro do mesmo servidor. Para receber eventos externos (GitHub, Stripe), configure com o domínio público do seu servidor: <code>WEBHOOK_URL=https://n8n.seudominio.com/</code>. Para desenvolvimento local, use ngrok para expor o localhost.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">2. Dados binários passando por Set node — perda de arquivos</div>
+        <p>O Set node por padrão <strong>não preserva dados binários</strong> (arquivos, imagens) do node anterior. Se o seu workflow manipula arquivos, ative a opção <strong>"Keep Only Set"</strong> como falso, ou use o campo <code>binary</code> explicitamente. Nodes que trabalham com binários têm configurações específicas para isso.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">3. Expressions com erro silencioso retornam string vazia</div>
+        <p>Se uma expression como <code>{{ $json.campo_que_nao_existe }}</code> falha, o n8n retorna string vazia por padrão — sem erro, sem aviso. Isso pode causar dados incorretos passando silenciosamente pelo workflow. Use o modo de debug (clique no node após executar) para verificar sempre os dados de saída.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">4. Execuções acumulando sem limpeza — disco lotando</div>
+        <p>Por padrão, n8n salva o histórico de todas as execuções com todos os dados de entrada/saída. Em workflows que rodam frequentemente (a cada minuto, por exemplo), isso pode consumir gigabytes em semanas. Configure <code>EXECUTIONS_DATA_SAVE_ON_SUCCESS=none</code> ou <code>EXECUTIONS_DATA_MAX_AGE=168</code> (horas) para limitar a retenção.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">5. Credenciais compartilhadas entre workflows — risco de segurança</div>
+        <p>As credenciais criadas em um workflow ficam disponíveis para todos os workflows da instância n8n. Em ambientes compartilhados (múltiplos usuários), use o n8n com múltiplos workspaces ou instâncias separadas. Revise quem tem acesso à sua instância n8n — quem acessa o editor tem acesso implícito a todas as credenciais configuradas.</p>
+      </div>
+    </div>
+
+    <!-- 12. VÍDEOS -->
+    <div class="section">
+      <div class="section-label">// CURADORIA</div>
+      <h2>Vídeos Recomendados</h2>
+      <div class="video-grid">
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">n8n Crash Course for Beginners</div>
+            <div class="video-channel">Tiff in Tech · ~45 min</div>
+            <div class="video-why">Por que assistir: O melhor curso introdutório de n8n em inglês — cobre instalação, interface, primeiros workflows do zero com explicações claras de nodes, triggers e connections. Excelente para solidificar os conceitos desta aula.</div>
+            <a href="https://www.youtube.com/watch?v=1MwSoB0gnM4" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">n8n Full Tutorial — Automate Everything</div>
+            <div class="video-channel">NetworkChuck · ~1h</div>
+            <div class="video-why">Por que assistir: NetworkChuck mostra a instalação self-hosted com Docker, criação de workflows reais e casos de uso práticos — incluindo integração com Telegram, servidores Linux e automações de segurança.</div>
+            <a href="https://www.youtube.com/watch?v=mHxMlD9hyoU" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">n8n vs Zapier vs Make — Qual usar?</div>
+            <div class="video-channel">Liam Ottley · ~20 min</div>
+            <div class="video-why">Por que assistir: Comparação honesta e técnica entre as três principais plataformas de automação — preço, capacidades, limitações e quando cada uma faz mais sentido. Essencial para tomar a decisão certa no seu contexto.</div>
+            <a href="https://www.youtube.com/watch?v=YWZSMTiyupw" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">n8n Webhook Tutorial — Integrando qualquer API</div>
+            <div class="video-channel">Leon van Zyl · ~30 min</div>
+            <div class="video-why">Por que assistir: Foca especificamente no Webhook Trigger — como configurar, testar com ngrok, processar dados recebidos e responder. Essencial para construir integrações com serviços externos que enviam eventos.</div>
+            <a href="https://www.youtube.com/watch?v=z5iH2qnpJts" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 13. GLOSSÁRIO -->
+    <div class="section">
+      <div class="section-label">// GLOSSÁRIO</div>
+      <h2>Termos desta Aula</h2>
+      <div class="glossary-item">
+        <div class="glossary-term">Workflow</div>
+        <div class="glossary-def">Conjunto de nodes conectados que define uma automação completa. Pode estar ativo (rodando automaticamente) ou inativo (apenas editável). Salvo como JSON internamente.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Node</div>
+        <div class="glossary-def">Bloco funcional individual que realiza uma operação — buscar dados, transformar, enviar para serviço externo, tomar uma decisão. Cada node tem inputs e outputs.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Trigger Node</div>
+        <div class="glossary-def">Node especial que inicia o workflow. Todo workflow tem exatamente um trigger. Define quando e com quais dados o workflow começa a executar.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Item</div>
+        <div class="glossary-def">Unidade de dados que flui entre nodes. Um array de items. Cada item tem um campo <code>json</code> com os dados e opcionalmente <code>binary</code> para arquivos.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Expression</div>
+        <div class="glossary-def">Sintaxe <code>{{ }}</code> usada em campos de texto para referenciar dados dinâmicos — do node anterior (<code>$json</code>), de nodes específicos (<code>$node</code>), ou variáveis do sistema (<code>$now</code>, <code>$workflow</code>).</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Credentials</div>
+        <div class="glossary-def">Configurações de autenticação para APIs externas (tokens, OAuth, usuário/senha). Armazenadas de forma criptografada no banco do n8n e reutilizáveis entre workflows.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Execution</div>
+        <div class="glossary-def">Uma instância de execução do workflow — do disparo do trigger até o último node. Cada execução tem ID único, status (success/error) e log dos dados em cada node.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Canvas</div>
+        <div class="glossary-def">Área de trabalho visual onde nodes são posicionados e conectados com setas. Os nodes são arrastáveis e as conexões são desenhadas clicando no ponto de saída de um node e arrastando para a entrada do próximo.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">self-hosted</div>
+        <div class="glossary-def">Modalidade de rodar o n8n na sua própria infraestrutura (servidor, VPS, Docker local) em vez de usar o serviço cloud gerenciado. Gratuito, com controle total dos dados e sem limites de execução.</div>
+      </div>
+    </div>
+
+    <!-- CHECKPOINT -->
+    <div class="section">
+      <div class="checkpoint">
+        <h3>🏁 Checkpoint — Desafio Final</h3>
+        <p>Construa <strong>dois workflows</strong> funcionais no n8n instalado localmente via Docker:</p>
+        <ul>
+          <li><strong>Workflow 1 — Schedule + API:</strong> A cada 30 minutos, busque a cotação do dólar em uma API pública (ex: <code>https://economia.awesomeapi.com.br/json/last/USD-BRL</code>), extraia o valor com o Set node e envie para um webhook de teste (webhook.site)</li>
+          <li><strong>Workflow 2 — Webhook:</strong> Crie um endpoint <code>POST /contato</code> que recebe um JSON com <code>nome</code>, <code>email</code> e <code>mensagem</code>. Use o IF node para validar se o email contém "@". Na saída true, responda com <code>{"status": "ok", "recebido": true}</code>. Na saída false, responda com <code>{"status": "erro", "motivo": "email inválido"}</code></li>
+          <li>Verifique o histórico em <strong>Executions</strong> e inspecione os dados de saída de cada node</li>
+          <li>Bônus: Adicione um <strong>Code node</strong> após o Set node do Workflow 1 que calcula o preço de 100 dólares em reais usando <code>$json.bid</code></li>
+        </ul>
+        <div class="checkpoint-hint">💬 Dica: para testar o Workflow 2 sem sair do terminal, use <code>curl -X POST http://localhost:5678/webhook-test/contato -H "Content-Type: application/json" -d '{"nome":"João","email":"joao@test.com","mensagem":"Olá"}'</code>. A URL de teste (<code>webhook-test</code>) só funciona enquanto você está com o editor aberto no node com o botão "Listening".</div>
+      </div>
+    </div>
+
+    <!-- PRÓXIMOS PASSOS -->
+    <div class="section">
+      <div class="section-label">// PRÓXIMA AULA</div>
+      <h2>O que vem a seguir?</h2>
+      <p style="margin-bottom:20px;">Com o ambiente funcionando e os conceitos básicos dominados, vamos aprofundar nos nodes mais poderosos do n8n — aqueles que permitem construir automações realmente complexas: HTTP Request para qualquer API, Code node para JavaScript customizado, IF e Switch para lógica condicional, Loop para processar listas, e Error Trigger para tratamento de falhas.</p>
+      <a href="n8n-02-nodes-logica.html" class="next-card">
+        <div>
+          <div class="next-card-label">Próxima Aula • 🔀 n8n</div>
+          <div class="next-card-title">n8n — Nodes Essenciais & Lógica</div>
+        </div>
+        <div class="next-arrow">→</div>
+      </a>
+    </div>
+
+  </div>
+
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+    document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+
+    const bar = document.getElementById('progressBar');
+    window.addEventListener('scroll', () => {
+      const scrollTop = document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const progress = (scrollTop / scrollHeight) * 100;
+      bar.style.width = progress + '%';
+    });
+  </script>
+</body>
+</html>

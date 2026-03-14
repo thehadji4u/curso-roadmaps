@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Git Avançado — Rebase, Tags & Estratégias · Aula 16</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #58a6ff;
+      --accent-dim: rgba(88,166,255,0.15);
+      --accent-border: rgba(88,166,255,0.35);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #79c0ff); width: 0%; transition: width 0.1s; }
+
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; cursor: default; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #79c0ff; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.08); border-color: var(--success); }
+    .callout-tip .callout-title { color: var(--success); }
+    .callout-danger { background: rgba(239,68,68,0.08); border-color: var(--danger); }
+    .callout-danger .callout-title { color: var(--danger); }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(88,166,255,0.2); color: #79c0ff; }
+    .badge-purple { background: rgba(168,85,247,0.2); color: #c084fc; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-info a { font-size: 12px; color: var(--accent); text-decoration: none; }
+    .video-info a:hover { text-decoration: underline; }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(88,166,255,0.08), rgba(121,192,255,0.04)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(88,166,255,0.06); border-radius: 6px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; }
+
+    .glossary-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .glossary-term { color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+    .glossary-def { color: var(--muted); font-size: 13px; }
+
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #79c0ff; }
+
+    /* Terminal */
+    .terminal { background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .terminal-bar { background: #1a1a1a; padding: 8px 14px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ef4444; } .dot-yellow { background: #f59e0b; } .dot-green { background: #10b981; }
+    .terminal-title { font-size: 11px; color: #555; margin-left: 6px; }
+    .terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; }
+    .t-prompt { color: #10b981; } .t-cmd { color: #e8e8f0; } .t-out { color: #8585a8; } .t-comment { color: #444; font-style: italic; }
+
+    /* Git log visual */
+    .git-log { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+    .git-commit { display: flex; gap: 14px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .git-commit:last-child { border-bottom: none; }
+    .git-hash { color: #ffa657; flex-shrink: 0; width: 70px; }
+    .git-dot { flex-shrink: 0; width: 12px; height: 12px; border-radius: 50%; margin-top: 4px; }
+    .git-msg { color: var(--text); }
+    .git-meta { color: var(--muted); font-size: 11px; margin-top: 2px; }
+    .ref-tag { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: 700; margin-right: 4px; }
+    .ref-head { background: rgba(88,166,255,0.2); color: #79c0ff; border: 1px solid rgba(88,166,255,0.4); }
+    .ref-main { background: rgba(16,185,129,0.2); color: #34d399; border: 1px solid rgba(16,185,129,0.4); }
+    .ref-tag-v { background: rgba(245,158,11,0.2); color: #fbbf24; border: 1px solid rgba(245,158,11,0.4); }
+
+    /* Branch timeline */
+    .branch-visual { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; font-family: 'JetBrains Mono', monospace; font-size: 12px; overflow-x: auto; }
+    .branch-row { display: flex; align-items: center; gap: 0; margin-bottom: 8px; height: 28px; }
+    .b-node { width: 14px; height: 14px; border-radius: 50%; border: 2px solid; flex-shrink: 0; }
+    .b-line { height: 2px; flex: 1; min-width: 20px; }
+    .b-label { font-size: 11px; margin-left: 10px; white-space: nowrap; }
+    .b-main { border-color: #58a6ff; background: #58a6ff; }
+    .b-main-line { background: #58a6ff; opacity: 0.5; }
+    .b-feat { border-color: #a855f7; background: #a855f7; }
+    .b-feat-line { background: #a855f7; opacity: 0.5; }
+    .b-tag { border-color: #f59e0b; background: #f59e0b; }
+    .b-empty { width: 14px; flex-shrink: 0; }
+    .b-space { width: 34px; flex-shrink: 0; }
+
+    /* Strategy cards */
+    .strategy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin: 20px 0; }
+    .strategy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px; position: relative; overflow: hidden; }
+    .strategy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+    .strategy-card.rebase-flow::before { background: linear-gradient(90deg, #58a6ff, #79c0ff); }
+    .strategy-card.merge-flow::before { background: linear-gradient(90deg, #10b981, #34d399); }
+    .strategy-card.squash-flow::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+    .strategy-icon { font-size: 28px; margin-bottom: 12px; }
+    .strategy-name { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
+    .strategy-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar"></div>
+  </div>
+
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="py-05-http-bibliotecas.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">🐙 GitHub</span> · Aula 16 / 50
+      </div>
+      <a href="dkr-01-conceitos-containers.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>🐙 GitHub</span>
+        <span class="hero-badge">Aula 16</span>
+      </div>
+      <h1>Git Avançado — Rebase, Tags & Estratégias</h1>
+      <div class="hero-meta">
+        <span>⏱ ~45 min de leitura</span>
+        <span>🎯 Nível Intermediário → Avançado</span>
+        <span>🔧 Hands-on incluído</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">git rebase</span>
+        <span class="tag accent">interactive rebase</span>
+        <span class="tag accent">git tag</span>
+        <span class="tag accent">releases</span>
+        <span class="tag">git stash</span>
+        <span class="tag">branch strategies</span>
+        <span class="tag">GitFlow</span>
+        <span class="tag">trunk-based</span>
+        <span class="tag">squash</span>
+        <span class="tag">cherry-pick</span>
+      </div>
+    </div>
+
+    <!-- 1. POR QUE IMPORTA -->
+    <div class="section">
+      <div class="section-label">// MOTIVAÇÃO</div>
+      <h2>Por que isso importa?</h2>
+      <p>
+        Qualquer pessoa aprende <code>git add</code>, <code>git commit</code> e <code>git push</code> em um dia. O que separa um desenvolvedor júnior de um sênior no uso de Git não é conhecer esses comandos básicos — é saber <strong>reescrever o histórico com precisão cirúrgica</strong>, marcar versões de forma profissional e escolher a estratégia de branching certa para cada tipo de time e projeto.
+      </p>
+      <p>
+        Rebase interativo é a ferramenta que transforma um histórico caótico de WIP commits em uma narrativa limpa e revisável. Tags são o contrato formal entre o seu repositório e o mundo — elas marcam exatamente o commit que foi para produção. E estratégias de branch determinam se seu time consegue fazer deploys com confiança ou vive apagando incêndios.
+      </p>
+      <div class="callout callout-info">
+        <div class="callout-title">💼 Por que um engenheiro sênior domina esses recursos</div>
+        Sêniors sabem que o histórico do Git <em>é</em> documentação. Um <code>git log --oneline</code> bem estruturado conta a história de uma feature em 5 linhas. Rebase interativo permite que o desenvolvedor entregue commits atômicos e revisáveis mesmo tendo trabalhado de forma iterativa e messy durante o desenvolvimento. Tags e releases criam pontos de referência que o time de infra, QA e suporte usam para rastrear exatamente o que está em produção.
+      </div>
+    </div>
+
+    <!-- 2. ANALOGIA -->
+    <div class="section">
+      <div class="section-label">// ANALOGIA</div>
+      <h2>A Analogia do Mundo Real</h2>
+
+      <div class="analogy-card">
+        <div class="analogy-label">🎬 Analogia: Edição de Filme</div>
+        <div class="analogy-text">
+          Imagine que você está filmando um documentário. Durante as gravações, você captura muita coisa: takes ruins, ensaios, imagens de câmera na mão tremendo, cenas fora de ordem. O produto final — o filme editado — é uma <strong>narrativa coesa e linear</strong> que o público vai assistir.<br><br>
+          <strong>Git rebase</strong> é a ilha de edição. Você pega todos aqueles takes brutos (commits de "fix typo", "wip", "tentei de novo") e reorganiza, comprime e aperfeiçoa até criar uma sequência limpa. <strong>Git tags</strong> são o lançamento do filme: a versão v1.0 é o que chegou nos cinemas, registrado para sempre. <strong>Estratégias de branch</strong> são os acordos de produção: quem filma o que, quando cada equipe entrega suas cenas e como tudo se junta na montagem final.
+        </div>
+        <div class="analogy-mapping">
+          <div class="analogy-real">📹 Takes brutos & ensaios</div>
+          <div class="analogy-tech"><code>git commit</code> durante dev (WIP commits)</div>
+          <div class="analogy-real">🎬 Ilha de edição</div>
+          <div class="analogy-tech"><code>git rebase -i</code> (rebase interativo)</div>
+          <div class="analogy-real">🎥 Lançamento nos cinemas</div>
+          <div class="analogy-tech"><code>git tag v1.0.0</code> + Release</div>
+          <div class="analogy-real">📋 Acordo de produção entre equipes</div>
+          <div class="analogy-tech">Estratégia de branching (GitFlow, trunk-based)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. CONCEITO: REBASE -->
+    <div class="section">
+      <div class="section-label">// CONCEITO CENTRAL</div>
+      <h2>Git Rebase — Reescrevendo o Histórico</h2>
+
+      <p>
+        O <code>git rebase</code> move ou reescreve commits de uma branch como se eles tivessem sido criados em outro ponto da história. Existem duas formas principais de uso: o <strong>rebase simples</strong> (para integrar mudanças de outra branch mantendo histórico linear) e o <strong>rebase interativo</strong> (para reorganizar, squash e editar commits).
+      </p>
+
+      <h3>Rebase Simples vs. Merge</h3>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// merge vs rebase — diferença no histórico resultante</div>
+        <div class="mermaid">
+gitGraph
+   commit id: "A"
+   commit id: "B"
+   branch feature
+   checkout feature
+   commit id: "C"
+   commit id: "D"
+   checkout main
+   commit id: "E"
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin: 24px 0;">
+        <div class="card-mini">
+          <div style="font-size: 11px; color: var(--success); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">✅ git merge</div>
+          <h4>Histórico preservado</h4>
+          <p>Cria um "merge commit" que une os dois lados. O histórico mostra exatamente o que aconteceu — incluindo o ponto de divergência. Ideal quando o histórico da integração importa.</p>
+        </div>
+        <div class="card-mini">
+          <div style="font-size: 11px; color: var(--accent); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">⟳ git rebase</div>
+          <h4>Histórico linear</h4>
+          <p>Reaplica os commits da feature como se tivessem começado a partir do último commit da main. O resultado é um histórico reto, sem bifurcações — mais fácil de ler com <code>git log</code>.</p>
+        </div>
+      </div>
+
+      <div class="callout callout-danger">
+        <div class="callout-title">🚫 A Regra de Ouro do Rebase</div>
+        Nunca faça rebase de commits que já foram enviados para um repositório <strong>compartilhado</strong> (push). Rebase reescreve o histórico criando novos commits com hashes diferentes. Se outra pessoa já baixou os commits originais, isso causa conflitos sérios e confusão para todo o time.
+      </div>
+
+      <h3>Rebase Interativo — A ferramenta mais poderosa</h3>
+
+      <p>
+        O <code>git rebase -i</code> (interactive) abre um editor onde você decide o que fazer com cada commit de uma branch. É aqui que a magia acontece.
+      </p>
+
+      <div class="terminal">
+        <div class="terminal-bar"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span><span class="terminal-title">bash</span></div>
+        <div class="terminal-body">
+          <span class="t-prompt">$</span> <span class="t-cmd">git rebase -i HEAD~5</span><br>
+          <span class="t-comment"># Abre o editor com os últimos 5 commits</span><br>
+          <span class="t-comment"># Cada linha tem um comando + hash + mensagem</span>
+        </div>
+      </div>
+
+      <div class="code-label">// o que aparece no editor (lista de commits a editar)</div>
+      <pre><code class="language-bash">pick 3a1b2c4 feat: adiciona autenticação OAuth
+pick 7d8e9f0 fix typo in variable name
+pick 1a2b3c4 wip: trying to fix the bug
+pick 5e6f7a8 WIP continue
+pick 9b0c1d2 feat: autenticação funcionando agora
+
+# Comandos disponíveis:
+# p, pick   = usa o commit como está
+# r, reword = usa o commit mas edita a mensagem
+# e, edit   = usa o commit mas para para edição
+# s, squash = une ao commit anterior
+# f, fixup  = como squash mas descarta a mensagem
+# d, drop   = remove o commit completamente
+# reorder   = basta reordenar as linhas</code></pre>
+
+      <p>O mais comum em times profissionais é transformar isso em:</p>
+
+      <div class="code-label">// após editar: commits organizados e limpos</div>
+      <pre><code class="language-bash">pick 3a1b2c4 feat: adiciona autenticação OAuth
+fixup 7d8e9f0 fix typo in variable name
+squash 1a2b3c4 wip: trying to fix the bug
+squash 5e6f7a8 WIP continue
+squash 9b0c1d2 feat: autenticação funcionando agora
+
+# Resultado: 1 commit limpo com mensagem editável
+# "feat: adiciona autenticação OAuth"</code></pre>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Pro tip: squash antes de abrir PR</div>
+        Antes de abrir um Pull Request, rode <code>git rebase -i origin/main</code> para fazer squash dos commits de WIP em commits atômicos e bem descritos. Seu reviewer vai agradecer — e o histórico do projeto vai ficar limpo para sempre.
+      </div>
+    </div>
+
+    <!-- 4. CONCEITO: TAGS & RELEASES -->
+    <div class="section">
+      <div class="section-label">// TAGS & RELEASES</div>
+      <h2>Tags — Marcando Versões com Semver</h2>
+
+      <p>
+        Tags são ponteiros permanentes para commits específicos. Diferente de branches (que avançam com novos commits), uma tag é imutável — ela sempre aponta para o mesmo commit. Tags são a forma padrão da indústria de marcar <strong>versões de software prontas para release</strong>.
+      </p>
+
+      <h3>Versionamento Semântico (SemVer)</h3>
+
+      <p>
+        O padrão <strong>MAJOR.MINOR.PATCH</strong> (ex: <code>v2.1.3</code>) é o contrato que informa à comunidade o impacto de cada atualização:
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Componente</th>
+              <th>Quando incrementar</th>
+              <th>Exemplo</th>
+              <th>Impacto</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>MAJOR</strong></td>
+              <td>Breaking changes — API incompatível com versão anterior</td>
+              <td><code>v1.x → v2.0.0</code></td>
+              <td><span class="badge badge-red">⚠️ Quebra</span></td>
+            </tr>
+            <tr>
+              <td><strong>MINOR</strong></td>
+              <td>Nova funcionalidade compatível com versão anterior</td>
+              <td><code>v2.0 → v2.1.0</code></td>
+              <td><span class="badge badge-green">✓ Seguro</span></td>
+            </tr>
+            <tr>
+              <td><strong>PATCH</strong></td>
+              <td>Bug fixes compatíveis — sem novas funcionalidades</td>
+              <td><code>v2.1 → v2.1.3</code></td>
+              <td><span class="badge badge-green">✓ Seguro</span></td>
+            </tr>
+            <tr>
+              <td><strong>PRE-RELEASE</strong></td>
+              <td>Versões instáveis para testes</td>
+              <td><code>v3.0.0-beta.1</code></td>
+              <td><span class="badge badge-yellow">⚡ Instável</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Tipos de Tag: Lightweight vs Annotated</h3>
+
+      <div class="grid-2" style="margin: 20px 0;">
+        <div class="card-mini">
+          <div style="font-size: 22px; margin-bottom: 8px;">🏷️</div>
+          <h4>Lightweight</h4>
+          <p>Apenas um ponteiro para um commit. Sem metadados. Útil para tags temporárias ou internas. <code style="font-size:11px;">git tag v1.0.0</code></p>
+        </div>
+        <div class="card-mini">
+          <div style="font-size: 22px; margin-bottom: 8px;">📦</div>
+          <h4>Annotated (recomendada)</h4>
+          <p>Objeto Git completo com autor, data, mensagem e pode ser assinada. <strong>Use sempre em releases públicas.</strong> <code style="font-size:11px;">git tag -a v1.0.0 -m "Release"</code></p>
+        </div>
+      </div>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// histórico com tags em pontos de release</div>
+        <div class="mermaid">
+gitGraph
+   commit id: "init"
+   commit id: "feat: login" tag: "v0.1.0"
+   commit id: "feat: dashboard"
+   commit id: "fix: crash"  tag: "v0.1.1"
+   commit id: "feat: payments"
+   commit id: "feat: reports" tag: "v1.0.0"
+   commit id: "feat: export"
+        </div>
+      </div>
+
+      <h3>Criando e Publicando Tags</h3>
+
+      <div class="terminal">
+        <div class="terminal-bar"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span><span class="terminal-title">bash</span></div>
+        <div class="terminal-body">
+          <span class="t-comment"># Criar tag annotated</span><br>
+          <span class="t-prompt">$</span> <span class="t-cmd">git tag -a v1.2.0 -m "feat: adiciona exportação CSV e PDF"</span><br><br>
+          <span class="t-comment"># Publicar tag no remote (push não envia tags por padrão!)</span><br>
+          <span class="t-prompt">$</span> <span class="t-cmd">git push origin v1.2.0</span><br><br>
+          <span class="t-comment"># Ou publicar todas as tags de uma vez</span><br>
+          <span class="t-prompt">$</span> <span class="t-cmd">git push origin --tags</span><br><br>
+          <span class="t-comment"># Listar todas as tags</span><br>
+          <span class="t-prompt">$</span> <span class="t-cmd">git tag -l</span><br>
+          <span class="t-out">v0.1.0</span><br>
+          <span class="t-out">v0.1.1</span><br>
+          <span class="t-out">v1.0.0</span><br>
+          <span class="t-out">v1.2.0</span><br><br>
+          <span class="t-comment"># Ver detalhes de uma tag annotated</span><br>
+          <span class="t-prompt">$</span> <span class="t-cmd">git show v1.2.0</span><br><br>
+          <span class="t-comment"># Deletar tag local e remote (se errou)</span><br>
+          <span class="t-prompt">$</span> <span class="t-cmd">git tag -d v1.2.0</span><br>
+          <span class="t-prompt">$</span> <span class="t-cmd">git push origin --delete v1.2.0</span>
+        </div>
+      </div>
+
+      <div class="callout callout-info">
+        <div class="callout-title">💡 GitHub Releases</div>
+        No GitHub, ao criar uma tag você pode associá-la a uma <strong>Release</strong>: uma página com changelog, assets para download (binários, ZIPs) e notas de versão. Isso é automático se você criar a tag via interface do GitHub ou usando <code>gh release create</code> com o GitHub CLI.
+      </div>
+    </div>
+
+    <!-- 5. ESTRATÉGIAS DE BRANCHING -->
+    <div class="section">
+      <div class="section-label">// ESTRATÉGIAS</div>
+      <h2>Estratégias de Branching</h2>
+
+      <p>
+        Escolher a estratégia errada de branching pode destruir a produtividade de um time. As três abordagens mais usadas na indústria são GitFlow, GitHub Flow e Trunk-Based Development — cada uma com trade-offs claros dependendo do ritmo de deploy e tamanho do time.
+      </p>
+
+      <div class="strategy-grid">
+        <div class="strategy-card rebase-flow">
+          <div class="strategy-icon">🌊</div>
+          <div class="strategy-name">GitFlow</div>
+          <div class="strategy-desc">Branches <code>main</code>, <code>develop</code>, <code>feature/*</code>, <code>release/*</code>, <code>hotfix/*</code>. Ótimo para software com releases marcadas e suporte a múltiplas versões. Mais overhead, mas muito controle.</div>
+        </div>
+        <div class="strategy-card merge-flow">
+          <div class="strategy-icon">🚀</div>
+          <div class="strategy-name">GitHub Flow</div>
+          <div class="strategy-desc">Só <code>main</code> + feature branches de curta duração. PR → review → merge → deploy contínuo. Simples, rápido, ideal para times com CI/CD maduro e deploy frequente.</div>
+        </div>
+        <div class="strategy-card squash-flow">
+          <div class="strategy-icon">🌱</div>
+          <div class="strategy-name">Trunk-Based Dev</div>
+          <div class="strategy-desc">Todos commitam direto na <code>main</code> (ou branches de max. 2 dias). Feature flags escondem código incompleto. Máxima velocidade de integração, mínimo de conflitos. Padrão em Google e Netflix.</div>
+        </div>
+      </div>
+
+      <h3>Comparativo para ajudar na escolha</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Critério</th>
+              <th>GitFlow</th>
+              <th>GitHub Flow</th>
+              <th>Trunk-Based</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Frequência de deploy</td>
+              <td><span class="badge badge-yellow">Semanal/mensal</span></td>
+              <td><span class="badge badge-green">Diária</span></td>
+              <td><span class="badge badge-green">Várias vezes/dia</span></td>
+            </tr>
+            <tr>
+              <td>Complexidade</td>
+              <td><span class="badge badge-red">Alta</span></td>
+              <td><span class="badge badge-green">Baixa</span></td>
+              <td><span class="badge badge-yellow">Média</span></td>
+            </tr>
+            <tr>
+              <td>Conflitos de merge</td>
+              <td><span class="badge badge-red">Frequentes</span></td>
+              <td><span class="badge badge-yellow">Ocasionais</span></td>
+              <td><span class="badge badge-green">Raros</span></td>
+            </tr>
+            <tr>
+              <td>Suporte múltiplas versões</td>
+              <td><span class="badge badge-green">✓ Sim</span></td>
+              <td><span class="badge badge-red">Não ideal</span></td>
+              <td><span class="badge badge-red">Não ideal</span></td>
+            </tr>
+            <tr>
+              <td>Ideal para</td>
+              <td>Produtos com versões LTS, apps mobile</td>
+              <td>SaaS, APIs, times pequenos</td>
+              <td>Times maduros com CI/CD + feature flags</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// gitflow — fluxo típico com hotfix e release branch</div>
+        <div class="mermaid">
+gitGraph
+   commit id: "init" tag: "v1.0.0"
+   branch develop
+   checkout develop
+   commit id: "dev start"
+   branch feature/login
+   checkout feature/login
+   commit id: "login: form"
+   commit id: "login: auth"
+   checkout develop
+   merge feature/login id: "merge login"
+   branch release/1.1
+   checkout release/1.1
+   commit id: "release prep"
+   checkout main
+   merge release/1.1 id: "release" tag: "v1.1.0"
+   checkout develop
+   merge release/1.1 id: "sync"
+   branch hotfix/crash
+   checkout hotfix/crash
+   commit id: "fix: crash"
+   checkout main
+   merge hotfix/crash id: "hotfix" tag: "v1.1.1"
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. COMANDOS AVANÇADOS EXTRAS -->
+    <div class="section">
+      <div class="section-label">// ARSENAL AVANÇADO</div>
+      <h2>Outros Comandos Avançados Essenciais</h2>
+
+      <h3>git stash — Guardando trabalho em progresso</h3>
+      <p>
+        Quando você precisa trocar de branch mas tem mudanças não commitadas que não estão prontas para commit ainda, o <code>git stash</code> salva essas mudanças em uma pilha temporária.
+      </p>
+
+      <div class="terminal">
+        <div class="terminal-bar"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span><span class="terminal-title">bash</span></div>
+        <div class="terminal-body">
+          <span class="t-comment"># Guardar mudanças com descrição</span><br>
+          <span class="t-prompt">$</span> <span class="t-cmd">git stash push -m "feature: login em progresso"</span><br><br>
+          <span class="t-comment"># Listar stashes</span><br>
+          <span class="t-prompt">$</span> <span class="t-cmd">git stash list</span><br>
+          <span class="t-out">stash@{0}: On main: feature: login em progresso</span><br>
+          <span class="t-out">stash@{1}: On develop: fix parcial do bug</span><br><br>
+          <span class="t-comment"># Aplicar o stash mais recente e remover da pilha</span><br>
+          <span class="t-prompt">$</span> <span class="t-cmd">git stash pop</span><br><br>
+          <span class="t-comment"># Aplicar stash específico sem remover</span><br>
+          <span class="t-prompt">$</span> <span class="t-cmd">git stash apply stash@{1}</span>
+        </div>
+      </div>
+
+      <h3>git cherry-pick — Transplantando commits individuais</h3>
+      <p>
+        Permite aplicar um commit específico de qualquer branch para a branch atual. Muito usado para aplicar hotfixes em múltiplas branches de release ou trazer uma feature específica sem fazer merge completo.
+      </p>
+
+      <div class="terminal">
+        <div class="terminal-bar"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span><span class="terminal-title">bash</span></div>
+        <div class="terminal-body">
+          <span class="t-comment"># Pegar o hash do commit que queremos</span><br>
+          <span class="t-prompt">$</span> <span class="t-cmd">git log --oneline feature/payments</span><br>
+          <span class="t-out">a1b2c3d fix: corrige cálculo de taxas</span><br>
+          <span class="t-out">d4e5f6g feat: integra gateway de pagamento</span><br><br>
+          <span class="t-comment"># Aplicar apenas o fix na branch atual (ex: hotfix/v1.1)</span><br>
+          <span class="t-prompt">$</span> <span class="t-cmd">git cherry-pick a1b2c3d</span><br><br>
+          <span class="t-comment"># Cherry-pick de um range de commits</span><br>
+          <span class="t-prompt">$</span> <span class="t-cmd">git cherry-pick a1b2c3d^..d4e5f6g</span>
+        </div>
+      </div>
+
+      <h3>git bisect — Caçando o commit que introduziu o bug</h3>
+      <p>
+        O <code>git bisect</code> usa busca binária para encontrar qual commit introduziu um bug. Você informa um commit "bom" (sem bug) e um "ruim" (com bug), e o Git navega automaticamente pelos commits do meio para você testar.
+      </p>
+
+      <div class="terminal">
+        <div class="terminal-bar"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span><span class="terminal-title">bash</span></div>
+        <div class="terminal-body">
+          <span class="t-prompt">$</span> <span class="t-cmd">git bisect start</span><br>
+          <span class="t-prompt">$</span> <span class="t-cmd">git bisect bad</span><span class="t-comment">              # commit atual tem o bug</span><br>
+          <span class="t-prompt">$</span> <span class="t-cmd">git bisect good v1.0.0</span><span class="t-comment">       # v1.0.0 estava ok</span><br>
+          <span class="t-out">Bisecting: 23 revisions left to test...</span><br>
+          <span class="t-comment"># Git vai para o commit do meio — você testa</span><br>
+          <span class="t-prompt">$</span> <span class="t-cmd">git bisect good</span><span class="t-comment">              # ou: git bisect bad</span><br>
+          <span class="t-comment"># Repete até encontrar o commit exato</span><br>
+          <span class="t-out">a1b2c3d is the first bad commit</span><br>
+          <span class="t-prompt">$</span> <span class="t-cmd">git bisect reset</span><span class="t-comment">             # volta ao HEAD original</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. HANDS-ON PASSO A PASSO -->
+    <div class="section">
+      <div class="section-label">// HANDS-ON</div>
+      <h2>Passo a Passo: Rebase Interativo na Prática</h2>
+      <p>Vamos simular um fluxo real de desenvolvimento com commits bagunçados e organizá-los com rebase interativo.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Criar repositório de prática</div>
+            <div class="step-desc">Monte um repo com commits propositalmente bagunçados para praticar rebase</div>
+            <div class="terminal">
+              <div class="terminal-bar"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span></div>
+              <div class="terminal-body">
+                <span class="t-prompt">$</span> <span class="t-cmd">mkdir git-avancado-lab && cd git-avancado-lab</span><br>
+                <span class="t-prompt">$</span> <span class="t-cmd">git init && git commit --allow-empty -m "chore: init"</span><br>
+                <span class="t-prompt">$</span> <span class="t-cmd">git checkout -b feature/user-profile</span><br>
+                <span class="t-prompt">$</span> <span class="t-cmd">echo "# User Profile" > profile.py && git add . && git commit -m "wip"</span><br>
+                <span class="t-prompt">$</span> <span class="t-cmd">echo "class User: pass" >> profile.py && git add . && git commit -m "fix"</span><br>
+                <span class="t-prompt">$</span> <span class="t-cmd">echo "  def __init__(self): pass" >> profile.py && git add . && git commit -m "more stuff"</span><br>
+                <span class="t-prompt">$</span> <span class="t-cmd">echo "  def get_name(self): return self.name" >> profile.py && git add . && git commit -m "feat: user profile class"</span><br>
+                <span class="t-prompt">$</span> <span class="t-cmd">git log --oneline</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Iniciar rebase interativo dos últimos 4 commits</div>
+            <div class="step-desc">Vamos compactar os 3 primeiros commits WIP em um único commit descritivo</div>
+            <div class="terminal">
+              <div class="terminal-bar"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span></div>
+              <div class="terminal-body">
+                <span class="t-prompt">$</span> <span class="t-cmd">git rebase -i HEAD~4</span><br>
+                <span class="t-comment"># O editor abre. Edite para ficar assim:</span><br>
+                <span class="t-out">pick abc1234 wip</span><br>
+                <span class="t-out">squash def5678 fix</span><br>
+                <span class="t-out">squash ghi9012 more stuff</span><br>
+                <span class="t-out">squash jkl3456 feat: user profile class</span><br>
+                <span class="t-comment"># Salve e feche o editor</span><br>
+                <span class="t-comment"># Um segundo editor abre para a mensagem final</span><br>
+                <span class="t-comment"># Escreva: "feat: adiciona classe User com getter de nome"</span><br>
+                <span class="t-comment"># Salve novamente</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Verificar o resultado</div>
+            <div class="step-desc">Confirmar que os 4 commits viraram 1 commit limpo</div>
+            <div class="terminal">
+              <div class="terminal-bar"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span></div>
+              <div class="terminal-body">
+                <span class="t-prompt">$</span> <span class="t-cmd">git log --oneline</span><br>
+                <span class="t-out">a9b8c7d feat: adiciona classe User com getter de nome</span><br>
+                <span class="t-out">1234567 chore: init</span><br>
+                <span class="t-comment"># Perfeito! 2 commits limpos ao invés de 5 bagunçados</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Criar uma tag de release</div>
+            <div class="step-desc">Marcar o primeiro release do módulo de User Profile</div>
+            <div class="terminal">
+              <div class="terminal-bar"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span></div>
+              <div class="terminal-body">
+                <span class="t-comment"># Mergear na main primeiro</span><br>
+                <span class="t-prompt">$</span> <span class="t-cmd">git checkout main && git merge feature/user-profile --ff-only</span><br><br>
+                <span class="t-comment"># Criar tag annotated</span><br>
+                <span class="t-prompt">$</span> <span class="t-cmd">git tag -a v0.1.0 -m "feat: módulo inicial de User Profile"</span><br><br>
+                <span class="t-comment"># Verificar</span><br>
+                <span class="t-prompt">$</span> <span class="t-cmd">git log --oneline --decorate</span><br>
+                <span class="t-out">a9b8c7d (HEAD -> main, tag: v0.1.0, feature/user-profile) feat: adiciona classe User</span><br>
+                <span class="t-out">1234567 chore: init</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Praticar stash e cherry-pick</div>
+            <div class="step-desc">Simular o fluxo de guardar trabalho e trazer commits específicos</div>
+            <div class="terminal">
+              <div class="terminal-bar"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span></div>
+              <div class="terminal-body">
+                <span class="t-comment"># Criar mudanças não commitadas</span><br>
+                <span class="t-prompt">$</span> <span class="t-cmd">echo "  def get_email(self): pass" >> profile.py</span><br>
+                <span class="t-prompt">$</span> <span class="t-cmd">git stash push -m "wip: adiciona getter de email"</span><br>
+                <span class="t-prompt">$</span> <span class="t-cmd">git status</span><br>
+                <span class="t-out">nothing to commit, working tree clean</span><br><br>
+                <span class="t-comment"># Recuperar o stash</span><br>
+                <span class="t-prompt">$</span> <span class="t-cmd">git stash pop</span><br>
+                <span class="t-prompt">$</span> <span class="t-cmd">git status</span><br>
+                <span class="t-out">modified: profile.py</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. CÓDIGO COMENTADO -->
+    <div class="section">
+      <div class="section-label">// CÓDIGO COMPLETO</div>
+      <h2>Script de Automação de Tags e Releases</h2>
+      <p>Um script Bash prático para automatizar o processo de criação de tags e releases seguindo SemVer.</p>
+
+      <div class="code-label">// release.sh — script de release com semver automático</div>
+      <pre><code class="language-bash">#!/usr/bin/env bash
+# release.sh — automatiza o fluxo de criação de tags e releases
+# Uso: ./release.sh [major|minor|patch] "Descrição do release"
+# Exemplo: ./release.sh minor "adiciona exportação CSV"
+
+set -euo pipefail
+
+BUMP=${1:-patch}       # tipo de bump: major, minor ou patch
+MESSAGE=${2:-""}       # mensagem do release
+
+# ─── Validações ───────────────────────────────────────────────
+if [[ -n "$(git status --porcelain)" ]]; then
+  echo "❌ Erro: working tree não está limpa. Commit ou stash suas mudanças."
+  exit 1
+fi
+
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+if [[ "$BRANCH" != "main" && "$BRANCH" != "master" ]]; then
+  echo "⚠️  Aviso: você está na branch '$BRANCH', não em main."
+  read -p "Continuar mesmo assim? (s/N): " confirm
+  [[ "$confirm" != "s" ]] && exit 0
+fi
+
+# ─── Buscar última tag e calcular próxima versão ──────────────
+LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+echo "📌 Última tag: $LAST_TAG"
+
+# Remove o 'v' e separa os números
+VERSION="${LAST_TAG#v}"
+MAJOR=$(echo "$VERSION" | cut -d. -f1)
+MINOR=$(echo "$VERSION" | cut -d. -f2)
+PATCH=$(echo "$VERSION" | cut -d. -f3)
+
+# Incrementa o componente correto
+case "$BUMP" in
+  major) MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0 ;;
+  minor) MINOR=$((MINOR + 1)); PATCH=0 ;;
+  patch) PATCH=$((PATCH + 1)) ;;
+  *)
+    echo "❌ Tipo de bump inválido. Use: major, minor ou patch"
+    exit 1
+    ;;
+esac
+
+NEW_TAG="v${MAJOR}.${MINOR}.${PATCH}"
+echo "🚀 Nova versão: $NEW_TAG"
+
+# ─── Gerar changelog automático desde a última tag ────────────
+CHANGELOG=$(git log "${LAST_TAG}..HEAD" --oneline --no-merges)
+echo ""
+echo "📝 Commits desde $LAST_TAG:"
+echo "$CHANGELOG"
+echo ""
+
+# ─── Confirmar antes de criar ─────────────────────────────────
+read -p "Criar tag $NEW_TAG? (s/N): " confirm
+[[ "$confirm" != "s" ]] && exit 0
+
+# ─── Criar tag annotated ──────────────────────────────────────
+FULL_MESSAGE="${MESSAGE:-"Release $NEW_TAG"}
+
+$CHANGELOG"
+
+git tag -a "$NEW_TAG" -m "$FULL_MESSAGE"
+echo "✅ Tag $NEW_TAG criada localmente"
+
+# ─── Push da tag ──────────────────────────────────────────────
+read -p "Fazer push de $NEW_TAG para origin? (s/N): " push_confirm
+if [[ "$push_confirm" == "s" ]]; then
+  git push origin "$NEW_TAG"
+  echo "✅ Tag publicada em origin/$NEW_TAG"
+  echo ""
+  echo "💡 Para criar um GitHub Release:"
+  echo "   gh release create $NEW_TAG --notes \"$MESSAGE\""
+fi
+
+echo ""
+echo "🎉 Release $NEW_TAG concluído!"</code></pre>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Pro tip: GitHub CLI para releases</div>
+        Com o <a href="https://cli.github.com" target="_blank" style="color: var(--accent);">GitHub CLI</a> instalado, você pode criar releases completas direto do terminal: <code>gh release create v1.0.0 --generate-notes</code> — o <code>--generate-notes</code> gera automaticamente as release notes a partir dos PRs mergeados.
+      </div>
+    </div>
+
+    <!-- 9. ARMADILHAS COMUNS -->
+    <div class="section">
+      <div class="section-label">// ⚠️ PITFALLS</div>
+      <h2>Armadilhas Comuns</h2>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Rebase em branch compartilhada</div>
+        Fazer <code>git rebase</code> em uma branch que outros desenvolvedores já baixaram causa conflitos sérios. Os hashes dos commits mudam, e os outros desenvolvedores ficam com um histórico incompatível. Regra absoluta: <strong>nunca rebaze o que já foi pushed para um remote compartilhado</strong> — a não ser que todos os colaboradores concordem e saibam o que fazer.
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Tags sem push ficam apenas no local</div>
+        <code>git push</code> não envia tags automaticamente. Se você criar uma tag e esquecer de fazer <code>git push origin --tags</code>, a tag existe apenas na sua máquina. O CI/CD, os outros devs e o GitHub não vão vê-la. Sempre use <code>git push origin &lt;tagname&gt;</code> após criar uma tag de release.
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Squash antes de confirmar com o time</div>
+        Squash interativo que engloba commits já mergeados em branches compartilhadas pode criar duplicatas e confusão. Faça squash apenas de commits que ainda não foram integrados em branches de longa duração (main, develop).
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Branch strategy sem CI/CD automatizado</div>
+        Trunk-Based Development sem CI/CD sólido é uma receita para quebrar produção constantemente. Só adote estratégias de integração contínua agressiva quando o pipeline de testes estiver robusto e cobrindo a maior parte do código.
+      </div>
+    </div>
+
+    <!-- 10. VÍDEOS CURADOS -->
+    <div class="section">
+      <div class="section-label">// CURADORIA</div>
+      <h2>Vídeos Recomendados</h2>
+
+      <div class="video-grid">
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Git Rebase Explicado — Quando usar ao invés de Merge</div>
+            <div class="video-channel">Atlassian · ~12 min</div>
+            <div class="video-why">Por que assistir: visualizações animadas excelentes mostrando exatamente o que acontece com os commits durante o rebase. Clareza máxima sobre merge vs rebase.</div>
+            <a href="https://www.youtube.com/watch?v=CRlGDDprdOQ" target="_blank">Assistir →</a>
+          </div>
+        </div>
+
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Git Interactive Rebase, Squash, Amend and Other Ways of Rewriting History</div>
+            <div class="video-channel">The Modern Coder · ~18 min</div>
+            <div class="video-why">Por que assistir: demonstração prática do rebase interativo com exemplos reais de squash, fixup e reword. O mais hands-on disponível no YouTube sobre esse tópico.</div>
+            <a href="https://www.youtube.com/watch?v=ElRzTuYln0s" target="_blank">Assistir →</a>
+          </div>
+        </div>
+
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Git Branching Strategies w/ DevOps CI/CD</div>
+            <div class="video-channel">TechWorld with Nana · ~22 min</div>
+            <div class="video-why">Por que assistir: Nana explica GitFlow, GitHub Flow e Trunk-Based com contexto de DevOps e CI/CD. Essencial para entender qual estratégia usar em cada cenário profissional.</div>
+            <a href="https://www.youtube.com/watch?v=U_IjZe3gIEk" target="_blank">Assistir →</a>
+          </div>
+        </div>
+
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Semantic Versioning Explained</div>
+            <div class="video-channel">Fireship · ~8 min</div>
+            <div class="video-why">Por que assistir: o Fireship explica SemVer, tags e releases de forma objetiva e com exemplos de projetos open-source reais. Ótimo complemento antes de criar sua primeira release pública.</div>
+            <a href="https://www.youtube.com/watch?v=QGU9HJdaglk" target="_blank">Assistir →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 11. GLOSSÁRIO -->
+    <div class="section">
+      <div class="section-label">// GLOSSÁRIO</div>
+      <h2>Termos desta Aula</h2>
+
+      <div class="glossary-item">
+        <div class="glossary-term">Rebase</div>
+        <div class="glossary-def">Operação que reaplica commits de uma branch sobre outra, reescrevendo o histórico para criar uma linha de desenvolvimento linear.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Squash</div>
+        <div class="glossary-def">Técnica de combinar múltiplos commits em um único commit, usada para limpar o histórico antes de um PR ou merge.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Tag Annotated</div>
+        <div class="glossary-def">Objeto Git completo que armazena nome do tagger, data, mensagem e pode ser assinado com GPG. Recomendado para releases oficiais.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">SemVer (Versionamento Semântico)</div>
+        <div class="glossary-def">Convenção MAJOR.MINOR.PATCH que comunica o impacto de cada versão: MAJOR quebra compatibilidade, MINOR adiciona features, PATCH corrige bugs.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">GitFlow</div>
+        <div class="glossary-def">Modelo de branching com branches dedicadas para main, develop, features, releases e hotfixes. Mais estruturado, ideal para releases com ciclos definidos.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Trunk-Based Development</div>
+        <div class="glossary-def">Estratégia onde todos commitam na branch principal frequentemente, usando feature flags para esconder código incompleto. Favorece CI/CD de alta frequência.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Cherry-pick</div>
+        <div class="glossary-def">Comando que copia um commit específico de qualquer branch para a branch atual, sem fazer merge completo de toda a branch.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">git bisect</div>
+        <div class="glossary-def">Ferramenta de busca binária no histórico do Git para encontrar o commit exato que introduziu um bug.</div>
+      </div>
+    </div>
+
+    <!-- 12. CHECKPOINT -->
+    <div class="section">
+      <div class="checkpoint">
+        <h3>🏁 Checkpoint — Desafio Final</h3>
+        <p>
+          Você gerencia um projeto Python chamado <strong>task-manager</strong>. Faça o seguinte fluxo completo numa sessão de terminal:
+        </p>
+        <ul>
+          <li>Iniciar um repositório com 1 commit inicial vazio (<code>chore: init</code>)</li>
+          <li>Criar uma branch <code>feature/task-crud</code> e fazer 5 commits com mensagens de WIP</li>
+          <li>Usar <code>git rebase -i HEAD~5</code> para compactar em 1 commit com mensagem no estilo Conventional Commits: <code>feat: implementa CRUD de tarefas</code></li>
+          <li>Mergear na main com <code>--ff-only</code> para garantir histórico linear</li>
+          <li>Criar uma tag annotated <code>v0.1.0</code> com mensagem descritiva</li>
+          <li>Criar uma segunda feature branch, fazer algumas mudanças, usar <code>git stash</code> para salvar o trabalho em progresso e trocar de branch</li>
+          <li>Recuperar o stash com <code>git stash pop</code></li>
+        </ul>
+        <div class="checkpoint-hint">💬 Dica: use <code>git log --oneline --decorate --graph --all</code> para visualizar todo o histórico com branches e tags ao mesmo tempo. É o comando preferido dos sêniors para entender o estado do repositório.</div>
+      </div>
+    </div>
+
+    <!-- 13. PRÓXIMOS PASSOS -->
+    <div class="section">
+      <div class="section-label">// PRÓXIMA AULA</div>
+      <h2>O que vem a seguir</h2>
+      <p>
+        Com Git avançado dominado, você tem as ferramentas para trabalhar profissionalmente em qualquer time de desenvolvimento. A próxima aula é sobre <strong>Docker</strong> — vamos entender como empacotar sua aplicação em containers para que ela rode de forma idêntica em qualquer ambiente, do seu laptop até produção.
+      </p>
+
+      <a href="dkr-01-conceitos-containers.html" class="next-card">
+        <div>
+          <div class="next-card-label">Próxima aula · 🐳 Docker</div>
+          <div class="next-card-title">Docker — Conceitos, Imagens & Containers</div>
+        </div>
+        <div class="next-arrow">→</div>
+      </a>
+    </div>
+
+  </div><!-- end .page -->
+
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+    hljs.highlightAll();
+
+    // Progress bar
+    const progressBar = document.getElementById('progressBar');
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      progressBar.style.width = scrollPercent + '%';
+    });
+  </script>
+</body>
+</html>

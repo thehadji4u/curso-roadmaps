@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Docker — Conceitos, Imagens & Containers · Aula 17</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #06b6d4;
+      --accent-dim: rgba(6,182,212,0.15);
+      --accent-border: rgba(6,182,212,0.35);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #67e8f9); width: 0%; transition: width 0.1s; }
+
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; cursor: default; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #67e8f9; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.08); border-color: var(--success); }
+    .callout-tip .callout-title { color: var(--success); }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(6,182,212,0.2); color: #67e8f9; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-info a { font-size: 12px; color: var(--accent); text-decoration: none; }
+    .video-info a:hover { text-decoration: underline; }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(6,182,212,0.08), rgba(103,232,249,0.04)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(6,182,212,0.06); border-radius: 6px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; }
+
+    .glossary-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .glossary-term { color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+    .glossary-def { color: var(--muted); font-size: 13px; }
+
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #67e8f9; }
+
+    /* Terminal */
+    .terminal { background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .terminal-bar { background: #1a1a1a; padding: 8px 14px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ef4444; } .dot-yellow { background: #f59e0b; } .dot-green { background: #10b981; }
+    .terminal-title { font-size: 11px; color: #555; margin-left: 6px; }
+    .terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; }
+    .t-prompt { color: #10b981; } .t-cmd { color: #e8e8f0; } .t-out { color: #8585a8; } .t-comment { color: #444; font-style: italic; }
+
+    /* State machine */
+    .state-machine { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin: 20px 0; }
+    .state-box { background: var(--surface); border: 1px solid var(--border); padding: 16px 12px; text-align: center; position: relative; }
+    .state-box:not(:last-child)::after { content: '→'; position: absolute; right: -10px; top: 50%; transform: translateY(-50%); color: var(--accent); font-size: 18px; z-index: 1; }
+    .state-name { font-weight: 700; color: #fff; font-size: 13px; margin-bottom: 4px; }
+    .state-cmd { font-size: 11px; color: var(--accent); font-family: 'JetBrains Mono', monospace; }
+    .state-desc { font-size: 11px; color: var(--muted); margin-top: 4px; }
+    @media (max-width: 640px) { .state-machine { grid-template-columns: 1fr 1fr; } .state-box::after { display: none; } }
+
+    /* Cmd reference */
+    .cmd-ref { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 16px 0; }
+    .cmd-ref-header { padding: 10px 16px; background: var(--surface2); border-bottom: 1px solid var(--border); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+    .cmd-row { display: flex; gap: 16px; padding: 11px 16px; border-bottom: 1px solid var(--border); transition: background 0.15s; align-items: flex-start; }
+    .cmd-row:hover { background: rgba(255,255,255,0.02); }
+    .cmd-row:last-child { border-bottom: none; }
+    .cmd-cell { font-size: 13px; color: #67e8f9; min-width: 260px; font-family: 'JetBrains Mono', monospace; }
+    .cmd-desc { font-size: 13px; color: var(--muted); }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar"></div>
+  </div>
+
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="gh-04-git-avancado.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">🐳 Docker</span> · Aula 17 / 50
+      </div>
+      <a href="dkr-02-dockerfile.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>🐳 Docker</span>
+        <span class="hero-badge">Aula 17</span>
+      </div>
+      <h1>Docker — Conceitos, Imagens &amp; Containers</h1>
+      <div class="hero-meta">
+        <span>⏱ ~60 min de leitura</span>
+        <span>🎯 Fundamentos</span>
+        <span>🔧 Hands-on incluído</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">containers</span>
+        <span class="tag accent">imagens</span>
+        <span class="tag accent">volumes</span>
+        <span class="tag accent">docker run</span>
+        <span class="tag">docker pull</span>
+        <span class="tag">docker ps</span>
+        <span class="tag">redes</span>
+        <span class="tag">docker hub</span>
+      </div>
+    </div>
+
+    <!-- 1. MOTIVAÇÃO -->
+    <div class="section">
+      <div class="section-label">// MOTIVAÇÃO</div>
+      <h2>Por que isso importa?</h2>
+      <p>
+        Você já ouviu a frase <em>"Na minha máquina funciona"</em>? Esse é um dos problemas mais frustrantes e custosos do desenvolvimento de software. Um desenvolvedor configura o ambiente local, tudo funciona perfeitamente — e quando o código chega no servidor de produção ou na máquina de outro dev, quebra completamente.
+      </p>
+      <p>
+        O motivo? Diferenças de sistema operacional, versão do Python, dependências do sistema, variáveis de ambiente, portas em conflito. Times desperdiçam horas — às vezes dias — nisso. Docker elimina esse problema de forma definitiva: seu app roda <em>exatamente igual</em> em qualquer máquina com Docker instalado.
+      </p>
+
+      <div class="callout callout-info">
+        <div class="callout-title">💡 Por que um engenheiro sênior usa Docker hoje</div>
+        Docker garante paridade absoluta entre desenvolvimento, CI/CD e produção. É o pré-requisito direto para Kubernetes, microserviços e toda stack moderna de deploy. Saber Docker deixou de ser diferencial — virou requisito mínimo.
+      </div>
+    </div>
+
+    <!-- 2. ANALOGIA -->
+    <div class="section">
+      <div class="section-label">// ANALOGIA</div>
+      <h2>O contêiner marítimo que mudou o mundo</h2>
+
+      <div class="analogy-card">
+        <div class="analogy-label">// analogia do mundo real</div>
+        <div class="analogy-text">
+          Antes dos contêineres marítimos (anos 1950), carregar um navio era um caos. Cada tipo de mercadoria precisava de método diferente de acondicionamento. Estivadores precisavam saber tudo sobre cada produto — e qualquer erro era catastrófico.<br><br>
+          O contêiner padronizado revolucionou a logística: <strong>não importa o que está dentro</strong>. Se couber no contêiner, pode ser carregado em qualquer navio, empilhado em qualquer porto, colocado em qualquer caminhão. O mundo todo fala a mesma língua.<br><br>
+          <strong>Docker é exatamente isso para software.</strong> Seu app, junto com todas as dependências, fica dentro de um container padronizado. Não importa se é Python, Node ou Java — se tem Docker, roda.
+        </div>
+        <div class="analogy-mapping">
+          <div class="analogy-real">🚢 Contêiner marítimo</div>
+          <div class="analogy-tech">📦 Docker Container</div>
+          <div class="analogy-real">📸 Planta do contêiner</div>
+          <div class="analogy-tech">🖼️ Imagem Docker</div>
+          <div class="analogy-real">🏭 Porto / Armazém</div>
+          <div class="analogy-tech">🌐 Docker Hub (Registry)</div>
+          <div class="analogy-real">🏗️ Fábrica de contêineres</div>
+          <div class="analogy-tech">📄 Dockerfile</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. VM vs CONTAINER -->
+    <div class="section">
+      <div class="section-label">// CONCEITO 1</div>
+      <h2>VM vs Container — a diferença fundamental</h2>
+      <p>
+        Muita gente confunde containers com máquinas virtuais. São coisas fundamentalmente diferentes. VMs virtualizam hardware completo — cada uma tem seu próprio kernel de sistema operacional, tornando-as pesadas e lentas. Containers compartilham o kernel do host e isolam apenas o processo.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Característica</th><th>Máquina Virtual (VM)</th><th>Container Docker</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>O que virtualiza</td>
+              <td>Hardware completo + OS inteiro</td>
+              <td>Apenas o processo / userspace</td>
+            </tr>
+            <tr>
+              <td>Tamanho</td>
+              <td><span class="badge badge-red">Gigabytes (OS completo)</span></td>
+              <td><span class="badge badge-green">Megabytes (só o app)</span></td>
+            </tr>
+            <tr>
+              <td>Tempo de startup</td>
+              <td><span class="badge badge-red">Minutos</span></td>
+              <td><span class="badge badge-green">Segundos (ou menos)</span></td>
+            </tr>
+            <tr>
+              <td>Isolamento</td>
+              <td><span class="badge badge-green">Total (kernel próprio)</span></td>
+              <td><span class="badge badge-yellow">Compartilha kernel do host</span></td>
+            </tr>
+            <tr>
+              <td>Overhead</td>
+              <td><span class="badge badge-red">Alto (hypervisor)</span></td>
+              <td><span class="badge badge-green">Mínimo (namespaces + cgroups)</span></td>
+            </tr>
+            <tr>
+              <td>Portabilidade</td>
+              <td><span class="badge badge-yellow">Boa, porém pesada</span></td>
+              <td><span class="badge badge-green">Excelente — leve e rápida</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-info">
+        <div class="callout-title">💡 Como o isolamento funciona</div>
+        Containers usam <strong>Linux namespaces</strong> para isolamento (processo, rede, filesystem, usuários) e <strong>cgroups</strong> para limitar CPU e memória. Não há hypervisor — o container roda diretamente no kernel do host, por isso é tão rápido e leve.
+      </div>
+    </div>
+
+    <!-- 4. ARQUITETURA -->
+    <div class="section">
+      <div class="section-label">// CONCEITO 2</div>
+      <h2>Arquitetura Docker</h2>
+      <p>
+        Docker segue uma arquitetura cliente-servidor. O <strong>Docker CLI</strong> (o comando que você digita no terminal) se comunica via API REST com o <strong>Docker Daemon</strong> (<code>dockerd</code>), que é quem realmente cria e gerencia containers, imagens, volumes e redes.
+      </p>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// arquitetura cliente-servidor do docker</div>
+        <div class="mermaid">
+graph TB
+    subgraph HOST ["Sua Máquina (Host)"]
+        CLI["🖥️ Docker CLI\n(docker run, build, pull...)"]
+        DAEMON["⚙️ Docker Daemon — dockerd"]
+        subgraph CONTAINERS ["Containers em execução"]
+            C1["📦 nginx:alpine"]
+            C2["📦 postgres:15"]
+            C3["📦 seu-app"]
+        end
+        V1["💾 volume: pgdata"]
+    end
+    subgraph REGISTRY ["Registry (Docker Hub / GHCR)"]
+        IMG1["🖼️ nginx:alpine"]
+        IMG2["🖼️ postgres:15"]
+    end
+    CLI -- "API REST" --> DAEMON
+    DAEMON --> C1
+    DAEMON --> C2
+    DAEMON --> C3
+    DAEMON -- "docker pull" --> IMG1
+    DAEMON -- "docker pull" --> IMG2
+    C2 -- "monta" --> V1
+    style CLI fill:#06b6d4,color:#000,font-weight:bold
+    style DAEMON fill:#0e7490,color:#fff
+        </div>
+      </div>
+
+      <h3>Camadas de uma Imagem (Layers)</h3>
+      <p>
+        Imagens Docker são construídas em <strong>camadas imutáveis</strong>. Cada instrução no Dockerfile cria uma camada. Camadas são compartilhadas entre imagens — economizando espaço e acelerando downloads. Apenas a camada superior (do container em execução) é gravável e temporária.
+      </p>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// camadas de uma imagem docker (layers)</div>
+        <div class="mermaid">
+graph BT
+    L1["Camada 1 — ubuntu:22.04  (base, ~72MB)"]
+    L2["Camada 2 — apt install python3  (+45MB)"]
+    L3["Camada 3 — pip install requirements  (+120MB)"]
+    L4["Camada 4 — COPY . /app  (+2MB — seu código)"]
+    L5["Camada R/W — Container em execução  (gravável, temporária)"]
+    L1 --> L2 --> L3 --> L4 --> L5
+    style L5 fill:#0e2e0e,stroke:#10b981,color:#6ee7b7
+        </div>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Pro tip: cache de layers</div>
+        Camadas são cacheadas. Se você mudar apenas o código da aplicação (camada 4), o Docker reutiliza as camadas 1–3 do cache — o rebuild é quase instantâneo. Por isso, a <strong>ordem das instruções no Dockerfile importa muito</strong>. Veremos isso a fundo na próxima aula.
+      </div>
+    </div>
+
+    <!-- 5. INSTALAÇÃO + HANDS-ON -->
+    <div class="section">
+      <div class="section-label">// PRÁTICA</div>
+      <h2>Mãos na massa — instalação e primeiros comandos</h2>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Instale o Docker</div>
+            <div class="step-desc">Método recomendado por sistema operacional:</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal — Linux (Ubuntu/Debian)</span></div>
+              <div class="terminal-body">
+                <div><span class="t-comment"># Instala via script oficial (mais simples para dev)</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">curl -fsSL https://get.docker.com | sh</span></div>
+                <br>
+                <div><span class="t-comment"># Adiciona seu usuário ao grupo docker (evita usar sudo)</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">sudo usermod -aG docker $USER && newgrp docker</span></div>
+                <br>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">docker --version</span></div>
+                <div class="t-out">Docker version 25.0.3, build 4debf41</div>
+              </div>
+            </div>
+            <div class="callout callout-info" style="margin-top:12px;">
+              <div class="callout-title">💡 macOS e Windows</div>
+              Instale o <strong>Docker Desktop</strong>: <code>brew install --cask docker</code> no macOS, ou baixe em <code>docs.docker.com/desktop</code>. No Windows, habilite WSL2 como backend.
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Rode seu primeiro container</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal</span></div>
+              <div class="terminal-body">
+                <div><span class="t-prompt">$</span> <span class="t-cmd">docker run hello-world</span></div>
+                <br>
+                <div class="t-out">Unable to find image 'hello-world:latest' locally</div>
+                <div class="t-out">latest: Pulling from library/hello-world</div>
+                <div class="t-out">Status: Downloaded newer image for hello-world:latest</div>
+                <br>
+                <div class="t-out">Hello from Docker!</div>
+                <div class="t-out">This message shows that your installation appears to be working correctly.</div>
+              </div>
+            </div>
+            <div class="step-desc" style="margin-top:10px;">O que aconteceu: Docker procurou a imagem localmente → não encontrou → baixou do Docker Hub → criou o container → executou → container parou (processo terminou).</div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Suba o nginx e acesse no browser</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal</span></div>
+              <div class="terminal-body">
+                <div><span class="t-comment"># -d = background, -p = porta host:container, --name = nome</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">docker run -d --name web -p 8080:80 nginx:alpine</span></div>
+                <div class="t-out">a3f2b1c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4</div>
+                <br>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">docker ps</span></div>
+                <div class="t-out">CONTAINER ID   IMAGE          STATUS         PORTS</div>
+                <div class="t-out">a3f2b1c4d5e6   nginx:alpine   Up 3 seconds   0.0.0.0:8080->80/tcp</div>
+                <br>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">curl http://localhost:8080</span></div>
+                <div class="t-out">&lt;!DOCTYPE html&gt;&lt;html&gt;... (página padrão do nginx) ✓</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Explore o container por dentro e faça cleanup</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal</span></div>
+              <div class="terminal-body">
+                <div><span class="t-comment"># Acessa o shell do container em execução</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">docker exec -it web sh</span></div>
+                <div class="t-out"># agora estamos DENTRO do container</div>
+                <div><span class="t-prompt">/</span> <span class="t-cmd">ls /usr/share/nginx/html</span></div>
+                <div class="t-out">index.html  50x.html</div>
+                <div><span class="t-prompt">/</span> <span class="t-cmd">exit</span></div>
+                <br>
+                <div><span class="t-comment"># Veja os logs</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">docker logs web</span></div>
+                <div class="t-out">172.17.0.1 - - [01/Mar/2026] "GET / HTTP/1.1" 200 ...</div>
+                <br>
+                <div><span class="t-comment"># Para e remove</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">docker stop web && docker rm web</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. COMANDOS CORE -->
+    <div class="section">
+      <div class="section-label">// CONCEITO 3</div>
+      <h2>Comandos core — do pull ao cleanup</h2>
+
+      <h3>Gerenciando Imagens</h3>
+
+      <div class="cmd-ref">
+        <div class="cmd-ref-header">// docker image commands</div>
+        <div class="cmd-row"><span class="cmd-cell">docker pull nginx:alpine</span><span class="cmd-desc">Baixa imagem do registry sem criar container</span></div>
+        <div class="cmd-row"><span class="cmd-cell">docker images</span><span class="cmd-desc">Lista imagens locais com ID, tamanho e data</span></div>
+        <div class="cmd-row"><span class="cmd-cell">docker image inspect nginx:alpine</span><span class="cmd-desc">Detalhes completos: layers, env, cmd, arquitetura</span></div>
+        <div class="cmd-row"><span class="cmd-cell">docker image history nginx:alpine</span><span class="cmd-desc">Histórico de cada camada da imagem</span></div>
+        <div class="cmd-row"><span class="cmd-cell">docker rmi nginx:alpine</span><span class="cmd-desc">Remove imagem local (falha se containers em uso)</span></div>
+        <div class="cmd-row"><span class="cmd-cell">docker image prune</span><span class="cmd-desc">Remove imagens "dangling" (sem tag, sem uso)</span></div>
+        <div class="cmd-row"><span class="cmd-cell">docker image prune -a</span><span class="cmd-desc">Remove TODAS imagens não usadas por containers ativos</span></div>
+      </div>
+
+      <h3>Gerenciando Containers</h3>
+
+      <div class="cmd-ref">
+        <div class="cmd-ref-header">// docker container commands</div>
+        <div class="cmd-row"><span class="cmd-cell">docker run nginx</span><span class="cmd-desc">Cria e inicia container (foreground — bloqueia terminal)</span></div>
+        <div class="cmd-row"><span class="cmd-cell">docker run -d nginx</span><span class="cmd-desc">Modo detached (background). Retorna o ID do container.</span></div>
+        <div class="cmd-row"><span class="cmd-cell">docker run -d -p 8080:80 nginx</span><span class="cmd-desc">Mapeia porta: host:8080 → container:80</span></div>
+        <div class="cmd-row"><span class="cmd-cell">docker run --name web -d nginx</span><span class="cmd-desc">Nomeia o container para referenciá-lo facilmente</span></div>
+        <div class="cmd-row"><span class="cmd-cell">docker run --rm -it ubuntu bash</span><span class="cmd-desc">Interativo + tty + auto-remove ao sair</span></div>
+        <div class="cmd-row"><span class="cmd-cell">docker run -e VAR=valor ...</span><span class="cmd-desc">Passa variável de ambiente para o container</span></div>
+        <div class="cmd-row"><span class="cmd-cell">docker ps</span><span class="cmd-desc">Lista containers em execução</span></div>
+        <div class="cmd-row"><span class="cmd-cell">docker ps -a</span><span class="cmd-desc">Lista TODOS os containers (incluindo parados)</span></div>
+        <div class="cmd-row"><span class="cmd-cell">docker stop &lt;id/nome&gt;</span><span class="cmd-desc">Para graciosamente (SIGTERM → aguarda → SIGKILL)</span></div>
+        <div class="cmd-row"><span class="cmd-cell">docker rm &lt;id/nome&gt;</span><span class="cmd-desc">Remove container parado</span></div>
+        <div class="cmd-row"><span class="cmd-cell">docker rm -f &lt;id/nome&gt;</span><span class="cmd-desc">Para + remove mesmo estando em execução</span></div>
+        <div class="cmd-row"><span class="cmd-cell">docker logs -f &lt;id/nome&gt;</span><span class="cmd-desc">Segue logs em tempo real (como tail -f)</span></div>
+        <div class="cmd-row"><span class="cmd-cell">docker exec -it &lt;id&gt; bash</span><span class="cmd-desc">Abre shell interativo em container já rodando</span></div>
+        <div class="cmd-row"><span class="cmd-cell">docker stats</span><span class="cmd-desc">Uso de CPU/memória em tempo real (tipo htop)</span></div>
+        <div class="cmd-row"><span class="cmd-cell">docker inspect &lt;id&gt;</span><span class="cmd-desc">Todos os detalhes: rede, volumes, env, estado</span></div>
+      </div>
+
+      <div class="code-label">// fluxo completo comentado — do pull ao cleanup</div>
+      <pre><code class="language-bash"># ── 1. Baixar e inspecionar uma imagem ──────────────────────────
+docker pull postgres:15-alpine
+docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}"
+# REPOSITORY   TAG          SIZE
+# postgres     15-alpine    268MB
+# nginx        alpine       18.1MB
+
+# ── 2. Subir postgres com variáveis de ambiente ──────────────────
+docker run -d \
+  --name meu-postgres \
+  -e POSTGRES_PASSWORD=senha123 \
+  -e POSTGRES_DB=meubanco \
+  -p 5432:5432 \
+  postgres:15-alpine
+
+docker ps
+# CONTAINER ID   IMAGE              STATUS         PORTS
+# b4c5d6e7f8a9   postgres:15-alpine Up 5 seconds   0.0.0.0:5432->5432/tcp
+
+# ── 3. Ver logs e verificar saúde ───────────────────────────────
+docker logs meu-postgres
+# ... LOG:  database system is ready to accept connections ✓
+
+# ── 4. Conectar ao postgres de dentro do container ───────────────
+docker exec -it meu-postgres psql -U postgres -d meubanco
+# psql (15.x)
+# meubanco=# \l        → lista bancos
+# meubanco=# \q        → sai
+
+# ── 5. Cleanup ──────────────────────────────────────────────────
+docker stop meu-postgres
+docker rm meu-postgres
+docker system prune     # containers parados + redes + dangling images</code></pre>
+    </div>
+
+    <!-- 7. VOLUMES -->
+    <div class="section">
+      <div class="section-label">// CONCEITO 4</div>
+      <h2>Volumes — dados que sobrevivem ao container</h2>
+      <p>
+        Por padrão, tudo dentro de um container é <strong>efêmero</strong>. Quando o container é removido, os dados somem. Volumes são áreas de armazenamento gerenciadas pelo Docker que existem fora do ciclo de vida do container — os dados persistem mesmo que você destrua e recrie o container.
+      </p>
+
+      <div class="state-machine" style="grid-template-columns: repeat(3,1fr);">
+        <div class="state-box" style="border-top: 2px solid var(--accent); border-radius: 8px 0 0 8px;">
+          <div class="state-name">Named Volume</div>
+          <div class="state-cmd">-v nome:/caminho</div>
+          <div class="state-desc">Docker gerencia o storage. Recomendado para produção.</div>
+        </div>
+        <div class="state-box" style="border-top: 2px solid var(--warn);">
+          <div class="state-name">Bind Mount</div>
+          <div class="state-cmd">-v $(pwd)/src:/app</div>
+          <div class="state-desc">Pasta do host mapeada. Ideal para desenvolvimento.</div>
+        </div>
+        <div class="state-box" style="border-top: 2px solid var(--muted); border-radius: 0 8px 8px 0;">
+          <div class="state-name">tmpfs Mount</div>
+          <div class="state-cmd">--tmpfs /tmp</div>
+          <div class="state-desc">Apenas em memória. Dados não persistem nunca.</div>
+        </div>
+      </div>
+
+      <div class="code-label">// volumes na prática</div>
+      <pre><code class="language-bash"># ── Named Volume (recomendado para dados de app) ─────────────────
+docker volume create pgdata
+
+docker run -d \
+  --name postgres-dev \
+  -e POSTGRES_PASSWORD=senha123 \
+  -v pgdata:/var/lib/postgresql/data \
+  postgres:15-alpine
+
+# Remove o container — os dados ficam no volume!
+docker rm -f postgres-dev
+
+# Cria novo container com o mesmo volume → dados intactos ✓
+docker run -d \
+  --name postgres-dev2 \
+  -v pgdata:/var/lib/postgresql/data \
+  postgres:15-alpine
+
+# ── Bind Mount (desenvolvimento / hot-reload) ────────────────────
+docker run -d \
+  --name meu-app \
+  -p 3000:3000 \
+  -v $(pwd)/src:/app/src \
+  node:18-alpine
+
+# ── Gerenciando volumes ───────────────────────────────────────────
+docker volume ls                   # lista todos os volumes
+docker volume inspect pgdata       # detalhes: mountpoint, driver
+docker volume rm pgdata            # remove (falha se em uso)
+docker volume prune                # remove volumes sem containers associados</code></pre>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Quando usar cada tipo</div>
+        Use <strong>bind mounts</strong> em desenvolvimento para hot-reload imediato. Use <strong>named volumes</strong> em produção — Docker gerencia o armazenamento de forma otimizada e o caminho físico no host não importa.
+      </div>
+    </div>
+
+    <!-- 8. REDES -->
+    <div class="section">
+      <div class="section-label">// CONCEITO 5</div>
+      <h2>Redes — containers que se conversam</h2>
+      <p>
+        Containers na mesma rede Docker custom se referenciam pelo <strong>nome do container como hostname</strong> — sem precisar hardcodar IPs que mudam a cada restart. É o DNS interno do Docker em ação.
+      </p>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// containers na mesma rede se comunicam por nome</div>
+        <div class="mermaid">
+graph LR
+    HOST["🖥️ Host\nlocalhost:8000"]
+    subgraph NET ["Rede: dev-network"]
+        API["📦 api\n(container)"]
+        DB["📦 db\n(postgres)"]
+        CACHE["📦 cache\n(redis)"]
+    end
+    HOST -- "porta 8000" --> API
+    API -- "hostname: db\nporta 5432" --> DB
+    API -- "hostname: cache\nporta 6379" --> CACHE
+    style NET fill:#0a1a1a,stroke:#06b6d4
+        </div>
+      </div>
+
+      <div class="code-label">// criando e usando redes docker</div>
+      <pre><code class="language-bash"># Cria rede customizada (melhor que a rede bridge padrão)
+docker network create dev-network
+
+# Sobe containers na mesma rede
+docker run -d \
+  --name db \
+  --network dev-network \
+  -e POSTGRES_PASSWORD=senha123 \
+  postgres:15-alpine
+
+docker run -d \
+  --name api \
+  --network dev-network \
+  -p 8000:8000 \
+  -e DATABASE_URL=postgresql://postgres:senha123@db:5432/postgres \
+  minha-api-image
+
+# "api" resolve "db" como hostname automaticamente!
+# DNS interno do Docker — zero configuração de IP necessária.
+
+docker network ls
+docker network inspect dev-network</code></pre>
+    </div>
+
+    <!-- 9. PITFALLS -->
+    <div class="section">
+      <div class="section-label">// PITFALLS</div>
+      <h2>⚠️ Armadilhas Comuns</h2>
+
+      <div class="pitfall">
+        <div class="pitfall-title">1. Esquecer o -d (detached mode)</div>
+        <p><code>docker run nginx</code> sem <code>-d</code> bloqueia o terminal. Use sempre <code>-d</code> para serviços que ficam em background. Omita apenas quando quiser ver o output diretamente — scripts, jobs únicos.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">2. Perder dados por não usar volumes</div>
+        <p>Salvar dados dentro do container sem volume é receita para desastre. Tudo na camada gravável some quando o container é removido. Use <code>-v</code> sempre que os dados precisem persistir — banco de dados, uploads, logs.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">3. Containers zumbis acumulando espaço</div>
+        <p><code>docker run</code> sem <code>--rm</code> cria containers parados que acumulam espaço. Para scripts e tarefas únicas, sempre use <code>--rm</code>. Rode <code>docker ps -a</code> para ver os zumbis e <code>docker container prune</code> para limpar.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">4. Usar a tag latest em produção</div>
+        <p><code>nginx:latest</code> pode mudar de versão sem aviso entre deploys. Sempre use tags específicas: <code>nginx:1.25.3-alpine</code>. Isso garante reprodutibilidade total e evita surpresas no próximo deploy.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">5. Ignorar o .dockerignore</div>
+        <p>Sem <code>.dockerignore</code>, o <code>COPY . .</code> no Dockerfile copia <code>node_modules</code>, <code>.git</code>, arquivos de teste e secrets. Imagem gigante e potencialmente insegura. Crie o <code>.dockerignore</code> antes do primeiro build.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">6. Rodar como root dentro do container</div>
+        <p>Por padrão, processos rodam como root no container. Em produção, isso é risco de segurança. Use a instrução <code>USER</code> no Dockerfile — veremos em detalhes na próxima aula.</p>
+      </div>
+    </div>
+
+    <!-- 10. REFERÊNCIA -->
+    <div class="section">
+      <div class="section-label">// REFERÊNCIA</div>
+      <h2>Comandos desta aula — cheat sheet</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Comando</th><th>O que faz</th><th>Quando usar</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>docker run -d -p 8080:80 nginx</code></td><td>Sobe container em background com porta exposta</td><td>Subir qualquer serviço</td></tr>
+            <tr><td><code>docker ps</code> / <code>docker ps -a</code></td><td>Lista containers rodando / todos</td><td>Sempre — checar estado</td></tr>
+            <tr><td><code>docker logs -f &lt;nome&gt;</code></td><td>Segue logs em tempo real</td><td>Debug e monitoramento</td></tr>
+            <tr><td><code>docker exec -it &lt;nome&gt; sh</code></td><td>Shell interativo no container</td><td>Inspecionar container vivo</td></tr>
+            <tr><td><code>docker stop</code> / <code>docker rm</code></td><td>Para / remove container</td><td>Lifecycle management</td></tr>
+            <tr><td><code>docker rm -f &lt;nome&gt;</code></td><td>Para + remove de uma vez</td><td>Limpeza rápida</td></tr>
+            <tr><td><code>docker pull &lt;imagem:tag&gt;</code></td><td>Baixa imagem do registry</td><td>Antes de rodar offline</td></tr>
+            <tr><td><code>docker images</code></td><td>Lista imagens locais</td><td>Ver o que foi baixado</td></tr>
+            <tr><td><code>docker volume create &lt;nome&gt;</code></td><td>Cria named volume</td><td>Dados persistentes</td></tr>
+            <tr><td><code>docker network create &lt;nome&gt;</code></td><td>Cria rede customizada</td><td>Comunicação entre containers</td></tr>
+            <tr><td><code>docker system prune</code></td><td>Remove tudo não utilizado</td><td>Liberar espaço em disco</td></tr>
+            <tr><td><code>docker stats</code></td><td>CPU/memória em tempo real</td><td>⚠️ Monitorar uso de recursos</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 11. GLOSSÁRIO -->
+    <div class="section">
+      <div class="section-label">// GLOSSÁRIO</div>
+      <h2>Termos desta Aula</h2>
+      <div class="glossary-item">
+        <div class="glossary-term">Container</div>
+        <div class="glossary-def">Instância isolada e em execução de uma imagem Docker. Efêmero por natureza — não guarda estado entre execuções sem volumes.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Imagem (Image)</div>
+        <div class="glossary-def">Template somente-leitura formado por camadas (layers) que define o que vai dentro de um container. É o "molde"; o container é a "peça".</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Dockerfile</div>
+        <div class="glossary-def">Arquivo de texto com instruções para construir uma imagem Docker. Cada instrução gera uma camada imutável e cacheável.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Registry</div>
+        <div class="glossary-def">Servidor que armazena e distribui imagens Docker. Docker Hub é o registry público padrão. GHCR (GitHub Container Registry) é muito usado em projetos open-source.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Volume</div>
+        <div class="glossary-def">Mecanismo de persistência de dados gerenciado pelo Docker, que existe fora do ciclo de vida do container. Dados em volumes sobrevivem a remoções.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Docker Daemon (dockerd)</div>
+        <div class="glossary-def">Processo servidor que roda em background e gerencia containers, imagens, volumes e redes. O CLI se comunica com ele via API REST.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Layer (camada)</div>
+        <div class="glossary-def">Cada instrução do Dockerfile gera uma camada imutável e cacheável. Camadas são compartilhadas entre imagens para economizar espaço.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Namespace + cgroup</div>
+        <div class="glossary-def">Primitivas do kernel Linux usadas pelo Docker. Namespaces fornecem isolamento (processos, rede, filesystem). Cgroups limitam recursos como CPU e memória.</div>
+      </div>
+    </div>
+
+    <!-- 12. VÍDEOS -->
+    <div class="section">
+      <div class="section-label">// CURADORIA</div>
+      <h2>Vídeos Recomendados</h2>
+      <div class="video-grid">
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Docker in 100 Seconds</div>
+            <div class="video-channel">Fireship · ~2 min</div>
+            <div class="video-why">Por que assistir: A melhor introdução visual de 100 segundos que existe. Perfeito para solidificar a intuição de containers antes de mergulhar nos comandos.</div>
+            <a href="https://www.youtube.com/watch?v=Gjnup-PuquQ" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Docker Tutorial for Beginners — Full Course</div>
+            <div class="video-channel">TechWorld with Nana · ~3h</div>
+            <div class="video-why">Por que assistir: Nana é a melhor instrutora de DevOps do YouTube. Cobre do zero ao Docker Compose com exemplos reais de microserviços e boas práticas.</div>
+            <a href="https://www.youtube.com/watch?v=3c-iBn73dDE" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">you need to learn Docker RIGHT NOW!!</div>
+            <div class="video-channel">NetworkChuck · ~26 min</div>
+            <div class="video-why">Por que assistir: Explicação energética com demos ao vivo de containers vs VMs. Ótimo para reforçar a analogia do contêiner marítimo com exemplos práticos reais.</div>
+            <a href="https://www.youtube.com/watch?v=eGz9DS-aIeY" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Docker Volumes explained in 6 minutes</div>
+            <div class="video-channel">TechWorld with Nana · ~6 min</div>
+            <div class="video-why">Por que assistir: Volumes são o conceito que mais confunde iniciantes. Este vídeo desmistifica bind mounts vs named volumes com exemplos claros e diretos.</div>
+            <a href="https://www.youtube.com/watch?v=p2PH_YPCsis" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHECKPOINT -->
+    <div class="section">
+      <div class="checkpoint">
+        <h3>🏁 Checkpoint — Missão Docker</h3>
+        <p>Suba um ambiente de desenvolvimento com banco de dados e UI de administração usando apenas comandos Docker — sem Docker Compose ainda. Tudo no terminal.</p>
+        <ul>
+          <li>Crie uma rede Docker chamada <code>dev-network</code></li>
+          <li>Suba um container PostgreSQL 15 Alpine nessa rede, com senha e banco configurados via variáveis de ambiente, e dados persistidos em um named volume <code>pgdata</code></li>
+          <li>Suba um container <code>adminer</code> na mesma rede, exposto na porta 8080 do host</li>
+          <li>Acesse <code>http://localhost:8080</code>, conecte ao PostgreSQL usando o hostname <code>db</code> e confirme que funciona</li>
+          <li>Pare e remova o container do PostgreSQL, crie um novo com o mesmo volume — os dados devem estar intactos</li>
+          <li>Rode <code>docker system df</code> e interprete o que cada linha significa</li>
+        </ul>
+        <div class="checkpoint-hint">💬 Dica: a imagem do Adminer é <code>adminer</code> (oficial). No campo "servidor", coloque o nome do container do Postgres (ex: <code>db</code>). Isso só funciona se ambos estiverem na mesma rede Docker — é o DNS interno em ação!</div>
+      </div>
+    </div>
+
+    <!-- PRÓXIMOS PASSOS -->
+    <div class="section">
+      <div class="section-label">// próxima aula</div>
+      <h2>O que vem a seguir?</h2>
+      <p style="margin-bottom:20px;">Com containers e imagens dominados, estamos prontos para o próximo nível: escrever nossos próprios Dockerfiles. Vamos aprender a construir imagens profissionais com multi-stage builds, otimização de camadas, health checks e boas práticas de segurança.</p>
+      <a href="dkr-02-dockerfile.html" class="next-card">
+        <div>
+          <div class="next-card-label">Próxima Aula • 🐳 Docker</div>
+          <div class="next-card-title">Docker — Dockerfile &amp; Boas Práticas</div>
+        </div>
+        <div class="next-arrow">→</div>
+      </a>
+    </div>
+
+  </div>
+
+  <script>
+    const bar = document.getElementById('progressBar');
+    window.addEventListener('scroll', () => {
+      const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+      bar.style.width = Math.min(pct, 100) + '%';
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
+      mermaid.initialize({ startOnLoad: true, theme: 'dark', securityLevel: 'loose' });
+    });
+  </script>
+</body>
+</html>

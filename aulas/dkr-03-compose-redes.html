@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Docker Compose & Redes · Aula 19</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #06b6d4;
+      --accent-dim: rgba(6,182,212,0.12);
+      --accent-border: rgba(6,182,212,0.35);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #58a6ff;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #67e8f9); width: 0%; transition: width 0.1s; }
+
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; cursor: default; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #67e8f9; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(88,166,255,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.08); border-color: var(--success); }
+    .callout-tip .callout-title { color: var(--success); }
+    .callout-check { background: rgba(6,182,212,0.08); border-color: var(--accent); }
+    .callout-check .callout-title { color: var(--accent); }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(88,166,255,0.2); color: #79c0ff; }
+    .badge-cyan { background: rgba(6,182,212,0.2); color: #67e8f9; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+    .pillar-badge { font-size: 11px; padding: 3px 10px; border-radius: 4px; font-weight: 600; }
+
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-info a { font-size: 12px; color: var(--accent); text-decoration: none; }
+    .video-info a:hover { text-decoration: underline; }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(6,182,212,0.08), rgba(103,232,249,0.04)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(6,182,212,0.06); border-radius: 6px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; }
+
+    .glossary-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .glossary-term { color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+    .glossary-def { color: var(--muted); font-size: 13px; }
+
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #67e8f9; }
+
+    /* Terminal */
+    .terminal { background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .terminal-bar { background: #1a1a1a; padding: 8px 14px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ef4444; } .dot-yellow { background: #f59e0b; } .dot-green { background: #10b981; }
+    .terminal-title { font-size: 11px; color: #555; margin-left: 6px; }
+    .terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; }
+    .t-prompt { color: #10b981; } .t-cmd { color: #e8e8f0; } .t-out { color: #8585a8; } .t-comment { color: #444; font-style: italic; }
+
+    /* Infra diagram boxes */
+    .infra-diagram { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; margin: 24px 0; }
+    .infra-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 20px; }
+    .infra-network { border: 2px dashed rgba(6,182,212,0.3); border-radius: 10px; padding: 20px; margin: 8px 0; position: relative; }
+    .infra-network-label { position: absolute; top: -10px; left: 16px; background: var(--surface); padding: 0 8px; font-size: 10px; color: var(--accent); letter-spacing: 0.08em; font-weight: 600; }
+    .infra-services { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+    .infra-service { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; text-align: center; min-width: 110px; }
+    .infra-service.api { border-color: rgba(6,182,212,0.4); }
+    .infra-service.db { border-color: rgba(88,166,255,0.4); }
+    .infra-service.cache { border-color: rgba(245,158,11,0.4); }
+    .infra-service.worker { border-color: rgba(16,185,129,0.4); }
+    .infra-service-icon { font-size: 22px; margin-bottom: 6px; }
+    .infra-service-name { font-size: 12px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+    .infra-service-port { font-size: 10px; color: var(--muted); }
+    .infra-arrow { display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 18px; padding: 0 4px; }
+
+    /* Compare */
+    .compare-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+    @media (max-width: 640px) { .compare-wrap { grid-template-columns: 1fr; } }
+    .compare-block { border-radius: 10px; overflow: hidden; }
+    .compare-header { padding: 10px 16px; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; }
+    .compare-header.bad { background: rgba(239,68,68,0.15); color: #f87171; }
+    .compare-header.good { background: rgba(16,185,129,0.15); color: #34d399; }
+    .compare-block pre { margin: 0; border-radius: 0 0 10px 10px; }
+
+    /* Key-value chips */
+    .yaml-key { color: #79c0ff; }
+    .yaml-val { color: #a5d6ff; }
+    .yaml-comment { color: #8b949e; font-style: italic; }
+
+    /* Env file display */
+    .env-block { background: #0d1117; border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; margin: 12px 0; }
+    .env-key { color: #79c0ff; }
+    .env-val { color: #a5d6ff; }
+    .env-comment { color: #8b949e; font-style: italic; }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar"></div>
+  </div>
+
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="dkr-02-dockerfile.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">🐳 Docker</span> · Aula 19 / 50
+      </div>
+      <a href="gh-05-actions-cicd.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>🐳 Docker</span>
+        <span class="hero-badge">Aula 19</span>
+      </div>
+      <h1>Docker Compose & Redes</h1>
+      <div class="hero-meta">
+        <span>⏱ ~45 min de leitura</span>
+        <span>🎯 Intermediário</span>
+        <span>🔧 Hands-on incluído</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">docker compose</span>
+        <span class="tag accent">networking</span>
+        <span class="tag accent">environment variables</span>
+        <span class="tag accent">volumes</span>
+        <span class="tag accent">depends_on</span>
+        <span class="tag">multi-service</span>
+        <span class="tag">bridge network</span>
+        <span class="tag">.env file</span>
+        <span class="tag">healthcheck</span>
+        <span class="tag">profiles</span>
+      </div>
+    </div>
+
+    <!-- 1. POR QUE IMPORTA -->
+    <div class="section">
+      <div class="section-label">// MOTIVAÇÃO</div>
+      <h2>Por que isso importa?</h2>
+      <p>
+        Nenhuma aplicação real roda em um único container. Uma API precisa de um banco de dados, um sistema de cache, talvez um worker de background e um proxy reverso. Sem Docker Compose, subir esse ambiente significa executar cinco comandos <code>docker run</code> com dezenas de flags, na ordem certa, esperando cada serviço iniciar antes do próximo — e torcer para não errar nenhuma variável de ambiente.
+      </p>
+      <p>
+        O Docker Compose resolve isso com um único arquivo declarativo <code>docker-compose.yml</code> que descreve <em>toda a infraestrutura</em> da aplicação: quais containers rodam, como se conectam, quais variáveis recebem, quais volumes compartilham. Um único comando — <code>docker compose up</code> — sobe tudo. E <code>docker compose down</code> derruba tudo limpo.
+      </p>
+      <div class="callout callout-info">
+        <div class="callout-title">💼 Por que um engenheiro sênior domina Docker Compose</div>
+        Em times de produto, o <code>docker-compose.yml</code> é o "contrato de ambiente" — qualquer dev clona o repo, roda <code>docker compose up</code> e tem o mesmo ambiente que produção em minutos. Sem "funciona na minha máquina". Sem horas configurando PostgreSQL localmente. Compose é também a base para entender Kubernetes: os conceitos de serviços, redes e volumes são diretamente análogos.
+      </div>
+    </div>
+
+    <!-- 2. ANALOGIA -->
+    <div class="section">
+      <div class="section-label">// ANALOGIA</div>
+      <h2>Antes do código: uma analogia</h2>
+      <div class="analogy-card">
+        <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
+        <div class="analogy-text">
+          Pense numa <strong>produção teatral na Broadway</strong>. Um ator solo consegue fazer um monólogo sozinho — isso é um único container. Mas uma peça completa precisa de elenco, cenário, iluminação, sonoplastia, figurino e direção — todos trabalhando juntos, em sincronia, num ambiente controlado.
+          <br><br>
+          O <strong>roteiro de produção</strong> descreve cada papel, onde cada pessoa fica no palco, como se comunicam e em que ordem cada cena acontece. Você não telefona para cada ator individualmente toda noite — o diretor lê o roteiro e coordena tudo. O <code>docker-compose.yml</code> é esse roteiro de produção: ele descreve cada serviço (ator), a rede interna do palco (como se ouvem), as variáveis de ambiente (o script de cada um) e os volumes (os figurinos e adereços compartilhados).
+        </div>
+        <div class="analogy-mapping">
+          <span class="analogy-real">📋 Roteiro de produção completo</span>
+          <span class="analogy-tech">→ docker-compose.yml</span>
+          <span class="analogy-real">🎭 Cada ator no palco</span>
+          <span class="analogy-tech">→ Cada service no Compose</span>
+          <span class="analogy-real">🎙️ Palco onde todos se ouvem</span>
+          <span class="analogy-tech">→ Rede interna (bridge network)</span>
+          <span class="analogy-real">📜 Script personalizado de cada ator</span>
+          <span class="analogy-tech">→ environment variables por serviço</span>
+          <span class="analogy-real">🎁 Adereços compartilhados entre cenas</span>
+          <span class="analogy-tech">→ volumes compartilhados</span>
+          <span class="analogy-real">🎬 "Cena 3 só após cena 2"</span>
+          <span class="analogy-tech">→ depends_on com healthcheck</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. CONCEITO CENTRAL: DOCKER COMPOSE -->
+    <div class="section">
+      <div class="section-label">// CONCEITO CENTRAL</div>
+      <h2>Docker Compose — o que é e como funciona</h2>
+      <p>
+        O Docker Compose é uma ferramenta que lê um arquivo <code>docker-compose.yml</code> e gerencia o ciclo de vida de múltiplos containers como uma unidade. Ele cria automaticamente uma rede privada compartilhada para todos os serviços definidos, permitindo que se comuniquem pelo nome do serviço (DNS interno).
+      </p>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">Ciclo de vida: docker compose up → running → docker compose down</div>
+        <div class="mermaid">
+flowchart LR
+    YML["📄 docker-compose.yml\n(declaração dos serviços)"]
+    UP["docker compose up -d"]
+    NET["🌐 Rede privada criada\nautomaticamente"]
+    API["🟢 api\n:8000"]
+    DB["🟢 postgres\n:5432"]
+    REDIS["🟢 redis\n:6379"]
+    VOL["💾 Volumes persistentes"]
+    DOWN["docker compose down"]
+    CLEAN["🧹 Containers removidos\nRede removida"]
+
+    YML --> UP
+    UP --> NET
+    NET --> API
+    NET --> DB
+    NET --> REDIS
+    DB --> VOL
+    API -->|"Comunica via nome:\npostgres:5432"| DB
+    API -->|"Comunica via nome:\nredis:6379"| REDIS
+    API & DB & REDIS --> DOWN
+    DOWN --> CLEAN
+
+    style YML fill:#16161f,stroke:#1e1e2e,color:#e8e8f0
+    style NET fill:#0a2a3a,stroke:#06b6d4,color:#67e8f9
+    style API fill:#0a3a1a,stroke:#10b981,color:#34d399
+    style DB fill:#0a1a3a,stroke:#58a6ff,color:#79c0ff
+    style REDIS fill:#3a2a0a,stroke:#f59e0b,color:#fbbf24
+    style CLEAN fill:#16161f,stroke:#8585a8,color:#8585a8
+        </div>
+      </div>
+
+      <p>
+        O ponto-chave da rede interna do Compose: quando a <code>api</code> quer se conectar ao banco de dados, ela não usa <code>localhost</code> nem um IP — ela usa o <strong>nome do serviço</strong> como hostname. Se o serviço se chama <code>postgres</code> no Compose, a connection string é <code>postgresql://user:pass@postgres:5432/db</code>. O Docker resolve o DNS internamente.
+      </p>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Compose V2 — use sempre <code>docker compose</code> (sem hífen)</div>
+        O Docker Compose V1 era um binário separado (<code>docker-compose</code> com hífen). Desde o Docker Desktop 3.4 e Docker Engine 20.10, o Compose V2 é integrado ao CLI do Docker como plugin (<code>docker compose</code> sem hífen). A V2 é mais rápida, suporta BuildKit nativo e é a versão mantida. Se você ainda usa <code>docker-compose</code>, atualize.
+      </div>
+    </div>
+
+    <!-- 4. ANATOMIA DO COMPOSE FILE -->
+    <div class="section">
+      <div class="section-label">// ANATOMIA</div>
+      <h2>Anatomia do docker-compose.yml</h2>
+      <p>
+        O arquivo Compose usa YAML e tem quatro seções principais: <code>services</code>, <code>networks</code>, <code>volumes</code> e <code>configs</code>. A seção <code>services</code> é obrigatória — as demais são criadas automaticamente se não declaradas.
+      </p>
+
+      <div class="code-label">docker-compose.yml — estrutura anotada</div>
+      <pre><code class="language-yaml"># Versão do schema do Compose (omitir aceita a versão mais recente)
+# A partir do Compose V2, a chave "version" é obsoleta
+
+services:          # ← Seção principal: define cada container
+
+  api:             # ← Nome do serviço (vira hostname na rede interna)
+    build: .       # ← Builda a imagem do Dockerfile do diretório atual
+    # OU: image: python:3.12-slim  ← Usa imagem pronta do registry
+    
+    ports:
+      - "8000:8000"  # ← "HOST:CONTAINER" — publica para o mundo externo
+    
+    environment:     # ← Variáveis de ambiente inline (evite segredos aqui)
+      - DEBUG=false
+      - DATABASE_URL=postgresql://user:senha@postgres:5432/mydb
+    
+    env_file:        # ← Carrega variáveis de um arquivo .env
+      - .env
+    
+    depends_on:      # ← Garante ordem de inicialização
+      postgres:
+        condition: service_healthy   # ← Aguarda o healthcheck passar (não só "started")
+      redis:
+        condition: service_started   # ← Apenas aguarda o container iniciar
+    
+    volumes:
+      - ./app:/app   # ← Bind mount: sincroniza pasta local com container (dev)
+    
+    networks:
+      - backend      # ← Coloca o serviço nesta rede
+    
+    restart: unless-stopped   # ← Reinicia automaticamente em falhas
+
+  postgres:
+    image: postgres:16-alpine       # ← Pin de versão: sempre!
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: senha      # ← Em produção: use secrets ou env_file
+      POSTGRES_DB: mydb
+    volumes:
+      - pgdata:/var/lib/postgresql/data   # ← Volume nomeado: dados persistem
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d mydb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - backend
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redisdata:/data
+    networks:
+      - backend
+
+networks:
+  backend:           # ← Rede privada — apenas containers nesta rede se comunicam
+    driver: bridge   # ← Padrão; isola da rede do host
+
+volumes:
+  pgdata:            # ← Volume nomeado: gerenciado pelo Docker, persiste entre restarts
+  redisdata:</code></pre>
+    </div>
+
+    <!-- 5. NETWORKING -->
+    <div class="section">
+      <div class="section-label">// NETWORKING</div>
+      <h2>Redes no Docker — como os containers se comunicam</h2>
+      <p>
+        Por padrão, o Docker Compose cria uma rede <code>bridge</code> compartilhada para todos os serviços definidos no arquivo. Containers na mesma rede podem se resolver pelo nome do serviço como DNS — mas containers em redes diferentes <em>não se enxergam</em>.
+      </p>
+
+      <div class="infra-diagram">
+        <div class="infra-label">Arquitetura de rede: frontend isola do backend</div>
+        <div style="margin-bottom:16px;">
+          <div class="infra-network" style="margin-bottom:12px;">
+            <div class="infra-network-label">REDE: frontend (bridge)</div>
+            <div class="infra-services">
+              <div class="infra-service">
+                <div class="infra-service-icon">🌐</div>
+                <div class="infra-service-name">nginx</div>
+                <div class="infra-service-port">:80 / :443</div>
+              </div>
+              <div class="infra-arrow">⟷</div>
+              <div class="infra-service api">
+                <div class="infra-service-icon">⚡</div>
+                <div class="infra-service-name">api</div>
+                <div class="infra-service-port">:8000 (interno)</div>
+              </div>
+            </div>
+          </div>
+          <div class="infra-network">
+            <div class="infra-network-label">REDE: backend (bridge)</div>
+            <div class="infra-services">
+              <div class="infra-service api">
+                <div class="infra-service-icon">⚡</div>
+                <div class="infra-service-name">api</div>
+                <div class="infra-service-port">nas 2 redes!</div>
+              </div>
+              <div class="infra-arrow">⟷</div>
+              <div class="infra-service db">
+                <div class="infra-service-icon">🐘</div>
+                <div class="infra-service-name">postgres</div>
+                <div class="infra-service-port">:5432 (interno)</div>
+              </div>
+              <div class="infra-arrow">⟷</div>
+              <div class="infra-service cache">
+                <div class="infra-service-icon">⚡</div>
+                <div class="infra-service-name">redis</div>
+                <div class="infra-service-port">:6379 (interno)</div>
+              </div>
+              <div class="infra-arrow">⟷</div>
+              <div class="infra-service worker">
+                <div class="infra-service-icon">⚙️</div>
+                <div class="infra-service-name">worker</div>
+                <div class="infra-service-port">sem porta exposta</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin:0;">
+          O nginx acessa a api (mesma rede frontend). A api acessa postgres e redis (mesma rede backend). O postgres <strong>não</strong> é acessível pelo nginx — redes diferentes. A porta :5432 não está publicada no host — zero acesso externo.
+        </p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Driver de Rede</th><th>Comportamento</th><th>Quando usar</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>bridge</code></td>
+              <td>Rede privada isolada no host. Containers se comunicam pelo nome. Padrão do Compose.</td>
+              <td><span class="badge badge-green">Uso geral</span> — praticamente sempre</td>
+            </tr>
+            <tr>
+              <td><code>host</code></td>
+              <td>Container compartilha a rede do host diretamente. Sem isolamento de porta.</td>
+              <td>Performance máxima em cenários específicos (monitoramento, proxies)</td>
+            </tr>
+            <tr>
+              <td><code>none</code></td>
+              <td>Container sem acesso à rede. Completamente isolado.</td>
+              <td>Jobs batch que não precisam de rede. Segurança extrema.</td>
+            </tr>
+            <tr>
+              <td><code>overlay</code></td>
+              <td>Rede que span múltiplos hosts Docker. Requer Docker Swarm ou Kubernetes.</td>
+              <td>Produção distribuída — não no Compose local</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Ports vs Expose — a diferença fundamental</h3>
+      <div class="grid-2">
+        <div class="card-mini" style="border-color:var(--accent-border);">
+          <span class="pillar-badge" style="background:var(--accent-dim);color:var(--accent);">ports:</span>
+          <h4>Publica para o mundo externo</h4>
+          <p><code>"8000:8000"</code> mapeia a porta 8000 do container para a porta 8000 do seu laptop. Qualquer processo no host (ou na rede local) pode acessar. Use para serviços que precisam de acesso externo (nginx, api principal).</p>
+        </div>
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(255,255,255,0.08);color:var(--muted);">expose:</span>
+          <h4>Apenas documentação interna</h4>
+          <p><code>expose: ["5432"]</code> documenta que o container usa essa porta, mas não a abre para o host. Containers na mesma rede ainda se comunicam — é apenas uma sinalização. Para banco de dados e caches: <strong>não use <code>ports</code></strong>.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. VARIÁVEIS DE AMBIENTE -->
+    <div class="section">
+      <div class="section-label">// ENVIRONMENT</div>
+      <h2>Variáveis de Ambiente — o jeito certo</h2>
+      <p>
+        Gerenciar configuração e segredos via variáveis de ambiente é o padrão da indústria (The Twelve-Factor App). O Compose oferece três formas de injetar variáveis, cada uma com seu caso de uso específico.
+      </p>
+
+      <h3>Hierarquia de precedência (maior para menor)</h3>
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">Precedência de variáveis de ambiente no Compose</div>
+        <div class="mermaid">
+flowchart TD
+    A["1️⃣ Variável no shell do host\nexport DATABASE_URL=..."] -->|sobrescreve| B
+    B["2️⃣ docker compose --env-file custom.env"] -->|sobrescreve| C
+    C["3️⃣ .env na raiz do projeto\n(carregado automaticamente)"] -->|sobrescreve| D
+    D["4️⃣ environment: no compose.yml\n(valor inline)"] -->|sobrescreve| E
+    E["5️⃣ env_file: no serviço\n(arquivo externo específico)"]
+
+    style A fill:#0a3a1a,stroke:#10b981,color:#34d399
+    style E fill:#3a1010,stroke:#ef4444,color:#f87171
+        </div>
+      </div>
+
+      <div class="code-label">.env — arquivo de variáveis (nunca commitar segredos!)</div>
+      <div class="env-block">
+        <div><span class="env-comment"># ─── Banco de dados ───────────────────────────────────────</span></div>
+        <div><span class="env-key">POSTGRES_USER</span>=appuser</div>
+        <div><span class="env-key">POSTGRES_PASSWORD</span>=<span class="env-val">minha_senha_segura_aqui</span></div>
+        <div><span class="env-key">POSTGRES_DB</span>=appdb</div>
+        <div><span class="env-key">DATABASE_URL</span>=<span class="env-val">postgresql://appuser:minha_senha_segura_aqui@postgres:5432/appdb</span></div>
+        <div>&nbsp;</div>
+        <div><span class="env-comment"># ─── Aplicação ────────────────────────────────────────────</span></div>
+        <div><span class="env-key">DEBUG</span>=<span class="env-val">false</span></div>
+        <div><span class="env-key">SECRET_KEY</span>=<span class="env-val">troque-isso-em-producao-use-openssl-rand-hex-32</span></div>
+        <div><span class="env-key">ALLOWED_HOSTS</span>=<span class="env-val">localhost,127.0.0.1</span></div>
+        <div>&nbsp;</div>
+        <div><span class="env-comment"># ─── Redis ────────────────────────────────────────────────</span></div>
+        <div><span class="env-key">REDIS_URL</span>=<span class="env-val">redis://redis:6379/0</span></div>
+      </div>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ .env no .gitignore — sempre!</div>
+        O arquivo <code>.env</code> contém segredos reais e <strong>nunca deve ser commitado</strong>. Adicione ao <code>.gitignore</code> imediatamente. Crie um <code>.env.example</code> com os mesmos nomes de variáveis mas sem valores (ou com valores fictícios) para documentar o que o projeto precisa. Esse arquivo sim vai para o Git.
+      </div>
+
+      <div class="code-label">Referenciando variáveis do .env no docker-compose.yml</div>
+      <pre><code class="language-yaml">services:
+  api:
+    build: .
+    environment:
+      # Interpolação: o Compose substitui ${VAR} pelo valor do .env ou do shell
+      - DATABASE_URL=${DATABASE_URL}
+      - SECRET_KEY=${SECRET_KEY}
+      - DEBUG=${DEBUG:-false}   # Valor padrão "false" se DEBUG não estiver definido
+    env_file:
+      - .env    # Carrega TODAS as variáveis do arquivo diretamente
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      # Passagem direta: o Compose expande ${} na hora do up
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}</code></pre>
+    </div>
+
+    <!-- 7. VOLUMES -->
+    <div class="section">
+      <div class="section-label">// VOLUMES</div>
+      <h2>Volumes — persistência e compartilhamento de dados</h2>
+      <p>
+        Por padrão, dados criados dentro de um container existem apenas enquanto o container existe. Volumes quebram esse ciclo — eles persistem no host independentemente do container, permitindo que dados sobrevivam a reinicializações, atualizações e recriações de containers.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Tipo</th><th>Sintaxe</th><th>Onde fica</th><th>Quando usar</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Named volume</strong></td>
+              <td><code>pgdata:/var/lib/postgresql/data</code></td>
+              <td>Gerenciado pelo Docker (<code>/var/lib/docker/volumes/</code>)</td>
+              <td><span class="badge badge-green">Bancos de dados, dados de produção</span></td>
+            </tr>
+            <tr>
+              <td><strong>Bind mount</strong></td>
+              <td><code>./src:/app/src</code></td>
+              <td>Pasta específica do seu sistema de arquivos</td>
+              <td><span class="badge badge-cyan">Desenvolvimento — hot reload de código</span></td>
+            </tr>
+            <tr>
+              <td><strong>tmpfs mount</strong></td>
+              <td><code>type: tmpfs, target: /tmp</code></td>
+              <td>Memória RAM — nunca no disco</td>
+              <td>Dados temporários sensíveis (tokens, caches voláteis)</td>
+            </tr>
+            <tr>
+              <td><strong>Anonymous</strong></td>
+              <td><code>- /var/lib/mysql</code></td>
+              <td>Gerenciado pelo Docker, sem nome</td>
+              <td><span class="badge badge-red">Evitar — difícil de gerenciar</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="compare-wrap">
+        <div class="compare-block">
+          <div class="compare-header bad">❌ Desenvolvimento sem bind mount</div>
+          <pre><code class="language-yaml">services:
+  api:
+    build: .
+    # Sem volume: a cada mudança no código,
+    # precisa fazer novo docker build!
+    ports:
+      - "8000:8000"</code></pre>
+        </div>
+        <div class="compare-block">
+          <div class="compare-header good">✅ Desenvolvimento com bind mount</div>
+          <pre><code class="language-yaml">services:
+  api:
+    build: .
+    volumes:
+      # Sincroniza código local com o container
+      # Hot reload funciona sem rebuild!
+      - ./app:/app/app
+    ports:
+      - "8000:8000"</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. DEPENDS_ON E HEALTHCHECKS -->
+    <div class="section">
+      <div class="section-label">// ORDEM E RESILIÊNCIA</div>
+      <h2>depends_on & Healthchecks — ordem de inicialização</h2>
+      <p>
+        O <code>depends_on</code> simples garante apenas que o container do serviço dependente foi <em>iniciado</em> — não que está <em>pronto para receber conexões</em>. Um PostgreSQL pode levar 15 segundos para aceitar conexões após o processo iniciar. Sem a condição <code>service_healthy</code>, a API tenta conectar ao banco antes que ele esteja pronto e falha.
+      </p>
+
+      <div class="compare-wrap">
+        <div class="compare-block">
+          <div class="compare-header bad">❌ depends_on simples — race condition</div>
+          <pre><code class="language-yaml">services:
+  api:
+    build: .
+    depends_on:
+      - postgres   # Apenas espera o container INICIAR
+      # postgres pode não estar pronto ainda!
+      # A API vai tentar conectar e falhar</code></pre>
+        </div>
+        <div class="compare-block">
+          <div class="compare-header good">✅ depends_on com healthcheck — seguro</div>
+          <pre><code class="language-yaml">services:
+  api:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy  # Espera o HEALTHCHECK passar
+      redis:
+        condition: service_started  # Redis inicia rápido, ok aqui</code></pre>
+        </div>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Sempre defina healthcheck no serviço do banco de dados</div>
+        Para a condição <code>service_healthy</code> funcionar, o serviço dependido (postgres, redis, etc.) precisa ter um <code>healthcheck</code> definido. Imagens oficiais como <code>postgres</code> e <code>redis</code> não têm healthcheck por padrão — você precisa adicionar no seu Compose.
+      </div>
+    </div>
+
+    <!-- 9. CÓDIGO COMPLETO: STACK FULL -->
+    <div class="section">
+      <div class="section-label">// CÓDIGO COMPLETO</div>
+      <h2>Stack completa — API + Postgres + Redis + Worker</h2>
+      <p>
+        Um arquivo Compose real de produção para uma aplicação FastAPI com banco de dados, cache e worker de background.
+      </p>
+
+      <div class="code-label">docker-compose.yml — stack completa com boas práticas</div>
+      <pre><code class="language-yaml"># docker-compose.yml — Stack completa: API + PostgreSQL + Redis + Worker
+
+services:
+
+  # ─── API Principal ──────────────────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production          # Multi-stage: usa o estágio "production"
+    image: myapp-api:latest
+    container_name: myapp_api
+    restart: unless-stopped
+    ports:
+      - "${API_PORT:-8000}:8000"  # Porta configurável via .env, padrão 8000
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+      - SECRET_KEY=${SECRET_KEY}
+      - DEBUG=${DEBUG:-false}
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      # Bind mount APENAS em dev — remova em prod!
+      # - ./app:/app/app
+      - static_files:/app/staticfiles
+    networks:
+      - frontend
+      - backend
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"     # Limita logs a 10 MB por arquivo
+        max-file: "3"       # Mantém 3 arquivos rotacionados
+
+  # ─── Banco de Dados ──────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: myapp_postgres
+    restart: unless-stopped
+    # NÃO expõe porta 5432 para o host em produção!
+    # Em dev, descomente a linha abaixo para acessar com pgAdmin/DBeaver:
+    # ports:
+    #   - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data        # Dados persistem aqui
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql:ro  # Init script
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ─── Cache ───────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: myapp_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redisdata:/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # ─── Worker de Background ────────────────────────────────────────────────────
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: myapp_worker
+    restart: unless-stopped
+    command: ["celery", "-A", "app.celery", "worker", "--loglevel=info"]
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - backend
+    profiles:
+      - full    # Só sobe com: docker compose --profile full up
+
+  # ─── Proxy Reverso (produção) ─────────────────────────────────────────────
+  nginx:
+    image: nginx:alpine
+    container_name: myapp_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - static_files:/var/www/static:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - frontend
+    profiles:
+      - full
+
+# ─── Redes ────────────────────────────────────────────────────────────────────
+networks:
+  frontend:
+    driver: bridge
+    # API e nginx se comunicam aqui
+  backend:
+    driver: bridge
+    # API, postgres, redis e worker se comunicam aqui
+    # O banco NUNCA é exposto para a rede frontend
+
+# ─── Volumes ──────────────────────────────────────────────────────────────────
+volumes:
+  pgdata:         # Dados do PostgreSQL
+    driver: local
+  redisdata:      # Dados do Redis (AOF persistence)
+    driver: local
+  static_files:   # Arquivos estáticos compartilhados entre api e nginx
+    driver: local</code></pre>
+    </div>
+
+    <!-- 10. PERFIS E OVERRIDES -->
+    <div class="section">
+      <div class="section-label">// TÉCNICA AVANÇADA</div>
+      <h2>Profiles e Override Files — ambientes diferentes</h2>
+
+      <h3>Profiles — suba apenas o que precisa</h3>
+      <p>
+        Profiles permitem marcar serviços opcionais que só sobem quando explicitamente solicitados. Perfeito para serviços de produção que não precisam rodar no ambiente de desenvolvimento local.
+      </p>
+
+      <div class="terminal">
+        <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal</span></div>
+        <div class="terminal-body">
+          <div class="t-comment"># Sobe apenas os serviços sem profile (api, postgres, redis)</div>
+          <div><span class="t-prompt">$</span> <span class="t-cmd">docker compose up -d</span></div>
+          <br>
+          <div class="t-comment"># Sobe TUDO incluindo nginx e worker (profile "full")</div>
+          <div><span class="t-prompt">$</span> <span class="t-cmd">docker compose --profile full up -d</span></div>
+          <br>
+          <div class="t-comment"># Verifica status de todos os serviços</div>
+          <div><span class="t-prompt">$</span> <span class="t-cmd">docker compose ps</span></div>
+          <div class="t-out">NAME             STATUS          PORTS</div>
+          <div class="t-out">myapp_api        Up (healthy)    0.0.0.0:8000->8000/tcp</div>
+          <div class="t-out">myapp_postgres   Up (healthy)    5432/tcp</div>
+          <div class="t-out">myapp_redis      Up (healthy)    6379/tcp</div>
+        </div>
+      </div>
+
+      <h3>Override files — dev vs produção</h3>
+      <p>
+        O Compose merge automaticamente <code>docker-compose.yml</code> com <code>docker-compose.override.yml</code> quando presente. Use esse padrão para ter configurações diferentes por ambiente:
+      </p>
+
+      <div class="grid-2">
+        <div class="card-mini" style="border-color:var(--accent-border);">
+          <span class="pillar-badge" style="background:var(--accent-dim);color:var(--accent);">docker-compose.yml</span>
+          <h4>Base — configuração comum</h4>
+          <p>Definição dos serviços, imagens, volumes, redes. Valores que são iguais em todos os ambientes. Vai para o Git.</p>
+        </div>
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(255,255,255,0.08);color:var(--muted);">docker-compose.override.yml</span>
+          <h4>Dev — carregado automaticamente</h4>
+          <p>Bind mounts para hot reload, portas extras expostas para debug, variáveis de desenvolvimento. Vai para o Git (sem segredos).</p>
+        </div>
+      </div>
+
+      <div class="code-label">docker-compose.override.yml — específico para desenvolvimento</div>
+      <pre><code class="language-yaml"># docker-compose.override.yml — carregado automaticamente em desenvolvimento
+# NÃO use em produção: docker compose -f docker-compose.yml up
+
+services:
+  api:
+    build:
+      target: builder    # Estágio de build (tem compiladores, útil para debug)
+    volumes:
+      - ./app:/app/app   # Hot reload: código do host sincronizado
+    environment:
+      - DEBUG=true
+      - LOG_LEVEL=debug
+    command: ["uvicorn", "app.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
+
+  postgres:
+    ports:
+      - "5432:5432"      # Expõe o banco para o host (acesso via DBeaver/pgAdmin)
+
+  redis:
+    ports:
+      - "6379:6379"      # Expõe Redis para debug local</code></pre>
+
+      <div class="terminal">
+        <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal — gerenciando com override explícito</span></div>
+        <div class="terminal-body">
+          <div class="t-comment"># Desenvolvimento (merge automático com override.yml)</div>
+          <div><span class="t-prompt">$</span> <span class="t-cmd">docker compose up -d</span></div>
+          <br>
+          <div class="t-comment"># Produção (ignora override.yml)</div>
+          <div><span class="t-prompt">$</span> <span class="t-cmd">docker compose -f docker-compose.yml up -d</span></div>
+          <br>
+          <div class="t-comment"># Staging (arquivo específico)</div>
+          <div><span class="t-prompt">$</span> <span class="t-cmd">docker compose -f docker-compose.yml -f docker-compose.staging.yml up -d</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 11. HANDS-ON -->
+    <div class="section">
+      <div class="section-label">// HANDS-ON</div>
+      <h2>Passo a Passo — Stack FastAPI + PostgreSQL + Redis</h2>
+      <p>Vamos subir uma stack multi-serviço completa do zero. Execute cada passo na sua máquina agora.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Criar a estrutura do projeto</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal</span></div>
+              <div class="terminal-body">
+                <div><span class="t-prompt">$</span> <span class="t-cmd">mkdir compose-demo && cd compose-demo</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">touch docker-compose.yml .env .env.example .gitignore</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">mkdir app</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">touch app/main.py app/requirements.txt app/Dockerfile</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Criar a aplicação FastAPI</div>
+            <div class="step-desc">Conteúdo do <code>app/main.py</code>:</div>
+            <pre><code class="language-python">from fastapi import FastAPI
+import asyncpg
+import redis.asyncio as aioredis
+import os
+
+app = FastAPI(title="Compose Demo")
+
+DB_URL = os.getenv("DATABASE_URL", "postgresql://user:senha@postgres:5432/appdb")
+REDIS_URL = os.getenv("REDIS_URL", "redis://redis:6379/0")
+
+@app.get("/health")
+async def health():
+    return {"status": "healthy"}
+
+@app.get("/")
+async def root():
+    return {"message": "Stack rodando!", "services": ["api", "postgres", "redis"]}
+
+@app.get("/db-check")
+async def db_check():
+    """Testa conexão com o banco"""
+    conn = await asyncpg.connect(DB_URL)
+    version = await conn.fetchval("SELECT version()")
+    await conn.close()
+    return {"postgres": version[:50]}
+
+@app.get("/cache-check")
+async def cache_check():
+    """Testa conexão com o Redis"""
+    r = aioredis.from_url(REDIS_URL)
+    await r.set("ping", "pong", ex=10)
+    value = await r.get("ping")
+    await r.aclose()
+    return {"redis": value.decode()}</code></pre>
+            <div class="step-desc" style="margin-top:12px;">Conteúdo do <code>app/requirements.txt</code>:</div>
+            <pre><code class="language-text">fastapi==0.111.0
+uvicorn[standard]==0.29.0
+asyncpg==0.29.0
+redis==5.0.4</code></pre>
+            <div class="step-desc" style="margin-top:12px;">Conteúdo do <code>app/Dockerfile</code>:</div>
+            <pre><code class="language-dockerfile">FROM python:3.12.3-slim-bookworm
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+WORKDIR /app
+RUN groupadd --gid 1001 appgroup && useradd --uid 1001 --gid 1001 --no-create-home --shell /bin/false appuser
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY --chown=appuser:appgroup . .
+USER appuser
+EXPOSE 8000
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Criar o .env e .gitignore</div>
+            <div class="step-desc">Conteúdo do <code>.env</code>:</div>
+            <pre><code class="language-text">POSTGRES_USER=appuser
+POSTGRES_PASSWORD=senha_segura_dev
+POSTGRES_DB=appdb
+DATABASE_URL=postgresql://appuser:senha_segura_dev@postgres:5432/appdb
+REDIS_URL=redis://redis:6379/0
+DEBUG=true</code></pre>
+            <div class="step-desc" style="margin-top:12px;">Conteúdo do <code>.gitignore</code>:</div>
+            <pre><code class="language-text">.env
+.env.*
+!.env.example</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Criar o docker-compose.yml</div>
+            <pre><code class="language-yaml">services:
+  api:
+    build: ./app
+    ports:
+      - "8000:8000"
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - backend
+
+  postgres:
+    image: postgres:16-alpine
+    env_file: .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  redis:
+    image: redis:7-alpine
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+networks:
+  backend:
+
+volumes:
+  pgdata:</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Subir e testar a stack</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal</span></div>
+              <div class="terminal-body">
+                <div class="t-comment"># Sobe tudo em modo detached (background)</div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">docker compose up -d --build</span></div>
+                <div class="t-out">[+] Running 4/4</div>
+                <div class="t-out"> ✔ Network compose-demo_backend  Created</div>
+                <div class="t-out"> ✔ Container compose-demo_redis  Healthy</div>
+                <div class="t-out"> ✔ Container compose-demo_postgres  Healthy</div>
+                <div class="t-out"> ✔ Container compose-demo_api-1  Started</div>
+                <br>
+                <div class="t-comment"># Acompanhar logs em tempo real</div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">docker compose logs -f api</span></div>
+                <div class="t-out">api-1  | INFO:     Application startup complete.</div>
+                <div class="t-out">api-1  | INFO:     Uvicorn running on http://0.0.0.0:8000</div>
+                <br>
+                <div class="t-comment"># Testar os endpoints</div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">curl http://localhost:8000/health</span></div>
+                <div class="t-out">{"status":"healthy"}</div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">curl http://localhost:8000/db-check</span></div>
+                <div class="t-out">{"postgres":"PostgreSQL 16.2 on x86_64-pc-linux-musl"}</div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">curl http://localhost:8000/cache-check</span></div>
+                <div class="t-out">{"redis":"pong"}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <div class="step-title">Comandos essenciais do dia a dia</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="terminal-title">Terminal — cheat sheet de comandos</span></div>
+              <div class="terminal-body">
+                <div class="t-comment"># Ver status de todos os serviços</div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">docker compose ps</span></div>
+                <br>
+                <div class="t-comment"># Ver logs de um serviço específico</div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">docker compose logs -f api</span></div>
+                <br>
+                <div class="t-comment"># Entrar no shell de um container</div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">docker compose exec postgres psql -U appuser -d appdb</span></div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">docker compose exec api bash</span></div>
+                <br>
+                <div class="t-comment"># Reiniciar apenas um serviço</div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">docker compose restart api</span></div>
+                <br>
+                <div class="t-comment"># Rebuild e restart apenas a api (sem recriar db)</div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">docker compose up -d --build api</span></div>
+                <br>
+                <div class="t-comment"># Parar sem remover os volumes (dados preservados)</div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">docker compose down</span></div>
+                <br>
+                <div class="t-comment"># Parar E remover tudo incluindo volumes (APAGA DADOS!)</div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">docker compose down -v</span></div>
+                <br>
+                <div class="t-comment"># Ver variáveis interpoladas antes de subir</div>
+                <div><span class="t-prompt">$</span> <span class="t-cmd">docker compose config</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 12. ARMADILHAS -->
+    <div class="section">
+      <div class="section-label">// PITFALLS</div>
+      <h2>⚠️ Armadilhas Comuns</h2>
+
+      <div class="pitfall">
+        <div class="pitfall-title">1. depends_on sem condition: service_healthy</div>
+        <p>O <code>depends_on</code> sem condição garante apenas que o container do serviço dependido foi <em>criado e iniciado</em> — não que o processo dentro está pronto. Postgres leva alguns segundos para aceitar conexões. Sempre use <code>condition: service_healthy</code> junto com um <code>healthcheck</code> definido no serviço do banco.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">2. Usar localhost para se conectar a outros serviços</div>
+        <p>Dentro de um container, <code>localhost</code> refere-se ao próprio container — não ao host nem aos outros serviços. Para a API se conectar ao banco, use o nome do serviço: <code>postgresql://user:pass@postgres:5432/db</code>. O Docker resolve o DNS internamente na rede bridge.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">3. Commitar o arquivo .env com segredos</div>
+        <p>O <code>.env</code> contém senhas e tokens e <strong>nunca deve ir para o Git</strong>. Adicione ao <code>.gitignore</code> imediatamente. Crie um <code>.env.example</code> com os nomes das variáveis mas sem valores — esse arquivo vai para o Git e serve como documentação.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">4. Expor porta do banco de dados em produção</div>
+        <p>Em produção, bancos de dados <strong>nunca devem ter <code>ports:</code> publicadas</strong>. <code>ports: ["5432:5432"]</code> expõe o banco para qualquer processo no host e, dependendo das configurações de rede, para a internet. Deixe o banco acessível apenas via rede interna do Compose.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">5. docker compose down -v acidentalmente</div>
+        <p>O flag <code>-v</code> no <code>docker compose down -v</code> remove todos os volumes nomeados — incluindo os dados do banco de dados. Em produção, isso significa perda de dados irreversível. Sempre faça backup antes de usar <code>down -v</code> e prefira <code>docker compose down</code> (sem <code>-v</code>) para operações rotineiras.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">6. Usar bind mounts em produção</div>
+        <p>Bind mounts (<code>- ./app:/app</code>) são ótimos para desenvolvimento com hot reload, mas não devem ser usados em produção — o container passa a depender de um path específico do host, quebrando a portabilidade. Em produção, o código deve estar dentro da imagem, não montado do host.</p>
+      </div>
+    </div>
+
+    <!-- 13. TABELA DE REFERÊNCIA -->
+    <div class="section">
+      <div class="section-label">// REFERÊNCIA</div>
+      <h2>Comandos Compose — cheat sheet completo</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Comando</th><th>O que faz</th><th>Flag útil</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>docker compose up</code></td><td>Sobe todos os serviços (foreground)</td><td><code>-d</code> (background), <code>--build</code> (rebuild)</td></tr>
+            <tr><td><code>docker compose down</code></td><td>Para e remove containers e rede</td><td><code>-v</code> (remove volumes — ⚠️)</td></tr>
+            <tr><td><code>docker compose ps</code></td><td>Status de todos os serviços</td><td><code>-a</code> (inclui parados)</td></tr>
+            <tr><td><code>docker compose logs</code></td><td>Logs de todos os serviços</td><td><code>-f</code> (follow), <code>--tail=50</code></td></tr>
+            <tr><td><code>docker compose exec</code></td><td>Executa comando num container rodando</td><td><code>-it</code> (interativo)</td></tr>
+            <tr><td><code>docker compose run</code></td><td>Cria e executa um container one-off</td><td><code>--rm</code> (remove após)</td></tr>
+            <tr><td><code>docker compose build</code></td><td>Reconstrói as imagens</td><td><code>--no-cache</code></td></tr>
+            <tr><td><code>docker compose pull</code></td><td>Baixa versões mais recentes das imagens</td><td>—</td></tr>
+            <tr><td><code>docker compose config</code></td><td>Mostra a config merged e interpolada</td><td>Útil para debug de variáveis</td></tr>
+            <tr><td><code>docker compose restart</code></td><td>Reinicia um ou todos os serviços</td><td><code>[service]</code> para um serviço</td></tr>
+            <tr><td><code>docker compose stop</code></td><td>Para os containers sem remover</td><td>Para pausar sem destruir</td></tr>
+            <tr><td><code>docker compose start</code></td><td>Inicia containers já criados</td><td>Após <code>stop</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 14. VÍDEOS -->
+    <div class="section">
+      <div class="section-label">// CURADORIA</div>
+      <h2>Vídeos Recomendados</h2>
+      <div class="video-grid">
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Docker Compose em 12 Minutos</div>
+            <div class="video-channel">Fireship · ~12 min</div>
+            <div class="video-why">Por que assistir: O melhor overview de Docker Compose — mostra um Compose real com múltiplos serviços, redes e volumes de forma visual e concisa. Perfeito para solidificar os conceitos desta aula.</div>
+            <a href="https://www.youtube.com/watch?v=HG6yIjZapSA" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Docker Compose Tutorial — TechWorld with Nana</div>
+            <div class="video-channel">TechWorld with Nana · ~1h</div>
+            <div class="video-why">Por que assistir: Cobre Docker Compose de forma completa e didática — desde a instalação até um projeto real com Node.js, MongoDB e networking. Um dos melhores tutoriais disponíveis.</div>
+            <a href="https://www.youtube.com/watch?v=3c-iBn73dDE" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Docker Networking Crash Course</div>
+            <div class="video-channel">NetworkChuck · ~30 min</div>
+            <div class="video-why">Por que assistir: Explica redes Docker de forma visual e hands-on — bridge, host, overlay — com experimentos reais no terminal. Essencial para entender por que containers se comunicam pelo nome do serviço.</div>
+            <a href="https://www.youtube.com/watch?v=bKFMS5C4CG0" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Docker Compose para Desenvolvimento — Dev/Prod Parity</div>
+            <div class="video-channel">Bret Fisher Docker and DevOps · ~45 min</div>
+            <div class="video-why">Por que assistir: Mostra o padrão override files para dev/prod com exemplos reais de projetos, variáveis de ambiente seguras e melhores práticas de Compose para equipes. Nível avançado.</div>
+            <a href="https://www.youtube.com/watch?v=mnrGZIzEhM4" target="_blank" rel="noopener noreferrer">Assistir →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 15. GLOSSÁRIO -->
+    <div class="section">
+      <div class="section-label">// GLOSSÁRIO</div>
+      <h2>Termos desta Aula</h2>
+      <div class="glossary-item">
+        <div class="glossary-term">docker-compose.yml</div>
+        <div class="glossary-def">Arquivo YAML declarativo que define todos os serviços, redes e volumes de uma aplicação multi-container. É o "contrato de ambiente" do projeto.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Service (Serviço)</div>
+        <div class="glossary-def">No contexto do Compose, um serviço é a definição de um container: qual imagem usa, quais variáveis recebe, a quais redes pertence. Um serviço pode ter múltiplas réplicas.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Bridge Network</div>
+        <div class="glossary-def">Rede privada virtual criada automaticamente pelo Compose. Containers na mesma rede se comunicam pelo nome do serviço como hostname (DNS interno). Isolada da rede do host.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Named Volume</div>
+        <div class="glossary-def">Volume gerenciado pelo Docker com um nome explícito. Persiste entre <code>docker compose down</code> e <code>up</code>. Os dados ficam em <code>/var/lib/docker/volumes/</code> no host.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Bind Mount</div>
+        <div class="glossary-def">Mapeamento direto entre uma pasta do host e um caminho dentro do container. Mudanças nos arquivos do host refletem imediatamente no container (hot reload). Ideal para desenvolvimento.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">depends_on</div>
+        <div class="glossary-def">Diretiva que controla a ordem de inicialização dos serviços. Com <code>condition: service_healthy</code>, aguarda o healthcheck do serviço dependido passar antes de iniciar.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">profiles</div>
+        <div class="glossary-def">Mecanismo para marcar serviços opcionais que só são iniciados quando o profile é explicitamente ativado com <code>--profile nome</code>. Útil para serviços de produção ou debugging.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Override file</div>
+        <div class="glossary-def">Arquivo <code>docker-compose.override.yml</code> que é automaticamente merged com o Compose principal. Permite configurações diferentes por ambiente sem duplicar o arquivo base.</div>
+      </div>
+    </div>
+
+    <!-- CHECKPOINT -->
+    <div class="section">
+      <div class="checkpoint">
+        <h3>🏁 Checkpoint — Desafio Final</h3>
+        <p>Crie uma stack Docker Compose completa para uma aplicação de sua escolha com <strong>pelo menos três serviços</strong> que se comunicam entre si:</p>
+        <ul>
+          <li>Um serviço de aplicação (Python/Node/qualquer linguagem) com Dockerfile próprio</li>
+          <li>Um banco de dados (PostgreSQL ou MySQL) com volume nomeado para persistência</li>
+          <li>Um serviço de cache (Redis) ou outro serviço de suporte</li>
+          <li><code>depends_on</code> com <code>condition: service_healthy</code> e healthchecks nos serviços dependidos</li>
+          <li>Variáveis de ambiente carregadas via <code>.env</code> (com <code>.env.example</code> no Git)</li>
+          <li>Duas redes separadas: uma pública (api + proxy) e uma privada (api + db + cache)</li>
+          <li>Comprove que o banco <strong>não</strong> está acessível de fora da rede backend</li>
+        </ul>
+        <p>Bônus: crie um <code>docker-compose.override.yml</code> com bind mounts para hot reload em desenvolvimento e portas expostas do banco para uso com DBeaver ou pgAdmin.</p>
+        <div class="checkpoint-hint">💬 Dica: use <code>docker compose config</code> para ver o arquivo Compose final com todas as variáveis interpoladas — é o melhor jeito de debugar problemas com <code>.env</code>. E <code>docker network inspect compose-demo_backend</code> para ver todos os containers conectados a cada rede.</div>
+      </div>
+    </div>
+
+    <!-- PRÓXIMOS PASSOS -->
+    <div class="section">
+      <div class="section-label">// PRÓXIMA AULA</div>
+      <h2>O que vem a seguir?</h2>
+      <p style="margin-bottom:20px;">Com Docker dominado — imagens, Dockerfiles e Compose — estamos prontos para fechar o loop de desenvolvimento com automação. O GitHub Actions permite que toda vez que você faz push de código, testes rodem automaticamente, a imagem seja buildada e o deploy aconteça sem intervenção manual. É o CI/CD que transforma uma ferramenta de colaboração num pipeline de entrega contínua.</p>
+      <a href="gh-05-actions-cicd.html" class="next-card">
+        <div>
+          <div class="next-card-label">Próxima Aula • 🐙 GitHub</div>
+          <div class="next-card-title">GitHub Actions — CI/CD Completo</div>
+        </div>
+        <div class="next-arrow">→</div>
+      </a>
+    </div>
+
+  </div>
+
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+    document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+
+    const bar = document.getElementById('progressBar');
+    window.addEventListener('scroll', () => {
+      const scrollTop = document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const progress = (scrollTop / scrollHeight) * 100;
+      bar.style.width = progress + '%';
+    });
+  </script>
+</body>
+</html>

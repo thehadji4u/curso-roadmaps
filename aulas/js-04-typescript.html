@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TypeScript — Tipos, Interfaces & Generics · Aula 23</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #f59e0b;
+      --accent-dim: rgba(245,158,11,0.15);
+      --accent-border: rgba(245,158,11,0.35);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #fbbf24); width: 0%; transition: width 0.1s; }
+
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; cursor: default; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #fbbf24; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.08); border-color: var(--success); }
+    .callout-tip .callout-title { color: var(--success); }
+    .callout-danger { background: rgba(239,68,68,0.08); border-color: var(--danger); }
+    .callout-danger .callout-title { color: var(--danger); }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(88,166,255,0.2); color: #79c0ff; }
+    .badge-purple { background: rgba(168,85,247,0.2); color: #c084fc; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+    .pillar-badge { font-size: 11px; padding: 3px 10px; border-radius: 4px; font-weight: 600; }
+
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-info a { font-size: 12px; color: var(--accent); text-decoration: none; }
+    .video-info a:hover { text-decoration: underline; }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(251,191,36,0.04)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(245,158,11,0.06); border-radius: 6px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; }
+
+    .glossary-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .glossary-term { color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+    .glossary-def { color: var(--muted); font-size: 13px; }
+
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #fbbf24; }
+
+    /* Terminal */
+    .terminal { background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .terminal-bar { background: #1a1a1a; padding: 8px 14px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ef4444; } .dot-yellow { background: #f59e0b; } .dot-green { background: #10b981; }
+    .terminal-title { font-size: 11px; color: #555; margin-left: 6px; }
+    .terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; }
+    .t-prompt { color: #10b981; } .t-cmd { color: #e8e8f0; } .t-out { color: #8585a8; } .t-err { color: #f87171; } .t-comment { color: #444; font-style: italic; }
+
+    /* Type comparison boxes */
+    .type-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+    @media (max-width: 640px) { .type-compare { grid-template-columns: 1fr; } }
+    .type-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .type-box-header { padding: 10px 16px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .type-box-header.bad { background: rgba(239,68,68,0.12); color: #f87171; border-bottom: 1px solid rgba(239,68,68,0.2); }
+    .type-box-header.good { background: rgba(16,185,129,0.12); color: #34d399; border-bottom: 1px solid rgba(16,185,129,0.2); }
+    .type-box pre { margin: 0; border: none; border-radius: 0; }
+
+    /* Utility type card grid */
+    .utility-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; margin: 20px 0; }
+    .utility-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; transition: border-color 0.2s; }
+    .utility-card:hover { border-color: var(--accent-border); }
+    .utility-name { font-weight: 700; color: var(--accent); font-size: 14px; margin-bottom: 4px; font-family: 'JetBrains Mono', monospace; }
+    .utility-desc { color: var(--muted); font-size: 12px; margin-bottom: 8px; line-height: 1.6; }
+    .utility-example { font-size: 11px; color: #79c0ff; font-family: 'JetBrains Mono', monospace; background: rgba(255,255,255,0.04); padding: 4px 8px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar"></div>
+  </div>
+
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="n8n-02-nodes-logica.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">⚡ JavaScript</span> · Aula 23 / 50
+      </div>
+      <a href="html-05-tooling.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>⚡ JavaScript</span>
+        <span class="hero-badge">Aula 23</span>
+      </div>
+      <h1>TypeScript — Tipos, Interfaces & Generics</h1>
+      <div class="hero-meta">
+        <span>⏱ ~55 min de leitura</span>
+        <span>🎯 Intermediário–Avançado</span>
+        <span>🔧 Hands-on incluído</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">tipos primitivos</span>
+        <span class="tag accent">interfaces</span>
+        <span class="tag accent">type aliases</span>
+        <span class="tag accent">generics</span>
+        <span class="tag accent">strict mode</span>
+        <span class="tag accent">utility types</span>
+        <span class="tag accent">decorators</span>
+        <span class="tag">union & intersection</span>
+        <span class="tag">narrowing</span>
+        <span class="tag">tsconfig</span>
+      </div>
+    </div>
+
+    <!-- 1. POR QUE IMPORTA -->
+    <div class="section">
+      <div class="section-label">// MOTIVAÇÃO</div>
+      <h2>Por que isso importa?</h2>
+      <p>
+        JavaScript é dinâmico e flexível — o que também significa que é fácil cometer erros silenciosos que só aparecem em produção. TypeScript é um <strong>superset de JavaScript com tipagem estática</strong>: você escreve JS com anotações de tipo extras, e o compilador (<code>tsc</code>) captura erros <em>antes mesmo de rodar o código</em>.
+      </p>
+      <p>
+        Em 2025, TypeScript não é mais opcional em projetos sérios. React, Vue, Angular, Next.js, NestJS, Prisma — todos adotaram TypeScript como padrão. Entender tipos, interfaces e generics é o que separa alguém que "usa TypeScript" de alguém que <em>aproveita TypeScript de verdade</em>.
+      </p>
+      <div class="callout callout-info">
+        <div class="callout-title">💼 Por que um engenheiro sênior domina TypeScript profundamente</div>
+        Sêniors usam TypeScript como documentação executável. Quando você define um tipo <code>Pedido</code>, qualquer colega (ou você no futuro) sabe exatamente quais campos existem, quais são opcionais e quais os tipos de cada valor — sem precisar ler a implementação. Generics eliminam duplicação de lógica sem sacrificar a segurança de tipos. Utility types permitem transformar tipos existentes em variantes sem repetir código. É produtividade real, não apenas burocracia.
+      </div>
+    </div>
+
+    <!-- 2. ANALOGIA -->
+    <div class="section">
+      <div class="section-label">// ANALOGIA</div>
+      <h2>Antes do código: uma analogia</h2>
+      <div class="analogy-card">
+        <div class="analogy-label">🏛️ Mundo Real → Tecnologia</div>
+        <div class="analogy-text">
+          Imagine um <strong>contrato jurídico entre partes</strong>. Um contrato em linguagem natural (JavaScript) pode ser ambíguo — "o vendedor entregará o produto" sem especificar qual produto, em que formato, ou em quanto tempo. Já um contrato tipado (TypeScript) é mais parecido com um <em>formulário padronizado</em>: cada campo tem um nome, um tipo de dado esperado (data, valor numérico, string), e campos obrigatórios x opcionais são marcados explicitamente.
+          <br><br>
+          <strong>Generics</strong> são como cláusulas contratuais reutilizáveis: "A Parte A entregará um <em>item do tipo T</em> à Parte B" — onde T pode ser preenchido como "carro", "imóvel" ou "serviço" dependendo do contrato específico.
+        </div>
+        <div class="analogy-mapping">
+          <span class="analogy-real">📝 Contrato com campos bem definidos</span>
+          <span class="analogy-tech">→ Interface / Type alias</span>
+          <span class="analogy-real">🔢 Campo obrigatório vs campo opcional</span>
+          <span class="analogy-tech">→ <code>nome: string</code> vs <code>apelido?: string</code></span>
+          <span class="analogy-real">📋 Cláusula reutilizável com variável</span>
+          <span class="analogy-tech">→ Generic <code>&lt;T&gt;</code></span>
+          <span class="analogy-real">🔍 Revisor que valida antes de assinar</span>
+          <span class="analogy-tech">→ Compilador TypeScript (<code>tsc</code>)</span>
+          <span class="analogy-real">⚙️ Formulário com regras ultra-rígidas</span>
+          <span class="analogy-tech">→ <code>strict: true</code> no tsconfig</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. FUNDAMENTOS: TIPOS PRIMITIVOS E BÁSICOS -->
+    <div class="section">
+      <div class="section-label">// FUNDAMENTO 1</div>
+      <h2>Tipos primitivos & anotações básicas</h2>
+      <p>
+        TypeScript infere tipos automaticamente na maioria dos casos. Você só precisa anotar explicitamente onde a inferência não é possível — como parâmetros de funções, retornos ambíguos e declarações sem valor inicial.
+      </p>
+
+      <div class="type-compare">
+        <div class="type-box">
+          <div class="type-box-header bad">❌ JavaScript — erros silenciosos</div>
+          <pre><code class="language-javascript">function calcularDesconto(preco, pct) {
+  return preco - (preco * pct);
+}
+
+// Chamadas "válidas" mas erradas:
+calcularDesconto("100", 0.1);  // "100" - 10 = NaN
+calcularDesconto(100);         // 100 - NaN = NaN
+// Erro só aparece em runtime!</code></pre>
+        </div>
+        <div class="type-box">
+          <div class="type-box-header good">✅ TypeScript — erro em tempo de compilação</div>
+          <pre><code class="language-typescript">function calcularDesconto(
+  preco: number,
+  pct: number
+): number {
+  return preco - (preco * pct);
+}
+
+calcularDesconto("100", 0.1);
+// Erro: Argument of type 'string' is not
+// assignable to parameter of type 'number'
+calcularDesconto(100);
+// Erro: Expected 2 arguments, but got 1</code></pre>
+        </div>
+      </div>
+
+      <h3>Tipos primitivos disponíveis</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Tipo TS</th><th>Valor exemplo</th><th>Observação</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>string</code></td><td><code>"olá"</code>, <code>'mundo'</code>, <code>`template`</code></td><td>Inclui template literals</td></tr>
+            <tr><td><code>number</code></td><td><code>42</code>, <code>3.14</code>, <code>NaN</code>, <code>Infinity</code></td><td>Não há <code>int</code> separado</td></tr>
+            <tr><td><code>boolean</code></td><td><code>true</code>, <code>false</code></td><td>—</td></tr>
+            <tr><td><code>null</code></td><td><code>null</code></td><td>Com strict: <strong>não</strong> é atribuível a outros tipos</td></tr>
+            <tr><td><code>undefined</code></td><td><code>undefined</code></td><td>Idem — precisa de union: <code>string | undefined</code></td></tr>
+            <tr><td><code>symbol</code></td><td><code>Symbol('id')</code></td><td>Identificadores únicos</td></tr>
+            <tr><td><code>bigint</code></td><td><code>9007199254740991n</code></td><td>Números inteiros grandes</td></tr>
+            <tr><td><code>any</code></td><td>Qualquer coisa</td><td>⚠️ Desativa verificação — use só como último recurso</td></tr>
+            <tr><td><code>unknown</code></td><td>Qualquer coisa</td><td>✅ Alternativa segura ao <code>any</code> — força verificação antes de usar</td></tr>
+            <tr><td><code>never</code></td><td>Nunca retorna</td><td>Funções que lançam exceção ou loops infinitos</td></tr>
+            <tr><td><code>void</code></td><td><code>undefined</code></td><td>Retorno de funções que não retornam valor</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="code-label">Tipos especiais — arrays, tuples e enums</div>
+      <pre><code class="language-typescript">// Arrays
+const nomes: string[] = ["Ana", "Bruno"];
+const ids: Array<number> = [1, 2, 3];    // sintaxe alternativa
+
+// Tuple — array com tamanho e tipos fixos por posição
+const coordenada: [number, number] = [23.5, -46.6];
+const entrada: [string, number, boolean] = ["João", 25, true];
+
+// Enum — conjunto nomeado de constantes
+enum Status {
+  Pendente = "PENDENTE",
+  Aprovado = "APROVADO",
+  Rejeitado = "REJEITADO"
+}
+
+const meuStatus: Status = Status.Aprovado;
+console.log(meuStatus); // "APROVADO"
+
+// Union types — pode ser um OU outro
+type ID = string | number;
+const idUsuario: ID = "abc123";  // ok
+const idPedido: ID = 42;         // ok também
+
+// Literal types — valor exato como tipo
+type Direcao = "norte" | "sul" | "leste" | "oeste";
+const mover = (d: Direcao) => console.log(d);
+mover("norte");   // ok
+mover("diagonal"); // Erro: não está no union</code></pre>
+    </div>
+
+    <!-- 4. INTERFACES & TYPE ALIASES -->
+    <div class="section">
+      <div class="section-label">// FUNDAMENTO 2</div>
+      <h2>Interfaces & Type Aliases</h2>
+      <p>
+        Ambos definem <strong>contratos de forma</strong> para objetos. A diferença principal é que interfaces podem ser estendidas (merging declaration) e são mais idiomáticas para OOP, enquanto type aliases são mais flexíveis para unions, intersections e tipos computados.
+      </p>
+
+      <div class="grid-2">
+        <div class="card-mini" style="border-color: var(--accent-border);">
+          <span class="pillar-badge" style="background:var(--accent-dim);color:var(--accent);">interface</span>
+          <h4>Melhor para objetos e classes</h4>
+          <p>Permite <em>declaration merging</em> — você pode declarar a mesma interface em dois lugares e elas se fundem. Padrão do TypeScript para contratos de objetos. Suporta <code>extends</code> e <code>implements</code>.</p>
+        </div>
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(255,255,255,0.08);color:var(--muted);">type</span>
+          <h4>Melhor para unions e transformações</h4>
+          <p>Mais expressivo: pode representar unions, intersections, tipos condicionais e mapeados. Não permite declaration merging. Prefira para aliases de tipos primitivos ou unions complexas.</p>
+        </div>
+      </div>
+
+      <div class="code-label">Interface — modelando entidades de domínio</div>
+      <pre><code class="language-typescript">// Interface básica
+interface Usuario {
+  id: number;
+  nome: string;
+  email: string;
+  avatar?: string;          // campo opcional (? = pode ser undefined)
+  readonly criadoEm: Date;  // readonly = não pode ser reatribuído após criação
+}
+
+// Herança com extends
+interface Admin extends Usuario {
+  permissoes: string[];
+  nivel: 1 | 2 | 3;  // literal union
+}
+
+// Implementação em classe
+class UsuarioService implements Usuario {
+  id = 1;
+  nome = "Ana";
+  email = "ana@exemplo.com";
+  readonly criadoEm = new Date();
+
+  getNomeCompleto(): string {
+    return this.nome;
+  }
+}
+
+// Interface para funções
+interface Transformador<T, R> {
+  (input: T): R;
+}
+
+const paraMaiusculo: Transformador<string, string> = (s) => s.toUpperCase();</code></pre>
+
+      <div class="code-label">Type alias — unions, intersections e tipos complexos</div>
+      <pre><code class="language-typescript">// Union type complexo
+type Resultado<T> =
+  | { sucesso: true; dados: T }
+  | { sucesso: false; erro: string };
+
+// Uso:
+function buscarUsuario(id: number): Resultado<Usuario> {
+  if (id <= 0) return { sucesso: false, erro: "ID inválido" };
+  return { sucesso: true, dados: { id, nome: "Ana", email: "ana@ex.com", criadoEm: new Date() } };
+}
+
+const res = buscarUsuario(1);
+if (res.sucesso) {
+  console.log(res.dados.nome); // TypeScript sabe que dados existe aqui
+} else {
+  console.log(res.erro);       // TypeScript sabe que erro existe aqui
+}
+
+// Intersection type — combina múltiplos tipos em um
+type Auditavel = { criadoPor: string; criadoEm: Date; };
+type Excluivel = { excluido: boolean; excluidoEm?: Date; };
+type EntidadeCompleta = Usuario & Auditavel & Excluivel;
+
+// Tipo mapeado — transforma cada propriedade
+type Opcional<T> = { [K in keyof T]?: T[K] };
+type UsuarioOpcional = Opcional<Usuario>;  // todos os campos opcionais</code></pre>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">Hierarquia de tipos — herança e composição</div>
+        <div class="mermaid">
+classDiagram
+    class Entidade {
+        +id: number
+        +criadoEm: Date
+    }
+    class Usuario {
+        +nome: string
+        +email: string
+        +avatar?: string
+    }
+    class Admin {
+        +permissoes: string[]
+        +nivel: 1|2|3
+    }
+    class SuperAdmin {
+        +acessoTotal: boolean
+    }
+    Entidade <|-- Usuario : extends
+    Usuario <|-- Admin : extends
+    Admin <|-- SuperAdmin : extends
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. GENERICS -->
+    <div class="section">
+      <div class="section-label">// FUNDAMENTO 3</div>
+      <h2>Generics — código reutilizável com segurança de tipos</h2>
+      <p>
+        Generics permitem escrever funções, classes e interfaces que funcionam com <em>qualquer tipo</em>, mantendo a segurança estática. Em vez de usar <code>any</code> (que perde a tipagem) ou duplicar código para cada tipo, você usa um <strong>parâmetro de tipo</strong> (<code>T</code>).
+      </p>
+
+      <div class="code-label">O problema que generics resolvem</div>
+      <pre><code class="language-typescript">// ❌ SEM generics — você escolhe entre duplicar ou perder tipos:
+
+function primeiroElemento_string(arr: string[]): string {
+  return arr[0];
+}
+function primeiroElemento_number(arr: number[]): number {
+  return arr[0];
+}
+// Duplicação infinita para cada tipo...
+
+function primeiroElemento_any(arr: any[]): any {
+  return arr[0];  // Funciona, mas perde toda a tipagem!
+}
+
+// ✅ COM generics — um só código, tipos preservados:
+
+function primeiroElemento<T>(arr: T[]): T | undefined {
+  return arr[0];
+}
+
+const s = primeiroElemento(["a", "b", "c"]);  // s: string
+const n = primeiroElemento([1, 2, 3]);         // n: number
+const b = primeiroElemento([true, false]);     // b: boolean
+// TypeScript infere T automaticamente!</code></pre>
+
+      <h3>Constraints — limitando o que T pode ser</h3>
+      <div class="code-label">Generic com constraint usando extends</div>
+      <pre><code class="language-typescript">// Constraint: T deve ter ao menos a propriedade "length"
+function logTamanho<T extends { length: number }>(item: T): T {
+  console.log(`Tamanho: ${item.length}`);
+  return item;
+}
+
+logTamanho("hello");        // ok — string tem .length
+logTamanho([1, 2, 3]);      // ok — array tem .length
+logTamanho({ length: 5 });  // ok — objeto com length explícito
+logTamanho(42);             // Erro: number não tem .length
+
+// Constraint com keyof — acesso seguro a propriedades
+function obterPropriedade<T, K extends keyof T>(obj: T, chave: K): T[K] {
+  return obj[chave];
+}
+
+const usuario = { id: 1, nome: "Ana", email: "ana@ex.com" };
+const nome = obterPropriedade(usuario, "nome");   // string — tipado!
+const id   = obterPropriedade(usuario, "id");     // number — tipado!
+obterPropriedade(usuario, "senha");               // Erro: "senha" não existe em tipo</code></pre>
+
+      <h3>Generics em interfaces e classes</h3>
+      <div class="code-label">Generic Repository — padrão usado em produção</div>
+      <pre><code class="language-typescript">// Interface genérica para repositórios de dados
+interface Repositorio<T extends { id: number }> {
+  buscarPorId(id: number): Promise<T | null>;
+  listar(filtro?: Partial<T>): Promise<T[]>;
+  salvar(item: Omit<T, "id">): Promise<T>;
+  atualizar(id: number, dados: Partial<T>): Promise<T>;
+  excluir(id: number): Promise<void>;
+}
+
+// Implementação concreta para Usuario
+class UsuarioRepositorio implements Repositorio<Usuario> {
+  private usuarios: Usuario[] = [];
+
+  async buscarPorId(id: number): Promise<Usuario | null> {
+    return this.usuarios.find(u => u.id === id) ?? null;
+  }
+
+  async listar(filtro?: Partial<Usuario>): Promise<Usuario[]> {
+    if (!filtro) return this.usuarios;
+    return this.usuarios.filter(u =>
+      Object.entries(filtro).every(([k, v]) => u[k as keyof Usuario] === v)
+    );
+  }
+
+  async salvar(dados: Omit<Usuario, "id">): Promise<Usuario> {
+    const novoId = Math.max(0, ...this.usuarios.map(u => u.id)) + 1;
+    const usuario = { id: novoId, ...dados };
+    this.usuarios.push(usuario);
+    return usuario;
+  }
+
+  async atualizar(id: number, dados: Partial<Usuario>): Promise<Usuario> {
+    const idx = this.usuarios.findIndex(u => u.id === id);
+    if (idx === -1) throw new Error(`Usuário ${id} não encontrado`);
+    this.usuarios[idx] = { ...this.usuarios[idx], ...dados };
+    return this.usuarios[idx];
+  }
+
+  async excluir(id: number): Promise<void> {
+    this.usuarios = this.usuarios.filter(u => u.id !== id);
+  }
+}</code></pre>
+    </div>
+
+    <!-- 6. STRICT MODE -->
+    <div class="section">
+      <div class="section-label">// FUNDAMENTO 4</div>
+      <h2>Strict Mode & tsconfig</h2>
+      <p>
+        O <strong>tsconfig.json</strong> é o arquivo de configuração do compilador TypeScript. A flag <code>"strict": true</code> habilita um conjunto de verificações que transformam TypeScript de "auxiliar opcional" em "guardião real" do código.
+      </p>
+
+      <div class="code-label">tsconfig.json recomendado para projetos novos</div>
+      <pre><code class="language-json">{
+  "compilerOptions": {
+    "target": "ES2022",           // versão JS de saída
+    "lib": ["ES2022", "DOM"],     // APIs disponíveis
+    "module": "commonjs",         // sistema de módulos (Node) ou "ESNext" (browser)
+    "moduleResolution": "node",
+    "outDir": "./dist",           // pasta de saída dos .js compilados
+    "rootDir": "./src",           // pasta raiz dos .ts fontes
+    "declaration": true,          // gera .d.ts junto com .js
+    "sourceMap": true,            // mapas para debug
+
+    // ===== STRICT MODE — habilita todas as flags abaixo =====
+    "strict": true,
+
+    // O que "strict: true" ativa:
+    // "noImplicitAny": true         → proíbe inferência de 'any'
+    // "strictNullChecks": true      → null/undefined não atribuíveis a outros tipos
+    // "strictFunctionTypes": true   → covariância/contravariância em funções
+    // "strictPropertyInitialization": true → propriedades de classe devem ser inicializadas
+    // "noImplicitThis": true        → 'this' precisa ser tipado explicitamente
+    // "alwaysStrict": true          → 'use strict' em todos os arquivos gerados
+
+    // Extras recomendados:
+    "noUnusedLocals": true,       // avisa sobre variáveis não usadas
+    "noUnusedParameters": true,   // avisa sobre parâmetros não usados
+    "noImplicitReturns": true,    // toda branch de função deve ter return
+    "exactOptionalPropertyTypes": true  // campo opcional ≠ campo que aceita undefined
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}</code></pre>
+
+      <h3>strictNullChecks — a flag mais importante</h3>
+      <div class="type-compare">
+        <div class="type-box">
+          <div class="type-box-header bad">❌ Sem strictNullChecks</div>
+          <pre><code class="language-typescript">// null e undefined são subtipos de tudo
+let nome: string = null;  // ok! bug silencioso
+nome.toUpperCase();       // TypeError em runtime</code></pre>
+        </div>
+        <div class="type-box">
+          <div class="type-box-header good">✅ Com strictNullChecks</div>
+          <pre><code class="language-typescript">let nome: string = null;  // Erro em compilação!
+let nomeOpcional: string | null = null; // ok, union explícito
+
+// Força você a tratar o null:
+if (nomeOpcional !== null) {
+  nomeOpcional.toUpperCase(); // seguro
+}</code></pre>
+        </div>
+      </div>
+
+      <h3>Type Narrowing — afunilamento de tipos</h3>
+      <p>Quando você tem um union type, o TypeScript precisa saber qual ramo está ativo. <em>Narrowing</em> é o processo de afunilamento dentro de blocos condicionais.</p>
+
+      <div class="code-label">Técnicas de narrowing</div>
+      <pre><code class="language-typescript">type Forma = { tipo: "circulo"; raio: number }
+           | { tipo: "retangulo"; largura: number; altura: number };
+
+function calcularArea(forma: Forma): number {
+  // Narrowing por discriminant property
+  switch (forma.tipo) {
+    case "circulo":
+      return Math.PI * forma.raio ** 2;  // TS sabe que raio existe
+    case "retangulo":
+      return forma.largura * forma.altura; // TS sabe que largura e altura existem
+  }
+}
+
+// typeof narrowing
+function processar(valor: string | number) {
+  if (typeof valor === "string") {
+    return valor.toUpperCase();  // string aqui
+  }
+  return valor.toFixed(2);       // number aqui
+}
+
+// instanceof narrowing
+function formatar(data: Date | string): string {
+  if (data instanceof Date) {
+    return data.toLocaleDateString("pt-BR");
+  }
+  return data; // string aqui
+}
+
+// Assertion function — afunilar com erro explícito
+function assertString(val: unknown): asserts val is string {
+  if (typeof val !== "string") throw new Error(`Expected string, got ${typeof val}`);
+}
+
+const input: unknown = "hello";
+assertString(input);
+console.log(input.toUpperCase()); // seguro após a assertion</code></pre>
+    </div>
+
+    <!-- 7. UTILITY TYPES -->
+    <div class="section">
+      <div class="section-label">// FUNDAMENTO 5</div>
+      <h2>Utility Types — transformar tipos sem repetição</h2>
+      <p>
+        TypeScript vem com uma biblioteca de <strong>tipos utilitários embutidos</strong> que permitem derivar novos tipos a partir de existentes. São indispensáveis para evitar duplicação e manter o código DRY.
+      </p>
+
+      <div class="utility-grid">
+        <div class="utility-card">
+          <div class="utility-name">Partial&lt;T&gt;</div>
+          <div class="utility-desc">Torna todos os campos de T opcionais. Ideal para payloads de atualização (PATCH).</div>
+          <div class="utility-example">Partial&lt;Usuario&gt; → todos os campos com ?</div>
+        </div>
+        <div class="utility-card">
+          <div class="utility-name">Required&lt;T&gt;</div>
+          <div class="utility-desc">Torna todos os campos de T obrigatórios. Oposto de Partial.</div>
+          <div class="utility-example">Required&lt;Config&gt; → remove todos os ?</div>
+        </div>
+        <div class="utility-card">
+          <div class="utility-name">Readonly&lt;T&gt;</div>
+          <div class="utility-desc">Torna todos os campos de T imutáveis (readonly). Útil para estado em Redux/Zustand.</div>
+          <div class="utility-example">Readonly&lt;Estado&gt; → sem reatribuição</div>
+        </div>
+        <div class="utility-card">
+          <div class="utility-name">Pick&lt;T, K&gt;</div>
+          <div class="utility-desc">Cria um tipo com apenas os campos K de T. Projeção de campos.</div>
+          <div class="utility-example">Pick&lt;Usuario, "id"|"nome"&gt;</div>
+        </div>
+        <div class="utility-card">
+          <div class="utility-name">Omit&lt;T, K&gt;</div>
+          <div class="utility-desc">Cria um tipo sem os campos K de T. Inverso de Pick.</div>
+          <div class="utility-example">Omit&lt;Usuario, "senha"&gt;</div>
+        </div>
+        <div class="utility-card">
+          <div class="utility-name">Record&lt;K, V&gt;</div>
+          <div class="utility-desc">Tipo de objeto com chaves K e valores V. Substitui <code>{ [key: string]: V }</code>.</div>
+          <div class="utility-example">Record&lt;string, number&gt;</div>
+        </div>
+        <div class="utility-card">
+          <div class="utility-name">Exclude&lt;T, U&gt;</div>
+          <div class="utility-desc">Remove da union T os tipos que são atribuíveis a U.</div>
+          <div class="utility-example">Exclude&lt;"a"|"b"|"c", "b"&gt; → "a"|"c"</div>
+        </div>
+        <div class="utility-card">
+          <div class="utility-name">Extract&lt;T, U&gt;</div>
+          <div class="utility-desc">Mantém na union T apenas os tipos atribuíveis a U. Inverso de Exclude.</div>
+          <div class="utility-example">Extract&lt;"a"|"b"|1, string&gt; → "a"|"b"</div>
+        </div>
+        <div class="utility-card">
+          <div class="utility-name">NonNullable&lt;T&gt;</div>
+          <div class="utility-desc">Remove <code>null</code> e <code>undefined</code> de T.</div>
+          <div class="utility-example">NonNullable&lt;string|null&gt; → string</div>
+        </div>
+        <div class="utility-card">
+          <div class="utility-name">ReturnType&lt;F&gt;</div>
+          <div class="utility-desc">Extrai o tipo de retorno de uma função F.</div>
+          <div class="utility-example">ReturnType&lt;typeof fetch&gt;</div>
+        </div>
+        <div class="utility-card">
+          <div class="utility-name">Parameters&lt;F&gt;</div>
+          <div class="utility-desc">Extrai os parâmetros de uma função como tuple.</div>
+          <div class="utility-example">Parameters&lt;typeof calcularDesconto&gt;</div>
+        </div>
+        <div class="utility-card">
+          <div class="utility-name">Awaited&lt;T&gt;</div>
+          <div class="utility-desc">Desembrulha um Promise&lt;T&gt; para obter T. Essencial com async/await.</div>
+          <div class="utility-example">Awaited&lt;Promise&lt;Usuario&gt;&gt; → Usuario</div>
+        </div>
+      </div>
+
+      <div class="code-label">Utility types em uso real — API de cadastro de usuário</div>
+      <pre><code class="language-typescript">interface Usuario {
+  id: number;
+  nome: string;
+  email: string;
+  senha: string;
+  avatar?: string;
+  readonly criadoEm: Date;
+  readonly atualizadoEm: Date;
+}
+
+// Para criar: sem id e campos readonly (gerados pelo servidor)
+type CriarUsuarioDTO = Omit<Usuario, "id" | "criadoEm" | "atualizadoEm">;
+
+// Para atualizar: campos opcionais, sem id e campos sensíveis
+type AtualizarUsuarioDTO = Partial<Omit<Usuario, "id" | "senha" | "criadoEm" | "atualizadoEm">>;
+
+// Para retornar na API: sem senha
+type UsuarioPublico = Omit<Usuario, "senha">;
+
+// Para o perfil público (apenas campos não-sensíveis)
+type UsuarioPerfil = Pick<Usuario, "id" | "nome" | "avatar">;
+
+// Usar:
+async function criarUsuario(dados: CriarUsuarioDTO): Promise<UsuarioPublico> {
+  // dados.senha existe ✓, dados.id não existe ✓
+  const usuario = await db.usuarios.create(dados);
+  const { senha, ...publico } = usuario;  // remove senha do retorno
+  return publico;
+}
+
+async function atualizarUsuario(
+  id: number,
+  dados: AtualizarUsuarioDTO
+): Promise<UsuarioPublico> {
+  // dados.senha não existe ✓ — não pode atualizar senha por aqui
+  return db.usuarios.update(id, dados);
+}</code></pre>
+    </div>
+
+    <!-- 8. DECORATORS -->
+    <div class="section">
+      <div class="section-label">// FUNDAMENTO 6</div>
+      <h2>Decorators — metaprogramação elegante</h2>
+      <p>
+        Decorators são uma proposta (agora no estágio 3 do ECMAScript) que TypeScript suporta há anos com a flag <code>experimentalDecorators</code>. São <strong>funções especiais que "decoram"</strong> classes, métodos, propriedades e parâmetros — adicionando comportamento de forma declarativa.
+      </p>
+
+      <div class="callout callout-info">
+        <div class="callout-title">💡 Onde você já viu decorators</div>
+        Se você usou <strong>NestJS</strong> (<code>@Controller</code>, <code>@Get</code>, <code>@Injectable</code>), <strong>TypeORM</strong> (<code>@Entity</code>, <code>@Column</code>), ou <strong>Angular</strong> (<code>@Component</code>, <code>@Input</code>) — já usou decorators. Eles são a cola que torna esses frameworks tão expressivos.
+      </div>
+
+      <div class="code-label">tsconfig — habilitar decorators</div>
+      <pre><code class="language-json">{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  }
+}</code></pre>
+
+      <div class="code-label">Criando e usando decorators</div>
+      <pre><code class="language-typescript">// ===== Class Decorator =====
+// Adiciona metadata ou modifica o construtor da classe
+function Singleton<T extends { new(...args: any[]): {} }>(Base: T) {
+  let instance: InstanceType<T>;
+  return class extends Base {
+    constructor(...args: any[]) {
+      if (instance) return instance;
+      super(...args);
+      instance = this as any;
+    }
+  };
+}
+
+@Singleton
+class ConfigService {
+  readonly ambiente = process.env.NODE_ENV || "development";
+}
+
+// ===== Method Decorator =====
+// Mede o tempo de execução de qualquer método
+function Cronometrar(
+  target: any,
+  nomeProp: string,
+  descriptor: PropertyDescriptor
+) {
+  const metodoOriginal = descriptor.value;
+  descriptor.value = async function (...args: any[]) {
+    const inicio = performance.now();
+    const resultado = await metodoOriginal.apply(this, args);
+    const fim = performance.now();
+    console.log(`${nomeProp} executou em ${(fim - inicio).toFixed(2)}ms`);
+    return resultado;
+  };
+  return descriptor;
+}
+
+// ===== Property Decorator =====
+// Valida que o valor é sempre positivo
+function Positivo(target: any, nomePropriedade: string) {
+  let valor: number;
+  Object.defineProperty(target, nomePropriedade, {
+    get: () => valor,
+    set: (novoValor: number) => {
+      if (novoValor < 0) throw new Error(`${nomePropriedade} deve ser positivo`);
+      valor = novoValor;
+    }
+  });
+}
+
+// ===== Uso combinado (estilo NestJS simplificado) =====
+class ProdutoService {
+  @Positivo
+  preco: number = 0;
+
+  @Cronometrar
+  async buscarProdutos(): Promise<string[]> {
+    await new Promise(r => setTimeout(r, 100)); // simula delay
+    return ["Produto A", "Produto B"];
+  }
+}
+
+const service = new ProdutoService();
+service.preco = 50;    // ok
+service.preco = -10;   // Erro: preco deve ser positivo
+await service.buscarProdutos(); // "buscarProdutos executou em 100.34ms"</code></pre>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Decorators experimentais vs Stage 3</div>
+        O TypeScript 5.0+ suporta decorators do Stage 3 (padrão ECMAScript), que têm API diferente dos <code>experimentalDecorators</code>. Frameworks como NestJS e Angular ainda usam os experimentais. Para novos projetos sem framework, use os Stage 3. Para projetos NestJS/Angular, siga a documentação do framework.
+      </div>
+    </div>
+
+    <!-- 9. HANDS-ON -->
+    <div class="section">
+      <div class="section-label">// HANDS-ON</div>
+      <h2>Passo a Passo: configurando TypeScript do zero</h2>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Instalar TypeScript e inicializar projeto</div>
+            <div class="step-desc">Crie uma pasta nova, inicialize o npm e instale o TypeScript como dependência de desenvolvimento.</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><div class="terminal-title">Terminal</div></div>
+              <div class="terminal-body">
+                <span class="t-prompt">$ </span><span class="t-cmd">mkdir ts-lab && cd ts-lab</span><br>
+                <span class="t-prompt">$ </span><span class="t-cmd">npm init -y</span><br>
+                <span class="t-prompt">$ </span><span class="t-cmd">npm install -D typescript tsx @types/node</span><br>
+                <span class="t-comment"># typescript → compilador; tsx → executa .ts diretamente (como ts-node, mais rápido)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Gerar tsconfig.json</div>
+            <div class="step-desc">Use o comando <code>tsc --init</code> para gerar um tsconfig com todas as opções comentadas, depois ajuste para o strict mode.</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><div class="terminal-title">Terminal</div></div>
+              <div class="terminal-body">
+                <span class="t-prompt">$ </span><span class="t-cmd">npx tsc --init</span><br>
+                <span class="t-out">Created a new tsconfig.json with TS5048</span><br>
+                <span class="t-comment"># Edite o tsconfig: target=ES2022, strict=true, outDir=dist, rootDir=src</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Criar src/index.ts com os conceitos da aula</div>
+            <div class="step-desc">Crie a pasta <code>src/</code> e o arquivo <code>index.ts</code>. Implemente uma mini-API de gerenciamento de tarefas usando interface, generics e utility types.</div>
+            <pre><code class="language-typescript">// src/index.ts
+interface Tarefa {
+  id: number;
+  titulo: string;
+  descricao?: string;
+  status: "pendente" | "em_progresso" | "concluida";
+  prioridade: 1 | 2 | 3;
+  readonly criadaEm: Date;
+}
+
+type CriarTarefaDTO = Omit<Tarefa, "id" | "criadaEm"> & { status?: Tarefa["status"] };
+type AtualizarTarefaDTO = Partial<Omit<Tarefa, "id" | "criadaEm">>;
+
+class RepositorioGenerico<T extends { id: number }> {
+  protected itens: T[] = [];
+
+  adicionar(item: Omit<T, "id"> & Record<string, any>): T {
+    const novoId = this.itens.length + 1;
+    const novo = { id: novoId, ...item } as T;
+    this.itens.push(novo);
+    return novo;
+  }
+
+  buscarPorId(id: number): T | undefined {
+    return this.itens.find(i => i.id === id);
+  }
+
+  listarTodos(): Readonly<T[]> {
+    return this.itens;
+  }
+}
+
+class TarefaRepositorio extends RepositorioGenerico<Tarefa> {
+  porStatus(status: Tarefa["status"]): Tarefa[] {
+    return this.itens.filter(t => t.status === status);
+  }
+}
+
+// Uso:
+const repo = new TarefaRepositorio();
+
+const t1 = repo.adicionar({
+  titulo: "Estudar TypeScript",
+  status: "em_progresso",
+  prioridade: 1,
+  criadaEm: new Date()
+});
+
+const t2 = repo.adicionar({
+  titulo: "Criar projeto prático",
+  descricao: "Aplicar todos os conceitos da aula",
+  status: "pendente",
+  prioridade: 2,
+  criadaEm: new Date()
+});
+
+console.log(repo.listarTodos());
+console.log(repo.porStatus("em_progresso"));</code></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Executar e compilar</div>
+            <div class="step-desc">Use <code>tsx</code> para executar diretamente ou <code>tsc</code> para compilar para JavaScript.</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><div class="terminal-title">Terminal</div></div>
+              <div class="terminal-body">
+                <span class="t-prompt">$ </span><span class="t-cmd">npx tsx src/index.ts</span><br>
+                <span class="t-out">[ { id: 1, titulo: 'Estudar TypeScript', status: 'em_progresso', ... } ]</span><br>
+                <span class="t-out">[ { id: 1, titulo: 'Estudar TypeScript', status: 'em_progresso', ... } ]</span><br>
+                <br>
+                <span class="t-comment"># Para compilar para JS:</span><br>
+                <span class="t-prompt">$ </span><span class="t-cmd">npx tsc</span><br>
+                <span class="t-out">Arquivos .js gerados em dist/</span><br>
+                <span class="t-prompt">$ </span><span class="t-cmd">node dist/index.js</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Provocar erros propositalmente e ver o compilador reagir</div>
+            <div class="step-desc">Tente atribuir um valor errado a <code>status</code>, passar uma string onde se espera number, ou omitir um campo obrigatório. Observe as mensagens de erro do <code>tsc</code> — essa é a experiência central do TypeScript.</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><div class="terminal-title">Erros propositais — aprendendo com o compilador</div></div>
+              <div class="terminal-body">
+                <span class="t-comment"># Tente: tarefa.status = "cancelada"</span><br>
+                <span class="t-err">error TS2322: Type '"cancelada"' is not assignable to type '"pendente" | "em_progresso" | "concluida"'</span><br>
+                <br>
+                <span class="t-comment"># Tente: tarefa.prioridade = 5</span><br>
+                <span class="t-err">error TS2322: Type '5' is not assignable to type '1 | 2 | 3'</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10. TABELA COMPARATIVA -->
+    <div class="section">
+      <div class="section-label">// COMPARATIVO</div>
+      <h2>Interface vs Type — quando usar cada um</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Critério</th><th>interface</th><th>type</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Modelar objetos e entidades</td>
+              <td><span class="badge badge-green">✅ Preferido</span></td>
+              <td><span class="badge badge-yellow">Funciona</span></td>
+            </tr>
+            <tr>
+              <td>Union types (<code>A | B</code>)</td>
+              <td><span class="badge badge-red">❌ Não suporta</span></td>
+              <td><span class="badge badge-green">✅ Necessário</span></td>
+            </tr>
+            <tr>
+              <td>Intersection (<code>A &amp; B</code>)</td>
+              <td><span class="badge badge-yellow">extends (verboso)</span></td>
+              <td><span class="badge badge-green">✅ Direto</span></td>
+            </tr>
+            <tr>
+              <td>Declaration merging</td>
+              <td><span class="badge badge-green">✅ Suporta</span></td>
+              <td><span class="badge badge-red">❌ Não suporta</span></td>
+            </tr>
+            <tr>
+              <td>Implementação em classe (<code>implements</code>)</td>
+              <td><span class="badge badge-green">✅ Idiomático</span></td>
+              <td><span class="badge badge-yellow">Funciona</span></td>
+            </tr>
+            <tr>
+              <td>Tipos mapeados e condicionais</td>
+              <td><span class="badge badge-red">❌ Limitado</span></td>
+              <td><span class="badge badge-green">✅ Pleno suporte</span></td>
+            </tr>
+            <tr>
+              <td>Extends de tipo primitivo</td>
+              <td><span class="badge badge-red">❌ Não suporta</span></td>
+              <td><span class="badge badge-green">✅ type ID = string | number</span></td>
+            </tr>
+            <tr>
+              <td>Erros de tipo mais legíveis</td>
+              <td><span class="badge badge-green">✅ Geralmente melhor</span></td>
+              <td><span class="badge badge-yellow">Pode ser verboso</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Regra prática de sêniors</div>
+        Use <code>interface</code> para modelar entidades de domínio (User, Product, Order) e contratos de classes. Use <code>type</code> para tudo que é composição, transformação ou não é um objeto simples. Quando tiver dúvida: <code>interface</code> é o padrão mais idiomático no ecossistema TypeScript.
+      </div>
+    </div>
+
+    <!-- 11. PITFALLS -->
+    <div class="section">
+      <div class="section-label">// ARMADILHAS</div>
+      <h2>Erros comuns a evitar</h2>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Usar any como atalho</div>
+        <code>any</code> desativa toda a verificação de tipos para aquela variável. É o "não me incomode, TypeScript" — e tira o principal benefício da linguagem. Se você precisa de um tipo flexível, use <code>unknown</code> (que força verificação antes do uso) ou <code>never</code> (para impossíveis). Ative <code>"noImplicitAny": true</code> no tsconfig para ser avisado automaticamente.
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Type assertion excessiva com "as"</div>
+        <code>valor as string</code> diz ao compilador "confie em mim, é string" — sem verificação real. Usada com excesso, cria a ilusão de código seguro que ainda quebra em runtime. Use assertions apenas quando você <em>sabe com certeza</em> (ex: após uma verificação manual) e prefira narrowing natural sempre que possível.
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Ignorar o retorno de funções assíncronas</div>
+        <code>async function foo(): Promise&lt;void&gt;</code> — se você não tratar o retorno (ou usar <code>await</code>), erros são silenciados. Ative <code>"noFloatingPromises"</code> no tsconfig (via <code>@typescript-eslint</code>) para capturar Promises não tratadas em tempo de análise estática.
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Confundir strictPropertyInitialization com campos opcionais</div>
+        Com <code>strict: true</code>, propriedades de classe devem ser inicializadas no construtor. Não basta marcar como <code>nome?: string</code> se a classe espera sempre ter o valor. Use o <em>definite assignment assertion</em> (<code>nome!: string</code>) com cautela, apenas quando você garante inicialização por outro meio (ex: injeção de dependência).
+      </div>
+    </div>
+
+    <!-- 12. VÍDEOS -->
+    <div class="section">
+      <div class="section-label">// CURADORIA</div>
+      <h2>Vídeos essenciais</h2>
+      <div class="video-grid">
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">TypeScript in 100 Seconds</div>
+            <div class="video-channel">Fireship · 2 min</div>
+            <div class="video-why">Por que assistir: visão geral densa e visual do que é TypeScript e por que existe. Perfeito para contextualizar antes de mergulhar nos detalhes.</div>
+            <a href="https://www.youtube.com/watch?v=zQnBQ4tB3ZA" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">TypeScript Course for Beginners – Full Tutorial</div>
+            <div class="video-channel">Academind / Maximilian Schwarzmüller · ~3h</div>
+            <div class="video-why">Por que assistir: curso completo e bem estruturado que cobre tipos, interfaces, generics, decorators e integração com projetos reais. Referência padrão da comunidade.</div>
+            <a href="https://www.youtube.com/watch?v=BwuLxPH8IDs" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">TypeScript Generics – This Is What You Need To Know</div>
+            <div class="video-channel">Web Dev Simplified · ~20 min</div>
+            <div class="video-why">Por que assistir: foca especificamente em generics com exemplos progressivos — de funções simples até constraints com keyof. O melhor vídeo isolado sobre o tópico.</div>
+            <a href="https://www.youtube.com/watch?v=EcCTIExsqmI" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">TypeScript Utility Types Explained</div>
+            <div class="video-channel">Matt Pocock (Total TypeScript) · ~25 min</div>
+            <div class="video-why">Por que assistir: Matt Pocock é a maior referência em TypeScript avançado hoje. Este vídeo cobre todos os utility types com casos de uso reais e explicações claras sobre quando usar cada um.</div>
+            <a href="https://www.youtube.com/watch?v=EU0TB_8KHpY" target="_blank">Assistir →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 13. GLOSSÁRIO -->
+    <div class="section">
+      <div class="section-label">// GLOSSÁRIO</div>
+      <h2>Termos desta Aula</h2>
+      <div class="glossary-item">
+        <div class="glossary-term">Type Annotation</div>
+        <div class="glossary-def">Anotação explícita de tipo no código TypeScript. Ex: <code>let nome: string</code>. Opcional onde o TypeScript pode inferir automaticamente.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Type Inference</div>
+        <div class="glossary-def">Capacidade do TypeScript de determinar o tipo automaticamente a partir do valor atribuído. <code>const x = 42</code> → TypeScript infere <code>x: number</code>.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Union Type</div>
+        <div class="glossary-def">Tipo que pode ser um ou mais tipos diferentes. <code>string | number</code> significa que o valor pode ser string ou number.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Generic (T)</div>
+        <div class="glossary-def">Parâmetro de tipo que permite que uma função, classe ou interface trabalhe com qualquer tipo mantendo a segurança estática. <code>Array&lt;T&gt;</code> é o generic mais comum.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Narrowing</div>
+        <div class="glossary-def">Processo de afunilar um union type para um tipo específico dentro de um bloco condicional. <code>if (typeof x === "string") { /* x é string aqui */ }</code>.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Declaration Merging</div>
+        <div class="glossary-def">Capacidade de interfaces TypeScript de se fusionarem quando declaradas múltiplas vezes com o mesmo nome. Usado por bibliotecas para permitir extensão de tipos.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Structural Typing</div>
+        <div class="glossary-def">Sistema de tipos do TypeScript baseado na <em>forma</em> do objeto (campos e métodos) e não no nome da classe ou interface. Se tem os campos certos, é compatível.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Decorator</div>
+        <div class="glossary-def">Função especial que modifica o comportamento de classes, métodos ou propriedades de forma declarativa usando o prefixo <code>@</code>. Amplamente usada em frameworks como NestJS e Angular.</div>
+      </div>
+    </div>
+
+    <!-- CHECKPOINT -->
+    <div class="section">
+      <div class="checkpoint">
+        <h3>🏁 Checkpoint — Desafio Final</h3>
+        <p>Construa um sistema de <strong>gerenciamento de biblioteca</strong> totalmente tipado com TypeScript:</p>
+        <ul>
+          <li>Defina a interface <code>Livro</code> com campos: <code>isbn</code> (string, readonly), <code>titulo</code>, <code>autor</code>, <code>genero</code> (literal union com 5+ gêneros), <code>anoPublicacao</code>, <code>disponivel</code> (boolean)</li>
+          <li>Crie os types: <code>CriarLivroDTO</code> (sem isbn, gerado automaticamente), <code>LivroPublico</code> (sem campos de controle interno), <code>FiltroLivro</code> (todos os campos opcionais, para busca)</li>
+          <li>Implemente a classe genérica <code>Catalogo&lt;T extends { isbn: string }&gt;</code> com métodos: <code>adicionar</code>, <code>buscarPorISBN</code>, <code>filtrar(criterios: Partial&lt;T&gt;)</code>, <code>listarDisponiveis</code></li>
+          <li>Adicione um method decorator <code>@LogOperacao</code> que imprime no console: nome do método, argumentos e tempo de execução</li>
+          <li>Demonstre narrowing com uma função <code>processarBusca(termo: string | FiltroLivro)</code> que age diferente para string vs objeto</li>
+          <li>Ative <code>strict: true</code> no tsconfig e resolva todos os erros de compilação sem usar <code>any</code></li>
+        </ul>
+        <div class="checkpoint-hint">💬 Dica: comece pelas interfaces e types, depois a classe genérica, depois o decorator. Compile com <code>tsc --noEmit</code> para verificar erros sem gerar arquivos — modo "checar apenas". Use <code>npx tsx src/index.ts</code> para rodar sem compilar, mais rápido durante o desenvolvimento.</div>
+      </div>
+    </div>
+
+    <!-- PRÓXIMOS PASSOS -->
+    <div class="section">
+      <div class="section-label">// próxima aula</div>
+      <h2>O que vem a seguir?</h2>
+      <p style="margin-bottom:20px;">Com a base sólida em TypeScript, vamos mudar de trilha e mergulhar no CSS moderno. A próxima aula cobre as principais ferramentas de CSS que dominam o ecossistema frontend hoje: Tailwind CSS para utility-first styling, Sass/SCSS para CSS programático, PostCSS para transformações, e como traduzir designs do Figma em código real.</p>
+      <a href="html-05-tooling.html" class="next-card">
+        <div>
+          <div class="next-card-label">Próxima Aula • 🌐 HTML/CSS</div>
+          <div class="next-card-title">CSS Tooling — Tailwind, Sass & Figma</div>
+        </div>
+        <div class="next-arrow">→</div>
+      </a>
+    </div>
+
+  </div>
+
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+    hljs.highlightAll();
+
+    const bar = document.getElementById('progressBar');
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      bar.style.width = pct + '%';
+    });
+  </script>
+</body>
+</html>

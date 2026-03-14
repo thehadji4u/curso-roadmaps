@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Python — pandas & NumPy · Aula 25</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #3b82f6;
+      --accent-dim: rgba(59,130,246,0.15);
+      --accent-border: rgba(59,130,246,0.35);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #60a5fa); width: 0%; transition: width 0.1s; }
+
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; cursor: default; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #60a5fa; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.08); border-color: var(--success); }
+    .callout-tip .callout-title { color: var(--success); }
+    .callout-danger { background: rgba(239,68,68,0.08); border-color: var(--danger); }
+    .callout-danger .callout-title { color: var(--danger); }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(59,130,246,0.2); color: #60a5fa; }
+    .badge-purple { background: rgba(168,85,247,0.2); color: #c084fc; }
+    .badge-cyan { background: rgba(6,182,212,0.2); color: #22d3ee; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+    .pillar-badge { font-size: 11px; padding: 3px 10px; border-radius: 4px; font-weight: 600; }
+
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-info a { font-size: 12px; color: var(--accent); text-decoration: none; }
+    .video-info a:hover { text-decoration: underline; }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(96,165,250,0.04)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(59,130,246,0.06); border-radius: 6px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; }
+
+    .glossary-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .glossary-term { color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+    .glossary-def { color: var(--muted); font-size: 13px; }
+
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #60a5fa; }
+
+    /* Terminal */
+    .terminal { background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .terminal-bar { background: #1a1a1a; padding: 8px 14px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ef4444; } .dot-yellow { background: #f59e0b; } .dot-green { background: #10b981; }
+    .terminal-title { font-size: 11px; color: #555; margin-left: 6px; }
+    .terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; }
+    .t-prompt { color: #10b981; } .t-cmd { color: #e8e8f0; } .t-out { color: #8585a8; } .t-comment { color: #444; font-style: italic; }
+
+    /* DataFrame visual */
+    .df-table { overflow-x: auto; margin: 16px 0; }
+    .df-table table { border-collapse: collapse; font-size: 12px; font-family: 'JetBrains Mono', monospace; }
+    .df-table thead tr { background: rgba(59,130,246,0.15); border-bottom: 2px solid rgba(59,130,246,0.4); }
+    .df-table thead th { padding: 8px 14px; color: #60a5fa; font-size: 11px; text-align: right; }
+    .df-table thead th:first-child { color: var(--muted); text-align: left; }
+    .df-table tbody tr { border-bottom: 1px solid var(--border); }
+    .df-table tbody tr:hover { background: rgba(255,255,255,0.03); }
+    .df-table tbody td { padding: 7px 14px; color: var(--text); text-align: right; }
+    .df-table tbody td:first-child { color: var(--muted); text-align: left; font-weight: 600; }
+    .df-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+
+    /* Array shape visual */
+    .array-visual { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; margin: 20px 0; }
+    .array-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+    .array-box-title { font-size: 11px; color: var(--accent); font-weight: 700; letter-spacing: 0.08em; margin-bottom: 10px; text-transform: uppercase; }
+    .array-row { display: flex; gap: 4px; margin-bottom: 4px; }
+    .array-cell { width: 36px; height: 36px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--accent); font-weight: 600; }
+    .array-cell.highlight { background: rgba(59,130,246,0.4); border-color: var(--accent); color: #fff; }
+
+    /* EDA pipeline */
+    .eda-flow { display: flex; flex-direction: column; gap: 2px; margin: 20px 0; }
+    .eda-step { display: flex; gap: 14px; align-items: flex-start; padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+    .eda-step:not(:last-child) { border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-bottom: none; }
+    .eda-step:not(:first-child) { border-top-left-radius: 0; border-top-right-radius: 0; }
+    .eda-num { flex-shrink: 0; width: 24px; height: 24px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; margin-top: 2px; }
+    .eda-body { flex: 1; }
+    .eda-title { font-weight: 700; color: #fff; font-size: 13px; margin-bottom: 3px; }
+    .eda-desc { color: var(--muted); font-size: 12px; }
+    .eda-code { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #60a5fa; background: rgba(59,130,246,0.06); padding: 2px 8px; border-radius: 4px; margin-top: 4px; display: inline-block; }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar"></div>
+  </div>
+
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="html-05-tooling.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">🐍 Python</span> · Aula 25 / 50
+      </div>
+      <a href="py-07-fastapi.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>🐍 Python</span>
+        <span class="hero-badge">Aula 25</span>
+      </div>
+      <h1>Python — pandas & NumPy</h1>
+      <div class="hero-meta">
+        <span>⏱ ~60 min de leitura</span>
+        <span>🎯 Intermediário</span>
+        <span>🔧 Hands-on incluído</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">pandas</span>
+        <span class="tag accent">NumPy</span>
+        <span class="tag accent">DataFrame</span>
+        <span class="tag accent">Series</span>
+        <span class="tag accent">ndarray</span>
+        <span class="tag accent">EDA</span>
+        <span class="tag">groupby</span>
+        <span class="tag">merge / join</span>
+        <span class="tag">vetorização</span>
+        <span class="tag">limpeza de dados</span>
+        <span class="tag">matplotlib</span>
+      </div>
+    </div>
+
+    <!-- 1. POR QUE IMPORTA -->
+    <div class="section">
+      <div class="section-label">// MOTIVAÇÃO</div>
+      <h2>Por que isso importa?</h2>
+      <p>
+        Python se tornou a linguagem dominante em dados e ciência de dados por causa de duas bibliotecas: <strong>NumPy</strong> e <strong>pandas</strong>. NumPy fornece arrays multidimensionais ultrarrápidos e operações matemáticas vetorizadas. pandas constrói em cima do NumPy para oferecer a estrutura de dados mais poderosa para análise: o <strong>DataFrame</strong>.
+      </p>
+      <p>
+        Sem essas ferramentas, analisar um CSV com 1 milhão de linhas em Python puro levaria minutos e gigabytes de RAM. Com NumPy + pandas, a mesma operação acontece em segundos, com código conciso e expressivo.
+      </p>
+      <div class="callout callout-info">
+        <div class="callout-title">💼 Por que um engenheiro de dados sênior domina pandas profundamente</div>
+        Sêniors usam pandas para muito mais que "abrir CSVs". É a ferramenta de ETL rápida para transformar dados antes de carregar num banco, a base de qualquer pipeline de ML, e a forma mais eficiente de inspecionar e limpar dados antes de qualquer análise. Dominar <code>groupby</code>, <code>merge</code>, operações vetorizadas e tratamento de dados faltantes é o que separa quem "consegue rodar o script" de quem "resolve problemas de dados".
+      </div>
+    </div>
+
+    <!-- 2. ANALOGIA -->
+    <div class="section">
+      <div class="section-label">// ANALOGIA</div>
+      <h2>Antes do código: uma analogia</h2>
+      <div class="analogy-card">
+        <div class="analogy-label">📊 Mundo Real → Tecnologia</div>
+        <div class="analogy-text">
+          Imagine que você é analista num grande banco e precisa processar <strong>extratos financeiros de milhares de clientes</strong>. Com Python puro, seria como calcular tudo à mão com calculadora — funciona para 10 clientes, impossível para 100.000.
+          <br><br>
+          <strong>NumPy</strong> é como uma <em>calculadora científica de alto desempenho</em>: você alimenta colunas inteiras de números e ela opera em tudo de uma vez, em velocidade de C. <strong>pandas</strong> é a <em>planilha do Excel turbinada com SQL</em>: cada extrato é uma linha, cada campo é uma coluna, e você pode filtrar, agrupar, juntar e transformar com uma linha de código. A diferença é que pandas roda em código, é reproduzível, versionável e escala para bilhões de linhas com Dask ou Spark.
+        </div>
+        <div class="analogy-mapping">
+          <span class="analogy-real">📋 Planilha Excel com colunas e linhas</span>
+          <span class="analogy-tech">→ pandas DataFrame</span>
+          <span class="analogy-real">📊 Uma coluna da planilha</span>
+          <span class="analogy-tech">→ pandas Series</span>
+          <span class="analogy-real">🔢 Array de números para cálculos em massa</span>
+          <span class="analogy-tech">→ NumPy ndarray</span>
+          <span class="analogy-real">🔍 Filtro/autofilter do Excel</span>
+          <span class="analogy-tech">→ Boolean indexing / df[mask]</span>
+          <span class="analogy-real">📊 Tabela dinâmica do Excel</span>
+          <span class="analogy-tech">→ df.groupby().agg()</span>
+          <span class="analogy-real">🔗 PROCV / VLOOKUP entre planilhas</span>
+          <span class="analogy-tech">→ pd.merge() / df.join()</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. NUMPY -->
+    <div class="section">
+      <div class="section-label">// FUNDAMENTO 1</div>
+      <h2>NumPy — a fundação numérica do Python científico</h2>
+      <p>
+        NumPy (Numerical Python) fornece o <strong>ndarray</strong> — um array multidimensional homogêneo armazenado contiguamente na memória, acessado via código C compilado. Isso torna operações numéricas 10–100x mais rápidas do que listas Python.
+      </p>
+
+      <h3>ndarray — a estrutura central</h3>
+
+      <div class="array-visual">
+        <div class="array-box">
+          <div class="array-box-title">1D — shape (5,)</div>
+          <div class="array-row">
+            <div class="array-cell">10</div>
+            <div class="array-cell highlight">20</div>
+            <div class="array-cell">30</div>
+            <div class="array-cell">40</div>
+            <div class="array-cell">50</div>
+          </div>
+          <div style="font-size:11px;color:var(--muted);margin-top:8px;">vetor — uma linha</div>
+        </div>
+        <div class="array-box">
+          <div class="array-box-title">2D — shape (3, 4)</div>
+          <div class="array-row">
+            <div class="array-cell">1</div><div class="array-cell">2</div>
+            <div class="array-cell">3</div><div class="array-cell">4</div>
+          </div>
+          <div class="array-row">
+            <div class="array-cell highlight">5</div><div class="array-cell">6</div>
+            <div class="array-cell">7</div><div class="array-cell">8</div>
+          </div>
+          <div class="array-row">
+            <div class="array-cell">9</div><div class="array-cell">10</div>
+            <div class="array-cell">11</div><div class="array-cell highlight">12</div>
+          </div>
+          <div style="font-size:11px;color:var(--muted);margin-top:8px;">matriz — linhas × colunas</div>
+        </div>
+        <div class="array-box">
+          <div class="array-box-title">3D — shape (2, 3, 4)</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.8;">
+            2 "fatias" (depth)<br>
+            cada uma com 3 linhas<br>
+            e 4 colunas<br>
+            <span style="color:var(--accent);">→ imagens RGB, séries temporais multivariadas</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-label">NumPy — criação, indexação e operações essenciais</div>
+      <pre><code class="language-python">import numpy as np
+
+# ===== CRIAÇÃO =====
+a = np.array([1, 2, 3, 4, 5])           # de lista Python
+b = np.zeros((3, 4))                      # matrix 3×4 de zeros
+c = np.ones((2, 3), dtype=np.float32)    # ones com dtype específico
+d = np.arange(0, 20, 2)                  # [0, 2, 4, ..., 18]
+e = np.linspace(0, 1, 11)               # 11 pontos entre 0 e 1
+f = np.random.randn(100, 5)              # 100×5 de normais aleatórias
+g = np.eye(4)                            # matriz identidade 4×4
+
+# ===== ATRIBUTOS =====
+print(f.shape)    # (100, 5)  — dimensões
+print(f.ndim)     # 2         — número de dimensões
+print(f.dtype)    # float64   — tipo dos elementos
+print(f.size)     # 500       — total de elementos
+
+# ===== INDEXAÇÃO E SLICING =====
+m = np.arange(12).reshape(3, 4)
+# [[0, 1,  2,  3],
+#  [4, 5,  6,  7],
+#  [8, 9, 10, 11]]
+
+print(m[1, 2])       # 6  — linha 1, coluna 2
+print(m[0, :])       # [0, 1, 2, 3]  — primeira linha
+print(m[:, 1])       # [1, 5, 9]     — segunda coluna
+print(m[1:, 2:])     # submatriz linhas 1-2, colunas 2-3
+
+# Boolean indexing
+print(m[m > 5])      # [6, 7, 8, 9, 10, 11]
+m[m < 0] = 0         # zera todos os negativos
+
+# ===== OPERAÇÕES VETORIZADAS (sem for loops!) =====
+x = np.array([1.0, 2.0, 3.0, 4.0])
+y = np.array([2.0, 4.0, 6.0, 8.0])
+
+print(x + y)         # [3.0, 6.0,  9.0, 12.0]
+print(x * 3)         # [3.0, 6.0,  9.0, 12.0]
+print(x ** 2)        # [1.0, 4.0,  9.0, 16.0]
+print(np.sqrt(x))    # [1.0, 1.41, 1.73, 2.0]
+print(np.log(x))     # logaritmo natural de cada elemento
+
+# Broadcasting — operações entre shapes compatíveis
+a = np.ones((3, 1))   # shape (3, 1)
+b = np.arange(4)      # shape (4,)  → broad para (1, 4)
+print((a + b).shape)  # (3, 4) — broadcasting automático
+
+# ===== AGREGAÇÕES =====
+dados = np.random.randint(0, 100, size=(50, 3))
+print(dados.sum())           # soma total
+print(dados.sum(axis=0))     # soma por coluna → shape (3,)
+print(dados.sum(axis=1))     # soma por linha  → shape (50,)
+print(dados.mean(axis=0))    # média por coluna
+print(dados.std())           # desvio padrão global
+print(np.percentile(dados, 75))  # 3º quartil</code></pre>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Pro tip: nunca use for loops com NumPy</div>
+        A principal regra do NumPy é <strong>pensar em operações inteiras de array</strong>, não elemento por elemento. Um loop <code>for i in range(len(arr))</code> em NumPy é sinal de código ineficiente. Qualquer operação que você pensa em fazer num loop provavelmente já existe como função NumPy vetorizada — e rodará 100x mais rápido.
+      </div>
+
+      <h3>Álgebra linear com NumPy</h3>
+      <div class="code-label">NumPy linalg — operações matriciais essenciais</div>
+      <pre><code class="language-python">A = np.array([[1, 2], [3, 4]])
+B = np.array([[5, 6], [7, 8]])
+
+# Multiplicação de matrizes (não element-wise!)
+C = A @ B          # ou np.matmul(A, B)
+# [[19, 22],
+#  [43, 50]]
+
+# Operações de álgebra linear
+print(np.linalg.det(A))        # determinante: -2.0
+print(np.linalg.inv(A))        # matriz inversa
+vals, vecs = np.linalg.eig(A)  # autovalores e autovetores
+U, S, Vt = np.linalg.svd(A)   # decomposição SVD
+
+# Resolver sistema linear Ax = b
+b = np.array([1, 2])
+x = np.linalg.solve(A, b)      # solução exata sem inverter A</code></pre>
+    </div>
+
+    <!-- 4. PANDAS FUNDAMENTOS -->
+    <div class="section">
+      <div class="section-label">// FUNDAMENTO 2</div>
+      <h2>pandas — Series e DataFrame</h2>
+      <p>
+        pandas oferece duas estruturas principais: <strong>Series</strong> (array 1D com índice) e <strong>DataFrame</strong> (tabela 2D com índice de linhas e labels de colunas). Internamente, cada coluna de um DataFrame é uma Series, e cada Series usa NumPy arrays por baixo.
+      </p>
+
+      <h3>Series — array 1D rotulado</h3>
+      <div class="code-label">pandas Series — criação e operações</div>
+      <pre><code class="language-python">import pandas as pd
+
+# Criação
+s1 = pd.Series([100, 200, 150, 300])
+s2 = pd.Series([10, 20, 15, 30], index=["jan", "fev", "mar", "abr"])
+s3 = pd.Series({"SP": 12_325_232, "RJ": 6_747_815, "MG": 2_521_564})
+
+# Acesso
+print(s2["mar"])       # 15
+print(s2[["jan", "abr"]])  # múltiplos labels
+print(s2[:2])          # slicing — jan e fev
+print(s3.sort_values(ascending=False))
+
+# Operações vetorizadas
+print(s2 * 1.1)        # aplica em todos os elementos
+print(s2[s2 > 15])     # filtragem boolean
+
+# Atributos úteis
+print(s2.dtype)        # int64
+print(s2.index)        # Index(['jan', 'fev', 'mar', 'abr'])
+print(s2.values)       # array([10, 20, 15, 30]) — ndarray subjacente
+print(s2.describe())   # count, mean, std, min, quartis, max</code></pre>
+
+      <h3>DataFrame — a planilha turbinada</h3>
+
+      <div class="df-label">Exemplo de DataFrame — vendas por produto</div>
+      <div class="df-table">
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>produto</th>
+              <th>categoria</th>
+              <th>preco</th>
+              <th>qtd_vendida</th>
+              <th>receita</th>
+              <th>data</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>0</td><td>Notebook Pro</td><td>Eletrônicos</td><td>3200.0</td><td>45</td><td>144000.0</td><td>2024-01-15</td></tr>
+            <tr><td>1</td><td>Headphone X</td><td>Eletrônicos</td><td>899.0</td><td>120</td><td>107880.0</td><td>2024-01-16</td></tr>
+            <tr><td>2</td><td>Cadeira Gamer</td><td>Móveis</td><td>1450.0</td><td>30</td><td>43500.0</td><td>2024-01-16</td></tr>
+            <tr><td>3</td><td>Mesa Standing</td><td>Móveis</td><td>2200.0</td><td>18</td><td>39600.0</td><td>2024-01-17</td></tr>
+            <tr><td>4</td><td>Teclado Mec.</td><td>Eletrônicos</td><td>450.0</td><td>200</td><td>90000.0</td><td>2024-01-17</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="code-label">Criação e inspeção de DataFrames</div>
+      <pre><code class="language-python">import pandas as pd
+import numpy as np
+
+# Criar de dicionário
+df = pd.DataFrame({
+    "produto":     ["Notebook Pro", "Headphone X", "Cadeira Gamer", "Mesa Standing", "Teclado Mec."],
+    "categoria":   ["Eletrônicos", "Eletrônicos", "Móveis", "Móveis", "Eletrônicos"],
+    "preco":       [3200.0, 899.0, 1450.0, 2200.0, 450.0],
+    "qtd_vendida": [45, 120, 30, 18, 200],
+    "data":        pd.to_datetime(["2024-01-15", "2024-01-16", "2024-01-16", "2024-01-17", "2024-01-17"])
+})
+
+# Coluna calculada
+df["receita"] = df["preco"] * df["qtd_vendida"]
+
+# ===== INSPEÇÃO BÁSICA — sempre o primeiro passo =====
+print(df.shape)          # (5, 6) — linhas × colunas
+print(df.dtypes)         # tipo de cada coluna
+print(df.info())         # resumo + memória usada + nulls
+print(df.describe())     # estatísticas das colunas numéricas
+print(df.head(3))        # primeiras 3 linhas
+print(df.tail(2))        # últimas 2 linhas
+
+# ===== SELEÇÃO DE COLUNAS =====
+print(df["produto"])              # Series — uma coluna
+print(df[["produto", "preco"]])   # DataFrame — múltiplas colunas
+
+# ===== SELEÇÃO DE LINHAS =====
+# .loc  — por label (nome do índice ou condição)
+# .iloc — por posição inteira (como Python lists)
+print(df.loc[0])              # linha de índice 0
+print(df.loc[1:3])            # linhas índice 1 a 3 (inclusivo!)
+print(df.iloc[0:3])           # posições 0, 1, 2 (exclusivo no fim)
+print(df.iloc[-1])            # última linha
+
+# ===== FILTRAGEM BOOLEAN =====
+eletronicos = df[df["categoria"] == "Eletrônicos"]
+caros = df[df["preco"] > 1000]
+top = df[(df["preco"] > 500) & (df["qtd_vendida"] > 50)]  # AND
+qualquer = df[(df["categoria"] == "Móveis") | (df["preco"] < 500)]  # OR
+
+# query() — sintaxe SQL-like, mais legível
+top_query = df.query("preco > 500 and qtd_vendida > 50")</code></pre>
+    </div>
+
+    <!-- 5. OPERAÇÕES ESSENCIAIS -->
+    <div class="section">
+      <div class="section-label">// FUNDAMENTO 3</div>
+      <h2>Operações essenciais no DataFrame</h2>
+
+      <h3>GroupBy — agregação por categoria</h3>
+      <div class="code-label">groupby() — equivalente ao GROUP BY do SQL</div>
+      <pre><code class="language-python"># Receita total por categoria
+por_categoria = df.groupby("categoria")["receita"].sum()
+# categoria
+# Eletrônicos    341880.0
+# Móveis          83100.0
+
+# Múltiplas agregações ao mesmo tempo
+resumo = df.groupby("categoria").agg(
+    receita_total  = ("receita",       "sum"),
+    preco_medio    = ("preco",         "mean"),
+    qtd_total      = ("qtd_vendida",   "sum"),
+    n_produtos     = ("produto",       "count"),
+    preco_max      = ("preco",         "max")
+).round(2)
+
+# Groupby + transform — mantém o índice original (útil para criar colunas)
+df["pct_receita_categoria"] = df.groupby("categoria")["receita"].transform(
+    lambda x: x / x.sum() * 100
+)
+
+# Pivot table — resumo multidimensional
+pivot = df.pivot_table(
+    values="receita",
+    index="categoria",
+    columns=pd.Grouper(key="data", freq="D"),
+    aggfunc="sum",
+    fill_value=0
+)</code></pre>
+
+      <h3>Merge & Join — combinando DataFrames</h3>
+      <div class="code-label">pd.merge() — tipos de JOIN</div>
+      <pre><code class="language-python"># DataFrame de clientes
+clientes = pd.DataFrame({
+    "cliente_id": [1, 2, 3, 4],
+    "nome": ["Ana", "Bruno", "Carlos", "Diana"],
+    "cidade": ["SP", "RJ", "SP", "MG"]
+})
+
+# DataFrame de pedidos
+pedidos = pd.DataFrame({
+    "pedido_id": [101, 102, 103, 104, 105],
+    "cliente_id": [1, 2, 1, 3, 5],   # cliente_id 5 não existe em clientes
+    "valor": [250.0, 180.0, 420.0, 90.0, 310.0]
+})
+
+# INNER JOIN — apenas matches em ambos
+inner = pd.merge(pedidos, clientes, on="cliente_id", how="inner")
+# Resultado: 4 linhas — cliente_id=5 é descartado
+
+# LEFT JOIN — todos de pedidos, clientes opcionais
+left = pd.merge(pedidos, clientes, on="cliente_id", how="left")
+# 5 linhas — pedido do cliente_id=5 aparece com NaN em nome/cidade
+
+# Merge com chaves diferentes
+# left_on / right_on quando os campos têm nomes diferentes
+resultado = pd.merge(
+    pedidos, clientes,
+    left_on="cliente_id",
+    right_on="cliente_id",
+    how="left"
+)
+
+# concat — empilhar DataFrames (UNION ALL do SQL)
+q1 = pd.DataFrame({"mes": ["jan", "fev", "mar"], "vendas": [100, 120, 90]})
+q2 = pd.DataFrame({"mes": ["abr", "mai", "jun"], "vendas": [110, 130, 95]})
+semestre = pd.concat([q1, q2], ignore_index=True)</code></pre>
+
+      <h3>Tratamento de dados faltantes</h3>
+      <div class="code-label">Lidando com NaN — o inimigo silencioso</div>
+      <pre><code class="language-python">df_sujo = pd.DataFrame({
+    "nome":   ["Ana", "Bruno", None, "Diana", "Eduardo"],
+    "idade":  [25, None, 30, 28, None],
+    "salario":[5000.0, 7200.0, None, 4800.0, 6100.0],
+    "dept":   ["TI", "TI", "RH", None, "TI"]
+})
+
+# ===== DIAGNÓSTICO =====
+print(df_sujo.isnull().sum())          # nulls por coluna
+print(df_sujo.isnull().sum() / len(df_sujo) * 100)  # % de nulls
+print(df_sujo[df_sujo.isnull().any(axis=1)])  # linhas com qualquer null
+
+# ===== ESTRATÉGIAS DE TRATAMENTO =====
+
+# 1. Remover linhas com null (quando poucos e aleatórios)
+df_limpo = df_sujo.dropna()
+df_limpo2 = df_sujo.dropna(subset=["nome"])  # só se "nome" for null
+
+# 2. Preenchimento com valor fixo
+df_sujo["dept"].fillna("Não informado", inplace=True)
+
+# 3. Preenchimento com estatística
+media_idade = df_sujo["idade"].mean()
+df_sujo["idade"].fillna(media_idade, inplace=True)
+
+mediana_salario = df_sujo["salario"].median()
+df_sujo["salario"].fillna(mediana_salario, inplace=True)
+
+# 4. Forward fill / backward fill (séries temporais)
+serie_tempo = pd.Series([1, None, None, 4, None, 6])
+print(serie_tempo.ffill())   # propaga valor anterior
+print(serie_tempo.bfill())   # propaga valor seguinte
+
+# 5. Interpolação
+print(serie_tempo.interpolate())  # interpolação linear</code></pre>
+
+      <h3>Transformações e apply</h3>
+      <div class="code-label">Transformar colunas com map, apply e assign</div>
+      <pre><code class="language-python"># map() — substituição simples por dicionário ou função
+df["categoria_cod"] = df["categoria"].map({"Eletrônicos": 1, "Móveis": 2})
+
+# apply() — função customizada em cada linha ou coluna
+df["ticket_medio"] = df.apply(
+    lambda row: row["receita"] / row["qtd_vendida"], axis=1
+)
+
+# Para colunas numéricas, prefira operações vetorizadas (mais rápido):
+df["ticket_medio"] = df["receita"] / df["qtd_vendida"]  # mesma coisa, 10x mais rápido
+
+# assign() — cria múltiplas colunas em cadeia (estilo funcional)
+df = (df
+    .assign(
+        receita      = lambda d: d["preco"] * d["qtd_vendida"],
+        ticket_medio = lambda d: d["receita"] / d["qtd_vendida"],
+        categoria_upper = lambda d: d["categoria"].str.upper(),
+        mes          = lambda d: d["data"].dt.month
+    )
+)
+
+# Operações de string com .str
+df["produto_clean"] = df["produto"].str.strip().str.lower().str.replace(" ", "_")
+df["tem_pro"] = df["produto"].str.contains("Pro", case=False, na=False)
+
+# Operações de data com .dt
+df["ano"]       = df["data"].dt.year
+df["mes"]       = df["data"].dt.month
+df["dia_semana"]= df["data"].dt.day_name()
+df["semana"]    = df["data"].dt.isocalendar().week</code></pre>
+    </div>
+
+    <!-- 6. EDA — ANÁLISE EXPLORATÓRIA -->
+    <div class="section">
+      <div class="section-label">// FUNDAMENTO 4</div>
+      <h2>EDA — Análise Exploratória de Dados</h2>
+      <p>
+        Análise Exploratória de Dados (EDA — Exploratory Data Analysis) é o processo sistemático de <strong>entender um dataset antes de modelar ou tomar decisões</strong>. É o primeiro passo em qualquer projeto de dados — feito corretamente, revela padrões, anomalias e relações que guiam toda a análise seguinte.
+      </p>
+
+      <div class="eda-flow">
+        <div class="eda-step">
+          <div class="eda-num">1</div>
+          <div class="eda-body">
+            <div class="eda-title">Carregar e inspecionar estrutura</div>
+            <div class="eda-desc">Shape, dtypes, primeiras/últimas linhas, tamanho em memória</div>
+            <span class="eda-code">df.info() · df.shape · df.dtypes · df.head()</span>
+          </div>
+        </div>
+        <div class="eda-step">
+          <div class="eda-num">2</div>
+          <div class="eda-body">
+            <div class="eda-title">Verificar dados faltantes</div>
+            <div class="eda-desc">% de nulls por coluna, padrões de missingness (MCAR, MAR, MNAR)</div>
+            <span class="eda-code">df.isnull().sum() · df.isnull().mean() * 100</span>
+          </div>
+        </div>
+        <div class="eda-step">
+          <div class="eda-num">3</div>
+          <div class="eda-body">
+            <div class="eda-title">Estatísticas descritivas</div>
+            <div class="eda-desc">Média, mediana, desvio padrão, quartis, min/max para numéricas; value_counts para categóricas</div>
+            <span class="eda-code">df.describe() · df["col"].value_counts()</span>
+          </div>
+        </div>
+        <div class="eda-step">
+          <div class="eda-num">4</div>
+          <div class="eda-body">
+            <div class="eda-title">Identificar outliers</div>
+            <div class="eda-desc">Z-score, IQR, boxplot. Outliers podem ser erros de dados ou sinais valiosos</div>
+            <span class="eda-code">df.quantile([0.25, 0.75]) · (df - df.mean()) / df.std()</span>
+          </div>
+        </div>
+        <div class="eda-step">
+          <div class="eda-num">5</div>
+          <div class="eda-body">
+            <div class="eda-title">Distribuições e correlações</div>
+            <div class="eda-desc">Histogramas por coluna, matriz de correlação para entender relações lineares</div>
+            <span class="eda-code">df.hist() · df.corr() · df.plot.scatter()</span>
+          </div>
+        </div>
+        <div class="eda-step">
+          <div class="eda-num">6</div>
+          <div class="eda-body">
+            <div class="eda-title">Análise temporal (se houver datas)</div>
+            <div class="eda-desc">Tendências, sazonalidade, gaps no tempo</div>
+            <span class="eda-code">df.set_index("data").resample("M").sum()</span>
+          </div>
+        </div>
+        <div class="eda-step">
+          <div class="eda-num">7</div>
+          <div class="eda-body">
+            <div class="eda-title">Hipóteses e perguntas de negócio</div>
+            <div class="eda-desc">Documentar achados, anomalias e questões para investigação profunda</div>
+            <span class="eda-code">groupby · crosstab · pivot_table</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-label">EDA completo — script reproduzível</div>
+      <pre><code class="language-python">import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 1. Carregar dados
+df = pd.read_csv("vendas.csv", parse_dates=["data"])
+print(f"Shape: {df.shape}")
+print(f"Memória: {df.memory_usage(deep=True).sum() / 1024:.1f} KB")
+df.info()
+
+# 2. Dados faltantes
+nulls = df.isnull().sum()
+null_pct = (nulls / len(df) * 100).round(2)
+print(pd.DataFrame({"nulls": nulls, "pct": null_pct})[nulls > 0])
+
+# 3. Estatísticas descritivas
+print(df.describe().round(2))
+
+# Para colunas categóricas
+for col in df.select_dtypes(include="object").columns:
+    print(f"\n{col}: {df[col].nunique()} únicos")
+    print(df[col].value_counts().head(5))
+
+# 4. Outliers com IQR
+def detectar_outliers(series):
+    Q1 = series.quantile(0.25)
+    Q3 = series.quantile(0.75)
+    IQR = Q3 - Q1
+    lower = Q1 - 1.5 * IQR
+    upper = Q3 + 1.5 * IQR
+    return series[(series < lower) | (series > upper)]
+
+for col in df.select_dtypes(include=np.number).columns:
+    outliers = detectar_outliers(df[col])
+    if len(outliers) > 0:
+        print(f"{col}: {len(outliers)} outliers ({len(outliers)/len(df)*100:.1f}%)")
+
+# 5. Correlações
+corr = df.select_dtypes(include=np.number).corr()
+print("\nCorrelações com 'receita':")
+print(corr["receita"].sort_values(ascending=False))
+
+# 6. Análise temporal (se tiver coluna de data)
+if "data" in df.columns:
+    df_tempo = df.set_index("data").resample("W")["receita"].sum()
+    df_tempo.plot(title="Receita Semanal", figsize=(12, 4))
+    plt.tight_layout()
+    plt.savefig("receita_semanal.png", dpi=150)
+
+# 7. Perguntas respondidas com groupby
+print("\nTop 5 produtos por receita:")
+print(df.groupby("produto")["receita"].sum().sort_values(ascending=False).head())
+
+print("\nReceita por categoria:")
+print(df.groupby("categoria")["receita"].agg(["sum", "mean", "count"]))</code></pre>
+    </div>
+
+    <!-- 7. DIAGRAMA MERMAID -->
+    <div class="section">
+      <div class="section-label">// ARQUITETURA</div>
+      <h2>Ecossistema Python para dados</h2>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">Stack de dados Python — camadas e dependências</div>
+        <div class="mermaid">
+graph TD
+    A["🔢 NumPy\nArrays C-speed\nÁlgebra linear"] --> B["🐼 pandas\nDataFrame / Series\nETL · EDA · Aggregation"]
+    A --> C["🤖 scikit-learn\nML · modelos · pipelines"]
+    A --> D["📊 Matplotlib\nvisualizações base"]
+    B --> C
+    B --> D
+    B --> E["📈 Seaborn\nplots estatísticos\n(usa Matplotlib)"]
+    B --> F["⚡ Polars\nalternativa moderna\nmais rápida em big data"]
+    B --> G["🔄 Dask\npandas paralelo\npara datasets gigantes"]
+    C --> H["🧠 TensorFlow / PyTorch\nDeep Learning"]
+    style A fill:#111118,stroke:#3b82f6,color:#e8e8f0
+    style B fill:#111118,stroke:#3b82f6,color:#e8e8f0
+    style C fill:#111118,stroke:#10b981,color:#e8e8f0
+    style D fill:#111118,stroke:#f59e0b,color:#e8e8f0
+    style E fill:#111118,stroke:#f59e0b,color:#e8e8f0
+    style F fill:#111118,stroke:#06b6d4,color:#e8e8f0
+    style G fill:#111118,stroke:#8585a8,color:#e8e8f0
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. TABELA COMPARATIVA -->
+    <div class="section">
+      <div class="section-label">// COMPARATIVO</div>
+      <h2>pandas vs alternativas modernas</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Critério</th><th>pandas</th><th>Polars</th><th>Dask</th><th>PySpark</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Curva de aprendizado</td>
+              <td><span class="badge badge-yellow">Média</span></td>
+              <td><span class="badge badge-yellow">Média</span></td>
+              <td><span class="badge badge-yellow">Média+</span></td>
+              <td><span class="badge badge-red">Alta</span></td>
+            </tr>
+            <tr>
+              <td>Velocidade (dados médios &lt;1GB)</td>
+              <td><span class="badge badge-yellow">Boa</span></td>
+              <td><span class="badge badge-green">Excelente</span></td>
+              <td><span class="badge badge-yellow">Boa</span></td>
+              <td><span class="badge badge-red">Overhead alto</span></td>
+            </tr>
+            <tr>
+              <td>Datasets grandes (&gt;10GB)</td>
+              <td><span class="badge badge-red">Limitado (RAM)</span></td>
+              <td><span class="badge badge-yellow">Lazy eval</span></td>
+              <td><span class="badge badge-green">Paralelismo</span></td>
+              <td><span class="badge badge-green">Distribuído</span></td>
+            </tr>
+            <tr>
+              <td>Ecossistema / comunidade</td>
+              <td><span class="badge badge-green">Enorme</span></td>
+              <td><span class="badge badge-yellow">Crescendo</span></td>
+              <td><span class="badge badge-yellow">Médio</span></td>
+              <td><span class="badge badge-green">Corporativo</span></td>
+            </tr>
+            <tr>
+              <td>Integração com ML (sklearn)</td>
+              <td><span class="badge badge-green">Nativa</span></td>
+              <td><span class="badge badge-yellow">Parcial</span></td>
+              <td><span class="badge badge-yellow">Parcial</span></td>
+              <td><span class="badge badge-yellow">MLlib separado</span></td>
+            </tr>
+            <tr>
+              <td>Uso em produção (2025)</td>
+              <td><span class="badge badge-green">Universal</span></td>
+              <td><span class="badge badge-yellow">Adoção rápida</span></td>
+              <td><span class="badge badge-yellow">Nicho</span></td>
+              <td><span class="badge badge-blue">Empresas grandes</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-info">
+        <div class="callout-title">💡 Quando migrar para Polars</div>
+        Se você tem datasets entre 500MB e 10GB e operações estão lentas com pandas, experimente <strong>Polars</strong>. Tem API similar, mas usa execução lazy (otimiza o query plan antes de executar) e paralelismo automático. Para iniciantes, comece com pandas — o conhecimento é 80% transferível para Polars e o ecossistema é muito mais maduro.
+      </div>
+    </div>
+
+    <!-- 9. HANDS-ON -->
+    <div class="section">
+      <div class="section-label">// HANDS-ON</div>
+      <h2>Passo a Passo: EDA de dataset real</h2>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Instalar dependências e abrir Jupyter</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><div class="terminal-title">Terminal</div></div>
+              <div class="terminal-body">
+                <span class="t-prompt">$ </span><span class="t-cmd">python -m venv .venv && source .venv/bin/activate</span><br>
+                <span class="t-prompt">$ </span><span class="t-cmd">pip install pandas numpy matplotlib seaborn jupyter</span><br>
+                <span class="t-prompt">$ </span><span class="t-cmd">jupyter notebook</span><br>
+                <span class="t-out">  Jupyter running at http://localhost:8888/</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Baixar dataset público e carregar</div>
+            <div class="step-desc">Use o dataset de passageiros do Titanic — clássico de EDA com dados faltantes e variáveis mistas.</div>
+            <pre><code class="language-python">import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Dataset disponível publicamente
+url = "https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv"
+df = pd.read_csv(url)
+
+print(df.shape)    # (891, 12)
+print(df.dtypes)</code></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">EDA: entender a estrutura e dados faltantes</div>
+            <pre><code class="language-python">df.info()
+print(df.isnull().sum()[df.isnull().sum() > 0])
+# Age      177  (19.9%)
+# Cabin    687  (77.1%)
+# Embarked   2  (0.2%)
+
+print(df.describe().round(2))
+print(df["Survived"].value_counts(normalize=True).mul(100).round(1))
+# 0    61.6%  (não sobreviveram)
+# 1    38.4%  (sobreviveram)</code></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Análise de sobrevivência por grupos</div>
+            <pre><code class="language-python"># Taxa de sobrevivência por classe e sexo
+sobrev = df.groupby(["Pclass", "Sex"])["Survived"].mean().round(3) * 100
+print(sobrev)
+#                    Sobrevivência (%)
+# Pclass  Sex
+# 1       female    96.8
+# 1       male      36.9
+# 2       female    92.1
+# 2       male      15.7
+# 3       female    50.0
+# 3       male      13.5
+
+# Visualização
+fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+df.groupby("Pclass")["Survived"].mean().plot(kind="bar", ax=axes[0], title="Sobrevivência por Classe")
+df.groupby("Sex")["Survived"].mean().plot(kind="bar", ax=axes[1], title="Sobrevivência por Sexo")
+plt.tight_layout()
+plt.savefig("sobrevivencia.png", dpi=150)</code></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Limpeza e feature engineering</div>
+            <pre><code class="language-python"># Tratar dados faltantes
+df["Age"].fillna(df["Age"].median(), inplace=True)
+df["Embarked"].fillna(df["Embarked"].mode()[0], inplace=True)
+df.drop(columns=["Cabin"], inplace=True)  # muito sparse
+
+# Feature engineering
+df["FamilySize"] = df["SibSp"] + df["Parch"] + 1
+df["IsAlone"] = (df["FamilySize"] == 1).astype(int)
+df["AgeGroup"] = pd.cut(df["Age"], bins=[0, 12, 18, 60, 100],
+                         labels=["criança", "adolescente", "adulto", "idoso"])
+
+# Verificar resultado
+print(df.isnull().sum().sum())  # 0 — nenhum null restante
+print(df[["FamilySize", "IsAlone", "AgeGroup"]].head())</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10. ARMADILHAS -->
+    <div class="section">
+      <div class="section-label">// ARMADILHAS</div>
+      <h2>Erros comuns a evitar</h2>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ SettingWithCopyWarning — modificando cópia acidental</div>
+        <code>df_filtrado = df[df["col"] > 10]; df_filtrado["nova_col"] = 0</code> pode ou não modificar o original — comportamento imprevisível. Sempre use <code>.copy()</code> ao criar subsets: <code>df_filtrado = df[df["col"] > 10].copy()</code>. Ou use <code>.loc</code> para modificar o original diretamente: <code>df.loc[df["col"] > 10, "nova_col"] = 0</code>.
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Usar apply() onde operações vetorizadas bastam</div>
+        <code>df["total"] = df.apply(lambda r: r["preco"] * r["qtd"], axis=1)</code> é até 100x mais lento que <code>df["total"] = df["preco"] * df["qtd"]</code>. Use <code>apply()</code> apenas quando não há operação vetorizada equivalente — tipicamente para lógica condicional complexa por linha.
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Esquecer que merge pode multiplicar linhas</div>
+        Se a chave de join não é única em um dos DataFrames, o merge gera um produto cartesiano parcial — mais linhas que o esperado. Sempre verifique com <code>df.shape</code> antes e depois do merge, e use <code>how="left"</code> + <code>validate="many_to_one"</code> para garantir a cardinalidade esperada.
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Ignorar dtype na leitura de CSV</div>
+        <code>pd.read_csv()</code> infere tipos automaticamente. CEP <code>"01310-100"</code> vira string (ok), mas CPF <code>12345678900</code> vira float e perde zeros à esquerda. Sempre especifique <code>dtype={"cpf": str, "cep": str}</code> na leitura para colunas que parecem numéricas mas não são.
+      </div>
+    </div>
+
+    <!-- 11. VÍDEOS -->
+    <div class="section">
+      <div class="section-label">// CURADORIA</div>
+      <h2>Vídeos essenciais</h2>
+      <div class="video-grid">
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">NumPy Full Python Tutorial</div>
+            <div class="video-channel">NeuralNine · ~1h20</div>
+            <div class="video-why">Por que assistir: cobre criação, indexação, broadcasting, álgebra linear e otimização de performance. Visual e prático, com comparativo de velocidade NumPy vs listas Python.</div>
+            <a href="https://www.youtube.com/watch?v=4c_mwnYdbhQ" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Pandas Tutorial — Data Analysis with Python</div>
+            <div class="video-channel">Corey Schafer · 2 partes · ~1h cada</div>
+            <div class="video-why">Por que assistir: Corey Schafer é a referência definitiva de pandas em português/inglês. Dois vídeos que cobrem toda a biblioteca de forma metódica e muito clara. Essencial.</div>
+            <a href="https://www.youtube.com/watch?v=ZyhVh-qRZPA" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Exploratory Data Analysis with pandas</div>
+            <div class="video-channel">Keith Galli · ~1h30</div>
+            <div class="video-why">Por que assistir: foca especificamente em EDA com um dataset real do Kaggle. Demonstra o raciocínio analítico completo: desde a inspeção inicial até insights acionáveis.</div>
+            <a href="https://www.youtube.com/watch?v=vmEHCJofslg" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Pandas Tricks You Should Know</div>
+            <div class="video-channel">Rob Mulla · ~25 min</div>
+            <div class="video-why">Por que assistir: truques avançados que aceleram o trabalho do dia a dia — pipe(), method chaining, query(), assign(), e como escrever código pandas mais expressivo e legível.</div>
+            <a href="https://www.youtube.com/watch?v=RlIiVeig3hc" target="_blank">Assistir →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 12. GLOSSÁRIO -->
+    <div class="section">
+      <div class="section-label">// GLOSSÁRIO</div>
+      <h2>Termos desta Aula</h2>
+      <div class="glossary-item">
+        <div class="glossary-term">ndarray</div>
+        <div class="glossary-def">N-dimensional array do NumPy. Array homogêneo (todos os elementos do mesmo tipo) armazenado contiguamente na memória, permitindo operações vetorizadas em velocidade C.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Broadcasting</div>
+        <div class="glossary-def">Mecanismo do NumPy que permite operações entre arrays de shapes diferentes, expandindo automaticamente o array menor para compatibilidade. Ex: <code>array(3,4) + array(4,)</code> → o segundo é "broadcast" para <code>(3,4)</code>.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">DataFrame</div>
+        <div class="glossary-def">Estrutura de dados 2D do pandas — uma tabela com linhas indexadas e colunas rotuladas. Internamente, é uma coleção de Series que compartilham o mesmo índice.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Vetorização</div>
+        <div class="glossary-def">Técnica de aplicar operações a arrays inteiros em vez de elemento por elemento. Em NumPy e pandas, operações vetorizadas rodam em código C compilado — muito mais rápidas que loops Python.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">groupby</div>
+        <div class="glossary-def">Operação split-apply-combine: divide o DataFrame em grupos, aplica uma função em cada grupo, e combina os resultados. Equivalente ao GROUP BY do SQL.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Boolean Indexing</div>
+        <div class="glossary-def">Filtragem de arrays/DataFrames usando uma máscara booleana. <code>df[df["preco"] > 100]</code> retorna apenas as linhas onde a condição é True.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">EDA (Exploratory Data Analysis)</div>
+        <div class="glossary-def">Processo sistemático de análise inicial de um dataset para resumir suas características, encontrar padrões, detectar anomalias e verificar suposições antes de modelagem ou tomada de decisão.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">dtype</div>
+        <div class="glossary-def">Data type de um array NumPy ou coluna pandas (int64, float64, object, bool, datetime64, category). Impacta memória consumida e operações disponíveis.</div>
+      </div>
+    </div>
+
+    <!-- CHECKPOINT -->
+    <div class="section">
+      <div class="checkpoint">
+        <h3>🏁 Checkpoint — Desafio Final</h3>
+        <p>Realize uma <strong>EDA completa</strong> do dataset de preços de casas de Boston (ou qualquer dataset do Kaggle à sua escolha) com os seguintes entregáveis:</p>
+        <ul>
+          <li>Carregue o dataset e imprima um relatório de qualidade: shape, dtypes, % de nulls por coluna, linhas duplicadas</li>
+          <li>Calcule estatísticas descritivas completas e identifique pelo menos 2 outliers usando o método IQR</li>
+          <li>Crie pelo menos 3 colunas novas (feature engineering) — ex: ratios, bins com <code>pd.cut</code>, flags booleanas</li>
+          <li>Faça um <code>groupby</code> com pelo menos 3 funções de agregação diferentes (<code>.agg()</code>) por uma variável categórica</li>
+          <li>Execute pelo menos um <code>pd.merge()</code> com outro DataFrame criado por você (ex: tabela de referência de bairros)</li>
+          <li>Produza uma matriz de correlação NumPy e identifique as 3 variáveis mais correlacionadas com o target</li>
+          <li>Salve o DataFrame limpo em <code>.parquet</code> (<code>df.to_parquet("clean.parquet")</code>) — formato eficiente para dados tabulares</li>
+        </ul>
+        <div class="checkpoint-hint">💬 Dica: use <code>pd.read_csv("https://...")></code> para carregar dados diretamente de URLs — não precisa baixar manualmente. Dataset sugerido: <code>https://raw.githubusercontent.com/selva86/datasets/master/BostonHousing.csv</code>. Para o parquet, instale <code>pip install pyarrow</code> primeiro.</div>
+      </div>
+    </div>
+
+    <!-- PRÓXIMOS PASSOS -->
+    <div class="section">
+      <div class="section-label">// próxima aula</div>
+      <h2>O que vem a seguir?</h2>
+      <p style="margin-bottom:20px;">Com pandas e NumPy dominados, vamos construir APIs profissionais em Python. A próxima aula cobre FastAPI — o framework web Python mais moderno e rápido, com validação automática via Pydantic, suporte nativo a async/await, documentação Swagger gerada automaticamente, e performance comparável a Node.js e Go.</p>
+      <a href="py-07-fastapi.html" class="next-card">
+        <div>
+          <div class="next-card-label">Próxima Aula • 🐍 Python</div>
+          <div class="next-card-title">FastAPI — API REST do Zero</div>
+        </div>
+        <div class="next-arrow">→</div>
+      </a>
+    </div>
+
+  </div>
+
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+    hljs.highlightAll();
+
+    const bar = document.getElementById('progressBar');
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      bar.style.width = pct + '%';
+    });
+  </script>
+</body>
+</html>

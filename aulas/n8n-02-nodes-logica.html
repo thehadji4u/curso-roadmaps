@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>n8n — Nodes Essenciais & Lógica · Aula 22</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #10b981;
+      --accent-dim: rgba(16,185,129,0.15);
+      --accent-border: rgba(16,185,129,0.35);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #34d399); width: 0%; transition: width 0.1s; }
+
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; cursor: default; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #34d399; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.08); border-color: var(--success); }
+    .callout-tip .callout-title { color: var(--success); }
+    .callout-check { background: rgba(16,185,129,0.06); border-color: var(--success); }
+    .callout-check .callout-title { color: var(--success); }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(88,166,255,0.2); color: #79c0ff; }
+    .badge-cyan { background: rgba(6,182,212,0.2); color: #22d3ee; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+    .pillar-badge { font-size: 11px; padding: 3px 10px; border-radius: 4px; font-weight: 600; }
+
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-info a { font-size: 12px; color: var(--accent); text-decoration: none; }
+    .video-info a:hover { text-decoration: underline; }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(52,211,153,0.04)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(16,185,129,0.06); border-radius: 6px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; }
+
+    .glossary-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .glossary-term { color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+    .glossary-def { color: var(--muted); font-size: 13px; }
+
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #34d399; }
+
+    /* Terminal */
+    .terminal { background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .terminal-bar { background: #1a1a1a; padding: 8px 14px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ef4444; } .dot-yellow { background: #f59e0b; } .dot-green { background: #10b981; }
+    .terminal-title { font-size: 11px; color: #555; margin-left: 6px; }
+    .terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; }
+    .t-prompt { color: #10b981; } .t-cmd { color: #e8e8f0; } .t-out { color: #8585a8; } .t-comment { color: #444; font-style: italic; }
+
+    /* Node visual */
+    .node-visual { display: flex; align-items: center; gap: 0; flex-wrap: wrap; margin: 20px 0; }
+    .node-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 20px; text-align: center; min-width: 110px; position: relative; transition: border-color 0.2s; }
+    .node-box.active { border-color: var(--accent-border); background: var(--accent-dim); }
+    .node-box.warn-node { border-color: rgba(245,158,11,0.4); background: rgba(245,158,11,0.06); }
+    .node-box.danger-node { border-color: rgba(239,68,68,0.4); background: rgba(239,68,68,0.06); }
+    .node-icon { font-size: 22px; margin-bottom: 4px; }
+    .node-name { font-size: 11px; font-weight: 700; color: #fff; }
+    .node-type { font-size: 10px; color: var(--muted); margin-top: 2px; }
+    .node-arrow { color: var(--accent); font-size: 20px; padding: 0 8px; align-self: center; }
+    .node-arrow.branch { color: var(--warn); }
+
+    /* Flow diagram */
+    .flow-row { display: flex; align-items: stretch; gap: 0; margin: 8px 0; }
+    .flow-branch { display: flex; flex-direction: column; gap: 6px; padding-left: 20px; border-left: 2px solid var(--border); margin-left: 20px; }
+    .flow-branch-label { font-size: 10px; color: var(--muted); letter-spacing: 0.08em; margin-bottom: 4px; }
+
+    /* Expression highlight */
+    .expr-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 24px; margin: 16px 0; }
+    .expr-line { display: flex; gap: 12px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .expr-line:last-child { border-bottom: none; }
+    .expr-key { color: var(--accent); min-width: 220px; flex-shrink: 0; font-weight: 600; }
+    .expr-desc { color: var(--muted); }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar"></div>
+  </div>
+
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="n8n-01-setup-workflow.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">🔀 n8n</span> · Aula 22 / 50
+      </div>
+      <a href="js-04-typescript.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>🔀 n8n</span>
+        <span class="hero-badge">Aula 22</span>
+      </div>
+      <h1>n8n — Nodes Essenciais & Lógica</h1>
+      <div class="hero-meta">
+        <span>⏱ ~50 min de leitura</span>
+        <span>🎯 Intermediário</span>
+        <span>🔧 Hands-on incluído</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">HTTP Request</span>
+        <span class="tag accent">Code Node</span>
+        <span class="tag accent">IF / Switch</span>
+        <span class="tag accent">Loop</span>
+        <span class="tag accent">Merge & Set</span>
+        <span class="tag accent">Error Trigger</span>
+        <span class="tag">expressões n8n</span>
+        <span class="tag">$json</span>
+        <span class="tag">$items</span>
+        <span class="tag">lógica condicional</span>
+      </div>
+    </div>
+
+    <!-- 1. POR QUE IMPORTA -->
+    <div class="section">
+      <div class="section-label">// MOTIVAÇÃO</div>
+      <h2>Por que isso importa?</h2>
+      <p>
+        Saber criar um workflow no n8n é o primeiro passo — mas para resolver problemas reais de automação você precisa dominar os <strong>nodes que fazem a lógica acontecer</strong>. Sem eles, seus workflows são apenas pipelines lineares sem inteligência.
+      </p>
+      <p>
+        Na prática, toda automação útil precisa de pelo menos um desses elementos: buscar dados de uma API externa (<code>HTTP Request</code>), transformar ou calcular valores (<code>Code Node</code>), tomar decisões (<code>IF</code> / <code>Switch</code>), iterar sobre listas (<code>Loop</code>), combinar dados de origens diferentes (<code>Merge</code>) e capturar falhas graciosamente (<code>Error Trigger</code>). Esta aula cobre todos eles.
+      </p>
+      <div class="callout callout-info">
+        <div class="callout-title">💼 Por que um engenheiro sênior domina esses nodes</div>
+        Engenheiros sêniors não usam o n8n apenas para "ligar A ao B". Eles constroem workflows que tratam erros, lidam com paginação de APIs, bifurcam fluxos com base em dados e processam listas arbitrariamente grandes sem travar. Esses padrões se repetem em 90% das automações de produção — dominar os nodes desta aula é dominar o núcleo da ferramenta.
+      </div>
+    </div>
+
+    <!-- 2. ANALOGIA -->
+    <div class="section">
+      <div class="section-label">// ANALOGIA</div>
+      <h2>Antes do código: uma analogia</h2>
+      <div class="analogy-card">
+        <div class="analogy-label">🏭 Mundo Real → Tecnologia</div>
+        <div class="analogy-text">
+          Imagine uma <strong>linha de produção de fábrica inteligente</strong>. Cada estação de trabalho faz uma coisa específica: uma estação busca matéria-prima do fornecedor (<em>HTTP Request</em>), outra realiza transformações manuais que a máquina padrão não faz (<em>Code Node</em>), outra inspeciona o produto e decide para qual linha enviar (<em>IF / Switch</em>), outra processa cada unidade de um lote individualmente (<em>Loop</em>), outra consolida peças de duas linhas paralelas numa só (<em>Merge</em>), e há uma equipe de resposta a emergências acionada quando qualquer máquina falha (<em>Error Trigger</em>).
+          <br><br>
+          No n8n, os <strong>dados são as peças</strong> que fluem entre as estações. Cada node é uma estação que recebe, processa e passa adiante.
+        </div>
+        <div class="analogy-mapping">
+          <span class="analogy-real">🚚 Buscar matéria-prima do fornecedor</span>
+          <span class="analogy-tech">→ HTTP Request Node</span>
+          <span class="analogy-real">👷 Operação manual especializada</span>
+          <span class="analogy-tech">→ Code Node (JavaScript)</span>
+          <span class="analogy-real">🔍 Inspetor de qualidade com desvio de linha</span>
+          <span class="analogy-tech">→ IF / Switch Node</span>
+          <span class="analogy-real">🔄 Processar cada peça do lote</span>
+          <span class="analogy-tech">→ Loop Over Items</span>
+          <span class="analogy-real">🔀 Consolidar duas linhas em uma</span>
+          <span class="analogy-tech">→ Merge Node</span>
+          <span class="analogy-real">🚨 Equipe de emergência em standby</span>
+          <span class="analogy-tech">→ Error Trigger Node</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. CONCEITO CENTRAL — EXPRESSÕES -->
+    <div class="section">
+      <div class="section-label">// FUNDAMENTO</div>
+      <h2>Expressões n8n: a cola de tudo</h2>
+      <p>
+        Antes de ver cada node, precisamos entender <strong>expressões</strong>. Em n8n, expressões são pedaços de JavaScript envolvidos em <code>{{ }}</code> que você escreve diretamente nos campos dos nodes. Elas permitem acessar dados dos nodes anteriores dinamicamente.
+      </p>
+
+      <div class="expr-wrap">
+        <div class="expr-line">
+          <span class="expr-key">{{ $json.nome }}</span>
+          <span class="expr-desc">Acessa o campo "nome" do item atual (JSON do node anterior)</span>
+        </div>
+        <div class="expr-line">
+          <span class="expr-key">{{ $json.preco * 1.1 }}</span>
+          <span class="expr-desc">Calcula 10% a mais no preço — expressões suportam operações JS</span>
+        </div>
+        <div class="expr-line">
+          <span class="expr-key">{{ $items("HTTP Request")[0].json.id }}</span>
+          <span class="expr-desc">Acessa o primeiro item da saída de um node específico pelo nome</span>
+        </div>
+        <div class="expr-line">
+          <span class="expr-key">{{ $now.toISO() }}</span>
+          <span class="expr-desc">Data/hora atual em formato ISO — útil em headers e logs</span>
+        </div>
+        <div class="expr-line">
+          <span class="expr-key">{{ $env.MINHA_API_KEY }}</span>
+          <span class="expr-desc">Acessa variável de ambiente definida nas Settings do n8n</span>
+        </div>
+        <div class="expr-line">
+          <span class="expr-key">{{ $node["Set"].json.resultado }}</span>
+          <span class="expr-desc">Referencia um node pelo nome — mais robusto que $items()</span>
+        </div>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Pro tip: use o Expression Editor</div>
+        Em qualquer campo do n8n, clique no ícone de engrenagem ou no botão <strong>=</strong> para abrir o Expression Editor. Ele tem autocomplete, mostra o valor atual e destaca erros em tempo real. Indispensável ao trabalhar com dados aninhados.
+      </div>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">Fluxo de dados entre nodes com expressões</div>
+        <div class="mermaid">
+flowchart LR
+    A["🌐 HTTP Request\n{id: 42, nome: 'Produto X'}"] -->|"$json.id → 42\n$json.nome → 'Produto X'"| B["⚙️ Set Node\nnome: {{$json.nome}}\npreco: {{$json.preco * 1.1}}"]
+    B -->|"dados transformados"| C["📧 Email / Slack\n{{$json.nome}} foi processado"]
+    style A fill:#111118,stroke:#10b981,color:#e8e8f0
+    style B fill:#111118,stroke:#f59e0b,color:#e8e8f0
+    style C fill:#111118,stroke:#06b6d4,color:#e8e8f0
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. HTTP REQUEST NODE -->
+    <div class="section">
+      <div class="section-label">// NODE 1</div>
+      <h2>HTTP Request — buscar qualquer API</h2>
+      <p>
+        O node mais usado no n8n. Ele faz requisições HTTP para qualquer API REST: GET, POST, PUT, PATCH, DELETE. Com ele, você integra praticamente qualquer serviço que não tem node nativo no n8n.
+      </p>
+
+      <h3>Anatomia de uma configuração</h3>
+
+      <div class="node-visual">
+        <div class="node-box active">
+          <div class="node-icon">🌐</div>
+          <div class="node-name">HTTP Request</div>
+          <div class="node-type">Core Node</div>
+        </div>
+        <div class="node-arrow">→</div>
+        <div class="node-box">
+          <div class="node-icon">📦</div>
+          <div class="node-name">JSON Response</div>
+          <div class="node-type">items saída</div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Campo</th>
+              <th>Exemplo</th>
+              <th>Observação</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>Method</code></td>
+              <td>GET, POST, PUT…</td>
+              <td>Selecionado no dropdown</td>
+            </tr>
+            <tr>
+              <td><code>URL</code></td>
+              <td><code>https://api.exemplo.com/users</code></td>
+              <td>Suporta expressões: <code>{{ $json.endpoint }}</code></td>
+            </tr>
+            <tr>
+              <td><code>Authentication</code></td>
+              <td>Bearer Token, Basic, OAuth2…</td>
+              <td>Usa Credentials cadastradas no n8n</td>
+            </tr>
+            <tr>
+              <td><code>Headers</code></td>
+              <td><code>Content-Type: application/json</code></td>
+              <td>Pares chave-valor, expressões permitidas</td>
+            </tr>
+            <tr>
+              <td><code>Query Parameters</code></td>
+              <td><code>page=1&limit=50</code></td>
+              <td>Adicione via interface ou expressão</td>
+            </tr>
+            <tr>
+              <td><code>Body</code></td>
+              <td>JSON, Form Data, Raw…</td>
+              <td>Para POST/PUT — use JSON com expressões</td>
+            </tr>
+            <tr>
+              <td><code>Response Format</code></td>
+              <td>Auto-detect / JSON / String</td>
+              <td>Quase sempre deixe em Auto-detect</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Paginação automática — padrão essencial</h3>
+      <p>
+        A maioria das APIs retorna dados paginados. O n8n tem suporte nativo a paginação em <strong>Options → Pagination</strong>. Configure o campo de "next page" e o n8n itera automaticamente até acabar os resultados.
+      </p>
+
+      <div class="code-label">Exemplo — Buscar lista paginada de usuários</div>
+      <pre><code class="language-json">// Configuração do node HTTP Request
+{
+  "method": "GET",
+  "url": "https://api.exemplo.com/users",
+  "queryParameters": {
+    "page": "={{ $pageCount + 1 }}",
+    "limit": "50"
+  },
+  "options": {
+    "pagination": {
+      "paginationMode": "responseContainsNextURL",
+      "nextURL": "={{ $response.body.next }}"
+    }
+  }
+}</code></pre>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Pitfall: timeout em APIs lentas</div>
+        Por padrão o HTTP Request tem timeout de 300 segundos. Para APIs lentas ou downloads grandes, vá em <strong>Options → Timeout</strong> e ajuste. Em produção, prefira processar em lotes menores a fazer uma chamada gigante que pode falhar no meio.
+      </div>
+    </div>
+
+    <!-- 5. CODE NODE -->
+    <div class="section">
+      <div class="section-label">// NODE 2</div>
+      <h2>Code Node — JavaScript direto no workflow</h2>
+      <p>
+        O Code Node é a "válvula de escape" quando nenhum node nativo resolve seu problema. Você escreve JavaScript puro (ou TypeScript) e tem acesso completo aos dados de entrada. É o equivalente a um bloco <code>.map()</code>, <code>.filter()</code> ou qualquer lógica customizada.
+      </p>
+
+      <h3>Dois modos de operação</h3>
+      <div class="grid-2">
+        <div class="card-mini" style="border-color: var(--accent-border);">
+          <span class="pillar-badge" style="background:var(--accent-dim);color:var(--accent);">Run Once for All Items</span>
+          <h4>Processa tudo de uma vez</h4>
+          <p>Recebe <code>$input.all()</code> — array com todos os items. Ideal para agregações, ordenações e filtros complexos. Retorna um array de objetos <code>{ json: {...} }</code>.</p>
+        </div>
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(255,255,255,0.08);color:var(--muted);">Run Once for Each Item</span>
+          <h4>Processa item a item</h4>
+          <p>Recebe <code>$input.item</code> — um item por vez. Mais simples para transformações individuais. O n8n chama a função para cada item e coleta os resultados.</p>
+        </div>
+      </div>
+
+      <div class="code-label">Code Node — Run Once for All Items (agrupamento)</div>
+      <pre><code class="language-javascript">// Agrupa pedidos por status
+const items = $input.all();
+
+const grouped = {};
+for (const item of items) {
+  const status = item.json.status;
+  if (!grouped[status]) grouped[status] = [];
+  grouped[status].push(item.json);
+}
+
+// Retorna um item por grupo
+return Object.entries(grouped).map(([status, pedidos]) => ({
+  json: {
+    status,
+    total: pedidos.length,
+    pedidos
+  }
+}));</code></pre>
+
+      <div class="code-label">Code Node — Run Once for Each Item (transformação)</div>
+      <pre><code class="language-javascript">// Normaliza nome completo e calcula desconto
+const { nome, sobrenome, preco, vip } = $input.item.json;
+
+return {
+  json: {
+    nomeCompleto: `${nome} ${sobrenome}`.trim(),
+    precoFinal: vip ? preco * 0.8 : preco,       // 20% desconto para VIPs
+    desconto: vip ? "20%" : "0%",
+    processadoEm: new Date().toISOString()
+  }
+};</code></pre>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">⚠️ Sem acesso a módulos externos por padrão</div>
+        O Code Node roda em sandbox. Você não pode <code>require('axios')</code> ou importar npm packages no cloud n8n. Na versão self-hosted, é possível habilitar módulos via variável de ambiente <code>NODE_FUNCTION_ALLOW_BUILTIN</code> e <code>NODE_FUNCTION_ALLOW_EXTERNAL</code>. Para chamadas HTTP dentro do code node, use o node HTTP Request separado.
+      </div>
+    </div>
+
+    <!-- 6. IF / SWITCH -->
+    <div class="section">
+      <div class="section-label">// NODE 3</div>
+      <h2>IF & Switch — bifurcação de fluxo</h2>
+      <p>
+        Lógica condicional é a alma de qualquer automação inteligente. No n8n, temos dois nodes para isso:
+      </p>
+
+      <div class="grid-2">
+        <div class="card-mini" style="border-color: var(--accent-border);">
+          <span class="pillar-badge" style="background:var(--accent-dim);color:var(--accent);">IF Node</span>
+          <h4>Condição binária (true / false)</h4>
+          <p>Divide o fluxo em dois caminhos. Saída <strong>true</strong> para itens que satisfazem a condição, <strong>false</strong> para os demais. Use para triagem simples.</p>
+        </div>
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(245,158,11,0.2);color:#fbbf24;">Switch Node</span>
+          <h4>Múltiplos caminhos</h4>
+          <p>Divide em N saídas com base em regras. Cada saída tem sua condição. Se nenhuma bate, pode ter uma saída "default". Use para roteamento por tipo/status/região.</p>
+        </div>
+      </div>
+
+      <h3>Operadores de comparação disponíveis</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Tipo</th><th>Operadores</th><th>Exemplo de uso</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge badge-blue">String</span></td>
+              <td>equal, not equal, contains, startsWith, endsWith, regex</td>
+              <td><code>status</code> equal <code>aprovado</code></td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-green">Number</span></td>
+              <td>equal, !=, >, >=, &lt;, &lt;=</td>
+              <td><code>valor</code> >= <code>1000</code></td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-yellow">Boolean</span></td>
+              <td>true, false</td>
+              <td><code>ativo</code> is true</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-cyan">Array</span></td>
+              <td>contains, not contains, lengthEqual, isEmpty</td>
+              <td><code>tags</code> contains <code>urgente</code></td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-red">Date</span></td>
+              <td>after, before, between</td>
+              <td><code>criadoEm</code> after <code>2024-01-01</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">IF Node — roteamento por valor de pedido</div>
+        <div class="mermaid">
+flowchart TD
+    A["📦 Pedido recebido\n{valor: 1500, cliente: 'João'}"] --> B{IF Node\nvalor >= 1000?}
+    B -->|"✅ true"| C["💎 Fila VIP\nPrioridade Alta"]
+    B -->|"❌ false"| D["📬 Fila Normal\nProcessamento padrão"]
+    C --> E["📧 Email de confirmação\npersonalizado VIP"]
+    D --> F["📧 Email de confirmação\npadrão"]
+    style A fill:#111118,stroke:#10b981,color:#e8e8f0
+    style B fill:#111118,stroke:#f59e0b,color:#e8e8f0
+    style C fill:#111118,stroke:#10b981,color:#e8e8f0
+    style D fill:#111118,stroke:#8585a8,color:#e8e8f0
+        </div>
+      </div>
+
+      <h3>Switch Node — roteamento multi-saída</h3>
+      <div class="code-label">Exemplo: roteamento por país</div>
+      <pre><code class="language-json">// Configuração do Switch Node
+// Valor a testar: {{ $json.pais }}
+
+// Saída 0 → Rule: pais equal "BR"
+// Saída 1 → Rule: pais equal "US"  
+// Saída 2 → Rule: pais equal "EU"
+// Saída 3 → (Fallback — todos os demais)
+
+// Cada saída conecta a um workflow diferente:
+// BR → endpoint em português
+// US → endpoint em inglês
+// EU → endpoint com conformidade GDPR
+// Fallback → fila de revisão manual</code></pre>
+    </div>
+
+    <!-- 7. LOOP -->
+    <div class="section">
+      <div class="section-label">// NODE 4</div>
+      <h2>Loop Over Items — iteração controlada</h2>
+      <p>
+        Por padrão, o n8n já processa <em>todos os items em paralelo</em> entre nodes. Mas às vezes você precisa de <strong>controle explícito</strong>: processar item por item com operações dependentes de estado, ou limitar a taxa de chamadas a uma API que tem rate limit.
+      </p>
+
+      <div class="callout callout-info">
+        <div class="callout-title">💡 Quando usar Loop Over Items vs processamento nativo</div>
+        <strong>Não use Loop</strong> se o que você quer é apenas que cada item passe pelo mesmo node — isso já acontece automaticamente. <strong>Use Loop</strong> quando precisar de: (1) sub-workflows por item, (2) acumulação de resultados com contexto compartilhado, (3) rate limiting explícito com Wait node no meio.
+      </div>
+
+      <h3>Padrão com Wait para rate limiting</h3>
+
+      <div class="node-visual" style="flex-wrap:wrap;gap:8px;">
+        <div class="node-box active">
+          <div class="node-icon">🔄</div>
+          <div class="node-name">Loop Over Items</div>
+          <div class="node-type">Split In Batches</div>
+        </div>
+        <div class="node-arrow">→</div>
+        <div class="node-box">
+          <div class="node-icon">🌐</div>
+          <div class="node-name">HTTP Request</div>
+          <div class="node-type">1 por vez</div>
+        </div>
+        <div class="node-arrow">→</div>
+        <div class="node-box warn-node">
+          <div class="node-icon">⏳</div>
+          <div class="node-name">Wait</div>
+          <div class="node-type">500ms delay</div>
+        </div>
+        <div class="node-arrow">→</div>
+        <div class="node-box">
+          <div class="node-icon">🔄</div>
+          <div class="node-name">Loop (volta)</div>
+          <div class="node-type">próximo item</div>
+        </div>
+      </div>
+
+      <div class="code-label">Configuração do Split In Batches (Loop)</div>
+      <pre><code class="language-json">{
+  "batchSize": 1,        // quantos items por iteração
+  "options": {
+    "reset": false       // true = começa do início quando chamado novamente
+  }
+}
+
+// O node tem duas saídas:
+// → "loop" (itens restantes) — conecta ao próximo node
+// → "done" (quando acabou)  — conecta ao que deve rodar após o loop</code></pre>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Pitfall: loop infinito por conexão errada</div>
+        O "done" output do Loop deve conectar a algo <em>fora</em> do ciclo. Se você acidentalmente reconectar o "done" de volta ao Loop ou a um node que o alimenta, o workflow fica em loop infinito e consome recursos até ser cancelado manualmente.
+      </div>
+    </div>
+
+    <!-- 8. MERGE & SET -->
+    <div class="section">
+      <div class="section-label">// NODES 5 & 6</div>
+      <h2>Merge & Set — combinação e normalização</h2>
+
+      <h3>Set Node — definir, transformar e filtrar campos</h3>
+      <p>
+        O Set Node é o canivete suíço de transformação de dados. Use-o para: renomear campos, adicionar campos calculados, remover campos sensíveis antes de enviar a uma API, ou formatar datas e strings.
+      </p>
+
+      <div class="code-label">Set Node em modo "Keep Only Set" — projeção de campos</div>
+      <pre><code class="language-json">// Modo: "Keep Only Set" — remove todos os campos não listados
+// Útil para limpar dados antes de enviar para uma API externa
+
+Campos a definir:
+  id          → {{ $json.usuario_id }}
+  nome        → {{ $json.nome_completo.split(' ')[0] }}  // só o primeiro nome
+  email       → {{ $json.email.toLowerCase() }}
+  timestamp   → {{ $now.toISO() }}
+  fonte       → "crm_interno"   // valor fixo
+
+// Campos originais como "senha", "cpf", "telefone" são descartados</code></pre>
+
+      <h3>Merge Node — juntar dados de fluxos paralelos</h3>
+      <p>
+        O Merge Node combina dados de <strong>dois ramos diferentes</strong> do workflow. É essencial quando você faz chamadas paralelas (ex: buscar dados de dois endpoints diferentes) e precisa consolidar os resultados.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Modo</th><th>O que faz</th><th>Caso de uso</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge badge-green">Append</span></td>
+              <td>Concatena os items dos dois inputs em sequência</td>
+              <td>Unir duas listas de usuários em uma só</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-blue">Merge By Index</span></td>
+              <td>Combina item 0 do input1 com item 0 do input2, e assim por diante</td>
+              <td>Juntar dados quando a ordem é garantida</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-yellow">Merge By Key</span></td>
+              <td>Faz um JOIN por campo em comum (ex: <code>id</code>)</td>
+              <td>Enriquecer usuários com dados de perfil por ID</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-cyan">Keep Key Matches</span></td>
+              <td>Retorna apenas items que têm match nos dois inputs</td>
+              <td>Interseção — equivalente a INNER JOIN</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-red">Remove Key Matches</span></td>
+              <td>Retorna items do input1 que NÃO têm match no input2</td>
+              <td>Encontrar registros que existem em A mas não em B</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">Merge By Key — enriquecer pedidos com dados do cliente</div>
+        <div class="mermaid">
+flowchart LR
+    A["🌐 HTTP Request\nGET /pedidos\n[{id:1, cliente_id:10, valor:500}]"] --> M
+    B["🌐 HTTP Request\nGET /clientes\n[{id:10, nome:'Ana', email:'...'}]"] --> M
+    M["🔀 Merge Node\nModo: Merge By Key\nKey: cliente_id == id"] --> C["📦 Output\n{id:1, valor:500,\nnome:'Ana', email:'...'}"]
+    style A fill:#111118,stroke:#10b981,color:#e8e8f0
+    style B fill:#111118,stroke:#10b981,color:#e8e8f0
+    style M fill:#111118,stroke:#f59e0b,color:#e8e8f0
+    style C fill:#111118,stroke:#06b6d4,color:#e8e8f0
+        </div>
+      </div>
+    </div>
+
+    <!-- 9. ERROR TRIGGER -->
+    <div class="section">
+      <div class="section-label">// NODE 7</div>
+      <h2>Error Trigger — capturar falhas graciosamente</h2>
+      <p>
+        Todo workflow de produção precisa de um plano para quando as coisas dão errado. O <strong>Error Trigger</strong> é um node especial que não se conecta a outros nodes no fluxo normal — ele é acionado automaticamente quando qualquer execução de outro workflow falha.
+      </p>
+
+      <h3>Como funciona</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Criar um workflow de tratamento de erros</div>
+            <div class="step-desc">Crie um novo workflow separado. Adicione o node <strong>Error Trigger</strong> como primeiro node. Este workflow receberá dados sobre qualquer erro.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Configurar nos workflows de produção</div>
+            <div class="step-desc">Em cada workflow que deve ser monitorado, vá em <strong>Settings → Error Workflow</strong> e selecione o workflow de tratamento criado no passo 1.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Usar os dados do erro no workflow de tratamento</div>
+            <div class="step-desc">O Error Trigger passa para o próximo node o objeto <code>$json</code> com detalhes: nome do workflow, node que falhou, mensagem de erro, timestamp e execution ID.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-label">Dados disponíveis no Error Trigger ($json)</div>
+      <pre><code class="language-json">{
+  "execution": {
+    "id": "abc123",
+    "url": "https://n8n.meusite.com/execution/abc123",
+    "retryOf": null,
+    "error": {
+      "message": "Request failed with status code 500",
+      "stack": "Error: Request failed..."
+    },
+    "lastNodeExecuted": "HTTP Request"
+  },
+  "workflow": {
+    "id": "15",
+    "name": "Sincronizar Pedidos"
+  }
+}</code></pre>
+
+      <div class="code-label">Workflow de erro — notificar no Slack com detalhes</div>
+      <pre><code class="language-javascript">// No Code Node do workflow de erro, formata a mensagem:
+const { execution, workflow } = $input.item.json;
+
+return {
+  json: {
+    mensagem: [
+      `🚨 *Workflow com Falha*`,
+      `*Workflow:* ${workflow.name} (ID: ${workflow.id})`,
+      `*Node:* ${execution.lastNodeExecuted}`,
+      `*Erro:* ${execution.error.message}`,
+      `*Execução:* <${execution.url}|Ver no n8n>`,
+      `*Hora:* ${new Date().toLocaleString('pt-BR')}`
+    ].join('\n')
+  }
+};</code></pre>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Pro tip: Error Trigger + retry automático</div>
+        Combine Error Trigger com o node <strong>n8n</strong> (que pode acionar execuções de outros workflows) para implementar retry automático: quando um workflow falha, o Error Trigger aciona um workflow que espera 5 minutos (Wait node) e re-executa o workflow original com o mesmo payload. Limite a 3 tentativas usando um contador em variável de workflow.
+      </div>
+    </div>
+
+    <!-- 10. HANDS-ON -->
+    <div class="section">
+      <div class="section-label">// HANDS-ON</div>
+      <h2>Passo a Passo: Workflow completo com todos os nodes</h2>
+      <p>Vamos construir um workflow que: busca usuários de uma API pública, filtra os ativos, transforma os dados, processa em loop e notifica em caso de erro.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Criar novo workflow no n8n</div>
+            <div class="step-desc">Acesse sua instância n8n → New Workflow → nomeie como "Nodes Essenciais — Prática".</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Adicionar Manual Trigger + HTTP Request</div>
+            <div class="step-desc">Manual Trigger → HTTP Request com método GET e URL <code>https://jsonplaceholder.typicode.com/users</code>. Execute para ver os 10 usuários retornados.</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><div class="terminal-title">Saída esperada do HTTP Request</div></div>
+              <div class="terminal-body">
+                <span class="t-out">10 items — cada item é um usuário com id, name, email, address, phone, website, company</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Adicionar IF Node — filtrar usuários de empresa "Romaguera"</div>
+            <div class="step-desc">IF → Condição: <code>{{ $json.company.name }}</code> contains <code>Romaguera</code>. Conecte a saída "true" ao próximo passo. A saída "false" pode ir para um Set node que apenas registra "ignorado".</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Adicionar Set Node — normalizar campos</div>
+            <div class="step-desc">Mode: "Keep Only Set". Defina campos: <code>id</code>, <code>nome</code> (<code>{{ $json.name }}</code>), <code>email</code> (<code>{{ $json.email.toLowerCase() }}</code>), <code>empresa</code> (<code>{{ $json.company.name }}</code>), <code>processadoEm</code> (<code>{{ $now.toISO() }}</code>).</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Adicionar Code Node — calcular score fictício</div>
+            <div class="step-desc">Mode: "Run Once for Each Item". Adicione um campo <code>score</code> baseado no comprimento do email (apenas para praticar o Code Node).</div>
+            <pre><code class="language-javascript">const { id, nome, email, empresa, processadoEm } = $input.item.json;
+return {
+  json: {
+    id, nome, email, empresa, processadoEm,
+    score: email.length * 3,  // cálculo fictício para demonstração
+    tier: email.length > 20 ? "gold" : "silver"
+  }
+};</code></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <div class="step-title">Inspecionar resultado e ativar o workflow</div>
+            <div class="step-desc">Execute manualmente, verifique os dados no painel de saída. Quando tudo estiver correto, ative o workflow clicando no toggle "Active" no topo. Adicione um Error Trigger separado para monitorar falhas.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 11. TABELA COMPARATIVA -->
+    <div class="section">
+      <div class="section-label">// COMPARATIVO</div>
+      <h2>Quando usar cada node de lógica</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Situação</th>
+              <th>Node recomendado</th>
+              <th>Alternativa</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Chamar uma API REST qualquer</td>
+              <td><span class="badge badge-green">HTTP Request</span></td>
+              <td>Node nativo do serviço (se existir)</td>
+            </tr>
+            <tr>
+              <td>Transformação simples de campos</td>
+              <td><span class="badge badge-blue">Set Node</span></td>
+              <td>Code Node (mais verboso)</td>
+            </tr>
+            <tr>
+              <td>Lógica complexa, agregações, regex</td>
+              <td><span class="badge badge-blue">Code Node</span></td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td>Divisão binária de fluxo</td>
+              <td><span class="badge badge-yellow">IF Node</span></td>
+              <td>Switch com 2 saídas</td>
+            </tr>
+            <tr>
+              <td>Roteamento por tipo/status/região</td>
+              <td><span class="badge badge-yellow">Switch Node</span></td>
+              <td>IF em cascata (evitar)</td>
+            </tr>
+            <tr>
+              <td>Rate limiting em APIs</td>
+              <td><span class="badge badge-cyan">Loop + Wait</span></td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td>JOIN entre dois conjuntos de dados</td>
+              <td><span class="badge badge-green">Merge (By Key)</span></td>
+              <td>Code Node com Map</td>
+            </tr>
+            <tr>
+              <td>Unir duas listas</td>
+              <td><span class="badge badge-green">Merge (Append)</span></td>
+              <td>Code Node com concat</td>
+            </tr>
+            <tr>
+              <td>Monitorar e reagir a falhas</td>
+              <td><span class="badge badge-red">Error Trigger</span></td>
+              <td>Try/Catch no Code Node</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 12. VÍDEOS -->
+    <div class="section">
+      <div class="section-label">// CURADORIA</div>
+      <h2>Vídeos essenciais</h2>
+      <div class="video-grid">
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">n8n Full Beginner Course 2024</div>
+            <div class="video-channel">Less Stress More Flows · ~2h</div>
+            <div class="video-why">Por que assistir: cobre HTTP Request, IF, Merge e Code Node com exemplos reais de automação do dia a dia. O melhor curso introdutório completo.</div>
+            <a href="https://www.youtube.com/watch?v=1MwSoB0gnM4" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">n8n Code Node — JavaScript in Your Workflows</div>
+            <div class="video-channel">n8n · ~18 min</div>
+            <div class="video-why">Por que assistir: canal oficial do n8n. Demonstra os dois modos do Code Node (all items vs each item), acesso a $input, e como retornar múltiplos items.</div>
+            <a href="https://www.youtube.com/watch?v=qlRC4L6rh-I" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Error Handling in n8n — Build Production Workflows</div>
+            <div class="video-channel">Automation with Curtis · ~22 min</div>
+            <div class="video-why">Por que assistir: foca especificamente em Error Trigger, logging de erros no Google Sheets e Slack, e padrões de retry. Essencial para automações de produção.</div>
+            <a href="https://www.youtube.com/results?search_query=n8n+error+handling+error+trigger+production" target="_blank">Buscar no YouTube →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">n8n Merge Node — All Modes Explained</div>
+            <div class="video-channel">n8n Official · ~14 min</div>
+            <div class="video-why">Por que assistir: demonstra todos os modos do Merge (Append, By Index, By Key, Keep Matches, Remove Matches) com exemplos visuais lado a lado. Referência definitiva.</div>
+            <a href="https://www.youtube.com/results?search_query=n8n+merge+node+all+modes+explained" target="_blank">Buscar no YouTube →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 13. PITFALLS -->
+    <div class="section">
+      <div class="section-label">// ARMADILHAS</div>
+      <h2>Erros comuns a evitar</h2>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Usar IF em cascata em vez de Switch</div>
+        Conectar a saída "false" de um IF em outro IF, e outro, e outro… torna o workflow ilegível e difícil de manter. Sempre que tiver mais de 2 caminhos, use o Switch Node.
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Ignorar erros de HTTP Request</div>
+        Por padrão, se a API retorna status 4xx ou 5xx, o node falha e para o workflow. Configure <strong>Options → Continue On Fail</strong> e trate o erro com um IF Node logo depois, checando se <code>$json.error</code> existe. Isso dá controle granular sobre o que fazer em cada tipo de falha.
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Esquecer que Merge precisa de dados nos dois inputs</div>
+        O Merge Node aguarda dados chegarem pelos dois inputs antes de executar. Se um dos ramos estiver vazio (zero items), o Merge pode travar ou produzir resultado inesperado. Use <strong>Options → Clamp</strong> ou adicione um Set Node com um item dummy no ramo que pode ficar vazio.
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Hardcodar credenciais no Code Node ou HTTP Request</div>
+        Nunca coloque API keys diretamente no campo URL ou no code. Use <strong>Credentials</strong> do n8n (para HTTP Request) ou <code>{{ $env.MINHA_KEY }}</code> (variáveis de ambiente) para o Code Node. Credenciais no n8n são criptografadas em repouso.
+      </div>
+    </div>
+
+    <!-- 14. GLOSSÁRIO -->
+    <div class="section">
+      <div class="section-label">// GLOSSÁRIO</div>
+      <h2>Termos desta Aula</h2>
+      <div class="glossary-item">
+        <div class="glossary-term">Expressão n8n</div>
+        <div class="glossary-def">Código JavaScript envolvido em <code>{{ }}</code> para acessar dados dinamicamente nos campos dos nodes. Ex: <code>{{ $json.email }}</code>.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">$json</div>
+        <div class="glossary-def">Objeto que representa os dados JSON do item atual sendo processado pelo node. Principal forma de acessar campos do node anterior.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">$input.all()</div>
+        <div class="glossary-def">No Code Node, retorna array com todos os items de entrada. Usado no modo "Run Once for All Items".</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Rate Limiting</div>
+        <div class="glossary-def">Restrição de uma API ao número de chamadas por segundo/minuto. Contornado no n8n com Loop + Wait node para espaçar as requisições.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Error Workflow</div>
+        <div class="glossary-def">Workflow especial configurado nas Settings de outro workflow para ser acionado automaticamente quando aquele workflow falha.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Merge By Key</div>
+        <div class="glossary-def">Modo do Merge Node que faz JOIN entre dois inputs usando um campo em comum. Equivalente ao JOIN de banco de dados.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Continue On Fail</div>
+        <div class="glossary-def">Opção de nodes que permite o workflow continuar mesmo quando o node falha, passando os dados de erro como item normal para o próximo node.</div>
+      </div>
+    </div>
+
+    <!-- CHECKPOINT -->
+    <div class="section">
+      <div class="checkpoint">
+        <h3>🏁 Checkpoint — Desafio Final</h3>
+        <p>Construa um workflow completo de <strong>enriquecimento e roteamento de leads</strong> usando os nodes desta aula:</p>
+        <ul>
+          <li>Use HTTP Request para buscar dados de <code>https://jsonplaceholder.typicode.com/posts</code> (simula leads)</li>
+          <li>Filtre com IF apenas os posts cujo <code>userId</code> seja par (<code>{{ $json.userId % 2 === 0 }}</code>)</li>
+          <li>Use Switch Node para rotear por <code>userId</code>: IDs 2 e 4 vão para "Fila A", IDs 6, 8 e 10 vão para "Fila B"</li>
+          <li>Em cada fila, use Set Node para adicionar campo <code>fila</code> e <code>processadoEm</code> com timestamp atual</li>
+          <li>Use Merge (Append) para reunir as duas filas em um único fluxo</li>
+          <li>Adicione Code Node para contar quantos items foram de cada fila e retornar um sumário</li>
+          <li>Crie um workflow separado com Error Trigger que loga o erro no console</li>
+        </ul>
+        <div class="checkpoint-hint">💬 Dica: para testar o Error Trigger, adicione temporariamente um HTTP Request com URL inválida no workflow principal e execute — ele deve acionar o workflow de erro. Lembre-se de configurar o "Error Workflow" nas Settings do workflow principal.</div>
+      </div>
+    </div>
+
+    <!-- PRÓXIMOS PASSOS -->
+    <div class="section">
+      <div class="section-label">// próxima aula</div>
+      <h2>O que vem a seguir?</h2>
+      <p style="margin-bottom:20px;">Com os nodes essenciais dominados, vamos entrar em TypeScript — a camada de tipagem estática que transforma JavaScript em uma linguagem adequada para projetos de escala. Tipos, interfaces, generics e utility types: as ferramentas que um engenheiro sênior usa para escrever código JavaScript seguro e manutenível.</p>
+      <a href="js-04-typescript.html" class="next-card">
+        <div>
+          <div class="next-card-label">Próxima Aula • ⚡ JavaScript</div>
+          <div class="next-card-title">TypeScript — Tipos, Interfaces & Generics</div>
+        </div>
+        <div class="next-arrow">→</div>
+      </a>
+    </div>
+
+  </div>
+
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+    hljs.highlightAll();
+
+    const bar = document.getElementById('progressBar');
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      bar.style.width = pct + '%';
+    });
+  </script>
+</body>
+</html>

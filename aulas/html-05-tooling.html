@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS Tooling — Tailwind, Sass & Figma · Aula 24</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #ef4444;
+      --accent-dim: rgba(239,68,68,0.15);
+      --accent-border: rgba(239,68,68,0.35);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #f87171); width: 0%; transition: width 0.1s; }
+
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; cursor: default; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #f87171; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.08); border-color: var(--success); }
+    .callout-tip .callout-title { color: var(--success); }
+    .callout-danger { background: rgba(239,68,68,0.08); border-color: var(--danger); }
+    .callout-danger .callout-title { color: var(--danger); }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(88,166,255,0.2); color: #79c0ff; }
+    .badge-purple { background: rgba(168,85,247,0.2); color: #c084fc; }
+    .badge-cyan { background: rgba(6,182,212,0.2); color: #22d3ee; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    @media (max-width: 640px) { .grid-3 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+    .pillar-badge { font-size: 11px; padding: 3px 10px; border-radius: 4px; font-weight: 600; }
+
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-info a { font-size: 12px; color: var(--accent); text-decoration: none; }
+    .video-info a:hover { text-decoration: underline; }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(239,68,68,0.08), rgba(248,113,113,0.04)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(239,68,68,0.06); border-radius: 6px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; }
+
+    .glossary-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .glossary-term { color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+    .glossary-def { color: var(--muted); font-size: 13px; }
+
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #f87171; }
+
+    /* Terminal */
+    .terminal { background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .terminal-bar { background: #1a1a1a; padding: 8px 14px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ef4444; } .dot-yellow { background: #f59e0b; } .dot-green { background: #10b981; }
+    .terminal-title { font-size: 11px; color: #555; margin-left: 6px; }
+    .terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; }
+    .t-prompt { color: #10b981; } .t-cmd { color: #e8e8f0; } .t-out { color: #8585a8; } .t-comment { color: #444; font-style: italic; }
+
+    /* CSS compare blocks */
+    .css-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+    @media (max-width: 640px) { .css-compare { grid-template-columns: 1fr; } }
+    .css-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .css-box-header { padding: 10px 16px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .css-box-header.vanilla { background: rgba(6,182,212,0.1); color: #22d3ee; border-bottom: 1px solid rgba(6,182,212,0.2); }
+    .css-box-header.tailwind { background: rgba(6,182,212,0.18); color: #22d3ee; border-bottom: 1px solid rgba(6,182,212,0.3); }
+    .css-box-header.sass { background: rgba(245,158,11,0.1); color: #fbbf24; border-bottom: 1px solid rgba(245,158,11,0.2); }
+    .css-box pre { margin: 0; border: none; border-radius: 0; }
+
+    /* Figma token visual */
+    .token-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .token-row:last-child { border-bottom: none; }
+    .token-swatch { width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.1); }
+    .token-name { color: var(--accent); font-weight: 600; min-width: 160px; }
+    .token-value { color: var(--muted); }
+    .token-usage { color: var(--text); font-size: 12px; }
+
+    /* Tailwind scale visual */
+    .tw-scale { display: flex; gap: 4px; flex-wrap: wrap; margin: 12px 0; }
+    .tw-swatch { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .tw-swatch-box { width: 36px; height: 36px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); }
+    .tw-swatch-label { font-size: 9px; color: var(--muted); }
+
+    /* PostCSS pipeline */
+    .pipeline { display: flex; align-items: center; gap: 0; overflow-x: auto; padding: 4px 0; }
+    .pipe-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; text-align: center; min-width: 110px; flex-shrink: 0; }
+    .pipe-box.active { border-color: var(--accent-border); background: var(--accent-dim); }
+    .pipe-name { font-size: 12px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+    .pipe-desc { font-size: 10px; color: var(--muted); }
+    .pipe-arrow { color: var(--accent); font-size: 18px; padding: 0 8px; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar"></div>
+  </div>
+
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="js-04-typescript.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">🌐 HTML/CSS</span> · Aula 24 / 50
+      </div>
+      <a href="py-06-pandas-numpy.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>🌐 HTML/CSS</span>
+        <span class="hero-badge">Aula 24</span>
+      </div>
+      <h1>CSS Tooling — Tailwind, Sass & Figma</h1>
+      <div class="hero-meta">
+        <span>⏱ ~55 min de leitura</span>
+        <span>🎯 Intermediário</span>
+        <span>🔧 Hands-on incluído</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">Tailwind CSS</span>
+        <span class="tag accent">Sass / SCSS</span>
+        <span class="tag accent">PostCSS</span>
+        <span class="tag accent">Figma → Código</span>
+        <span class="tag">utility-first</span>
+        <span class="tag">design tokens</span>
+        <span class="tag">autoprefixer</span>
+        <span class="tag">variables SCSS</span>
+        <span class="tag">mixins</span>
+        <span class="tag">JIT compiler</span>
+      </div>
+    </div>
+
+    <!-- 1. POR QUE IMPORTA -->
+    <div class="section">
+      <div class="section-label">// MOTIVAÇÃO</div>
+      <h2>Por que isso importa?</h2>
+      <p>
+        CSS puro funciona — mas em projetos reais, com equipes e dezenas de componentes, rapidamente vira um labirinto de classes sobrepostas, valores duplicados e inconsistências visuais. O ecossistema de <strong>ferramentas de CSS</strong> existe para tornar o styling escalável, manutenível e consistente com o design aprovado no Figma.
+      </p>
+      <p>
+        Tailwind CSS revolucionou como escrevemos estilos nos últimos anos e hoje é a abordagem padrão em projetos React e Next.js modernos. Sass/SCSS continua fundamental em projetos legados e sistemas de design customizados. PostCSS opera por baixo de ambos. E Figma é onde os designs vivem — saber traduzir tokens de design em código é habilidade obrigatória para frontend sênior.
+      </p>
+      <div class="callout callout-info">
+        <div class="callout-title">💼 Por que um engenheiro frontend sênior domina esse tooling</div>
+        Um sênior não apenas "escreve CSS". Ele configura pipelines que garantem consistência visual em toda a aplicação: design tokens que fluem do Figma para variáveis CSS, Tailwind com tema customizado que reflete o design system, e PostCSS que otimiza o CSS final automaticamente. Sem esse tooling, qualquer projeto de médio porte vira um caos de classes e valores mágicos.
+      </div>
+    </div>
+
+    <!-- 2. ANALOGIA -->
+    <div class="section">
+      <div class="section-label">// ANALOGIA</div>
+      <h2>Antes do código: uma analogia</h2>
+      <div class="analogy-card">
+        <div class="analogy-label">🏗️ Mundo Real → Tecnologia</div>
+        <div class="analogy-text">
+          Imagine construir um <strong>prédio arquitetônico</strong>. O arquiteto cria o projeto no software (Figma), definindo cores, espaçamentos e componentes padronizados. A construtora não mistura cimento na mão — ela usa ferramentas e máquinas (PostCSS) que garantem proporções exatas. Alguns trabalham com tijolos avulsos que encaixam livremente em qualquer padrão (Tailwind — utility-first), outros usam fôrmas pré-moldadas que podem ser personalizadas (Sass/SCSS — componentes e mixins). O resultado final sempre segue o projeto original do arquiteto, sem improvisações.
+          <br><br>
+          O CSS sem ferramentas é misturar cimento na mão: funciona para uma parede, mas não para um prédio inteiro.
+        </div>
+        <div class="analogy-mapping">
+          <span class="analogy-real">📐 Projeto arquitetônico com padrões</span>
+          <span class="analogy-tech">→ Figma com Design Tokens</span>
+          <span class="analogy-real">🧱 Tijolos avulsos de propósito único</span>
+          <span class="analogy-tech">→ Tailwind utility classes</span>
+          <span class="analogy-real">🏛️ Fôrmas pré-moldadas reutilizáveis</span>
+          <span class="analogy-tech">→ Sass mixins & componentes</span>
+          <span class="analogy-real">⚙️ Máquinas da construção civil</span>
+          <span class="analogy-tech">→ PostCSS (autoprefixer, minify)</span>
+          <span class="analogy-real">📏 Régua de medidas padrão do projeto</span>
+          <span class="analogy-tech">→ Design tokens (cores, espaçamentos)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. TAILWIND CSS -->
+    <div class="section">
+      <div class="section-label">// FERRAMENTA 1</div>
+      <h2>Tailwind CSS — utility-first styling</h2>
+      <p>
+        Tailwind não é um framework de componentes (como Bootstrap). É uma coleção de <strong>classes utilitárias de propósito único</strong> — cada classe faz exatamente uma coisa: <code>p-4</code> adiciona <code>padding: 1rem</code>, <code>flex</code> ativa <code>display: flex</code>, <code>text-red-500</code> aplica uma cor vermelha específica.
+      </p>
+      <p>
+        A grande sacada: você <strong>não sai do HTML</strong> para escrever CSS. O styling e a estrutura ficam no mesmo arquivo, tornando componentes totalmente autocontidos.
+      </p>
+
+      <div class="css-compare">
+        <div class="css-box">
+          <div class="css-box-header vanilla">CSS Tradicional</div>
+          <pre><code class="language-html">&lt;!-- HTML --&gt;
+&lt;button class="btn-primary"&gt;
+  Salvar
+&lt;/button&gt;
+
+&lt;!-- CSS separado --&gt;
+&lt;style&gt;
+.btn-primary {
+  background-color: #3b82f6;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-primary:hover {
+  background-color: #2563eb;
+}
+&lt;/style&gt;</code></pre>
+        </div>
+        <div class="css-box">
+          <div class="css-box-header tailwind">Tailwind CSS</div>
+          <pre><code class="language-html">&lt;!-- Tudo inline no HTML --&gt;
+&lt;button class="
+  bg-blue-500
+  hover:bg-blue-600
+  text-white
+  px-4 py-2
+  rounded-md
+  border-none
+  font-semibold
+  cursor-pointer
+  transition-colors
+"&gt;
+  Salvar
+&lt;/button&gt;
+
+&lt;!-- Zero CSS extra necessário --&gt;</code></pre>
+        </div>
+      </div>
+
+      <h3>Instalação e configuração</h3>
+      <div class="terminal">
+        <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><div class="terminal-title">Terminal</div></div>
+        <div class="terminal-body">
+          <span class="t-prompt">$ </span><span class="t-cmd">npm install -D tailwindcss postcss autoprefixer</span><br>
+          <span class="t-prompt">$ </span><span class="t-cmd">npx tailwindcss init -p</span><br>
+          <span class="t-out">Created tailwind.config.js</span><br>
+          <span class="t-out">Created postcss.config.js</span>
+        </div>
+      </div>
+
+      <div class="code-label">tailwind.config.js — configuração essencial</div>
+      <pre><code class="language-javascript">/** @type {import('tailwindcss').Config} */
+module.exports = {
+  // 1. Onde o Tailwind deve procurar classes para incluir no bundle final
+  content: [
+    "./src/**/*.{html,js,ts,jsx,tsx}",
+    "./index.html"
+  ],
+
+  // 2. Customização do tema (substitui OU estende o padrão)
+  theme: {
+    extend: {
+      // Cores customizadas adicionadas ao sistema de cores padrão
+      colors: {
+        brand: {
+          50:  "#eff6ff",
+          500: "#3b82f6",
+          900: "#1e3a8a"
+        },
+        // Mapear design tokens do Figma diretamente aqui
+        "primary":   "var(--color-primary)",
+        "secondary": "var(--color-secondary)"
+      },
+      // Espaçamentos extras
+      spacing: {
+        "18": "4.5rem",   // 72px
+        "88": "22rem"     // 352px
+      },
+      // Tipografia customizada
+      fontFamily: {
+        sans:  ["Inter", "system-ui", "sans-serif"],
+        mono:  ["JetBrains Mono", "monospace"]
+      },
+      // Animações extras
+      animation: {
+        "fade-in": "fadeIn 0.3s ease-in-out"
+      },
+      keyframes: {
+        fadeIn: {
+          "0%":   { opacity: "0", transform: "translateY(-8px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" }
+        }
+      }
+    }
+  },
+
+  // 3. Plugins oficiais (typography, forms, aspect-ratio, etc.)
+  plugins: [
+    require("@tailwindcss/typography"),  // classes prose para markdown
+    require("@tailwindcss/forms")        // estilos base para inputs
+  ]
+};</code></pre>
+
+      <div class="code-label">CSS de entrada — as 3 diretivas obrigatórias</div>
+      <pre><code class="language-css">/* src/styles/global.css */
+@tailwind base;        /* normalize + estilos base dos elementos HTML */
+@tailwind components;  /* classes de componentes (incluindo plugins) */
+@tailwind utilities;   /* todas as utility classes */
+
+/* Aqui você pode adicionar seu CSS customizado */
+@layer components {
+  /* Componente reutilizável com classes Tailwind */
+  .btn {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-md font-semibold
+           transition-all duration-200 cursor-pointer border-none;
+  }
+  .btn-primary {
+    @apply btn bg-blue-500 text-white hover:bg-blue-600 active:bg-blue-700;
+  }
+  .btn-ghost {
+    @apply btn bg-transparent text-gray-700 hover:bg-gray-100
+           border border-gray-300 hover:border-gray-400;
+  }
+}
+
+@layer utilities {
+  /* Utility customizada */
+  .text-gradient {
+    @apply bg-gradient-to-r from-blue-500 to-purple-500
+           bg-clip-text text-transparent;
+  }
+}</code></pre>
+
+      <h3>Prefixos de responsividade e estados</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Prefixo</th><th>Quando ativa</th><th>Exemplo</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>sm:</code></td><td>≥ 640px</td><td><code>sm:flex</code> — flex só em telas ≥ 640px</td></tr>
+            <tr><td><code>md:</code></td><td>≥ 768px</td><td><code>md:grid-cols-2</code></td></tr>
+            <tr><td><code>lg:</code></td><td>≥ 1024px</td><td><code>lg:text-xl</code></td></tr>
+            <tr><td><code>xl:</code></td><td>≥ 1280px</td><td><code>xl:max-w-7xl</code></td></tr>
+            <tr><td><code>hover:</code></td><td>Mouse over</td><td><code>hover:bg-blue-600</code></td></tr>
+            <tr><td><code>focus:</code></td><td>Elemento focado</td><td><code>focus:ring-2</code></td></tr>
+            <tr><td><code>active:</code></td><td>Sendo clicado</td><td><code>active:scale-95</code></td></tr>
+            <tr><td><code>disabled:</code></td><td>Elemento desabilitado</td><td><code>disabled:opacity-50</code></td></tr>
+            <tr><td><code>dark:</code></td><td>Dark mode ativo</td><td><code>dark:bg-gray-900</code></td></tr>
+            <tr><td><code>group-hover:</code></td><td>Hover no elemento pai (<code>.group</code>)</td><td><code>group-hover:underline</code></td></tr>
+            <tr><td><code>peer-checked:</code></td><td>Elemento <code>.peer</code> está checked</td><td>Toggle CSS puro</td></tr>
+            <tr><td><code>first:</code>, <code>last:</code></td><td>Primeiro/último filho</td><td><code>last:border-b-0</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Pro tip: JIT e classes arbitrárias</div>
+        O compilador JIT (Just-in-Time) do Tailwind v3+ gera apenas as classes que você usa. Isso permite <strong>valores arbitrários</strong> com sintaxe de colchetes: <code>w-[342px]</code>, <code>bg-[#1a1a2e]</code>, <code>grid-cols-[1fr_2fr_1fr]</code>. Use para valores que não estão no design system padrão, como alturas específicas de um banner do Figma.
+      </div>
+    </div>
+
+    <!-- 4. SASS / SCSS -->
+    <div class="section">
+      <div class="section-label">// FERRAMENTA 2</div>
+      <h2>Sass / SCSS — CSS programático</h2>
+      <p>
+        Sass é um <em>pré-processador CSS</em> — você escreve em SCSS (superset do CSS) e ele compila para CSS puro. Traz <strong>variáveis, nesting, mixins, funções e partials</strong> para o CSS. Em projetos sem Tailwind ou em sistemas de design complexos, Sass ainda é a escolha padrão.
+      </p>
+
+      <div class="grid-2">
+        <div class="card-mini" style="border-color: var(--accent-border);">
+          <span class="pillar-badge" style="background:var(--accent-dim);color:var(--accent);">.scss</span>
+          <h4>SCSS — recomendado</h4>
+          <p>Superset do CSS: qualquer CSS válido é SCSS válido. Usa chaves e ponto-e-vírgula como CSS normal. Curva de aprendizado mínima para quem já sabe CSS.</p>
+        </div>
+        <div class="card-mini">
+          <span class="pillar-badge" style="background:rgba(255,255,255,0.08);color:var(--muted);">.sass</span>
+          <h4>Sass — sintaxe indentada</h4>
+          <p>Sintaxe mais antiga, sem chaves nem ponto-e-vírgula. Usa indentação. Menos popular hoje. Use apenas se o projeto já existir em .sass.</p>
+        </div>
+      </div>
+
+      <div class="code-label">SCSS — todos os recursos principais</div>
+      <pre><code class="language-scss">// ===== VARIÁVEIS =====
+$color-primary: #3b82f6;
+$color-secondary: #10b981;
+$spacing-base: 16px;
+$font-size-base: 16px;
+$border-radius: 8px;
+
+// ===== MAPA (objeto de variáveis) =====
+$breakpoints: (
+  "sm":  640px,
+  "md":  768px,
+  "lg":  1024px,
+  "xl":  1280px
+);
+
+// ===== MIXIN — bloco reutilizável com parâmetros =====
+@mixin flex-center($direction: row) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: $direction;
+}
+
+@mixin responsive($breakpoint) {
+  $value: map-get($breakpoints, $breakpoint);
+  @media (min-width: $value) {
+    @content;  // conteúdo passado no @include
+  }
+}
+
+@mixin truncate($linhas: 1) {
+  @if $linhas == 1 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  } @else {
+    display: -webkit-box;
+    -webkit-line-clamp: $linhas;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+// ===== FUNCTION — retorna um valor calculado =====
+@function rem($px) {
+  @return #{$px / $font-size-base}rem;
+}
+
+@function transparentize-brand($alpha) {
+  @return rgba($color-primary, $alpha);
+}
+
+// ===== NESTING — hierarquia visual =====
+.card {
+  background: white;
+  border-radius: $border-radius;
+  padding: $spacing-base;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+
+  // & = referência ao seletor pai (.card)
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  &--featured {       // BEM: .card--featured
+    border: 2px solid $color-primary;
+  }
+
+  &__header {         // BEM: .card__header
+    @include flex-center;
+    margin-bottom: rem(16);
+    font-size: rem(18);
+    font-weight: 700;
+  }
+
+  &__body {
+    color: #555;
+    @include truncate(3);
+  }
+
+  &__footer {
+    margin-top: $spacing-base;
+    padding-top: $spacing-base;
+    border-top: 1px solid #eee;
+    @include flex-center;
+    gap: 8px;
+  }
+}
+
+// ===== @EXTEND — herdar estilos de outro seletor =====
+%btn-base {
+  display: inline-flex;
+  align-items: center;
+  padding: rem(8) rem(16);
+  border-radius: $border-radius;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.btn-primary {
+  @extend %btn-base;
+  background: $color-primary;
+  color: white;
+
+  &:hover { background: darken($color-primary, 10%); }
+}
+
+.btn-secondary {
+  @extend %btn-base;
+  background: transparent;
+  color: $color-primary;
+  border: 1px solid $color-primary;
+
+  &:hover { background: transparentize-brand(0.08); }
+}
+
+// ===== @EACH — loop sobre listas/mapas =====
+$cores: ("red": #ef4444, "green": #10b981, "blue": #3b82f6);
+
+@each $nome, $valor in $cores {
+  .text-#{$nome} { color: $valor; }
+  .bg-#{$nome}   { background-color: $valor; }
+  .border-#{$nome} { border-color: $valor; }
+}
+
+// ===== @FOR — loop numérico =====
+@for $i from 1 through 12 {
+  .col-#{$i} {
+    width: percentage($i / 12);
+  }
+}
+
+// ===== PARTIALS & IMPORTS =====
+// Arquivo: _variables.scss (underscore = não compilado sozinho)
+// Importado com: @use 'variables' as vars;
+//                @forward 'variables';</code></pre>
+
+      <h3>Organização com partials — arquitetura 7-1</h3>
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">Padrão 7-1 — organização de arquivos SCSS</div>
+        <div class="mermaid">
+graph TD
+    A["main.scss\n(ponto de entrada)"] --> B["abstracts/\n_variables.scss\n_mixins.scss\n_functions.scss"]
+    A --> C["base/\n_reset.scss\n_typography.scss\n_animations.scss"]
+    A --> D["components/\n_buttons.scss\n_cards.scss\n_forms.scss\n_modals.scss"]
+    A --> E["layout/\n_header.scss\n_footer.scss\n_grid.scss\n_sidebar.scss"]
+    A --> F["pages/\n_home.scss\n_dashboard.scss\n_profile.scss"]
+    A --> G["themes/\n_dark.scss\n_light.scss"]
+    A --> H["vendors/\n_normalize.scss\n_animate.scss"]
+    style A fill:#111118,stroke:#ef4444,color:#e8e8f0
+    style B fill:#111118,stroke:#f59e0b,color:#e8e8f0
+    style C fill:#111118,stroke:#10b981,color:#e8e8f0
+    style D fill:#111118,stroke:#3b82f6,color:#e8e8f0
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. POSTCSS -->
+    <div class="section">
+      <div class="section-label">// FERRAMENTA 3</div>
+      <h2>PostCSS — o processador que trabalha por baixo</h2>
+      <p>
+        PostCSS não é um pré-processador como Sass. É um <strong>transformador de CSS via plugins JavaScript</strong>. Você passa CSS e ele aplica uma série de transformações configuráveis. Tailwind, autoprefixer e a maioria das ferramentas CSS modernas funcionam como plugins PostCSS.
+      </p>
+
+      <div class="pipeline">
+        <div class="pipe-box">
+          <div class="pipe-name">Código-fonte</div>
+          <div class="pipe-desc">.scss / .css / .tw</div>
+        </div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-box active">
+          <div class="pipe-name">PostCSS</div>
+          <div class="pipe-desc">parser + plugins</div>
+        </div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-box">
+          <div class="pipe-name">Autoprefixer</div>
+          <div class="pipe-desc">-webkit-, -moz-</div>
+        </div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-box">
+          <div class="pipe-name">cssnano</div>
+          <div class="pipe-desc">minificação</div>
+        </div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-box">
+          <div class="pipe-name">CSS final</div>
+          <div class="pipe-desc">otimizado</div>
+        </div>
+      </div>
+
+      <div class="code-label">postcss.config.js — configuração típica</div>
+      <pre><code class="language-javascript">// postcss.config.js
+module.exports = {
+  plugins: [
+    // 1. Tailwind CSS (gera as utility classes)
+    require("tailwindcss"),
+
+    // 2. Autoprefixer — adiciona prefixos vendor automaticamente
+    // -webkit-transform → transform, etc.
+    // Lê o .browserslistrc ou package.json["browserslist"]
+    require("autoprefixer"),
+
+    // 3. Apenas em produção: minificar o CSS
+    process.env.NODE_ENV === "production"
+      ? require("cssnano")({ preset: "default" })
+      : false,
+
+    // 4. CSS Modules nesting (opcional — suporte a & nesting nativo)
+    require("postcss-nesting"),
+
+    // 5. Variáveis CSS customizadas com fallback para browsers antigos
+    require("postcss-custom-properties"),
+  ].filter(Boolean) // remove os false (cssnano em dev)
+};</code></pre>
+
+      <div class="code-label">.browserslistrc — quais browsers suportar</div>
+      <pre><code class="language-text"># .browserslistrc
+# Autoprefixer e Babel usam essa lista para decidir
+# quais transformações e prefixos aplicar
+
+> 1%                  # browsers com mais de 1% de market share
+last 2 versions       # últimas 2 versões de cada browser
+not dead              # exclui browsers sem suporte ativo
+not IE 11             # explicitamente exclui IE11</code></pre>
+
+      <div class="callout callout-info">
+        <div class="callout-title">💡 Você já usa PostCSS sem saber</div>
+        Se você usou Tailwind, Vite, Create React App, Next.js ou Nuxt, já usou PostCSS. Ele é a camada de processamento CSS que todos esses frameworks constroem por cima. A maioria dos desenvolvedores nunca precisa configurar PostCSS diretamente — mas entender que ele existe explica por que <code>-webkit-</code> aparece magicamente no CSS compilado.
+      </div>
+    </div>
+
+    <!-- 6. FIGMA → CÓDIGO -->
+    <div class="section">
+      <div class="section-label">// FERRAMENTA 4</div>
+      <h2>Figma → Código — traduzindo design em CSS</h2>
+      <p>
+        Figma é onde designers criam e mantêm o design system da aplicação. Um desenvolvedor frontend sênior sabe <strong>extrair design tokens do Figma e transformá-los em variáveis CSS</strong>, garantindo que o código implementado seja pixel-perfect em relação ao design aprovado.
+      </p>
+
+      <h3>Design Tokens — a ponte entre design e código</h3>
+      <p>
+        Design tokens são as decisões atômicas do design system: cores, espaçamentos, tipografia, sombras, bordas. No Figma eles vivem como "Styles" ou "Variables". No código, eles viram variáveis CSS ou configuração do Tailwind.
+      </p>
+
+      <div class="code-label">Tokens do Figma → Variáveis CSS → config Tailwind</div>
+      <pre><code class="language-css">/* 1. Design tokens como variáveis CSS globais */
+/* Extraídos manualmente ou via plugin Figma Tokens / Token Studio */
+
+:root {
+  /* Cores */
+  --color-primary-50:  #eff6ff;
+  --color-primary-500: #3b82f6;
+  --color-primary-900: #1e3a8a;
+
+  --color-neutral-0:   #ffffff;
+  --color-neutral-50:  #f9fafb;
+  --color-neutral-100: #f3f4f6;
+  --color-neutral-900: #111827;
+
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger:  #ef4444;
+
+  /* Tipografia */
+  --font-family-sans: "Inter", system-ui, sans-serif;
+  --font-size-xs:   0.75rem;   /* 12px */
+  --font-size-sm:   0.875rem;  /* 14px */
+  --font-size-base: 1rem;      /* 16px */
+  --font-size-lg:   1.125rem;  /* 18px */
+  --font-size-xl:   1.25rem;   /* 20px */
+  --font-size-2xl:  1.5rem;    /* 24px */
+  --font-size-3xl:  1.875rem;  /* 30px */
+
+  /* Espaçamentos (escala 4px) */
+  --space-1: 0.25rem;  /* 4px  */
+  --space-2: 0.5rem;   /* 8px  */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1rem;     /* 16px */
+  --space-6: 1.5rem;   /* 24px */
+  --space-8: 2rem;     /* 32px */
+
+  /* Bordas */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  /* Sombras */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+}</code></pre>
+
+      <div class="code-label">Conectar tokens ao Tailwind</div>
+      <pre><code class="language-javascript">// tailwind.config.js — usando os tokens CSS como valores
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          50:  "var(--color-primary-50)",
+          500: "var(--color-primary-500)",
+          900: "var(--color-primary-900)"
+        },
+        success: "var(--color-success)",
+        warning: "var(--color-warning)",
+        danger:  "var(--color-danger)"
+      },
+      fontFamily: {
+        sans: "var(--font-family-sans)"
+      },
+      // Espaçamentos atrelados às variáveis:
+      spacing: {
+        // Tailwind já tem uma escala numérica,
+        // mas podemos adicionar tokens nomeados:
+        "design-1": "var(--space-1)",
+        "design-2": "var(--space-2)"
+      },
+      borderRadius: {
+        sm:   "var(--radius-sm)",
+        DEFAULT: "var(--radius-md)",
+        lg:   "var(--radius-lg)",
+        full: "var(--radius-full)"
+      },
+      boxShadow: {
+        sm: "var(--shadow-sm)",
+        DEFAULT: "var(--shadow-md)",
+        lg: "var(--shadow-lg)"
+      }
+    }
+  }
+};</code></pre>
+
+      <h3>Lendo o inspetor do Figma</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Propriedade no Figma</th><th>CSS equivalente</th><th>Observação</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Fill (cor sólida)</td>
+              <td><code>background-color</code> ou <code>color</code></td>
+              <td>Figma mostra HEX/RGB — converter para variável do token</td>
+            </tr>
+            <tr>
+              <td>Stroke</td>
+              <td><code>border: [width] solid [color]</code></td>
+              <td>Outside = outline, Inside = inset box-shadow</td>
+            </tr>
+            <tr>
+              <td>Corner Radius</td>
+              <td><code>border-radius</code></td>
+              <td>Pode ser diferente por canto</td>
+            </tr>
+            <tr>
+              <td>Auto Layout → Gap</td>
+              <td><code>gap</code></td>
+              <td>Figma Auto Layout = CSS Flexbox/Grid</td>
+            </tr>
+            <tr>
+              <td>Auto Layout → Padding</td>
+              <td><code>padding</code></td>
+              <td>Horizontal/Vertical separados no Figma</td>
+            </tr>
+            <tr>
+              <td>Effect → Drop Shadow</td>
+              <td><code>box-shadow</code></td>
+              <td>Ordem dos valores: x y blur spread color</td>
+            </tr>
+            <tr>
+              <td>Effect → Blur</td>
+              <td><code>backdrop-filter: blur()</code></td>
+              <td>Requer <code>background</code> com transparência</td>
+            </tr>
+            <tr>
+              <td>Typography Style</td>
+              <td><code>font-size</code>, <code>font-weight</code>, <code>line-height</code>, <code>letter-spacing</code></td>
+              <td>letter-spacing no Figma em %, no CSS em em/px</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Pro tip: Figma Dev Mode + plugins</div>
+        O Figma <strong>Dev Mode</strong> (plano pago) mostra o CSS gerado automaticamente para qualquer elemento. Para projetos maiores, use o plugin <strong>Figma Tokens</strong> (ou o novo <strong>Token Studio</strong>) para exportar todos os tokens em JSON e importar no seu tailwind.config.js automaticamente — sem copiar valores manualmente.
+      </div>
+    </div>
+
+    <!-- 7. COMPARATIVO GERAL -->
+    <div class="section">
+      <div class="section-label">// COMPARATIVO</div>
+      <h2>Quando usar cada ferramenta</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Cenário</th><th>Recomendação</th><th>Justificativa</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Novo projeto React/Next.js</td>
+              <td><span class="badge badge-blue">Tailwind CSS</span></td>
+              <td>Padrão do ecossistema, JIT, DX excelente com TypeScript</td>
+            </tr>
+            <tr>
+              <td>Projeto Angular corporativo</td>
+              <td><span class="badge badge-yellow">Sass/SCSS</span></td>
+              <td>Angular tem suporte nativo, BEM + SCSS é muito usado</td>
+            </tr>
+            <tr>
+              <td>Sistema de design com muita customização</td>
+              <td><span class="badge badge-yellow">Sass/SCSS</span></td>
+              <td>Mixins e funções dão mais poder para casos complexos</td>
+            </tr>
+            <tr>
+              <td>Design system + Figma tokens</td>
+              <td><span class="badge badge-purple">CSS Variables + Tailwind</span></td>
+              <td>Tokens em CSS vars, consumidos pelo Tailwind e pelo CSS direto</td>
+            </tr>
+            <tr>
+              <td>Prototipagem rápida</td>
+              <td><span class="badge badge-blue">Tailwind CSS</span></td>
+              <td>Velocidade de desenvolvimento muito maior, sem CSS extra</td>
+            </tr>
+            <tr>
+              <td>Bundle CSS mínimo em produção</td>
+              <td><span class="badge badge-blue">Tailwind + PostCSS</span></td>
+              <td>JIT gera apenas as classes usadas, cssnano minifica</td>
+            </tr>
+            <tr>
+              <td>Suporte a browsers antigos</td>
+              <td><span class="badge badge-green">PostCSS + Autoprefixer</span></td>
+              <td>Gera prefixos -webkit-, -moz- automaticamente</td>
+            </tr>
+            <tr>
+              <td>Projeto legado sem build step</td>
+              <td><span class="badge badge-cyan">CSS puro + Custom Props</span></td>
+              <td>Variáveis CSS nativas resolvem muito sem tooling</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 8. HANDS-ON -->
+    <div class="section">
+      <div class="section-label">// HANDS-ON</div>
+      <h2>Passo a Passo: card de produto com Tailwind</h2>
+      <p>Vamos construir um card de produto responsivo com dark mode usando Tailwind CSS puro.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Criar projeto com Vite + Tailwind</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><div class="terminal-title">Terminal</div></div>
+              <div class="terminal-body">
+                <span class="t-prompt">$ </span><span class="t-cmd">npm create vite@latest css-lab -- --template vanilla</span><br>
+                <span class="t-prompt">$ </span><span class="t-cmd">cd css-lab && npm install</span><br>
+                <span class="t-prompt">$ </span><span class="t-cmd">npm install -D tailwindcss postcss autoprefixer</span><br>
+                <span class="t-prompt">$ </span><span class="t-cmd">npx tailwindcss init -p</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Configurar tailwind.config.js</div>
+            <div class="step-desc">Configure o <code>content</code> para apontar para o <code>index.html</code> e arquivos JS.</div>
+            <pre><code class="language-javascript">content: ["./index.html", "./src/**/*.{js,ts}"],
+theme: { extend: { /* tema customizado */ } },</code></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Criar o CSS de entrada e o card</div>
+            <pre><code class="language-html">&lt;!-- index.html --&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html class="dark"&gt;
+&lt;head&gt;
+  &lt;link rel="stylesheet" href="./src/style.css"&gt;
+&lt;/head&gt;
+&lt;body class="bg-gray-100 dark:bg-gray-950 min-h-screen grid place-items-center p-8"&gt;
+
+  &lt;!-- Card de produto --&gt;
+  &lt;div class="bg-white dark:bg-gray-900 rounded-2xl shadow-lg overflow-hidden
+              w-full max-w-sm border border-gray-100 dark:border-gray-800
+              hover:shadow-xl transition-shadow duration-300"&gt;
+
+    &lt;!-- Imagem --&gt;
+    &lt;div class="h-52 bg-gradient-to-br from-blue-400 to-purple-500
+                flex items-center justify-center text-white text-6xl"&gt;
+      🎧
+    &lt;/div&gt;
+
+    &lt;!-- Conteúdo --&gt;
+    &lt;div class="p-6"&gt;
+      &lt;div class="flex items-start justify-between mb-3"&gt;
+        &lt;div&gt;
+          &lt;span class="text-xs font-semibold text-blue-500 uppercase
+                       tracking-wider"&gt;Eletrônicos&lt;/span&gt;
+          &lt;h2 class="text-xl font-bold text-gray-900 dark:text-white mt-1"&gt;
+            Headphone Pro X
+          &lt;/h2&gt;
+        &lt;/div&gt;
+        &lt;button class="text-gray-400 hover:text-red-500 transition-colors"&gt;
+          ♥
+        &lt;/button&gt;
+      &lt;/div&gt;
+
+      &lt;p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-4
+                line-clamp-2"&gt;
+        Fones premium com cancelamento ativo de ruído, 40h de bateria e
+        áudio Hi-Fi certificado.
+      &lt;/p&gt;
+
+      &lt;!-- Rating --&gt;
+      &lt;div class="flex items-center gap-2 mb-5"&gt;
+        &lt;div class="flex text-yellow-400 text-sm"&gt;★★★★★&lt;/div&gt;
+        &lt;span class="text-xs text-gray-400"&gt;(248 avaliações)&lt;/span&gt;
+      &lt;/div&gt;
+
+      &lt;!-- Preço + botão --&gt;
+      &lt;div class="flex items-center justify-between"&gt;
+        &lt;div&gt;
+          &lt;span class="text-2xl font-bold text-gray-900 dark:text-white"&gt;
+            R$ 899
+          &lt;/span&gt;
+          &lt;span class="text-sm text-gray-400 line-through ml-2"&gt;R$ 1.199&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;button class="bg-blue-500 hover:bg-blue-600 active:scale-95
+                       text-white px-5 py-2.5 rounded-xl font-semibold
+                       text-sm transition-all duration-200"&gt;
+          Comprar
+        &lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Rodar o servidor de desenvolvimento</div>
+            <div class="terminal">
+              <div class="terminal-bar"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><div class="terminal-title">Terminal</div></div>
+              <div class="terminal-body">
+                <span class="t-prompt">$ </span><span class="t-cmd">npm run dev</span><br>
+                <span class="t-out">  VITE v5.x  ready in 312ms</span><br>
+                <span class="t-out">  ➜  Local: http://localhost:5173/</span><br>
+                <span class="t-comment"># Abra no browser e veja o card com dark mode!</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Experimentar — remover dark: do html e adicionar responsividade</div>
+            <div class="step-desc">Remova a classe <code>dark</code> do <code>&lt;html&gt;</code> para ver o modo claro. Adicione <code>md:max-w-md lg:max-w-lg</code> no card para testar breakpoints. Inspecione o CSS gerado em <code>dist/</code> após <code>npm run build</code> — veja como o JIT gera apenas o necessário.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9. ARMADILHAS -->
+    <div class="section">
+      <div class="section-label">// ARMADILHAS</div>
+      <h2>Erros comuns a evitar</h2>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Concatenar classes dinamicamente no Tailwind</div>
+        <code>"bg-" + cor</code> não funciona — o JIT não consegue detectar a classe no scan estático do código. Use sempre nomes de classes completos: <code>cor === "red" ? "bg-red-500" : "bg-blue-500"</code>. Para muitas variações, use um objeto de mapeamento: <code>const cores = {'{'} red: "bg-red-500", blue: "bg-blue-500" {'}'}</code>.
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Misturar Tailwind e Sass no mesmo projeto sem critério</div>
+        Usar Tailwind para 80% e Sass para 20% cria inconsistência — valores de espaçamento do Tailwind (<code>p-4</code> = 1rem) e do Sass (<code>$spacing: 16px</code>) podem divergir. Se usar os dois, garanta que ambos consumam os mesmos design tokens via CSS variables.
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Esquecer o conteúdo (content) no tailwind.config.js</div>
+        Se o campo <code>content</code> não apontar para todos os arquivos onde você usa classes Tailwind, o JIT não gera essas classes e elas somem em produção. Certifique-se de incluir todos os caminhos relevantes: <code>./src/**/*.{js,ts,jsx,tsx,vue,html}</code>.
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Usar @import no SCSS moderno — use @use e @forward</div>
+        O <code>@import</code> do Sass está <strong>depreciado</strong> desde 2021 e será removido. Use <code>@use 'variables' as vars</code> e acesse com <code>vars.$color-primary</code>. O <code>@forward</code> é para re-exportar de um arquivo de barril. Projetos legados ainda usam @import, mas novos devem usar o Module System.
+      </div>
+    </div>
+
+    <!-- 10. VÍDEOS -->
+    <div class="section">
+      <div class="section-label">// CURADORIA</div>
+      <h2>Vídeos essenciais</h2>
+      <div class="video-grid">
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Tailwind CSS in 100 Seconds</div>
+            <div class="video-channel">Fireship · 2 min</div>
+            <div class="video-why">Por que assistir: apresentação visual rápida da filosofia utility-first. Ideal para entender o "por quê" do Tailwind antes de mergulhar na documentação.</div>
+            <a href="https://www.youtube.com/watch?v=mr15Xzb1Ook" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Tailwind CSS Full Course for Beginners</div>
+            <div class="video-channel">Dave Gray · ~4h</div>
+            <div class="video-why">Por que assistir: curso completo e hands-on que constrói projetos reais. Cobre configuração, responsividade, dark mode, customização do tema e componentes reutilizáveis com @apply.</div>
+            <a href="https://www.youtube.com/watch?v=lCxcTsOHrjo" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Sass Tutorial for Beginners — CSS With Superpowers</div>
+            <div class="video-channel">Traversy Media · ~1h20</div>
+            <div class="video-why">Por que assistir: cobre todos os recursos do SCSS (variáveis, nesting, mixins, functions, partials) com exemplos práticos. O tutorial de Sass mais assistido em português/inglês.</div>
+            <a href="https://www.youtube.com/watch?v=nu5mdN2JIwM" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Figma to Code — Design Tokens Workflow</div>
+            <div class="video-channel">Kevin Powell · ~35 min</div>
+            <div class="video-why">Por que assistir: Kevin Powell (maior referência de CSS no YouTube) demonstra como extrair tokens do Figma, criar variáveis CSS e conectar ao seu workflow. Prático e direto.</div>
+            <a href="https://www.youtube.com/results?search_query=figma+to+css+design+tokens+kevin+powell" target="_blank">Buscar no YouTube →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 11. GLOSSÁRIO -->
+    <div class="section">
+      <div class="section-label">// GLOSSÁRIO</div>
+      <h2>Termos desta Aula</h2>
+      <div class="glossary-item">
+        <div class="glossary-term">Utility-first CSS</div>
+        <div class="glossary-def">Abordagem onde o styling é feito aplicando classes de propósito único diretamente no HTML, em vez de criar classes semânticas com múltiplas propriedades CSS.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">JIT (Just-in-Time)</div>
+        <div class="glossary-def">Compilador do Tailwind v3+ que gera CSS sob demanda apenas para as classes encontradas no código-fonte. Elimina a necessidade de purge manual e permite valores arbitrários.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Design Token</div>
+        <div class="glossary-def">Valor atômico e nomeado do design system (cor, espaçamento, tipografia). Ex: <code>--color-primary-500: #3b82f6</code>. São a fonte única da verdade que conecta Figma e código.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Mixin (Sass)</div>
+        <div class="glossary-def">Bloco de código CSS reutilizável com suporte a parâmetros. Definido com <code>@mixin</code> e usado com <code>@include</code>. Diferente de <code>@extend</code> — mixins incluem o código copiado.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Autoprefixer</div>
+        <div class="glossary-def">Plugin PostCSS que adiciona automaticamente prefixos vendor CSS (-webkit-, -moz-, -ms-) baseado na lista de browsers no .browserslistrc.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Partial (Sass)</div>
+        <div class="glossary-def">Arquivo SCSS com nome iniciado por underscore (_variables.scss). Não é compilado sozinho — apenas quando importado por outro arquivo. Usado para organização modular.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">@apply (Tailwind)</div>
+        <div class="glossary-def">Diretiva que permite usar classes Tailwind dentro de blocos CSS, criando componentes reutilizáveis sem duplicar classes no HTML. <code>.btn { @apply px-4 py-2 rounded; }</code>.</div>
+      </div>
+    </div>
+
+    <!-- CHECKPOINT -->
+    <div class="section">
+      <div class="checkpoint">
+        <h3>🏁 Checkpoint — Desafio Final</h3>
+        <p>Construa um <strong>mini design system</strong> com Tailwind CSS + design tokens:</p>
+        <ul>
+          <li>Defina pelo menos 8 design tokens como variáveis CSS (<code>:root</code>): cores, espaçamentos e border-radius</li>
+          <li>Configure o <code>tailwind.config.js</code> para consumir esses tokens nas chaves <code>colors</code>, <code>borderRadius</code> e <code>spacing</code></li>
+          <li>Crie os componentes <code>.btn-primary</code>, <code>.btn-secondary</code> e <code>.btn-ghost</code> usando <code>@layer components</code> com <code>@apply</code></li>
+          <li>Construa um card de usuário com: avatar (gradiente), nome, cargo, badges de habilidades e botão — totalmente com classes Tailwind</li>
+          <li>Adicione suporte a dark mode usando o prefixo <code>dark:</code> — o card deve ficar bonito em ambos os temas</li>
+          <li>Adicione responsividade: em mobile, o card ocupa 100% da largura; em <code>md:</code> vai para 50%; em <code>lg:</code> para 33%</li>
+          <li><strong>Bônus:</strong> replique exatamente um componente de um arquivo Figma público (Figma Community) usando os tokens extraídos do inspetor</li>
+        </ul>
+        <div class="checkpoint-hint">💬 Dica: instale a extensão <strong>Tailwind CSS IntelliSense</strong> no VS Code — ela dá autocomplete para todas as classes, mostra o CSS gerado ao passar o mouse e destaca classes inválidas. Indispensável. Para verificar o bundle final: rode <code>npm run build</code> e inspecione o tamanho do CSS em <code>dist/assets/*.css</code>.</div>
+      </div>
+    </div>
+
+    <!-- PRÓXIMOS PASSOS -->
+    <div class="section">
+      <div class="section-label">// próxima aula</div>
+      <h2>O que vem a seguir?</h2>
+      <p style="margin-bottom:20px;">Com o tooling CSS dominado, vamos voltar ao Python com foco em dados. A próxima aula cobre pandas e NumPy — as duas bibliotecas que transformam Python na linguagem mais usada em ciência de dados e análise exploratória: manipulação de DataFrames, operações vetorizadas, limpeza de dados e visualizações iniciais.</p>
+      <a href="py-06-pandas-numpy.html" class="next-card">
+        <div>
+          <div class="next-card-label">Próxima Aula • 🐍 Python</div>
+          <div class="next-card-title">Python — pandas & NumPy</div>
+        </div>
+        <div class="next-arrow">→</div>
+      </a>
+    </div>
+
+  </div>
+
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+    hljs.highlightAll();
+
+    const bar = document.getElementById('progressBar');
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      bar.style.width = pct + '%';
+    });
+  </script>
+</body>
+</html>

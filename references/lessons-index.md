@@ -58,9 +58,9 @@ Todos os HTMLs ficam em `outputs/aulas/` com o nome exato da coluna **Arquivo**.
 | `13-JS-02` | `[x]` | ⚡ JavaScript | JavaScript — Objetos, Arrays & ES6+ | Objetos & arrays · Prototype chain · Modules · Classes | `js-02-objetos-es6.html` |
 | `14-JS-03` | `[x]` | ⚡ JavaScript | JavaScript — Async: Event Loop, Promises & Fetch | Event Loop · Promises · Async/Await · Fetch API | `js-03-async-promises.html` |
 | `15-PY-05` | `[x]` | 🐍 Python | Python — HTTP, APIs & Bibliotecas Essenciais | requests · pathlib/os · datetime · regex | `py-05-http-bibliotecas.html` |
-| `16-GH-04` | `[ ]` | 🐙 GitHub | Git Avançado — Rebase, Tags & Estratégias | Rebase · Estratégias de branch · Tags · Releases | `gh-04-git-avancado.html` |
-| `17-DKR-01` | `[ ]` | 🐳 Docker | Docker — Conceitos, Imagens & Containers | Conceitos · Comandos core · Volumes | `dkr-01-conceitos-containers.html` |
-| `18-DKR-02` | `[ ]` | 🐳 Docker | Docker — Dockerfile & Boas Práticas | Dockerfile · Image optimization · Health checks · Segurança | `dkr-02-dockerfile.html` |
+| `16-GH-04` | `[x]` | 🐙 GitHub | Git Avançado — Rebase, Tags & Estratégias | Rebase · Estratégias de branch · Tags · Releases | `gh-04-git-avancado.html` |
+| `17-DKR-01` | `[x]` | 🐳 Docker | Docker — Conceitos, Imagens & Containers | Conceitos · Comandos core · Volumes | `dkr-01-conceitos-containers.html` |
+| `18-DKR-02` | `[x]` | 🐳 Docker | Docker — Dockerfile & Boas Práticas | Dockerfile · Image optimization · Health checks · Segurança | `dkr-02-dockerfile.html` |
 
 ---
 
@@ -70,12 +70,12 @@ Todos os HTMLs ficam em `outputs/aulas/` com o nome exato da coluna **Arquivo**.
 
 | ID | Status | Trilha | Título da Aula | Cards agrupados | Arquivo |
 |---|---|---|---|---|---|
-| `19-DKR-03` | `[ ]` | 🐳 Docker | Docker Compose & Redes | Docker Compose · Networking · Environment · Multi-stage builds | `dkr-03-compose-redes.html` |
-| `20-GH-05` | `[ ]` | 🐙 GitHub | GitHub Actions — CI/CD Completo | Workflows & YAML · CI testes automáticos · CD deploy · Secrets · Marketplace | `gh-05-actions-cicd.html` |
-| `21-N8N-01` | `[ ]` | 🔀 n8n | n8n — Setup & Primeiro Workflow | Instalação · Interface · Primeiro workflow · Tipos de triggers | `n8n-01-setup-workflow.html` |
-| `22-N8N-02` | `[ ]` | 🔀 n8n | n8n — Nodes Essenciais & Lógica | HTTP Request · Code Node · IF/Switch · Loop · Merge & Set · Error Trigger | `n8n-02-nodes-logica.html` |
-| `23-JS-04` | `[ ]` | ⚡ JavaScript | TypeScript — Tipos, Interfaces & Generics | Tipos & interfaces · Strict mode · Utility types · Decorators | `js-04-typescript.html` |
-| `24-HTML-05` | `[ ]` | 🌐 HTML/CSS | CSS Tooling — Tailwind, Sass & Figma | Tailwind CSS · Sass/SCSS · PostCSS · Figma → Código | `html-05-tooling.html` |
+| `19-DKR-03` | `[x]` | 🐳 Docker | Docker Compose & Redes | Docker Compose · Networking · Environment · Multi-stage builds | `dkr-03-compose-redes.html` |
+| `20-GH-05` | `[x]` | 🐙 GitHub | GitHub Actions — CI/CD Completo | Workflows & YAML · CI testes automáticos · CD deploy · Secrets · Marketplace | `gh-05-actions-cicd.html` |
+| `21-N8N-01` | `[x]` | 🔀 n8n | n8n — Setup & Primeiro Workflow | Instalação · Interface · Primeiro workflow · Tipos de triggers | `n8n-01-setup-workflow.html` |
+| `22-N8N-02` | `[x]` | 🔀 n8n | n8n — Nodes Essenciais & Lógica | HTTP Request · Code Node · IF/Switch · Loop · Merge & Set · Error Trigger | `n8n-02-nodes-logica.html` |
+| `23-JS-04` | `[x]` | ⚡ JavaScript | TypeScript — Tipos, Interfaces & Generics | Tipos & interfaces · Strict mode · Utility types · Decorators | `js-04-typescript.html` |
+| `24-HTML-05` | `[x]` | 🌐 HTML/CSS | CSS Tooling — Tailwind, Sass & Figma | Tailwind CSS · Sass/SCSS · PostCSS · Figma → Código | `html-05-tooling.html` |
 
 ---
 
@@ -85,10 +85,10 @@ Todos os HTMLs ficam em `outputs/aulas/` com o nome exato da coluna **Arquivo**.
 
 | ID | Status | Trilha | Título da Aula | Cards agrupados | Arquivo |
 |---|---|---|---|---|---|
-| `25-PY-06` | `[ ]` | 🐍 Python | Python — pandas & NumPy | pandas · NumPy · análise exploratória de dados | `py-06-pandas-numpy.html` |
-| `26-PY-07` | `[ ]` | 🐍 Python | FastAPI — API REST do Zero | FastAPI · Pydantic · validação · async · Swagger | `py-07-fastapi.html` |
-| `27-PY-08` | `[ ]` | 🐍 Python | Python Back-end Completo | SQLAlchemy · Autenticação JWT · Async/Await · pytest · Deploy | `py-08-backend-completo.html` |
-| `28-JS-05` | `[ ]` | ⚡ JavaScript | Node.js & Express — API REST | Node.js · Express/Fastify · rotas · middleware · REST API | `js-05-nodejs-express.html` |
+| `25-PY-06` | `[x]` | 🐍 Python | Python — pandas & NumPy | pandas · NumPy · análise exploratória de dados | `py-06-pandas-numpy.html` |
+| `26-PY-07` | `[x]` | 🐍 Python | FastAPI — API REST do Zero | FastAPI · Pydantic · validação · async · Swagger | `py-07-fastapi.html` |
+| `27-PY-08` | `[x]` | 🐍 Python | Python Back-end Completo | SQLAlchemy · Autenticação JWT · Async/Await · pytest · Deploy | `py-08-backend-completo.html` |
+| `28-JS-05` | `[x]` | ⚡ JavaScript | Node.js & Express — API REST | Node.js · Express/Fastify · rotas · middleware · REST API | `js-05-nodejs-express.html` |
 | `29-N8N-03` | `[ ]` | 🔀 n8n | n8n — Integrações Reais | Google Sheets · Telegram/Slack · Email · Banco de dados · Airtable/Notion | `n8n-03-integracoes.html` |
 | `30-GH-06` | `[ ]` | 🐙 GitHub | GitHub Avançado — Segurança & Packages | Branch protection · Dependabot · Code scanning · Packages & Registry · API & CLI | `gh-06-seguranca-packages.html` |
 

@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Python Back-end Completo — SQLAlchemy, JWT & pytest · Aula 27</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #3b82f6;
+      --accent-dim: rgba(59,130,246,0.15);
+      --accent-border: rgba(59,130,246,0.35);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #60a5fa); width: 0%; transition: width 0.1s; }
+
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; cursor: default; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #60a5fa; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.08); border-color: var(--success); }
+    .callout-tip .callout-title { color: var(--success); }
+    .callout-danger { background: rgba(239,68,68,0.08); border-color: var(--danger); }
+    .callout-danger .callout-title { color: var(--danger); }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(59,130,246,0.2); color: #60a5fa; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+    .pillar-badge { font-size: 11px; padding: 3px 10px; border-radius: 4px; font-weight: 600; }
+
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; text-decoration: none; color: inherit; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-watch { font-size: 12px; color: var(--accent); }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(96,165,250,0.04)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; margin-bottom: 40px; }
+    .checkpoint-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; font-weight: 600; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(59,130,246,0.06); border-radius: 6px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; }
+
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #60a5fa; }
+
+    .terminal { background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .terminal-bar { background: #1a1a1a; padding: 8px 14px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ef4444; } .dot-yellow { background: #f59e0b; } .dot-green { background: #10b981; }
+    .terminal-title { font-size: 11px; color: #555; margin-left: 6px; }
+    .terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; }
+    .t-prompt { color: #10b981; } .t-cmd { color: #e8e8f0; } .t-out { color: #8585a8; } .t-comment { color: #444; font-style: italic; }
+
+    /* JWT flow */
+    .jwt-parts { display: flex; gap: 4px; margin: 16px 0; flex-wrap: wrap; }
+    .jwt-part { padding: 6px 14px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; }
+    .jwt-header { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
+    .jwt-payload { background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); color: #fcd34d; }
+    .jwt-signature { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); color: #6ee7b7; }
+    .jwt-dot { color: var(--muted); display: flex; align-items: center; font-size: 18px; font-weight: 700; }
+
+    .footer { margin-top: 80px; padding-top: 24px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--muted); }
+    .footer a { color: var(--accent); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 640px) {
+      .top-nav { padding: 10px 16px; }
+      .page { padding: 32px 16px 80px; }
+      .analogy-mapping { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress"></div></div>
+
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="py-07-fastapi.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">🐍 Python</span> · Aula 27 / 50
+      </div>
+      <a href="js-05-nodejs-express.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>🐍 Python · Back-end</span>
+        <span class="hero-badge">Aula 27</span>
+      </div>
+      <h1>Python Back-end Completo</h1>
+      <div class="hero-meta">
+        <span>⏱ 40 min de leitura</span>
+        <span>🎯 Intermediário–Avançado</span>
+        <span>🔧 Hands-on incluído</span>
+        <span>🐍 Python 3.10+</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">SQLAlchemy</span>
+        <span class="tag">Alembic</span>
+        <span class="tag">JWT</span>
+        <span class="tag">bcrypt</span>
+        <span class="tag">pytest</span>
+        <span class="tag">async/await</span>
+        <span class="tag">Docker + Deploy</span>
+      </div>
+    </div>
+
+    <!-- 1. POR QUE ISSO IMPORTA -->
+    <div class="section">
+      <div class="section-label">// motivação</div>
+      <h2>A diferença entre um CRUD e uma API de produção</h2>
+      <p>
+        Na aula anterior, construímos uma API FastAPI com dados em memória. Funcionou — mas sem persistência (reiniciou o servidor, perdeu tudo), sem autenticação (qualquer um acessa tudo) e sem testes (como garantir que nada quebrou?). Esta aula fecha essas três lacunas.
+      </p>
+      <p>
+        SQLAlchemy é o ORM padrão do Python — traduz objetos Python para SQL sem escrever queries na mão. JWT é o protocolo de autenticação stateless mais usado em APIs REST. E pytest com fixtures transforma testes em algo prazeroso de escrever.
+      </p>
+      <div class="callout callout-info">
+        <div class="callout-title">💼 Por que um engenheiro sênior usa isso hoje</div>
+        <p>APIs de produção precisam de: banco relacional com migrações versionadas (Alembic), autenticação stateless que escala horizontalmente (JWT), e uma suíte de testes que roda em segundos no CI (pytest). Esses três pilares juntos transformam um projeto de hobby em software maintível por um time.</p>
+      </div>
+    </div>
+
+    <!-- 2. ANALOGIA -->
+    <div class="section">
+      <div class="section-label">// analogia</div>
+      <h2>Antes do código: uma analogia</h2>
+      <div class="analogy-card">
+        <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
+        <div class="analogy-text">
+          Imagine um <strong>cofre de banco</strong>. O <strong>cofre</strong> é o banco de dados — os dados persistem lá mesmo sem ninguém usando. O <strong>gerente de banco</strong> é o SQLAlchemy: você diz "quero abrir essa conta" e ele converte para as ações físicas corretas. O <strong>crachá de acesso com chip</strong> é o JWT: você autentica uma vez, recebe um crachá, e ele te identifica em todas as entradas seguintes sem precisar digitar senha de novo. E o <strong>auditório de testes da agência</strong> é o pytest: antes de abrir qualquer cofre real, todo procedimento é testado num ambiente simulado idêntico.
+        </div>
+        <div class="analogy-mapping">
+          <span class="analogy-real">🏦 Cofre do banco</span>
+          <span class="analogy-tech">→ PostgreSQL/SQLite (banco real)</span>
+          <span class="analogy-real">👔 Gerente de operações</span>
+          <span class="analogy-tech">→ SQLAlchemy ORM</span>
+          <span class="analogy-real">📇 Crachá com chip</span>
+          <span class="analogy-tech">→ JWT Token</span>
+          <span class="analogy-real">🏋️ Sala de treino simulada</span>
+          <span class="analogy-tech">→ pytest + fixtures</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. SQLALCHEMY -->
+    <div class="section">
+      <div class="section-label">// conceito 1</div>
+      <h2>SQLAlchemy — ORM que pensa como Python</h2>
+      <p>
+        Um ORM (Object-Relational Mapper) permite trabalhar com tabelas de banco de dados como se fossem classes Python. Você define um modelo, e o ORM cuida do SQL. Com <strong>Alembic</strong>, as mudanças no schema são versionadas — como git para o banco.
+      </p>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// camadas do SQLAlchemy com FastAPI</div>
+        <div class="mermaid">
+graph TD
+    A[FastAPI Handler] --> B[SQLAlchemy Session]
+    B --> C[ORM Models\nUser, Post, Todo...]
+    C --> D[SQLAlchemy Core\nSQL Expression]
+    D --> E[Database Driver\nasyncpg / aiosqlite]
+    E --> F[(PostgreSQL\n/ SQLite)]
+    G[Alembic Migrations] --> F
+    style C fill:#1e3a5f,stroke:#3b82f6,color:#93c5fd
+    style F fill:#163624,stroke:#10b981,color:#6ee7b7
+        </div>
+      </div>
+
+      <div class="code-label">// models/database.py — configuração</div>
+      <pre><code class="language-python">from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import DeclarativeBase, sessionmaker
+
+# Para SQLite (dev): "sqlite+aiosqlite:///./app.db"
+# Para PostgreSQL (prod): "postgresql+asyncpg://user:pass@host/db"
+DATABASE_URL = "sqlite+aiosqlite:///./todo.db"
+
+engine = create_async_engine(DATABASE_URL, echo=True)
+
+AsyncSessionLocal = sessionmaker(
+    engine, class_=AsyncSession, expire_on_commit=False
+)
+
+class Base(DeclarativeBase):
+    pass
+
+# Dependency — injetada via Depends() nas rotas
+async def get_db():
+    async with AsyncSessionLocal() as session:
+        yield session
+        # session.close() é chamado automaticamente</code></pre>
+
+      <div class="code-label">// models/todo.py — modelo SQLAlchemy</div>
+      <pre><code class="language-python">from sqlalchemy import String, Integer, Boolean, DateTime, func
+from sqlalchemy.orm import Mapped, mapped_column
+from .database import Base
+
+class Todo(Base):
+    __tablename__ = "todos"
+
+    # mapped_column é a sintaxe moderna (SQLAlchemy 2.0+)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    title: Mapped[str] = mapped_column(String(200), nullable=False)
+    description: Mapped[str | None] = mapped_column(String(1000))
+    priority: Mapped[int] = mapped_column(Integer, default=1)
+    completed: Mapped[bool] = mapped_column(Boolean, default=False)
+    owner_id: Mapped[int] = mapped_column(Integer, index=True)
+
+    # auto-preenchido pelo banco
+    created_at: Mapped[DateTime] = mapped_column(
+        DateTime, server_default=func.now()
+    )</code></pre>
+
+      <h3>Alembic — Migrações versionadas</h3>
+      <div class="terminal">
+        <div class="terminal-bar">
+          <span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span>
+          <span class="terminal-title">bash — workflow de migrações</span>
+        </div>
+        <div class="terminal-body">
+          <span class="t-prompt">$ </span><span class="t-cmd">pip install alembic aiosqlite</span><br>
+          <span class="t-prompt">$ </span><span class="t-cmd">alembic init alembic</span> <span class="t-comment"># cria pasta alembic/</span><br>
+          <span class="t-comment"># edite alembic/env.py para apontar para seus models</span><br>
+          <span class="t-prompt">$ </span><span class="t-cmd">alembic revision --autogenerate -m "create todos table"</span><br>
+          <span class="t-out">Generating alembic/versions/001_create_todos_table.py</span><br>
+          <span class="t-prompt">$ </span><span class="t-cmd">alembic upgrade head</span> <span class="t-comment"># aplica ao banco</span><br>
+          <span class="t-out">Running upgrade -> 001_create_todos_table</span>
+        </div>
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">🔥 Pro tip: nunca edite o banco manualmente em produção</div>
+        <p>Toda mudança de schema deve passar por uma migration Alembic. Isso garante que dev, staging e prod ficam sempre sincronizados — e permite fazer rollback com <code>alembic downgrade -1</code>.</p>
+      </div>
+    </div>
+
+    <!-- 4. JWT -->
+    <div class="section">
+      <div class="section-label">// conceito 2</div>
+      <h2>Autenticação JWT — stateless e escalável</h2>
+      <p>
+        JWT (JSON Web Token) é um token que carrega informações do usuário de forma <strong>auto-suficiente e assinada</strong>. O servidor não precisa guardar sessões — basta verificar a assinatura do token. Isso é fundamental para APIs que escalam horizontalmente.
+      </p>
+
+      <h3>Anatomia de um JWT</h3>
+      <div class="jwt-parts">
+        <span class="jwt-part jwt-header">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9</span>
+        <span class="jwt-dot">.</span>
+        <span class="jwt-part jwt-payload">eyJzdWIiOiIxMjM0NTY3ODkwIiwiZXhwIjoxNzE2MjM5MDIyfQ</span>
+        <span class="jwt-dot">.</span>
+        <span class="jwt-part jwt-signature">SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c</span>
+      </div>
+      <p style="font-size:13px;color:var(--muted);">
+        <span style="color:#fca5a5;">■</span> Header (algoritmo) &nbsp;
+        <span style="color:#fcd34d;">■</span> Payload (dados do usuário + expiração) &nbsp;
+        <span style="color:#6ee7b7;">■</span> Signature (HMAC com secret key)
+      </p>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// fluxo de autenticação JWT</div>
+        <div class="mermaid">
+sequenceDiagram
+    participant C as Cliente
+    participant A as /auth/login
+    participant R as /todos (rota protegida)
+    C->>A: POST {email, password}
+    A->>A: verifica bcrypt hash
+    A-->>C: {access_token: "eyJ..."}
+    C->>R: GET /todos\nAuthorization: Bearer eyJ...
+    R->>R: valida assinatura JWT
+    R-->>C: [lista de todos]
+        </div>
+      </div>
+
+      <div class="code-label">// core/security.py — JWT + bcrypt</div>
+      <pre><code class="language-python">from datetime import datetime, timedelta
+from typing import Optional
+import bcrypt
+from jose import JWTError, jwt
+
+SECRET_KEY = "sua-chave-super-secreta"  # use env var em produção!
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+def hash_password(password: str) -> str:
+    """Gera hash bcrypt. Nunca armazene senha em texto puro."""
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(password.encode(), salt).decode()
+
+def verify_password(plain: str, hashed: str) -> bool:
+    """Verifica senha contra o hash bcrypt armazenado."""
+    return bcrypt.checkpw(plain.encode(), hashed.encode())
+
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+    """Cria um JWT assinado com expiração."""
+    to_encode = data.copy()
+    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=15))
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+def decode_token(token: str) -> dict:
+    """Decodifica e valida o JWT. Lança JWTError se inválido."""
+    return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])</code></pre>
+
+      <div class="code-label">// core/deps.py — Dependency para rotas protegidas</div>
+      <pre><code class="language-python">from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.ext.asyncio import AsyncSession
+from .security import decode_token
+from .database import get_db
+from jose import JWTError
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+
+async def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Dependency que extrai e valida o usuário do JWT.
+    Use: user = Depends(get_current_user) em qualquer rota.
+    """
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Token inválido ou expirado",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = decode_token(token)
+        user_id: str = payload.get("sub")
+        if user_id is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+
+    # Em produção: buscar usuário do banco aqui
+    return {"id": int(user_id)}
+
+# Rota protegida — uso:
+# @app.get("/profile")
+# async def profile(user = Depends(get_current_user)):
+#     return {"user_id": user["id"]}</code></pre>
+    </div>
+
+    <!-- 5. PYTEST -->
+    <div class="section">
+      <div class="section-label">// conceito 3</div>
+      <h2>pytest — Testes que dão confiança para refatorar</h2>
+      <p>
+        pytest é o framework de testes padrão do Python. Com fixtures você cria estados reutilizáveis (banco de teste, cliente HTTP), e com <code>httpx.AsyncClient</code> testa endpoints FastAPI sem precisar de um servidor rodando.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Tipo de Teste</th><th>O que testa</th><th>Velocidade</th><th>Quando usar</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Unitário</strong></td>
+              <td>Função isolada (ex: <code>hash_password</code>)</td>
+              <td><span class="badge badge-green">Muito rápido</span></td>
+              <td>Sempre — lógica de negócio pura</td>
+            </tr>
+            <tr>
+              <td><strong>Integração</strong></td>
+              <td>Rota + banco + auth juntos</td>
+              <td><span class="badge badge-yellow">Médio</span></td>
+              <td>Fluxos críticos (login, CRUD)</td>
+            </tr>
+            <tr>
+              <td><strong>E2E</strong></td>
+              <td>Sistema completo com HTTP real</td>
+              <td><span class="badge badge-red">Lento</span></td>
+              <td>Smoke tests em staging/prod</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="code-label">// tests/conftest.py — fixtures compartilhadas</div>
+      <pre><code class="language-python">import pytest
+import pytest_asyncio
+from httpx import AsyncClient, ASGITransport
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker
+
+from main import app
+from models.database import Base, get_db
+
+# Banco de dados em memória para testes — nunca toca o banco real
+TEST_DB = "sqlite+aiosqlite:///:memory:"
+
+@pytest_asyncio.fixture(scope="session")
+async def test_db():
+    engine = create_async_engine(TEST_DB, echo=False)
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield engine
+    await engine.dispose()
+
+@pytest_asyncio.fixture
+async def db_session(test_db):
+    TestSession = sessionmaker(test_db, class_=AsyncSession,
+                               expire_on_commit=False)
+    async with TestSession() as session:
+        yield session
+
+@pytest_asyncio.fixture
+async def client(db_session):
+    # Sobrescreve a dependency de banco para usar o de teste
+    app.dependency_overrides[get_db] = lambda: db_session
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test"
+    ) as ac:
+        yield ac
+    app.dependency_overrides.clear()</code></pre>
+
+      <div class="code-label">// tests/test_todos.py — testes de integração</div>
+      <pre><code class="language-python">import pytest
+
+@pytest.mark.asyncio
+async def test_create_todo(client):
+    """Criar uma tarefa retorna 201 com os dados corretos."""
+    response = await client.post("/todos", json={
+        "title": "Estudar FastAPI",
+        "priority": 3
+    })
+    assert response.status_code == 201
+    data = response.json()
+    assert data["title"] == "Estudar FastAPI"
+    assert data["priority"] == 3
+    assert data["completed"] is False
+    assert "id" in data
+
+@pytest.mark.asyncio
+async def test_get_todo_not_found(client):
+    """Buscar tarefa inexistente retorna 404."""
+    response = await client.get("/todos/99999")
+    assert response.status_code == 404
+    assert "não encontrada" in response.json()["detail"]
+
+@pytest.mark.asyncio
+async def test_todo_validation_error(client):
+    """Dados inválidos retornam 422."""
+    response = await client.post("/todos", json={
+        "title": "",        # min_length=1
+        "priority": 10      # max=5
+    })
+    assert response.status_code == 422
+
+@pytest.mark.asyncio
+async def test_security_hash_verify():
+    """Testa bcrypt sem banco — teste unitário puro."""
+    from core.security import hash_password, verify_password
+    hashed = hash_password("senha123")
+    assert verify_password("senha123", hashed) is True
+    assert verify_password("senha_errada", hashed) is False</code></pre>
+
+      <div class="terminal">
+        <div class="terminal-bar">
+          <span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span>
+          <span class="terminal-title">bash — rodando os testes</span>
+        </div>
+        <div class="terminal-body">
+          <span class="t-prompt">$ </span><span class="t-cmd">pip install pytest pytest-asyncio httpx</span><br>
+          <span class="t-prompt">$ </span><span class="t-cmd">pytest tests/ -v --tb=short</span><br>
+          <span class="t-out">tests/test_todos.py::test_create_todo PASSED</span><br>
+          <span class="t-out">tests/test_todos.py::test_get_todo_not_found PASSED</span><br>
+          <span class="t-out">tests/test_todos.py::test_todo_validation_error PASSED</span><br>
+          <span class="t-out">tests/test_todos.py::test_security_hash_verify PASSED</span><br>
+          <span class="t-out">4 passed in 0.42s</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. DEPLOY -->
+    <div class="section">
+      <div class="section-label">// deploy</div>
+      <h2>Docker + Uvicorn — da máquina ao cloud</h2>
+      <p>
+        Com os arquivos anteriores organizados, o deploy é direto: um <code>Dockerfile</code> multi-stage cria uma imagem enxuta, e qualquer plataforma que aceite Docker (Railway, Fly.io, AWS, Render) recebe sua API.
+      </p>
+
+      <div class="code-label">// Dockerfile — multi-stage para produção</div>
+      <pre><code class="language-dockerfile"># Stage 1 — builder (instala dependências)
+FROM python:3.12-slim AS builder
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir --user -r requirements.txt
+
+# Stage 2 — runner (imagem final enxuta)
+FROM python:3.12-slim AS runner
+WORKDIR /app
+# Copia só as dependências compiladas do stage anterior
+COPY --from=builder /root/.local /root/.local
+COPY . .
+
+ENV PATH=/root/.local/bin:$PATH
+ENV PYTHONUNBUFFERED=1
+
+# Uvicorn com múltiplos workers para produção
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]</code></pre>
+
+      <div class="terminal">
+        <div class="terminal-bar">
+          <span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span>
+          <span class="terminal-title">bash — build e run local</span>
+        </div>
+        <div class="terminal-body">
+          <span class="t-prompt">$ </span><span class="t-cmd">docker build -t todo-api .</span><br>
+          <span class="t-out">Successfully built 89ab12cd</span><br>
+          <span class="t-prompt">$ </span><span class="t-cmd">docker run -p 8000:8000 todo-api</span><br>
+          <span class="t-out">INFO: Uvicorn running on http://0.0.0.0:8000</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. PITFALLS -->
+    <div class="section">
+      <div class="section-label">// armadilhas</div>
+      <h2>Erros comuns</h2>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Guardar SECRET_KEY no código-fonte</div>
+        <p>Nunca commite chaves secretas. Use variáveis de ambiente com <code>python-decouple</code> ou <code>pydantic-settings</code>. Em produção, use secrets manager (AWS Secrets Manager, Vault, etc.).</p>
+        <pre><code class="language-python"># ✅ Use pydantic-settings
+from pydantic_settings import BaseSettings
+
+class Settings(BaseSettings):
+    secret_key: str
+    database_url: str
+    class Config:
+        env_file = ".env"  # lê do .env em dev
+
+settings = Settings()</code></pre>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Token JWT sem expiração curta</div>
+        <p>Access tokens devem expirar em 15–30 minutos. Para sessões longas, use o padrão <strong>refresh token</strong>: um token de vida curta (access) + um de vida longa (refresh) armazenado em cookie HttpOnly. Nunca armazene tokens JWT em localStorage.</p>
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚠️ Usar o banco de produção nos testes</div>
+        <p>Sempre use SQLite em memória (<code>sqlite+aiosqlite:///:memory:</code>) ou um banco de teste separado. O fixture <code>dependency_overrides</code> do FastAPI foi criado exatamente para isso — sem ele, testes que inserem dados poluem o banco real.</p>
+      </div>
+    </div>
+
+    <!-- 8. VÍDEOS -->
+    <div class="section">
+      <div class="section-label">// curadoria</div>
+      <h2>Referências em vídeo</h2>
+      <div class="video-grid">
+        <a class="video-card" href="https://www.youtube.com/watch?v=2g1ZjA6zHRo" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">SQLAlchemy 2.0 Crash Course</div>
+            <div class="video-channel">ArjanCodes · 35min</div>
+            <div class="video-why">Por que assistir: cobre a nova API do SQLAlchemy 2.0 com mapped_column e sessão assíncrona — exatamente o que usamos aqui.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+        <a class="video-card" href="https://www.youtube.com/watch?v=G12LCBrSMi4" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">JWT Authentication — FastAPI Full Tutorial</div>
+            <div class="video-channel">Bitfumes · 1h 10min</div>
+            <div class="video-why">Por que assistir: implementação completa de auth com JWT, OAuth2PasswordBearer e proteção de rotas no FastAPI.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+        <a class="video-card" href="https://www.youtube.com/watch?v=cHjmJuGgXkU" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">pytest Tutorial — Complete Guide</div>
+            <div class="video-channel">Corey Schafer · 45min</div>
+            <div class="video-why">Por que assistir: cobre fixtures, parametrize, monkeypatch e boas práticas de organização de testes em Python.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+        <a class="video-card" href="https://www.youtube.com/watch?v=zkMRWDQV4Tg" target="_blank">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Dockerize a FastAPI app</div>
+            <div class="video-channel">TechWorld with Nana · 20min</div>
+            <div class="video-why">Por que assistir: mostra o Dockerfile multi-stage, variáveis de ambiente e deploy no Railway em menos de 20 minutos.</div>
+            <span class="video-watch">Assistir →</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- CHECKPOINT -->
+    <div class="checkpoint">
+      <div class="checkpoint-label">// desafio</div>
+      <h3>🏁 Checkpoint — valide seu aprendizado</h3>
+      <p>Evolua a API de filmes da Aula 26 para produção:</p>
+      <ul>
+        <li>Substitua o dict em memória por SQLAlchemy com SQLite (modelo <code>Movie</code> com todas as colunas)</li>
+        <li>Crie rota <code>POST /auth/register</code> e <code>POST /auth/login</code> que retorna JWT</li>
+        <li>Proteja as rotas de criação e deleção com <code>Depends(get_current_user)</code></li>
+        <li>Escreva ao menos 4 testes pytest: create, not_found, unauthorized e validation_error</li>
+        <li>Crie um <code>Dockerfile</code> que sobe a API e rode localmente com <code>docker build + docker run</code></li>
+      </ul>
+      <div class="checkpoint-hint">💬 Dica: use <code>alembic revision --autogenerate</code> após criar o model Movie para gerar a migration automaticamente. Teste cada endpoint no Swagger antes de escrever os testes.</div>
+    </div>
+
+    <!-- PRÓXIMA AULA -->
+    <a href="js-05-nodejs-express.html" class="next-card">
+      <div>
+        <div class="next-card-label">Próxima aula →</div>
+        <div class="next-card-title">Node.js &amp; Express — API REST no ecossistema JavaScript</div>
+      </div>
+      <div class="next-arrow">→</div>
+    </a>
+
+    <div class="footer">
+      <span>🐍 Python · Aula 27 / 50</span>
+      <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+    </div>
+
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+    mermaid.initialize({
+      startOnLoad: true, theme: 'dark',
+      themeVariables: {
+        primaryColor: '#1e3a5f', primaryTextColor: '#e8e8f0',
+        primaryBorderColor: '#3b82f6', lineColor: '#8585a8',
+        background: '#111118', mainBkg: '#16161f', nodeBorder: '#3b82f6'
+      }
+    });
+    window.addEventListener('scroll', () => {
+      const p = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+      document.getElementById('progress').style.width = p + '%';
+    });
+  </script>
+</body>
+</html>
