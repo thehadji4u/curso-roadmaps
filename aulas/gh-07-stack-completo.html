@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub no Stack Completo · Aula 35</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+    :root{--bg:#0a0a0f;--surface:#111118;--surface2:#16161f;--border:#1e1e2e;--text:#e8e8f0;--muted:#8585a8;--accent:#58a6ff;--accent-dim:rgba(88,166,255,0.12);--accent-border:rgba(88,166,255,0.35);--success:#10b981;--warn:#f59e0b;--danger:#ef4444;--info:#06b6d4}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:15px;line-height:1.75}
+    .progress-bar-wrap{position:fixed;top:0;left:0;right:0;height:3px;background:var(--border);z-index:1000}
+    .progress-bar-fill{height:100%;background:linear-gradient(90deg,#58a6ff,#93c5fd);width:0%;transition:width 0.1s}
+    .top-nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:12px 32px;background:rgba(10,10,15,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+    .nav-back{text-decoration:none;color:var(--muted);font-size:12px;letter-spacing:0.05em;padding:6px 14px;border:1px solid var(--border);border-radius:6px;transition:all 0.2s}
+    .nav-back:hover{color:var(--text);border-color:rgba(255,255,255,0.15);background:rgba(255,255,255,0.04)}
+    .nav-center{display:flex;align-items:center;gap:10px}
+    .nav-position{font-size:12px;color:var(--muted);letter-spacing:0.06em}
+    .nav-position .track{color:var(--accent);font-weight:600}
+    .nav-prev,.nav-next{display:flex;align-items:center;gap:6px;text-decoration:none;color:var(--muted);font-size:12px;letter-spacing:0.05em;padding:6px 14px;border:1px solid var(--border);border-radius:6px;background:transparent;transition:all 0.2s}
+    .nav-prev:hover,.nav-next:hover{color:var(--text);border-color:rgba(255,255,255,0.15);background:rgba(255,255,255,0.04)}
+    .nav-prev.disabled{opacity:0.3;pointer-events:none}
+    .nav-next{border-color:var(--accent-border);color:var(--accent)}
+    .nav-next:hover{background:var(--accent-dim);color:#93c5fd}
+    .page{max-width:860px;margin:0 auto;padding:48px 24px 96px}
+    .hero{padding:52px 0 40px;border-bottom:1px solid var(--border);margin-bottom:56px}
+    .hero-eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:20px;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)}
+    .hero-badge{background:var(--accent-dim);border:1px solid var(--accent-border);color:var(--accent);padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600}
+    .hero h1{font-family:'Syne',sans-serif;font-size:clamp(2rem,5vw,3rem);font-weight:800;line-height:1.1;letter-spacing:-0.02em;margin-bottom:20px;background:linear-gradient(135deg,#fff 40%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--muted);margin-bottom:24px}
+    .hero-tags{display:flex;flex-wrap:wrap;gap:8px}
+    .tag{background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--muted);padding:4px 12px;border-radius:4px;font-size:11px;letter-spacing:0.06em}
+    .tag.accent{background:var(--accent-dim);border-color:var(--accent-border);color:var(--accent)}
+    .section{margin-bottom:64px}
+    .section-label{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;font-weight:600}
+    .section h2{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:700;margin-bottom:20px;color:#fff}
+    .section h3{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:700;margin:32px 0 14px;color:#fff}
+    .section p{color:var(--text);margin-bottom:16px}
+    .callout{border-radius:8px;padding:18px 20px;margin:20px 0;border-left:3px solid}
+    .callout-title{font-weight:700;margin-bottom:6px;font-size:13px}
+    .callout-info{background:rgba(6,182,212,0.08);border-color:var(--info)}.callout-info .callout-title{color:var(--info)}
+    .callout-warn{background:rgba(245,158,11,0.08);border-color:var(--warn)}.callout-warn .callout-title{color:var(--warn)}
+    .callout-tip{background:rgba(88,166,255,0.06);border-color:var(--accent)}.callout-tip .callout-title{color:var(--accent)}
+    .callout-check{background:rgba(16,185,129,0.06);border-color:var(--success)}.callout-check .callout-title{color:var(--success)}
+    .analogy-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;position:relative;overflow:hidden}
+    .analogy-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),transparent)}
+    .analogy-label{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+    .analogy-text{font-size:15px;color:var(--text);margin-bottom:20px;line-height:1.8}
+    .analogy-mapping{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px}
+    .analogy-real{background:rgba(255,255,255,0.04);border:1px solid var(--border);padding:8px 14px;border-radius:6px;font-size:13px;color:var(--muted)}
+    .analogy-tech{background:var(--accent-dim);border:1px solid var(--accent-border);padding:8px 14px;border-radius:6px;font-size:13px;color:var(--accent)}
+    .mermaid-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px 20px;margin:24px 0;overflow:auto}
+    .mermaid-label{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+    .table-wrap{overflow-x:auto;margin:16px 0}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    thead tr{border-bottom:2px solid var(--accent-border)}
+    thead th{text-align:left;padding:10px 14px;color:var(--accent);font-size:11px;letter-spacing:0.08em;text-transform:uppercase}
+    tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s}
+    tbody tr:hover{background:rgba(255,255,255,0.03)}
+    tbody td{padding:11px 14px;color:var(--text);vertical-align:top}
+    .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+    .badge-green{background:rgba(16,185,129,0.2);color:#34d399}
+    .badge-red{background:rgba(239,68,68,0.2);color:#f87171}
+    .badge-yellow{background:rgba(245,158,11,0.2);color:#fbbf24}
+    .badge-blue{background:rgba(88,166,255,0.2);color:#93c5fd}
+    .steps{display:flex;flex-direction:column;gap:16px}
+    .step{display:flex;gap:18px;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:10px}
+    .step-num{flex-shrink:0;width:32px;height:32px;background:var(--accent-dim);border:1px solid var(--accent-border);color:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+    .step-body{flex:1;min-width:0}
+    .step-title{font-weight:700;color:#fff;margin-bottom:6px}
+    .step-desc{color:var(--muted);font-size:13px;margin-bottom:12px}
+    pre{background:#0d1117 !important;border:1px solid var(--border);border-radius:8px;overflow-x:auto;margin:12px 0;font-size:13px}
+    pre code{font-family:'JetBrains Mono',monospace}
+    .code-label{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);padding:10px 16px 0}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    @media(max-width:640px){.grid-2,.grid-3{grid-template-columns:1fr}}
+    .card-mini{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;transition:border-color 0.2s}
+    .card-mini:hover{border-color:var(--accent-border)}
+    .card-mini h4{color:#fff;font-size:14px;margin:10px 0 6px}
+    .card-mini p{color:var(--muted);font-size:13px;margin:0}
+    .video-grid{display:grid;gap:14px}
+    .video-card{display:flex;gap:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;transition:border-color 0.2s;text-decoration:none}
+    .video-card:hover{border-color:var(--accent-border)}
+    .video-thumb{flex-shrink:0;width:52px;height:52px;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px}
+    .video-info{flex:1}
+    .video-title{font-weight:700;color:#fff;font-size:14px;margin-bottom:4px}
+    .video-channel{color:var(--muted);font-size:12px;margin-bottom:6px}
+    .video-why{color:var(--text);font-size:12px;margin-bottom:10px}
+    .video-watch{font-size:12px;color:var(--accent);text-decoration:none}
+    .video-watch:hover{text-decoration:underline}
+    .checkpoint{background:linear-gradient(135deg,rgba(88,166,255,0.08),rgba(0,0,0,0));border:1px solid var(--accent-border);border-radius:12px;padding:28px;margin-bottom:40px}
+    .checkpoint-label{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;font-weight:600}
+    .checkpoint h3{font-family:'Syne',sans-serif;font-size:1.2rem;color:var(--accent);margin-bottom:12px}
+    .checkpoint p{margin-bottom:14px}
+    .checkpoint ul{padding-left:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+    .checkpoint ul li{color:var(--text);font-size:14px}
+    .checkpoint ul li::before{content:'✦ ';color:var(--accent)}
+    .checkpoint-hint{margin-top:16px;padding:12px 16px;background:rgba(255,255,255,0.03);border-radius:6px;font-size:13px;color:var(--muted)}
+    .pitfall{background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.25);border-radius:10px;padding:20px;margin:16px 0}
+    .pitfall-title{color:#f87171;font-weight:700;margin-bottom:8px;font-size:14px}
+    .next-card{display:flex;align-items:center;justify-content:space-between;padding:22px 24px;background:var(--surface);border:1px solid var(--accent-border);border-radius:10px;text-decoration:none;transition:all 0.2s;margin-top:24px}
+    .next-card:hover{background:var(--accent-dim)}
+    .next-card-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:4px;font-weight:600}
+    .next-card-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:#fff}
+    .next-arrow{font-size:1.5rem;color:var(--accent)}
+    .footer{display:flex;justify-content:space-between;align-items:center;padding:24px 0;margin-top:32px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)}
+    .footer a{color:var(--muted);text-decoration:none}
+    .footer a:hover{color:var(--text)}
+    code:not(.hljs){background:rgba(255,255,255,0.07);border:1px solid var(--border);padding:1px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#93c5fd}
+    .terminal{background:#000;border:1px solid #333;border-radius:8px;overflow:hidden;margin:12px 0}
+    .terminal-bar{background:#1a1a1a;padding:8px 14px;display:flex;align-items:center;gap:6px}
+    .dot{width:10px;height:10px;border-radius:50%}
+    .dot-red{background:#ef4444}.dot-yellow{background:#f59e0b}.dot-green{background:#10b981}
+    .terminal-title{font-size:11px;color:#555;margin-left:6px}
+    .terminal-body{padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:2}
+    .t-prompt{color:#58a6ff}.t-cmd{color:#e8e8f0}.t-out{color:#8585a8}.t-comment{color:#555;font-style:italic}
+    .integration-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin:10px 0;border-left:3px solid var(--accent)}
+    .integration-title{color:var(--accent);font-weight:700;margin-bottom:6px;font-size:14px}
+  </style>
+</head>
+<body>
+<div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+
+<nav class="top-nav">
+  <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+  <div class="nav-center">
+    <a href="n8n-04-avancado.html" class="nav-prev">← Anterior</a>
+    <div class="nav-position"><span class="track">🐙 GitHub</span> · Aula 35 / 50</div>
+    <a href="html-06-a11y-seo.html" class="nav-next">Próxima →</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <span class="hero-badge">🐙 GITHUB</span>
+      <span>Aula 35 · Prioridade 6</span>
+      <span>⏱ ~35 min</span>
+    </div>
+    <h1>GitHub no Stack Completo<br>Docker · n8n · Python · Pages · Monorepo</h1>
+    <div class="hero-meta">
+      <span>🔗 Integrações reais entre ferramentas</span>
+      <span>⚙️ Pipelines de ponta a ponta</span>
+      <span>📦 Monorepo profissional</span>
+    </div>
+    <div class="hero-tags">
+      <span class="tag accent">GitHub Actions</span>
+      <span class="tag accent">GHCR</span>
+      <span class="tag accent">GitHub Pages</span>
+      <span class="tag accent">Monorepo</span>
+      <span class="tag">Docker CI/CD</span>
+      <span class="tag">n8n Webhooks</span>
+      <span class="tag">pytest CI</span>
+      <span class="tag">Turborepo</span>
+    </div>
+  </div>
+
+  <!-- POR QUE -->
+  <div class="section">
+    <div class="section-label">01 · Motivação</div>
+    <h2>GitHub como centro nervoso do stack</h2>
+    <p>Nas aulas anteriores estudamos cada ferramenta isoladamente. Nesta aula, vamos ver como o <strong>GitHub conecta tudo</strong> — cada push, PR ou tag pode disparar pipelines que envolvem Docker, Python, n8n e GitHub Pages em uma única automação coesa.</p>
+    <div class="grid-3" style="margin:24px 0">
+      <div class="card-mini"><div style="font-size:1.5rem">🐳</div><h4>GitHub + Docker</h4><p>Build, push para GHCR e deploy automático a cada commit no main.</p></div>
+      <div class="card-mini"><div style="font-size:1.5rem">🔀</div><h4>GitHub + n8n</h4><p>Webhook do GitHub dispara workflows n8n — notificações, deploys, integrações.</p></div>
+      <div class="card-mini"><div style="font-size:1.5rem">🐍</div><h4>GitHub + Python</h4><p>CI com pytest, ruff, mypy e cobertura de testes a cada PR.</p></div>
+    </div>
+    <div class="callout callout-info">
+      <div class="callout-title">💡 Por que um engenheiro sênior usa isso hoje?</div>
+      Empresas de alto nível operam com pipelines que cruzam todas as ferramentas. Saber conectar GitHub ao seu stack completo é o que separa um dev que "sabe as ferramentas" de um que "sabe construir sistemas".
+    </div>
+  </div>
+
+  <!-- ANALOGIA -->
+  <div class="section">
+    <div class="section-label">02 · Analogia</div>
+    <h2>O GitHub como Torre de Controle</h2>
+    <div class="analogy-card">
+      <div class="analogy-label">✈️ Analogia</div>
+      <div class="analogy-text">Pense no GitHub como a <strong>torre de controle de um aeroporto</strong>. Cada avião (código) que decola (push) precisa de autorização e coordenação. A torre coordena: notifica o hangar (Docker build), avisa o pessoal de terra (n8n webhook), verifica a segurança (testes Python) e atualiza o painel de voos ao vivo (GitHub Pages). Nenhum avião pousa sem passar pela torre.</div>
+      <div class="analogy-mapping">
+        <div class="analogy-real">✈️ Avião decolando</div><div class="analogy-tech">→ git push / PR merge</div>
+        <div class="analogy-real">🏗️ Hangar de manutenção</div><div class="analogy-tech">→ Docker build + GHCR push</div>
+        <div class="analogy-real">📡 Comunicação com solo</div><div class="analogy-tech">→ n8n webhook trigger</div>
+        <div class="analogy-real">🔍 Inspeção de segurança</div><div class="analjs-tech">→ pytest + ruff CI</div>
+        <div class="analogy-real">🖥️ Painel de voos</div><div class="analogy-tech">→ GitHub Pages atualizado</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GITHUB + DOCKER -->
+  <div class="section">
+    <div class="section-label">03 · Integração 1</div>
+    <h2>GitHub + Docker — CI/CD Completo</h2>
+    <p>O workflow mais comum em produção: a cada push no main, o Actions constrói a imagem Docker, publica no GHCR e faz deploy no servidor via SSH.</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label">GitHub → Docker → Servidor</div>
+      <div class="mermaid">
+graph LR
+    A[git push main] --> B[⚙️ Actions trigger]
+    B --> C[docker build]
+    C --> D{testes OK?}
+    D -->|sim| E[docker push GHCR]
+    D -->|não| F[❌ falha — notifica]
+    E --> G[SSH deploy]
+    G --> H[🟢 produção]
+    style H fill:#10b981,color:#000
+    style F fill:#ef4444,color:#fff
+      </div>
+    </div>
+
+    <div class="code-label">.github/workflows/docker-deploy.yml</div>
+    <pre><code class="language-yaml">name: Build, Test & Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build image
+        run: docker build -t ghcr.io/${{ github.repository }}:${{ github.sha }} .
+
+      - name: Run tests inside container
+        run: |
+          docker run --rm \
+            ghcr.io/${{ github.repository }}:${{ github.sha }} \
+            npm test   # ou pytest, etc.
+
+      - name: Push to GHCR
+        if: github.ref == 'refs/heads/main'
+        run: |
+          docker tag ghcr.io/${{ github.repository }}:${{ github.sha }} \
+                     ghcr.io/${{ github.repository }}:latest
+          docker push ghcr.io/${{ github.repository }}:${{ github.sha }}
+          docker push ghcr.io/${{ github.repository }}:latest
+
+      - name: Deploy via SSH
+        if: github.ref == 'refs/heads/main'
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            docker pull ghcr.io/${{ github.repository }}:latest
+            docker compose -f /opt/app/docker-compose.yml up -d --no-deps app</code></pre>
+  </div>
+
+  <!-- GITHUB + N8N -->
+  <div class="section">
+    <div class="section-label">04 · Integração 2</div>
+    <h2>GitHub + n8n — Webhooks e Automações</h2>
+    <p>O GitHub pode disparar eventos para o n8n em tempo real via webhooks: novo PR, novo issue, release publicada, commit no main — tudo pode acionar um workflow n8n.</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label">GitHub Webhook → n8n Workflow</div>
+      <div class="mermaid">
+sequenceDiagram
+    participant GH as 🐙 GitHub
+    participant N8N as 🔀 n8n
+    participant TG as 💬 Telegram
+    participant SH as 🖥️ Servidor
+
+    GH->>N8N: POST /webhook/deploy (push event)
+    N8N->>N8N: Processa payload
+    N8N->>TG: "🚀 Deploy iniciado por @usuario"
+    N8N->>SH: SSH → docker pull && restart
+    SH-->>N8N: exit 0
+    N8N->>TG: "✅ Deploy concluído em 23s"
+      </div>
+    </div>
+
+    <h3>Configurando o Webhook do GitHub</h3>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">No n8n: crie um workflow com Webhook trigger</div>
+          <div class="step-desc">Adicione o node <strong>Webhook</strong>, método POST, copie a URL gerada: <code>https://n8n.seudominio.com/webhook/github-deploy</code></div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">No GitHub: Settings → Webhooks → Add webhook</div>
+          <div class="step-desc">Payload URL: a URL do n8n. Content type: <code>application/json</code>. Secret: uma chave aleatória para validar a origem.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">No n8n: valide a assinatura e processe o evento</div>
+          <pre><code class="language-javascript">// Code node — validar assinatura HMAC do GitHub
+const crypto = require('crypto')
+const secret = 'sua-chave-secreta'
+const signature = $request.headers['x-hub-signature-256']
+const body = JSON.stringify($input.item.json)
+
+const expected = 'sha256=' + crypto
+  .createHmac('sha256', secret)
+  .update(body)
+  .digest('hex')
+
+if (signature !== expected) {
+  throw new Error('Assinatura inválida — possível ataque')
+}
+
+// Processar o evento
+const event = $request.headers['x-github-event']
+const payload = $input.item.json
+
+return [{ json: { event, repo: payload.repository.name, pusher: payload.pusher?.name, commits: payload.commits?.length || 0 } }]</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">🔥 Eventos úteis do GitHub Webhook</div>
+      <code>push</code> (commits), <code>pull_request</code> (aberto/merged/fechado), <code>release</code> (nova versão publicada), <code>issues</code> (criado/fechado), <code>workflow_run</code> (Actions concluídas). Configure quais eventos disparar em "Which events would you like to trigger this webhook?".
+    </div>
+  </div>
+
+  <!-- GITHUB + PYTHON -->
+  <div class="section">
+    <div class="section-label">05 · Integração 3</div>
+    <h2>GitHub + Python — CI com Qualidade de Código</h2>
+    <p>Para projetos Python, o Actions garante que todo PR passa por testes, análise estática e verificação de cobertura antes de ser mergeado.</p>
+
+    <div class="code-label">.github/workflows/python-ci.yml</div>
+    <pre><code class="language-yaml">name: Python CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]   # testa em múltiplas versões
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip   # cache das dependências
+
+      - name: Instalar dependências
+        run: |
+          pip install -e ".[dev]"   # instala o projeto + deps de dev
+
+      - name: Lint com ruff (ultrarrápido, substitui flake8+isort)
+        run: ruff check . --output-format=github
+
+      - name: Type check com mypy
+        run: mypy src/ --strict
+
+      - name: Testes com pytest + cobertura
+        run: |
+          pytest tests/ \
+            --cov=src \
+            --cov-report=xml \
+            --cov-report=term-missing \
+            --cov-fail-under=80   # falha se cobertura < 80%
+
+      - name: Upload cobertura para Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: coverage.xml</code></pre>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">🔥 ruff: o linter Python do futuro</div>
+      <code>ruff</code> é 10–100x mais rápido que flake8 e substitui: flake8, isort, pyupgrade, bandit e mais. Escrito em Rust. Configure em <code>pyproject.toml</code>: <code>[tool.ruff] line-length = 88</code>
+    </div>
+  </div>
+
+  <!-- GITHUB PAGES -->
+  <div class="section">
+    <div class="section-label">06 · GitHub Pages</div>
+    <h2>GitHub Pages — Deploy Estático Automático</h2>
+    <p>GitHub Pages publica qualquer conteúdo estático (HTML/CSS/JS) diretamente do repositório, com HTTPS gratuito. Ideal para documentação, portfolios, sites de curso e landing pages.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Fonte</th><th>Uso</th><th>Branch/Pasta</th></tr></thead>
+        <tbody>
+          <tr><td>Raiz do repositório</td><td>Sites simples — HTML direto</td><td><code>main /</code></td></tr>
+          <tr><td>Pasta /docs</td><td>Documentação junto ao código</td><td><code>main /docs</code></td></tr>
+          <tr><td>Branch gh-pages</td><td>Build gerado (React, Next, VitePress)</td><td><code>gh-pages /</code></td></tr>
+          <tr><td>GitHub Actions</td><td>Controle total do processo de build</td><td>Actions → Pages</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="code-label">.github/workflows/pages-deploy.yml — Deploy de site estático gerado</div>
+    <pre><code class="language-yaml">name: Deploy GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write   # necessário para deploy no Pages
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci
+      - run: npm run build   # gera pasta dist/
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: dist }
+
+  deploy:
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4</code></pre>
+  </div>
+
+  <!-- MONOREPO -->
+  <div class="section">
+    <div class="section-label">07 · Monorepo</div>
+    <h2>Monorepo — Tudo em Um Só Repositório</h2>
+    <p>Um <strong>monorepo</strong> é um único repositório Git que contém múltiplos projetos ou pacotes relacionados (frontend, backend, libs compartilhadas). Usado por Google, Meta, Vercel e muitas empresas de referência.</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label">Estrutura de Monorepo com Turborepo</div>
+      <div class="mermaid">
+graph TB
+    Root[📁 meu-monorepo/] --> Apps[📁 apps/]
+    Root --> Packages[📁 packages/]
+    Root --> T[⚙️ turbo.json]
+    Root --> PJ[📄 package.json workspaces]
+
+    Apps --> Web[📁 web/ Next.js]
+    Apps --> API[📁 api/ FastAPI]
+    Apps --> Docs[📁 docs/ VitePress]
+
+    Packages --> UI[📁 ui/ components compartilhados]
+    Packages --> Config[📁 config/ tsconfig/eslint]
+    Packages --> Utils[📁 utils/ funções compartilhadas]
+
+    Web -.->|usa| UI
+    Web -.->|usa| Utils
+    API -.->|usa| Utils
+    style Root fill:#58a6ff,color:#000
+      </div>
+    </div>
+
+    <div class="code-label">package.json — workspaces (npm/pnpm/yarn)</div>
+    <pre><code class="language-json">{
+  "name": "meu-monorepo",
+  "private": true,
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "build": "turbo run build",
+    "test":  "turbo run test",
+    "lint":  "turbo run lint",
+    "dev":   "turbo run dev --parallel"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0"
+  }
+}</code></pre>
+
+    <div class="code-label">turbo.json — pipeline de tarefas com cache inteligente</div>
+    <pre><code class="language-json">{
+  "$schema": "https://turbo.build/schema.json",
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "dist/**", "build/**"]
+    },
+    "test": {
+      "dependsOn": ["build"],
+      "outputs": ["coverage/**"]
+    },
+    "lint": {
+      "outputs": []
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}</code></pre>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">🔥 Por que Turborepo?</div>
+      Turborepo faz cache inteligente das tarefas — se o código de um pacote não mudou, ele não reconstrói nem roda os testes de novo. Em monorepos grandes, isso reduz CI de 20 minutos para 2 minutos.
+    </div>
+
+    <h3>CI para Monorepo — só o que mudou</h3>
+    <div class="code-label">.github/workflows/ci-monorepo.yml</div>
+    <pre><code class="language-yaml">name: Monorepo CI
+
+on: [push, pull_request]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 2 }   # necessário para turbo diff
+
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: pnpm }
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build & test afetados (turbo + cache remoto)
+        run: pnpm turbo run build test lint --filter=...[HEAD^1]
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}   # cache remoto Vercel
+          TURBO_TEAM: ${{ vars.TURBO_TEAM }}</code></pre>
+  </div>
+
+  <!-- PITFALLS -->
+  <div class="section">
+    <div class="section-label">08 · Armadilhas</div>
+    <h2>⚠️ Erros Comuns</h2>
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Secrets expostos em logs do Actions</div>
+      <p>Nunca use <code>echo $SECRET</code> em workflows — o Actions oculta valores de secrets, mas comandos como <code>env</code> ou erros de runtime podem vazar. Use <code>--password-stdin</code> em vez de passar senhas como argumento.</p>
+    </div>
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Monorepo sem filtro no CI</div>
+      <p>Sem <code>--filter</code> do Turborepo, todo push reconstrói e retesta <em>todos</em> os apps, mesmo os que não mudaram. Use <code>--filter=...[HEAD^1]</code> para rodar apenas o que foi afetado pelas mudanças.</p>
+    </div>
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ GitHub Pages sem index.html</div>
+      <p>GitHub Pages precisa de um arquivo <code>index.html</code> na raiz da branch/pasta configurada. Se o arquivo se chama <code>roadmaps_new.html</code>, acesse diretamente pela URL completa — não apenas pelo domínio raiz.</p>
+    </div>
+  </div>
+
+  <!-- VÍDEOS -->
+  <div class="section">
+    <div class="section-label">09 · Curadoria</div>
+    <h2>Referências para Assistir</h2>
+    <div class="video-grid">
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">GitHub Actions Full Course</div>
+          <div class="video-channel">TechWorld with Nana · ~2h</div>
+          <div class="video-why">Por que assistir: referência completa de Actions cobrindo Docker, deploy e secrets — exatamente o que esta aula usa.</div>
+          <a href="https://www.youtube.com/watch?v=R8_veQiYBjI" target="_blank" class="video-watch">Assistir →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">Turborepo in 2 Minutes</div>
+          <div class="video-channel">Fireship · ~2 min</div>
+          <div class="video-why">Por que assistir: explicação visual e direta do que Turborepo resolve e por que monorepos escaláveis precisam dele.</div>
+          <a href="https://www.youtube.com/watch?v=9iU_IE6vnJ8" target="_blank" class="video-watch">Assistir →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">GitHub Pages & Actions Deploy</div>
+          <div class="video-channel">Kevin Powell · ~15 min</div>
+          <div class="video-why">Por que assistir: deploy automatizado de site estático com Actions do zero, incluindo domínio personalizado.</div>
+          <a href="https://www.youtube.com/watch?v=BT4WzyT2g8k" target="_blank" class="video-watch">Assistir →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECKPOINT -->
+  <div class="checkpoint">
+    <div class="checkpoint-label">🏁 Checkpoint Final</div>
+    <h3>Desafio: Stack Integrado do Zero</h3>
+    <p>Monte um monorepo com dois apps e um CI/CD completo:</p>
+    <ul>
+      <li>Crie um monorepo com <code>apps/web</code> (HTML estático) e <code>apps/api</code> (FastAPI)</li>
+      <li>Configure CI Python com pytest + ruff para a API</li>
+      <li>Configure deploy do <code>apps/web</code> para GitHub Pages via Actions</li>
+      <li>Adicione um webhook do GitHub para notificar via n8n quando há deploy bem-sucedido</li>
+      <li><strong>Bônus:</strong> Adicione Turborepo e verifique que apenas o app modificado é reconstruído no CI</li>
+    </ul>
+    <div class="checkpoint-hint">💬 Dica: Comece pelo mais simples — GitHub Pages primeiro, depois adicione o CI Python, depois o webhook n8n. Construa incrementalmente.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">10 · Próximos Passos</div>
+    <h2>O que vem depois?</h2>
+    <p>Com o stack completo integrado via GitHub, partimos para a trilha de HTML/CSS avançado — Acessibilidade (WCAG/ARIA) e SEO técnico, habilidades essenciais para qualquer front-end profissional.</p>
+    <a href="html-06-a11y-seo.html" class="next-card">
+      <div>
+        <div class="next-card-label">→ Próxima Aula · 36 / 50</div>
+        <div class="next-card-title">Acessibilidade & SEO — WCAG, ARIA e Core Web Vitals</div>
+      </div>
+      <div class="next-arrow">→</div>
+    </a>
+  </div>
+
+  <div class="footer">
+    <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+    <span>🐙 GitHub no Stack Completo · Aula 35 / 50</span>
+    <a href="html-06-a11y-seo.html">Próxima →</a>
+  </div>
+</div>
+
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+  window.addEventListener('scroll', () => {
+    const p = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+    document.getElementById('progressBar').style.width = p + '%';
+  });
+  document.addEventListener('DOMContentLoaded', () => { if (typeof hljs !== 'undefined') hljs.highlightAll(); });
+</script>
+</body>
+</html>

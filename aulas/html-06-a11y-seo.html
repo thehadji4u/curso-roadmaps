@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acessibilidade & SEO · Aula 36</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+    :root{--bg:#0a0a0f;--surface:#111118;--surface2:#16161f;--border:#1e1e2e;--text:#e8e8f0;--muted:#8585a8;--accent:#ef4444;--accent-dim:rgba(239,68,68,0.12);--accent-border:rgba(239,68,68,0.35);--success:#10b981;--warn:#f59e0b;--danger:#ef4444;--info:#06b6d4}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:15px;line-height:1.75}
+    .progress-bar-wrap{position:fixed;top:0;left:0;right:0;height:3px;background:var(--border);z-index:1000}
+    .progress-bar-fill{height:100%;background:linear-gradient(90deg,#ef4444,#fca5a5);width:0%;transition:width 0.1s}
+    .top-nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:12px 32px;background:rgba(10,10,15,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+    .nav-back{text-decoration:none;color:var(--muted);font-size:12px;letter-spacing:0.05em;padding:6px 14px;border:1px solid var(--border);border-radius:6px;transition:all 0.2s}
+    .nav-back:hover{color:var(--text);border-color:rgba(255,255,255,0.15);background:rgba(255,255,255,0.04)}
+    .nav-center{display:flex;align-items:center;gap:10px}
+    .nav-position{font-size:12px;color:var(--muted);letter-spacing:0.06em}
+    .nav-position .track{color:var(--accent);font-weight:600}
+    .nav-prev,.nav-next{display:flex;align-items:center;gap:6px;text-decoration:none;color:var(--muted);font-size:12px;letter-spacing:0.05em;padding:6px 14px;border:1px solid var(--border);border-radius:6px;background:transparent;transition:all 0.2s}
+    .nav-prev:hover,.nav-next:hover{color:var(--text);border-color:rgba(255,255,255,0.15);background:rgba(255,255,255,0.04)}
+    .nav-prev.disabled{opacity:0.3;pointer-events:none}
+    .nav-next{border-color:var(--accent-border);color:var(--accent)}
+    .nav-next:hover{background:var(--accent-dim);color:#fca5a5}
+    .page{max-width:860px;margin:0 auto;padding:48px 24px 96px}
+    .hero{padding:52px 0 40px;border-bottom:1px solid var(--border);margin-bottom:56px}
+    .hero-eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:20px;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)}
+    .hero-badge{background:var(--accent-dim);border:1px solid var(--accent-border);color:var(--accent);padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600}
+    .hero h1{font-family:'Syne',sans-serif;font-size:clamp(2rem,5vw,3rem);font-weight:800;line-height:1.1;letter-spacing:-0.02em;margin-bottom:20px;background:linear-gradient(135deg,#fff 40%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--muted);margin-bottom:24px}
+    .hero-tags{display:flex;flex-wrap:wrap;gap:8px}
+    .tag{background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--muted);padding:4px 12px;border-radius:4px;font-size:11px;letter-spacing:0.06em}
+    .tag.accent{background:var(--accent-dim);border-color:var(--accent-border);color:var(--accent)}
+    .section{margin-bottom:64px}
+    .section-label{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;font-weight:600}
+    .section h2{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:700;margin-bottom:20px;color:#fff}
+    .section h3{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:700;margin:32px 0 14px;color:#fff}
+    .section p{color:var(--text);margin-bottom:16px}
+    .callout{border-radius:8px;padding:18px 20px;margin:20px 0;border-left:3px solid}
+    .callout-title{font-weight:700;margin-bottom:6px;font-size:13px}
+    .callout-info{background:rgba(6,182,212,0.08);border-color:var(--info)}.callout-info .callout-title{color:var(--info)}
+    .callout-warn{background:rgba(245,158,11,0.08);border-color:var(--warn)}.callout-warn .callout-title{color:var(--warn)}
+    .callout-tip{background:rgba(239,68,68,0.06);border-color:var(--accent)}.callout-tip .callout-title{color:var(--accent)}
+    .callout-check{background:rgba(16,185,129,0.06);border-color:var(--success)}.callout-check .callout-title{color:var(--success)}
+    .analogy-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;position:relative;overflow:hidden}
+    .analogy-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),transparent)}
+    .analogy-label{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+    .analogy-text{font-size:15px;color:var(--text);margin-bottom:20px;line-height:1.8}
+    .analogy-mapping{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px}
+    .analogy-real{background:rgba(255,255,255,0.04);border:1px solid var(--border);padding:8px 14px;border-radius:6px;font-size:13px;color:var(--muted)}
+    .analogy-tech{background:var(--accent-dim);border:1px solid var(--accent-border);padding:8px 14px;border-radius:6px;font-size:13px;color:var(--accent)}
+    .mermaid-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px 20px;margin:24px 0;overflow:auto}
+    .mermaid-label{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+    .table-wrap{overflow-x:auto;margin:16px 0}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    thead tr{border-bottom:2px solid var(--accent-border)}
+    thead th{text-align:left;padding:10px 14px;color:var(--accent);font-size:11px;letter-spacing:0.08em;text-transform:uppercase}
+    tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s}
+    tbody tr:hover{background:rgba(255,255,255,0.03)}
+    tbody td{padding:11px 14px;color:var(--text);vertical-align:top}
+    .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+    .badge-green{background:rgba(16,185,129,0.2);color:#34d399}
+    .badge-red{background:rgba(239,68,68,0.2);color:#f87171}
+    .badge-yellow{background:rgba(245,158,11,0.2);color:#fbbf24}
+    .badge-blue{background:rgba(6,182,212,0.2);color:#67e8f9}
+    pre{background:#0d1117 !important;border:1px solid var(--border);border-radius:8px;overflow-x:auto;margin:12px 0;font-size:13px}
+    pre code{font-family:'JetBrains Mono',monospace}
+    .code-label{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);padding:10px 16px 0}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    @media(max-width:640px){.grid-2,.grid-3{grid-template-columns:1fr}}
+    .card-mini{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;transition:border-color 0.2s}
+    .card-mini:hover{border-color:var(--accent-border)}
+    .card-mini h4{color:#fff;font-size:14px;margin:10px 0 6px}
+    .card-mini p{color:var(--muted);font-size:13px;margin:0}
+    .video-grid{display:grid;gap:14px}
+    .video-card{display:flex;gap:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;transition:border-color 0.2s}
+    .video-card:hover{border-color:var(--accent-border)}
+    .video-thumb{flex-shrink:0;width:52px;height:52px;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px}
+    .video-info{flex:1}
+    .video-title{font-weight:700;color:#fff;font-size:14px;margin-bottom:4px}
+    .video-channel{color:var(--muted);font-size:12px;margin-bottom:6px}
+    .video-why{color:var(--text);font-size:12px;margin-bottom:10px}
+    .video-watch{font-size:12px;color:var(--accent);text-decoration:none}
+    .video-watch:hover{text-decoration:underline}
+    .checkpoint{background:linear-gradient(135deg,rgba(239,68,68,0.08),rgba(0,0,0,0));border:1px solid var(--accent-border);border-radius:12px;padding:28px;margin-bottom:40px}
+    .checkpoint-label{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;font-weight:600}
+    .checkpoint h3{font-family:'Syne',sans-serif;font-size:1.2rem;color:var(--accent);margin-bottom:12px}
+    .checkpoint p{margin-bottom:14px}
+    .checkpoint ul{padding-left:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+    .checkpoint ul li{color:var(--text);font-size:14px}
+    .checkpoint ul li::before{content:'✦ ';color:var(--accent)}
+    .checkpoint-hint{margin-top:16px;padding:12px 16px;background:rgba(255,255,255,0.03);border-radius:6px;font-size:13px;color:var(--muted)}
+    .pitfall{background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.25);border-radius:10px;padding:20px;margin:16px 0}
+    .pitfall-title{color:#f87171;font-weight:700;margin-bottom:8px;font-size:14px}
+    .next-card{display:flex;align-items:center;justify-content:space-between;padding:22px 24px;background:var(--surface);border:1px solid var(--accent-border);border-radius:10px;text-decoration:none;transition:all 0.2s;margin-top:24px}
+    .next-card:hover{background:var(--accent-dim)}
+    .next-card-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:4px;font-weight:600}
+    .next-card-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:#fff}
+    .next-arrow{font-size:1.5rem;color:var(--accent)}
+    .footer{display:flex;justify-content:space-between;align-items:center;padding:24px 0;margin-top:32px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)}
+    .footer a{color:var(--muted);text-decoration:none}
+    .footer a:hover{color:var(--text)}
+    code:not(.hljs){background:rgba(255,255,255,0.07);border:1px solid var(--border);padding:1px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#fca5a5}
+    .wcag-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin:10px 0;border-left:3px solid var(--accent)}
+    .wcag-level{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:0.1em;margin-bottom:8px}
+    .level-a{background:rgba(16,185,129,0.2);color:#34d399;border:1px solid rgba(16,185,129,0.3)}
+    .level-aa{background:rgba(245,158,11,0.2);color:#fbbf24;border:1px solid rgba(245,158,11,0.3)}
+    .level-aaa{background:rgba(239,68,68,0.2);color:#f87171;border:1px solid rgba(239,68,68,0.3)}
+    .contrast-demo{display:flex;gap:12px;margin:16px 0;flex-wrap:wrap}
+    .contrast-box{padding:12px 16px;border-radius:8px;font-size:13px;font-weight:600;flex:1;min-width:160px;text-align:center}
+    .contrast-fail{background:#1a1a1a;color:#555}
+    .contrast-pass{background:#1a1a1a;color:#fff}
+    .contrast-label{font-size:10px;margin-top:4px;opacity:0.7}
+  </style>
+</head>
+<body>
+<div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+
+<nav class="top-nav">
+  <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+  <div class="nav-center">
+    <a href="gh-07-stack-completo.html" class="nav-prev">← Anterior</a>
+    <div class="nav-position"><span class="track">🌐 HTML/CSS</span> · Aula 36 / 50</div>
+    <a href="ai-01-como-llms-funcionam.html" class="nav-next">Próxima →</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <span class="hero-badge">🌐 HTML/CSS</span>
+      <span>Aula 36 · Prioridade 6</span>
+      <span>⏱ ~30 min</span>
+    </div>
+    <h1>Acessibilidade & SEO<br>WCAG · ARIA · Core Web Vitals</h1>
+    <div class="hero-meta">
+      <span>♿ WCAG 2.1 A/AA</span>
+      <span>🔍 SEO técnico completo</span>
+      <span>⚡ Core Web Vitals</span>
+    </div>
+    <div class="hero-tags">
+      <span class="tag accent">WCAG 2.1</span>
+      <span class="tag accent">ARIA</span>
+      <span class="tag accent">Open Graph</span>
+      <span class="tag accent">schema.org</span>
+      <span class="tag">Core Web Vitals</span>
+      <span class="tag">Contraste</span>
+      <span class="tag">Semântica</span>
+      <span class="tag">SEO técnico</span>
+    </div>
+  </div>
+
+  <!-- POR QUE -->
+  <div class="section">
+    <div class="section-label">01 · Motivação</div>
+    <h2>Por que acessibilidade e SEO andam juntos?</h2>
+    <p>Sites acessíveis tendem a ter melhor SEO — e vice-versa. Isso não é coincidência: tanto leitores de tela quanto crawlers do Google entendem melhor um HTML semântico, com estrutura clara e conteúdo significativo.</p>
+    <div class="grid-2" style="margin:24px 0">
+      <div class="card-mini"><div style="font-size:1.5rem">♿</div><h4>1 em 7 pessoas</h4><p>Aproximadamente 15% da população mundial tem algum tipo de deficiência. Sites inacessíveis excluem essa audiência e podem gerar processos legais (ADA nos EUA, Lei Brasileira de Inclusão).</p></div>
+      <div class="card-mini"><div style="font-size:1.5rem">🔍</div><h4>SEO = acessibilidade</h4><p>Googlebot é essencialmente um usuário cego: lê texto, segue links, entende semântica HTML. Tudo que melhora acessibilidade melhora indexação.</p></div>
+    </div>
+    <div class="callout callout-info">
+      <div class="callout-title">💡 Por que um engenheiro sênior cuida disso?</div>
+      Empresas sérias exigem conformidade WCAG AA em contratos. Core Web Vitals impactam diretamente o ranking no Google. Acessibilidade e SEO são diferencial competitivo — não "nice to have".
+    </div>
+  </div>
+
+  <!-- ANALOGIA -->
+  <div class="section">
+    <div class="section-label">02 · Analogia</div>
+    <h2>O Prédio com Rampa e Placa Visível</h2>
+    <div class="analogy-card">
+      <div class="analogy-label">🏢 Analogia</div>
+      <div class="analogy-text">Um site é como um <strong>prédio público</strong>. Para ser acessível, precisa de <strong>rampa</strong> (navegação por teclado), <strong>elevador</strong> (skip links), <strong>braille nos botões</strong> (aria-labels), <strong>sinalização clara</strong> (headings em ordem), e <strong>contraste adequado</strong> nas placas. O SEO é a <strong>fachada e placa de identificação</strong> — se não estiverem visíveis e legíveis, o Google (e os usuários) não encontram o prédio.</div>
+      <div class="analogy-mapping">
+        <div class="analogy-real">♿ Rampa de acesso</div><div class="analogy-tech">→ Navegação por teclado / Tab</div>
+        <div class="analogy-real">🔤 Braille nos botões</div><div class="analogy-tech">→ aria-label / aria-labelledby</div>
+        <div class="analogy-real">🪧 Placa do prédio</div><div class="analogy-tech">→ &lt;title&gt; + meta description</div>
+        <div class="analogy-real">📢 Aviso sonoro do elevador</div><div class="analogy-tech">→ aria-live regions</div>
+        <div class="analogy-real">🗺️ Mapa do prédio</div><div class="analogy-tech">→ schema.org / sitemap.xml</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WCAG -->
+  <div class="section">
+    <div class="section-label">03 · WCAG 2.1</div>
+    <h2>WCAG — As Diretrizes de Acessibilidade</h2>
+    <p>WCAG (Web Content Accessibility Guidelines) é o padrão internacional de acessibilidade web, mantido pelo W3C. Organizado em 4 princípios: <strong>Perceptível, Operável, Compreensível, Robusto</strong> (POUR).</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Nível</th><th>O que significa</th><th>Obrigatório?</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge badge-green">A</span></td><td>Mínimo absoluto — sem isso, partes do site são inutilizáveis para pessoas com deficiência</td><td><span class="badge badge-red">Sempre</span></td></tr>
+          <tr><td><span class="badge badge-yellow">AA</span></td><td>Padrão de mercado — exigido por leis e contratos corporativos</td><td><span class="badge badge-yellow">Recomendado</span></td></tr>
+          <tr><td><span class="badge badge-red">AAA</span></td><td>Ideal — difícil de atingir 100% do site; buscar em componentes críticos</td><td><span class="badge badge-blue">Aspiracional</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Critérios mais importantes (nível A/AA)</h3>
+    <div class="wcag-card">
+      <span class="wcag-level level-a">NÍVEL A</span>
+      <div style="font-weight:700;color:#fff;margin-bottom:6px">1.1.1 — Conteúdo não-textual</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Toda imagem deve ter texto alternativo significativo. Imagens decorativas: <code>alt=""</code>. Imagens informativas: descreva o conteúdo.</p>
+      <pre><code class="language-html">&lt;!-- ❌ Errado --&gt;
+&lt;img src="grafico-vendas.png"&gt;
+&lt;img src="foto.jpg" alt="imagem"&gt;
+
+&lt;!-- ✅ Correto --&gt;
+&lt;img src="grafico-vendas.png" alt="Gráfico de barras mostrando crescimento de 40% nas vendas em Q3 2024"&gt;
+&lt;img src="decoracao.png" alt=""&gt; &lt;!-- decorativa: alt vazio --&gt;</code></pre>
+    </div>
+
+    <div class="wcag-card">
+      <span class="wcag-level level-aa">NÍVEL AA</span>
+      <div style="font-weight:700;color:#fff;margin-bottom:6px">1.4.3 — Contraste mínimo</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Texto normal: contraste mínimo 4.5:1. Texto grande (18pt+ ou 14pt bold): 3:1.</p>
+      <div class="contrast-demo">
+        <div class="contrast-box contrast-fail">Texto cinza claro<div class="contrast-label">❌ 2.1:1 — FALHA</div></div>
+        <div class="contrast-box contrast-pass">Texto branco<div class="contrast-label">✅ 16:1 — PASSA</div></div>
+        <div style="padding:12px 16px;border-radius:8px;background:#1a1a1a;color:#58a6ff;flex:1;min-width:160px;text-align:center;font-size:13px;font-weight:600">Azul links<div style="font-size:10px;margin-top:4px;opacity:0.7">✅ 5.9:1 — PASSA</div></div>
+      </div>
+    </div>
+
+    <div class="wcag-card">
+      <span class="wcag-level level-a">NÍVEL A</span>
+      <div style="font-weight:700;color:#fff;margin-bottom:6px">2.4.3 — Ordem de foco lógica</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px">A ordem de Tab deve seguir a lógica visual da página. Nunca use <code>tabindex > 0</code> para forçar ordem — isso causa confusão.</p>
+      <pre><code class="language-html">&lt;!-- ❌ Errado: tabindex positivo bagunça a ordem natural --&gt;
+&lt;button tabindex="3"&gt;Cancelar&lt;/button&gt;
+&lt;button tabindex="1"&gt;Confirmar&lt;/button&gt;
+
+&lt;!-- ✅ Correto: ordem segue o DOM --&gt;
+&lt;button&gt;Confirmar&lt;/button&gt;
+&lt;button&gt;Cancelar&lt;/button&gt;
+&lt;!-- Exceção: tabindex="0" para tornar elemento focável; tabindex="-1" para foco via JS --&gt;</code></pre>
+    </div>
+  </div>
+
+  <!-- ARIA -->
+  <div class="section">
+    <div class="section-label">04 · ARIA</div>
+    <h2>ARIA — Accesssible Rich Internet Applications</h2>
+    <p>ARIA adiciona semântica a elementos HTML que não têm significado acessível nativo. A regra de ouro: <strong>use HTML semântico primeiro</strong> — ARIA é para quando o HTML nativo não é suficiente.</p>
+
+    <div class="callout callout-warn">
+      <div class="callout-title">⚠️ Regra número 1 do ARIA</div>
+      "Não use ARIA se puder usar HTML semântico." Um <code>&lt;button&gt;</code> é sempre melhor que <code>&lt;div role="button"&gt;</code>. ARIA incorreto é pior que sem ARIA.
+    </div>
+
+    <h3>Roles, States e Properties</h3>
+    <pre><code class="language-html">&lt;!-- ── ARIA Roles ────────────────────────────────────────── --&gt;
+&lt;nav aria-label="Menu principal"&gt;...&lt;/nav&gt;
+&lt;aside aria-label="Navegação lateral"&gt;...&lt;/aside&gt;
+&lt;div role="dialog" aria-modal="true" aria-labelledby="dialog-title"&gt;
+  &lt;h2 id="dialog-title"&gt;Confirmar exclusão&lt;/h2&gt;
+&lt;/div&gt;
+
+&lt;!-- ── ARIA States ──────────────────────────────────────── --&gt;
+&lt;button aria-expanded="false" aria-controls="menu-dropdown"&gt;Menu ▼&lt;/button&gt;
+&lt;ul id="menu-dropdown" hidden&gt;...&lt;/ul&gt;
+
+&lt;input type="text" aria-invalid="true" aria-describedby="email-error"&gt;
+&lt;span id="email-error" role="alert"&gt;Email inválido&lt;/span&gt;
+
+&lt;!-- ── ARIA Live Regions (atualizações dinâmicas) ─────── --&gt;
+&lt;div aria-live="polite" aria-atomic="true"&gt;
+  &lt;!-- Conteúdo aqui é anunciado pelo leitor de tela quando muda --&gt;
+  Status: Carregando...
+&lt;/div&gt;
+
+&lt;div role="status"&gt;3 resultados encontrados&lt;/div&gt;  &lt;!-- live="polite" implícito --&gt;
+&lt;div role="alert"&gt;Erro ao salvar!&lt;/div&gt;           &lt;!-- live="assertive" implícito --&gt;
+
+&lt;!-- ── Landmarks importantes ─────────────────────────── --&gt;
+&lt;header role="banner"&gt;...&lt;/header&gt;
+&lt;main role="main"&gt;...&lt;/main&gt;
+&lt;footer role="contentinfo"&gt;...&lt;/footer&gt;
+&lt;form aria-label="Formulário de contato"&gt;
+  &lt;label for="nome"&gt;Nome completo&lt;/label&gt;
+  &lt;input id="nome" type="text" required aria-required="true"&gt;
+&lt;/form&gt;</code></pre>
+
+    <h3>Skip Links — Navegação rápida por teclado</h3>
+    <pre><code class="language-html">&lt;!-- Primeiro elemento do &lt;body&gt; — visível apenas no foco --&gt;
+&lt;a href="#conteudo-principal" class="skip-link"&gt;Pular para o conteúdo&lt;/a&gt;
+
+&lt;main id="conteudo-principal"&gt;...&lt;/main&gt;</code></pre>
+    <pre><code class="language-css">/* Skip link visível apenas no foco — não polui o design */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 16px;
+  background: #000;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 0 0 8px 8px;
+  font-size: 14px;
+  z-index: 9999;
+  transition: top 0.2s;
+}
+.skip-link:focus { top: 0; }</code></pre>
+  </div>
+
+  <!-- SEO -->
+  <div class="section">
+    <div class="section-label">05 · SEO Técnico</div>
+    <h2>SEO — Sendo Encontrado pelos Motores de Busca</h2>
+
+    <h3>Meta tags essenciais</h3>
+    <pre><code class="language-html">&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+
+  &lt;!-- SEO básico --&gt;
+  &lt;title&gt;Título da Página — Nome do Site | máx 60 caracteres&lt;/title&gt;
+  &lt;meta name="description" content="Descrição clara do conteúdo. Entre 150-160 caracteres. Aparece nos resultados do Google."&gt;
+  &lt;link rel="canonical" href="https://seusite.com/pagina"&gt;
+
+  &lt;!-- Open Graph (Facebook, LinkedIn, WhatsApp) --&gt;
+  &lt;meta property="og:title" content="Título para redes sociais"&gt;
+  &lt;meta property="og:description" content="Descrição para redes sociais"&gt;
+  &lt;meta property="og:image" content="https://seusite.com/og-image.jpg"&gt; &lt;!-- 1200x630px --&gt;
+  &lt;meta property="og:url" content="https://seusite.com/pagina"&gt;
+  &lt;meta property="og:type" content="website"&gt;
+  &lt;meta property="og:site_name" content="Nome do Site"&gt;
+
+  &lt;!-- Twitter Card --&gt;
+  &lt;meta name="twitter:card" content="summary_large_image"&gt;
+  &lt;meta name="twitter:title" content="Título para Twitter"&gt;
+  &lt;meta name="twitter:description" content="Descrição para Twitter"&gt;
+  &lt;meta name="twitter:image" content="https://seusite.com/og-image.jpg"&gt;
+&lt;/head&gt;</code></pre>
+
+    <h3>Schema.org — Dados Estruturados</h3>
+    <p>Schema.org permite que o Google entenda o <em>tipo</em> de conteúdo — artigo, produto, FAQ, receita, evento — e exiba rich snippets nos resultados.</p>
+    <pre><code class="language-html">&lt;!-- JSON-LD (recomendado pelo Google) --&gt;
+&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Como usar Docker em Produção",
+  "description": "Guia completo de Docker Swarm, Registry e CI/CD",
+  "author": {
+    "@type": "Person",
+    "name": "Vinicius Silva"
+  },
+  "datePublished": "2024-03-14",
+  "image": "https://seusite.com/post-docker.jpg",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Curso Roadmaps",
+    "logo": { "@type": "ImageObject", "url": "https://seusite.com/logo.png" }
+  }
+}
+&lt;/script&gt;
+
+&lt;!-- FAQ Schema — aparece expandido no Google --&gt;
+&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [{
+    "@type": "Question",
+    "name": "O que é Docker Swarm?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Docker Swarm é o modo de orquestração nativo do Docker..."
+    }
+  }]
+}
+&lt;/script&gt;</code></pre>
+
+    <h3>Core Web Vitals — Métricas que o Google usa</h3>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label">Core Web Vitals — o que cada um mede</div>
+      <div class="mermaid">
+graph LR
+    A[👤 Usuário<br/>acessa a página] --> B[LCP<br/>Largest Contentful Paint<br/>Tempo até conteúdo principal]
+    A --> C[INP<br/>Interaction to Next Paint<br/>Responsividade a cliques]
+    A --> D[CLS<br/>Cumulative Layout Shift<br/>Estabilidade visual]
+    B --> E{Bom?}
+    E -->|LCP < 2.5s| F[✅]
+    E -->|LCP > 4s| G[❌]
+    style F fill:#10b981,color:#000
+    style G fill:#ef4444,color:#fff
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Métrica</th><th>Bom</th><th>Precisa melhorar</th><th>Ruim</th><th>Como melhorar</th></tr></thead>
+        <tbody>
+          <tr><td><strong>LCP</strong></td><td><span class="badge badge-green">&lt; 2.5s</span></td><td>2.5s – 4s</td><td><span class="badge badge-red">&gt; 4s</span></td><td>Otimizar imagem hero, preload, CDN</td></tr>
+          <tr><td><strong>INP</strong></td><td><span class="badge badge-green">&lt; 200ms</span></td><td>200ms – 500ms</td><td><span class="badge badge-red">&gt; 500ms</span></td><td>Reduzir JS, defer/async, Web Workers</td></tr>
+          <tr><td><strong>CLS</strong></td><td><span class="badge badge-green">&lt; 0.1</span></td><td>0.1 – 0.25</td><td><span class="badge badge-red">&gt; 0.25</span></td><td>Definir width/height em imagens, evitar inserção dinâmica acima do fold</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="code-label">Boas práticas de performance/SEO no HTML</div>
+    <pre><code class="language-html">&lt;!-- Preload do recurso mais importante (LCP) --&gt;
+&lt;link rel="preload" as="image" href="hero-image.webp" fetchpriority="high"&gt;
+
+&lt;!-- Fontes sem bloco de renderização --&gt;
+&lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;
+&lt;link rel="stylesheet" href="fonts.css" media="print" onload="this.media='all'"&gt;
+
+&lt;!-- Imagens: tamanho explícito evita CLS --&gt;
+&lt;img src="hero.webp" width="1200" height="600"
+     alt="Dashboard da aplicação mostrando métricas em tempo real"
+     loading="lazy"   &lt;!-- lazy para imagens abaixo do fold --&gt;
+     decoding="async"&gt;
+
+&lt;!-- JS não-crítico: defer não bloqueia parsing --&gt;
+&lt;script src="analytics.js" defer&gt;&lt;/script&gt;
+
+&lt;!-- Hierarquia de headings correta (afeta SEO e a11y) --&gt;
+&lt;h1&gt;Título principal — apenas UM por página&lt;/h1&gt;
+  &lt;h2&gt;Seção principal&lt;/h2&gt;
+    &lt;h3&gt;Sub-seção&lt;/h3&gt;
+  &lt;h2&gt;Outra seção&lt;/h2&gt;</code></pre>
+  </div>
+
+  <!-- PITFALLS -->
+  <div class="section">
+    <div class="section-label">06 · Armadilhas</div>
+    <h2>⚠️ Erros Comuns</h2>
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ alt="imagem" ou alt="foto"</div>
+      <p>Texto alternativo genérico é inútil para leitores de tela. Descreva o conteúdo informativo da imagem. Se for decorativa, use <code>alt=""</code> (vazio) — o leitor de tela irá ignorá-la completamente.</p>
+    </div>
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Múltiplos &lt;h1&gt; por página</div>
+      <p>Cada página deve ter exatamente um <code>&lt;h1&gt;</code> descrevendo o conteúdo principal. Múltiplos confundem tanto leitores de tela quanto o Google (dilui a relevância do título).</p>
+    </div>
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Foco invisível (outline: none)</div>
+      <p>Remover o outline de foco dos botões/links (muito comum em resets CSS) torna o site inacessível para usuários de teclado. Estilize o foco — não o remova: <code>:focus-visible { outline: 2px solid #58a6ff; }</code></p>
+    </div>
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Meta description duplicada</div>
+      <p>Cada página deve ter uma meta description única e descritiva. Duplicadas fazem o Google ignorá-las e gerar um snippet automático (geralmente pior).</p>
+    </div>
+  </div>
+
+  <!-- VÍDEOS -->
+  <div class="section">
+    <div class="section-label">07 · Curadoria</div>
+    <h2>Referências para Assistir</h2>
+    <div class="video-grid">
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">Web Accessibility in 100 Seconds</div>
+          <div class="video-channel">Fireship · ~2 min</div>
+          <div class="video-why">Por que assistir: introdução visual rápida ao por que acessibilidade importa e os conceitos básicos de ARIA.</div>
+          <a href="https://www.youtube.com/watch?v=z3RiJBBNHzQ" target="_blank" class="video-watch">Assistir →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">SEO for Developers in 100 Seconds</div>
+          <div class="video-channel">Fireship · ~2 min</div>
+          <div class="video-why">Por que assistir: todos os conceitos de SEO técnico que um dev precisa saber, condensados no estilo Fireship.</div>
+          <a href="https://www.youtube.com/watch?v=-B58GgsehKQ" target="_blank" class="video-watch">Assistir →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">ARIA Roles — A11y Cast</div>
+          <div class="video-channel">Google Chrome Developers · ~10 min</div>
+          <div class="video-why">Por que assistir: série oficial do Google sobre ARIA — demonstrações reais com leitor de tela NVDA/VoiceOver.</div>
+          <a href="https://www.youtube.com/watch?v=g9Qff0b-lHk" target="_blank" class="video-watch">Assistir →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">Core Web Vitals — What You Need to Know</div>
+          <div class="video-channel">Google Search Central · ~15 min</div>
+          <div class="video-why">Por que assistir: explicação oficial do Google sobre LCP, INP e CLS com exemplos práticos de otimização.</div>
+          <a href="https://www.youtube.com/watch?v=AQqFZ5t8uNc" target="_blank" class="video-watch">Assistir →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECKPOINT -->
+  <div class="checkpoint">
+    <div class="checkpoint-label">🏁 Checkpoint Final</div>
+    <h3>Desafio: Auditoria Completa de Acessibilidade & SEO</h3>
+    <p>Escolha qualquer página HTML que você já criou neste curso e realize uma auditoria completa:</p>
+    <ul>
+      <li>Rode o Lighthouse no Chrome DevTools (F12 → Lighthouse → Accessibility + SEO)</li>
+      <li>Corrija todos os problemas de contraste encontrados (use o Chrome DevTools Color Picker)</li>
+      <li>Adicione <code>alt</code> descritivo em todas as imagens informativas</li>
+      <li>Adicione meta tags completas: title, description, Open Graph e Twitter Card</li>
+      <li>Adicione pelo menos um schema.org JSON-LD adequado ao conteúdo</li>
+      <li><strong>Bônus:</strong> Navegue pela página usando apenas o teclado (Tab, Enter, Esc) e corrija qualquer armadilha de foco</li>
+    </ul>
+    <div class="checkpoint-hint">💬 Dica: A extensão axe DevTools (gratuita) encontra problemas de acessibilidade que o Lighthouse não detecta. Instale no Chrome para uma auditoria mais completa. Ferramenta de contraste: webaim.org/resources/contrastchecker</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">08 · Próximos Passos</div>
+    <h2>O que vem depois?</h2>
+    <p>Com acessibilidade e SEO dominados, começamos a trilha mais empolgante do roadmap: <strong>Inteligência Artificial</strong>. Primeiro, entendemos como os LLMs realmente funcionam por dentro — tokens, transformers, atenção e temperatura.</p>
+    <a href="ai-01-como-llms-funcionam.html" class="next-card">
+      <div>
+        <div class="next-card-label">→ Próxima Aula · 37 / 50</div>
+        <div class="next-card-title">Como LLMs Funcionam — Transformers, Tokens & Temperature</div>
+      </div>
+      <div class="next-arrow">→</div>
+    </a>
+  </div>
+
+  <div class="footer">
+    <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+    <span>🌐 Acessibilidade & SEO · Aula 36 / 50</span>
+    <a href="ai-01-como-llms-funcionam.html">Próxima →</a>
+  </div>
+</div>
+
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+  window.addEventListener('scroll', () => {
+    const p = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+    document.getElementById('progressBar').style.width = p + '%';
+  });
+  document.addEventListener('DOMContentLoaded', () => { if (typeof hljs !== 'undefined') hljs.highlightAll(); });
+</script>
+</body>
+</html>

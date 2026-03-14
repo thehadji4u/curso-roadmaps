@@ -104,8 +104,8 @@ Todos os HTMLs ficam em `outputs/aulas/` com o nome exato da coluna **Arquivo**.
 | `32-JS-07` | `[x]` | ⚡ JavaScript | Next.js — Full-stack Moderno | Next.js · App Router · SSR · SSG · API routes | `js-07-nextjs.html` |
 | `33-DKR-04` | `[x]` | 🐳 Docker | Docker em Produção — Registry & Swarm | Registry · CI/CD com Docker · Docker Swarm | `dkr-04-producao-swarm.html` |
 | `34-N8N-04` | `[x]` | 🔀 n8n | n8n Avançado — Sub-workflows & Self-hosting | Sub-workflows · Self-hosting · Custom nodes | `n8n-04-avancado.html` |
-| `35-GH-07` | `[ ]` | 🐙 GitHub | GitHub no Stack Completo | GitHub + Docker · GitHub + n8n · GitHub + Python · GitHub Pages · Monorepo | `gh-07-stack-completo.html` |
-| `36-HTML-06` | `[ ]` | 🌐 HTML/CSS | Acessibilidade & SEO | Acessibilidade · ARIA · SEO básico · Pseudo-elementos · Figma handoff | `html-06-a11y-seo.html` |
+| `35-GH-07` | `[x]` | 🐙 GitHub | GitHub no Stack Completo | GitHub + Docker · GitHub + n8n · GitHub + Python · GitHub Pages · Monorepo | `gh-07-stack-completo.html` |
+| `36-HTML-06` | `[x]` | 🌐 HTML/CSS | Acessibilidade & SEO | Acessibilidade · ARIA · SEO básico · Pseudo-elementos · Figma handoff | `html-06-a11y-seo.html` |
 
 ---
 
@@ -115,7 +115,7 @@ Todos os HTMLs ficam em `outputs/aulas/` com o nome exato da coluna **Arquivo**.
 
 | ID | Status | Trilha | Título da Aula | Cards agrupados | Arquivo |
 |---|---|---|---|---|---|
-| `37-AI-01` | `[ ]` | 🤖 IA | Como LLMs Funcionam | Como LLMs funcionam · tokens · context window · temperature · top-p/top-k | `ai-01-como-llms-funcionam.html` |
+| `37-AI-01` | `[x]` | 🤖 IA | Como LLMs Funcionam | Como LLMs funcionam · tokens · context window · temperature · top-p/top-k | `ai-01-como-llms-funcionam.html` |
 | `38-AI-02` | `[ ]` | 🤖 IA | Prompt Engineering — Fundamentos | zero-shot · few-shot · CoT · role prompting · system vs user prompt | `ai-02-prompt-eng-fundamentos.html` |
 | `39-AI-03` | `[ ]` | 🤖 IA | Prompt Engineering — Avançado | Tree-of-Thought · Self-Consistency · ReAct · chaining · JSON mode · meta-prompting · jailbreak defense | `ai-03-prompt-eng-avancado.html` |
 | `40-AI-04` | `[ ]` | 🤖 IA | APIs de LLM — OpenAI, Anthropic & Gemini | chamadas básicas · streaming · autenticação · Avaliação de respostas | `ai-04-apis-llm.html` |

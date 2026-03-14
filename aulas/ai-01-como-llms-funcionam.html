@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Como LLMs Funcionam · Aula 37</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+    :root{--bg:#0a0a0f;--surface:#111118;--surface2:#16161f;--border:#1e1e2e;--text:#e8e8f0;--muted:#8585a8;--accent:#a855f7;--accent-dim:rgba(168,85,247,0.12);--accent-border:rgba(168,85,247,0.35);--success:#10b981;--warn:#f59e0b;--danger:#ef4444;--info:#06b6d4}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:15px;line-height:1.75}
+    .progress-bar-wrap{position:fixed;top:0;left:0;right:0;height:3px;background:var(--border);z-index:1000}
+    .progress-bar-fill{height:100%;background:linear-gradient(90deg,#a855f7,#d8b4fe);width:0%;transition:width 0.1s}
+    .top-nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:12px 32px;background:rgba(10,10,15,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+    .nav-back{text-decoration:none;color:var(--muted);font-size:12px;letter-spacing:0.05em;padding:6px 14px;border:1px solid var(--border);border-radius:6px;transition:all 0.2s}
+    .nav-back:hover{color:var(--text);border-color:rgba(255,255,255,0.15);background:rgba(255,255,255,0.04)}
+    .nav-center{display:flex;align-items:center;gap:10px}
+    .nav-position{font-size:12px;color:var(--muted);letter-spacing:0.06em}
+    .nav-position .track{color:var(--accent);font-weight:600}
+    .nav-prev,.nav-next{display:flex;align-items:center;gap:6px;text-decoration:none;color:var(--muted);font-size:12px;letter-spacing:0.05em;padding:6px 14px;border:1px solid var(--border);border-radius:6px;background:transparent;transition:all 0.2s}
+    .nav-prev:hover,.nav-next:hover{color:var(--text);border-color:rgba(255,255,255,0.15);background:rgba(255,255,255,0.04)}
+    .nav-prev.disabled{opacity:0.3;pointer-events:none}
+    .nav-next{border-color:var(--accent-border);color:var(--accent)}
+    .nav-next:hover{background:var(--accent-dim);color:#d8b4fe}
+    .page{max-width:860px;margin:0 auto;padding:48px 24px 96px}
+    .hero{padding:52px 0 40px;border-bottom:1px solid var(--border);margin-bottom:56px}
+    .hero-eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:20px;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)}
+    .hero-badge{background:var(--accent-dim);border:1px solid var(--accent-border);color:var(--accent);padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600}
+    .hero h1{font-family:'Syne',sans-serif;font-size:clamp(2rem,5vw,3rem);font-weight:800;line-height:1.1;letter-spacing:-0.02em;margin-bottom:20px;background:linear-gradient(135deg,#fff 40%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--muted);margin-bottom:24px}
+    .hero-tags{display:flex;flex-wrap:wrap;gap:8px}
+    .tag{background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--muted);padding:4px 12px;border-radius:4px;font-size:11px;letter-spacing:0.06em}
+    .tag.accent{background:var(--accent-dim);border-color:var(--accent-border);color:var(--accent)}
+    .section{margin-bottom:64px}
+    .section-label{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;font-weight:600}
+    .section h2{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:700;margin-bottom:20px;color:#fff}
+    .section h3{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:700;margin:32px 0 14px;color:#fff}
+    .section p{color:var(--text);margin-bottom:16px}
+    .callout{border-radius:8px;padding:18px 20px;margin:20px 0;border-left:3px solid}
+    .callout-title{font-weight:700;margin-bottom:6px;font-size:13px}
+    .callout-info{background:rgba(6,182,212,0.08);border-color:var(--info)}.callout-info .callout-title{color:var(--info)}
+    .callout-warn{background:rgba(245,158,11,0.08);border-color:var(--warn)}.callout-warn .callout-title{color:var(--warn)}
+    .callout-tip{background:rgba(168,85,247,0.06);border-color:var(--accent)}.callout-tip .callout-title{color:var(--accent)}
+    .callout-check{background:rgba(16,185,129,0.06);border-color:var(--success)}.callout-check .callout-title{color:var(--success)}
+    .analogy-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;position:relative;overflow:hidden}
+    .analogy-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),transparent)}
+    .analogy-label{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+    .analogy-text{font-size:15px;color:var(--text);margin-bottom:20px;line-height:1.8}
+    .analogy-mapping{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px}
+    .analogy-real{background:rgba(255,255,255,0.04);border:1px solid var(--border);padding:8px 14px;border-radius:6px;font-size:13px;color:var(--muted)}
+    .analogy-tech{background:var(--accent-dim);border:1px solid var(--accent-border);padding:8px 14px;border-radius:6px;font-size:13px;color:var(--accent)}
+    .mermaid-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px 20px;margin:24px 0;overflow:auto}
+    .mermaid-label{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+    .table-wrap{overflow-x:auto;margin:16px 0}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    thead tr{border-bottom:2px solid var(--accent-border)}
+    thead th{text-align:left;padding:10px 14px;color:var(--accent);font-size:11px;letter-spacing:0.08em;text-transform:uppercase}
+    tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s}
+    tbody tr:hover{background:rgba(255,255,255,0.03)}
+    tbody td{padding:11px 14px;color:var(--text);vertical-align:top}
+    .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+    .badge-green{background:rgba(16,185,129,0.2);color:#34d399}
+    .badge-red{background:rgba(239,68,68,0.2);color:#f87171}
+    .badge-yellow{background:rgba(245,158,11,0.2);color:#fbbf24}
+    .badge-purple{background:rgba(168,85,247,0.2);color:#d8b4fe}
+    pre{background:#0d1117 !important;border:1px solid var(--border);border-radius:8px;overflow-x:auto;margin:12px 0;font-size:13px}
+    pre code{font-family:'JetBrains Mono',monospace}
+    .code-label{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);padding:10px 16px 0}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    @media(max-width:640px){.grid-2,.grid-3{grid-template-columns:1fr}}
+    .card-mini{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;transition:border-color 0.2s}
+    .card-mini:hover{border-color:var(--accent-border)}
+    .card-mini h4{color:#fff;font-size:14px;margin:10px 0 6px}
+    .card-mini p{color:var(--muted);font-size:13px;margin:0}
+    .video-grid{display:grid;gap:14px}
+    .video-card{display:flex;gap:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;transition:border-color 0.2s}
+    .video-card:hover{border-color:var(--accent-border)}
+    .video-thumb{flex-shrink:0;width:52px;height:52px;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px}
+    .video-info{flex:1}
+    .video-title{font-weight:700;color:#fff;font-size:14px;margin-bottom:4px}
+    .video-channel{color:var(--muted);font-size:12px;margin-bottom:6px}
+    .video-why{color:var(--text);font-size:12px;margin-bottom:10px}
+    .video-watch{font-size:12px;color:var(--accent);text-decoration:none}
+    .video-watch:hover{text-decoration:underline}
+    .checkpoint{background:linear-gradient(135deg,rgba(168,85,247,0.08),rgba(0,0,0,0));border:1px solid var(--accent-border);border-radius:12px;padding:28px;margin-bottom:40px}
+    .checkpoint-label{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;font-weight:600}
+    .checkpoint h3{font-family:'Syne',sans-serif;font-size:1.2rem;color:var(--accent);margin-bottom:12px}
+    .checkpoint p{margin-bottom:14px}
+    .checkpoint ul{padding-left:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+    .checkpoint ul li{color:var(--text);font-size:14px}
+    .checkpoint ul li::before{content:'✦ ';color:var(--accent)}
+    .checkpoint-hint{margin-top:16px;padding:12px 16px;background:rgba(255,255,255,0.03);border-radius:6px;font-size:13px;color:var(--muted)}
+    .pitfall{background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.25);border-radius:10px;padding:20px;margin:16px 0}
+    .pitfall-title{color:#f87171;font-weight:700;margin-bottom:8px;font-size:14px}
+    .next-card{display:flex;align-items:center;justify-content:space-between;padding:22px 24px;background:var(--surface);border:1px solid var(--accent-border);border-radius:10px;text-decoration:none;transition:all 0.2s;margin-top:24px}
+    .next-card:hover{background:var(--accent-dim)}
+    .next-card-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:4px;font-weight:600}
+    .next-card-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:#fff}
+    .next-arrow{font-size:1.5rem;color:var(--accent)}
+    .footer{display:flex;justify-content:space-between;align-items:center;padding:24px 0;margin-top:32px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)}
+    .footer a{color:var(--muted);text-decoration:none}
+    .footer a:hover{color:var(--text)}
+    code:not(.hljs){background:rgba(255,255,255,0.07);border:1px solid var(--border);padding:1px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#d8b4fe}
+    .token-demo{display:flex;flex-wrap:wrap;gap:4px;margin:16px 0;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px}
+    .token{padding:4px 8px;border-radius:4px;font-size:13px;font-family:'JetBrains Mono',monospace;font-weight:600}
+    .t0{background:rgba(168,85,247,0.3);color:#d8b4fe;border:1px solid rgba(168,85,247,0.4)}
+    .t1{background:rgba(6,182,212,0.3);color:#67e8f9;border:1px solid rgba(6,182,212,0.4)}
+    .t2{background:rgba(16,185,129,0.3);color:#6ee7b7;border:1px solid rgba(16,185,129,0.4)}
+    .t3{background:rgba(245,158,11,0.3);color:#fcd34d;border:1px solid rgba(245,158,11,0.4)}
+    .t4{background:rgba(239,68,68,0.3);color:#fca5a5;border:1px solid rgba(239,68,68,0.4)}
+    .model-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;transition:border-color 0.2s}
+    .model-card:hover{border-color:var(--accent-border)}
+    .model-name{font-weight:700;color:#fff;font-size:14px;margin-bottom:4px}
+    .model-maker{font-size:11px;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.08em}
+    .model-stats{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--text)}
+    .temp-demo{display:flex;gap:12px;margin:16px 0;flex-wrap:wrap}
+    .temp-box{flex:1;min-width:140px;padding:14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;text-align:center}
+    .temp-val{font-size:1.4rem;font-weight:700;margin-bottom:6px}
+    .temp-desc{font-size:12px;color:var(--muted)}
+    .temp-example{font-size:11px;color:var(--text);margin-top:6px;font-style:italic}
+  </style>
+</head>
+<body>
+<div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+
+<nav class="top-nav">
+  <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+  <div class="nav-center">
+    <a href="html-06-a11y-seo.html" class="nav-prev">← Anterior</a>
+    <div class="nav-position"><span class="track">🤖 IA</span> · Aula 37 / 50</div>
+    <a href="ai-02-prompt-eng-fundamentos.html" class="nav-next">Próxima →</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <span class="hero-badge">🤖 INTELIGÊNCIA ARTIFICIAL</span>
+      <span>Aula 37 · Prioridade 7</span>
+      <span>⏱ ~35 min</span>
+    </div>
+    <h1>Como LLMs Funcionam<br>Transformers · Tokens · Temperature</h1>
+    <div class="hero-meta">
+      <span>🧠 Arquitetura Transformer</span>
+      <span>🔤 Tokenização</span>
+      <span>🌡️ Temperature, top-p, top-k</span>
+    </div>
+    <div class="hero-tags">
+      <span class="tag accent">LLM</span>
+      <span class="tag accent">Transformer</span>
+      <span class="tag accent">Tokens</span>
+      <span class="tag accent">Embeddings</span>
+      <span class="tag">Context Window</span>
+      <span class="tag">Temperature</span>
+      <span class="tag">RLHF</span>
+      <span class="tag">Fine-tuning</span>
+    </div>
+  </div>
+
+  <!-- POR QUE -->
+  <div class="section">
+    <div class="section-label">01 · Motivação</div>
+    <h2>Por que entender como LLMs funcionam?</h2>
+    <p>Você pode usar GPT-4 sem entender como ele funciona — assim como pode dirigir um carro sem saber mecânica. Mas quando o modelo <strong>alucina, recusa ou se comporta de forma inesperada</strong>, entender a mecânica interna é o que separa quem debugga em minutos de quem fica horas tentando.</p>
+    <div class="grid-3" style="margin:24px 0">
+      <div class="card-mini"><div style="font-size:1.5rem">🎯</div><h4>Prompts melhores</h4><p>Saber como o modelo processa tokens ajuda a escrever prompts que realmente funcionam.</p></div>
+      <div class="card-mini"><div style="font-size:1.5rem">💰</div><h4>Custo de API</h4><p>Tokens custam dinheiro. Saber como contar tokens evita surpresas na fatura.</p></div>
+      <div class="card-mini"><div style="font-size:1.5rem">🔧</div><h4>Parâmetros certos</h4><p>Temperature, top-p e top-k controlam criatividade vs. precisão. Saber usar é essencial.</p></div>
+    </div>
+    <div class="callout callout-info">
+      <div class="callout-title">💡 Por que um engenheiro sênior precisa saber isso?</div>
+      Em 2024–2025, engenheiros que integram LLMs em produtos são os mais valorizados do mercado. Mas quem entende a mecânica constrói sistemas mais robustos, econômicos e previsíveis — não só "chama a API e torce".
+    </div>
+  </div>
+
+  <!-- ANALOGIA -->
+  <div class="section">
+    <div class="section-label">02 · Analogia</div>
+    <h2>O Escritor Estatístico Ultra-Sofisticado</h2>
+    <div class="analogy-card">
+      <div class="analogy-label">✍️ Analogia</div>
+      <div class="analogy-text">Imagine um <strong>escritor que leu toda a internet</strong> e internalizou os padrões estatísticos de como as palavras se relacionam. Quando você diz "Complete: O céu é...", ele não sabe o significado de "azul" — ele sabe que, estatisticamente, depois de "O céu é" a palavra mais provável é "azul". Mas esse escritor tem uma memória de trabalho limitada (context window), se confunde com textos muito longos, e às vezes "inventa" com confiança quando não tem certeza. A <strong>temperatura</strong> é o quanto esse escritor está "bêbado" — 0.0 é extremamente conservador e previsível, 1.5 é criativo e caótico.</div>
+      <div class="analogy-mapping">
+        <div class="analogy-real">📚 Leu toda a internet</div><div class="analogy-tech">→ Pré-treinamento em trilhões de tokens</div>
+        <div class="analogy-real">🔤 Palavras que combinam</div><div class="analogy-tech">→ Próximo token mais provável</div>
+        <div class="analogy-real">🧠 Memória de trabalho</div><div class="analogy-tech">→ Context window (tokens)</div>
+        <div class="analogy-real">🍺 Nível de "bebedeira"</div><div class="analogy-tech">→ Temperature (0.0 – 2.0)</div>
+        <div class="analogy-real">📝 Revisão por humano</div><div class="analogy-tech">→ RLHF — feedback humano</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOKENS -->
+  <div class="section">
+    <div class="section-label">03 · Conceito Central</div>
+    <h2>Tokens — A Unidade Fundamental dos LLMs</h2>
+    <p>LLMs não processam palavras — processam <strong>tokens</strong>. Um token é um pedaço de texto, geralmente uma palavra ou parte dela. O modelo usa um vocabulário fixo (ex: GPT-4 tem ~100k tokens) e representa todo texto como sequência de números inteiros.</p>
+
+    <h3>Como o texto é tokenizado</h3>
+    <div class="token-demo">
+      <span class="t0">Doc</span><span class="t1">ker</span><span class="t2"> é</span><span class="t3"> uma</span><span class="t0"> plataforma</span><span class="t1"> de</span><span class="t2"> contê</span><span class="t3">iner</span><span class="t4">ização</span>
+    </div>
+    <p style="font-size:13px;color:var(--muted)">"Dockerização" vira 3 tokens. "é" = 1 token. Espaços geralmente fazem parte do token seguinte. Palavras raras são divididas em sub-palavras (BPE — Byte Pair Encoding).</p>
+
+    <div class="callout callout-warn">
+      <div class="callout-title">⚠️ Implicações práticas dos tokens</div>
+      <ul style="color:var(--text);font-size:13px;display:flex;flex-direction:column;gap:8px;margin-top:8px;padding-left:16px">
+        <li>Inglês é mais eficiente que português: "containerization" = 3 tokens; "containerização" = 4–5 tokens</li>
+        <li>Código é tokenizado de forma especial — identação, símbolos e palavras reservadas têm tokens próprios</li>
+        <li>GPT-4: ~$0.03/1k tokens input. Um documento de 10 páginas ≈ 3.000–5.000 tokens</li>
+        <li>Regra prática: 1 token ≈ 0.75 palavra em inglês; ≈ 0.6 palavra em português</li>
+      </ul>
+    </div>
+
+    <pre><code class="language-python"># Contando tokens com tiktoken (biblioteca da OpenAI)
+import tiktoken
+
+enc = tiktoken.encoding_for_model("gpt-4")
+
+texto = "Docker é uma plataforma de containerização"
+tokens = enc.encode(texto)
+
+print(f"Texto: {texto}")
+print(f"Número de tokens: {len(tokens)}")  # ex: 9
+print(f"IDs dos tokens: {tokens}")          # ex: [40, 82, 374, ...]
+
+# Decodificar tokens individuais
+for token_id in tokens:
+    print(repr(enc.decode([token_id])))</code></pre>
+  </div>
+
+  <!-- TRANSFORMERS -->
+  <div class="section">
+    <div class="section-label">04 · Arquitetura</div>
+    <h2>Transformers — A Arquitetura por Trás de Tudo</h2>
+    <p>Todos os LLMs modernos (GPT, Claude, Gemini, Llama) são baseados na arquitetura <strong>Transformer</strong>, proposta no paper <em>"Attention Is All You Need"</em> (Google, 2017). O componente chave é o <strong>mecanismo de atenção</strong>.</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label">Pipeline de um LLM — do texto ao próximo token</div>
+      <div class="mermaid">
+graph LR
+    A[📝 Texto<br/>de entrada] --> B[🔤 Tokenização<br/>texto → IDs]
+    B --> C[🔢 Embeddings<br/>IDs → vetores]
+    C --> D[🧠 N× Transformer<br/>Blocks<br/>Self-Attention + FFN]
+    D --> E[📊 Logits<br/>score p/ cada token]
+    E --> F[🎲 Sampling<br/>temperature/top-p]
+    F --> G[✅ Próximo<br/>token]
+    G -->|repete| D
+    style D fill:#a855f7,color:#000
+    style G fill:#10b981,color:#000
+      </div>
+    </div>
+
+    <h3>Self-Attention — O Coração do Transformer</h3>
+    <p>O mecanismo de atenção permite que o modelo "preste atenção" em diferentes partes do contexto ao processar cada token. Para a palavra "banco" na frase "Fui ao banco pescar", o modelo aprende a prestar mais atenção em "pescar" para entender que é margem de rio, não instituição financeira.</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label">Self-Attention — Relações entre tokens</div>
+      <div class="mermaid">
+graph TB
+    subgraph Frase["Frase: 'O gato sentou no tapete'"]
+      T1[O] --> A1{Atenção}
+      T2[gato] --> A1
+      T3[sentou] --> A1
+      T4[no] --> A1
+      T5[tapete] --> A1
+    end
+    A1 -->|"'gato' presta atenção em<br/>'sentou' e 'tapete'"| OUT[Representação<br/>contextual]
+    style A1 fill:#a855f7,color:#000
+      </div>
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">🔥 Por que "Attention is All You Need"?</div>
+      Antes dos Transformers, usávamos RNNs (redes recorrentes) que processavam sequências palavra por palavra — lento e sem paralelismo. O Transformer processa todos os tokens em paralelo usando atenção, permitindo treinar em escala muito maior com GPUs.
+    </div>
+  </div>
+
+  <!-- EMBEDDINGS -->
+  <div class="section">
+    <div class="section-label">05 · Embeddings</div>
+    <h2>Embeddings — Significado como Números</h2>
+    <p>Um <strong>embedding</strong> é a representação de um token (ou texto) como um vetor numérico de alta dimensão (ex: 1536 dimensões no text-embedding-ada-002 da OpenAI). Textos semanticamente similares ficam próximos no espaço vetorial.</p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label">Espaço de embeddings — similaridade semântica</div>
+      <div class="mermaid">
+graph LR
+    subgraph Espaço["Espaço Vetorial 2D (simplificado)"]
+      R[🐕 cachorro] -.->|similar| S[🐈 gato]
+      S -.->|similar| T[🐾 animal]
+      U[🚗 carro] -.->|similar| V[🚙 automóvel]
+      U -.->|similar| W[✈️ veículo]
+      R -.->|distante| U
+    end
+    style R fill:#a855f7,color:#000
+    style U fill:#06b6d4,color:#000
+      </div>
+    </div>
+
+    <pre><code class="language-python"># Gerando embeddings com a API da OpenAI
+from openai import OpenAI
+import numpy as np
+
+client = OpenAI()
+
+def get_embedding(text: str) -> list[float]:
+    response = client.embeddings.create(
+        input=text,
+        model="text-embedding-3-small"  # 1536 dimensões, barato
+    )
+    return response.data[0].embedding
+
+def cosine_similarity(v1: list, v2: list) -> float:
+    """Mede similaridade entre dois vetores (0 = diferente, 1 = idêntico)"""
+    a, b = np.array(v1), np.array(v2)
+    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+
+# Comparar similaridade semântica
+e1 = get_embedding("cachorro")
+e2 = get_embedding("cão")
+e3 = get_embedding("automóvel")
+
+print(cosine_similarity(e1, e2))  # ~0.92 — muito similar
+print(cosine_similarity(e1, e3))  # ~0.15 — bem diferente</code></pre>
+  </div>
+
+  <!-- CONTEXT WINDOW + TEMPERATURA -->
+  <div class="section">
+    <div class="section-label">06 · Parâmetros de Geração</div>
+    <h2>Context Window, Temperature & Sampling</h2>
+
+    <h3>Context Window — A Memória do Modelo</h3>
+    <p>A <strong>context window</strong> é o número máximo de tokens que o modelo pode processar de uma vez (input + output combinados). Tudo fora desse limite é simplesmente ignorado — o modelo não tem acesso.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Modelo</th><th>Context Window</th><th>Equivalente aprox.</th></tr></thead>
+        <tbody>
+          <tr><td>GPT-3.5</td><td>16k tokens</td><td>~12.000 palavras / 40 páginas</td></tr>
+          <tr><td>GPT-4o</td><td>128k tokens</td><td>~96.000 palavras / 320 páginas</td></tr>
+          <tr><td>Claude 3.5 Sonnet</td><td>200k tokens</td><td>~150.000 palavras / 500 páginas</td></tr>
+          <tr><td>Gemini 1.5 Pro</td><td>1M tokens</td><td>~750.000 palavras / 2.500 páginas</td></tr>
+          <tr><td>Llama 3.1 70B</td><td>128k tokens</td><td>~96.000 palavras / 320 páginas</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Temperature — Controlando a Criatividade</h3>
+    <div class="temp-demo">
+      <div class="temp-box">
+        <div class="temp-val" style="color:#67e8f9">0.0</div>
+        <div class="temp-desc">Determinístico</div>
+        <div class="temp-example">"A capital do Brasil é Brasília."</div>
+      </div>
+      <div class="temp-box">
+        <div class="temp-val" style="color:#6ee7b7">0.3</div>
+        <div class="temp-desc">Conservador</div>
+        <div class="temp-example">Bom para código, fatos, análises</div>
+      </div>
+      <div class="temp-box">
+        <div class="temp-val" style="color:#fcd34d">0.7</div>
+        <div class="temp-desc">Balanceado</div>
+        <div class="temp-example">Padrão para conversação geral</div>
+      </div>
+      <div class="temp-box">
+        <div class="temp-val" style="color:#fca5a5">1.2</div>
+        <div class="temp-desc">Criativo</div>
+        <div class="temp-example">Escrita criativa, brainstorming</div>
+      </div>
+    </div>
+
+    <pre><code class="language-python">from openai import OpenAI
+client = OpenAI()
+
+def gerar_resposta(prompt: str, temperature: float = 0.7, top_p: float = 1.0):
+    """
+    temperature: 0.0 = determinístico, 2.0 = caótico
+    top_p: 0.9 = considera apenas os 90% de probabilidade acumulada
+    top_k: não disponível na API OpenAI, mas presente em Anthropic/Ollama
+    max_tokens: limite de tokens na resposta
+    """
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=temperature,
+        top_p=top_p,
+        max_tokens=1000,
+    )
+    return response.choices[0].message.content
+
+# Para código: temperature baixa (previsível)
+codigo = gerar_resposta(
+    "Escreva uma função Python para ordenar uma lista",
+    temperature=0.1
+)
+
+# Para criativo: temperature alta
+historia = gerar_resposta(
+    "Escreva o início de um conto de ficção científica",
+    temperature=1.0
+)</code></pre>
+
+    <h3>top-p e top-k — Controle Fino do Sampling</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Parâmetro</th><th>O que faz</th><th>Valor típico</th></tr></thead>
+        <tbody>
+          <tr><td><code>temperature</code></td><td>Escala a distribuição de probabilidade — alto = mais uniforme (aleatório), baixo = mais concentrado (determinístico)</td><td>0.0 – 1.0</td></tr>
+          <tr><td><code>top_p</code> (nucleus)</td><td>Considera apenas tokens cuja probabilidade acumulada ≤ p. top_p=0.9 ignora os 10% menos prováveis</td><td>0.9 – 1.0</td></tr>
+          <tr><td><code>top_k</code></td><td>Considera apenas os k tokens mais prováveis. top_k=50 ignora todos exceto os 50 mais prováveis</td><td>40 – 100</td></tr>
+          <tr><td><code>max_tokens</code></td><td>Limite de tokens na resposta (não confundir com context window)</td><td>100 – 4096</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TREINAMENTO -->
+  <div class="section">
+    <div class="section-label">07 · Como São Treinados</div>
+    <h2>Pré-treinamento, Fine-tuning e RLHF</h2>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label">Pipeline de treinamento de um LLM moderno</div>
+      <div class="mermaid">
+graph LR
+    A[📚 Trilhões de tokens<br/>internet, livros, código] -->|Pré-treinamento<br/>Próximo token| B[🧠 Base Model<br/>Llama / GPT-base]
+    B -->|Fine-tuning<br/>Dados curados| C[📝 SFT Model<br/>Segue instruções]
+    C -->|RLHF<br/>Feedback humano| D[✅ RLHF Model<br/>Claude / ChatGPT]
+    D -->|Avaliação| E[🎯 Produto final]
+    style D fill:#a855f7,color:#000
+    style E fill:#10b981,color:#000
+      </div>
+    </div>
+
+    <div class="grid-3" style="margin:20px 0">
+      <div class="card-mini">
+        <div style="font-size:1.3rem">📚</div>
+        <h4>Pré-treinamento</h4>
+        <p>Modelo aprende a prever o próximo token em trilhões de tokens. Semanas/meses em milhares de GPUs. Custo: dezenas de milhões de dólares.</p>
+      </div>
+      <div class="card-mini">
+        <div style="font-size:1.3rem">🎯</div>
+        <h4>SFT (Supervised Fine-tuning)</h4>
+        <p>Fine-tuning em pares (instrução → resposta ideal) criados por humanos. Ensina o modelo a seguir instruções, não só completar texto.</p>
+      </div>
+      <div class="card-mini">
+        <div style="font-size:1.3rem">👥</div>
+        <h4>RLHF</h4>
+        <p>Humanos rankeiam respostas → treina um reward model → usa RL (PPO) para otimizar o LLM. É o que faz modelos serem "úteis e seguros".</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPARATIVO -->
+  <div class="section">
+    <div class="section-label">08 · Comparativo</div>
+    <h2>Os Principais LLMs em 2024–2025</h2>
+
+    <div class="grid-2" style="margin:16px 0">
+      <div class="model-card">
+        <div class="model-name">GPT-4o</div>
+        <div class="model-maker">OpenAI</div>
+        <div class="model-stats">
+          <span>📏 128k context window</span>
+          <span>💰 $5/$15 por 1M tokens (in/out)</span>
+          <span>🌐 Multimodal (texto + imagem + audio)</span>
+          <span>✅ API madura, ecossistema amplo</span>
+        </div>
+      </div>
+      <div class="model-card">
+        <div class="model-name">Claude 3.5 Sonnet</div>
+        <div class="model-maker">Anthropic</div>
+        <div class="model-stats">
+          <span>📏 200k context window</span>
+          <span>💰 $3/$15 por 1M tokens (in/out)</span>
+          <span>🌐 Excelente em código e análise longa</span>
+          <span>✅ Constitutional AI — mais seguro</span>
+        </div>
+      </div>
+      <div class="model-card">
+        <div class="model-name">Gemini 1.5 Pro</div>
+        <div class="model-maker">Google</div>
+        <div class="model-stats">
+          <span>📏 1M context window</span>
+          <span>💰 $3.50/$10.50 por 1M tokens</span>
+          <span>🌐 Maior contexto disponível</span>
+          <span>✅ Integrado ao ecossistema Google</span>
+        </div>
+      </div>
+      <div class="model-card">
+        <div class="model-name">Llama 3.1 70B</div>
+        <div class="model-maker">Meta (Open Source)</div>
+        <div class="model-stats">
+          <span>📏 128k context window</span>
+          <span>💰 Grátis (self-hosted)</span>
+          <span>🌐 Open weights — customizável</span>
+          <span>✅ Privacidade total, sem custo recorrente</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Critério</th><th>GPT-4o</th><th>Claude 3.5</th><th>Gemini 1.5</th><th>Llama 3.1</th></tr></thead>
+        <tbody>
+          <tr><td>Código</td><td><span class="badge badge-green">Excelente</span></td><td><span class="badge badge-green">Excelente</span></td><td><span class="badge badge-yellow">Bom</span></td><td><span class="badge badge-yellow">Bom</span></td></tr>
+          <tr><td>Raciocínio</td><td><span class="badge badge-green">Excelente</span></td><td><span class="badge badge-green">Excelente</span></td><td><span class="badge badge-green">Excelente</span></td><td><span class="badge badge-yellow">Bom</span></td></tr>
+          <tr><td>Contexto longo</td><td><span class="badge badge-yellow">128k</span></td><td><span class="badge badge-green">200k</span></td><td><span class="badge badge-green">1M</span></td><td><span class="badge badge-yellow">128k</span></td></tr>
+          <tr><td>Custo</td><td><span class="badge badge-yellow">Médio</span></td><td><span class="badge badge-green">Baixo</span></td><td><span class="badge badge-yellow">Médio</span></td><td><span class="badge badge-green">Grátis</span></td></tr>
+          <tr><td>Privacidade</td><td><span class="badge badge-red">API cloud</span></td><td><span class="badge badge-red">API cloud</span></td><td><span class="badge badge-red">API cloud</span></td><td><span class="badge badge-green">Self-hosted</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PITFALLS -->
+  <div class="section">
+    <div class="section-label">09 · Armadilhas</div>
+    <h2>⚠️ Conceitos que Geram Confusão</h2>
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ LLMs não "sabem" — eles predizem</div>
+      <p>LLMs não têm conhecimento ou entendimento real. Eles geram o texto estatisticamente mais provável dado o contexto. É por isso que "alucinam" com confiança — o modelo não sabe que está errado, só sabe que aquela sequência de tokens é plausível.</p>
+    </div>
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Context window ≠ memória persistente</div>
+      <p>O modelo não lembra de conversas anteriores. Cada chamada à API começa do zero. O que parece "memória" no ChatGPT é apenas o histórico da conversa sendo reenviado a cada mensagem — consumindo tokens.</p>
+    </div>
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Temperature 0.0 não é sempre melhor</div>
+      <p>Temperature=0.0 é determinístico mas pode ser repetitivo e limitado. Para código e fatos: use 0.0–0.3. Para escrita criativa ou brainstorming: 0.7–1.0. Não existe "temperatura ideal" universal.</p>
+    </div>
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Tamanho do modelo ≠ qualidade sempre</div>
+      <p>Um modelo menor com fine-tuning específico para sua tarefa frequentemente supera um modelo maior generalista. Llama 3.1 8B fine-tunado para SQL pode ser melhor que GPT-4 para queries SQL específicas.</p>
+    </div>
+  </div>
+
+  <!-- VÍDEOS -->
+  <div class="section">
+    <div class="section-label">10 · Curadoria</div>
+    <h2>Referências para Assistir</h2>
+    <div class="video-grid">
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">But what is a GPT? Visual intro to transformers</div>
+          <div class="video-channel">3Blue1Brown · ~27 min</div>
+          <div class="video-why">Por que assistir: a melhor explicação visual existente de como Transformers e atenção funcionam. Animações incríveis que tornam o abstrato concreto.</div>
+          <a href="https://www.youtube.com/watch?v=wjZofJX0v4M" target="_blank" class="video-watch">Assistir →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">Intro to Large Language Models</div>
+          <div class="video-channel">Andrej Karpathy · ~1h</div>
+          <div class="video-why">Por que assistir: Karpathy (ex-OpenAI) dá uma visão técnica completa de LLMs para quem quer entender de verdade. Referência obrigatória.</div>
+          <a href="https://www.youtube.com/watch?v=zjkBMFhNj_g" target="_blank" class="video-watch">Assistir →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">Tokens and Tokenization in LLMs</div>
+          <div class="video-channel">Andrej Karpathy · ~2h (série Let's build)</div>
+          <div class="video-why">Por que assistir: implementa tokenização BPE do zero em Python — entender implementando é 10x mais sólido que só assistindo.</div>
+          <a href="https://www.youtube.com/watch?v=zduSFxRajkE" target="_blank" class="video-watch">Assistir →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">AI Language Models in 100 Seconds</div>
+          <div class="video-channel">Fireship · ~2 min</div>
+          <div class="video-why">Por que assistir: revisão rápida do contexto histórico — de RNNs até Transformers — antes de mergulhar nos detalhes.</div>
+          <a href="https://www.youtube.com/watch?v=fjJOgb-E41w" target="_blank" class="video-watch">Assistir →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECKPOINT -->
+  <div class="checkpoint">
+    <div class="checkpoint-label">🏁 Checkpoint Final</div>
+    <h3>Desafio: Explorar os Parâmetros de Geração</h3>
+    <p>Use a API da OpenAI ou Anthropic (ambas têm tier gratuito) para explorar os parâmetros de geração:</p>
+    <ul>
+      <li>Instale <code>openai</code> com <code>pip install openai</code> e configure sua API key</li>
+      <li>Gere 5 respostas para o mesmo prompt com temperatures: 0.0, 0.3, 0.7, 1.0, 1.5</li>
+      <li>Use <code>tiktoken</code> para contar os tokens do seu prompt e calcular o custo estimado</li>
+      <li>Compare as respostas: qual temperature produziu o resultado mais útil?</li>
+      <li><strong>Bônus:</strong> Gere embeddings de 5 frases e calcule a similaridade cosseno entre elas — visualize quais são semanticamente próximas</li>
+    </ul>
+    <div class="checkpoint-hint">💬 Dica: Para experimentar sem gastar, use a API do Google Gemini (tem tier gratuito generoso) ou instale o Ollama localmente com <code>ollama pull llama3.2:3b</code> — roda em qualquer máquina com 4GB de RAM.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">11 · Próximos Passos</div>
+    <h2>O que vem depois?</h2>
+    <p>Com a mecânica dos LLMs compreendida, partimos para o que é mais prático e imediato: <strong>Prompt Engineering</strong>. Como escrever prompts que realmente funcionam — zero-shot, few-shot, Chain-of-Thought e mais.</p>
+    <a href="ai-02-prompt-eng-fundamentos.html" class="next-card">
+      <div>
+        <div class="next-card-label">→ Próxima Aula · 38 / 50</div>
+        <div class="next-card-title">Prompt Engineering — Fundamentos: Zero-shot, Few-shot & CoT</div>
+      </div>
+      <div class="next-arrow">→</div>
+    </a>
+  </div>
+
+  <div class="footer">
+    <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+    <span>🤖 Como LLMs Funcionam · Aula 37 / 50</span>
+    <a href="ai-02-prompt-eng-fundamentos.html">Próxima →</a>
+  </div>
+</div>
+
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+  window.addEventListener('scroll', () => {
+    const p = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+    document.getElementById('progressBar').style.width = p + '%';
+  });
+  document.addEventListener('DOMContentLoaded', () => { if (typeof hljs !== 'undefined') hljs.highlightAll(); });
+</script>
+</body>
+</html>
