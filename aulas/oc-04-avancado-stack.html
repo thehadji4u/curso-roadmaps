@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenClaw Avançado + Stack Completo · Aula 50</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #f97316;
+      --accent-dim: rgba(249,115,22,0.12);
+      --accent-border: rgba(249,115,22,0.35);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #fb923c); width: 0%; transition: width 0.1s; }
+
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-next.disabled { opacity: 0.3; pointer-events: none; cursor: default; }
+    .nav-prev { border-color: var(--accent-border); color: var(--accent); }
+    .nav-prev:hover { background: var(--accent-dim); color: #fb923c; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero-badge-final { background: linear-gradient(135deg, rgba(249,115,22,0.3), rgba(168,85,247,0.3)); border: 1px solid rgba(249,115,22,0.5); color: #fff; padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 30%, var(--accent) 70%, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.08); border-color: var(--success); }
+    .callout-tip .callout-title { color: var(--success); }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), #a855f7, transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(88,166,255,0.2); color: #79c0ff; }
+    .badge-orange { background: rgba(249,115,22,0.2); color: #fb923c; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    .terminal { background: #0d0d14; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 16px 0; }
+    .terminal-bar { background: #1a1a24; padding: 10px 16px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #ffbd2e; }
+    .dot-g { background: #28ca41; }
+    .terminal-title { font-size: 11px; color: var(--muted); margin-left: 8px; letter-spacing: 0.06em; }
+    .terminal-body { padding: 18px 20px; font-size: 13px; line-height: 1.7; color: #c9d1d9; }
+    .terminal-body .prompt { color: var(--accent); user-select: none; }
+    .terminal-body .comment { color: #8b949e; }
+    .terminal-body .out { color: #8b949e; padding-left: 18px; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+
+    .video-grid { display: flex; flex-direction: column; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 48px; height: 48px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--accent); }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    .video-why { font-size: 12px; color: var(--text); margin-bottom: 8px; }
+    .video-info a { font-size: 12px; color: var(--accent); text-decoration: none; }
+    .video-info a:hover { text-decoration: underline; }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(249,115,22,0.1), rgba(168,85,247,0.08)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 32px; margin: 32px 0; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 16px; }
+    .checkpoint p { color: var(--text); margin-bottom: 14px; }
+    .checkpoint ul { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; display: flex; gap: 8px; }
+    .checkpoint ul li::before { content: '✦'; color: var(--accent); flex-shrink: 0; }
+    .checkpoint-hint { background: rgba(255,255,255,0.04); border-radius: 8px; padding: 14px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 20px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; font-size: 13px; margin-bottom: 8px; }
+
+    /* Stack completo final card */
+    .final-card { background: linear-gradient(135deg, rgba(249,115,22,0.08), rgba(168,85,247,0.08)); border: 1px solid rgba(249,115,22,0.3); border-radius: 16px; padding: 40px; text-align: center; margin: 32px 0; position: relative; overflow: hidden; }
+    .final-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent), #a855f7, var(--accent)); }
+    .final-title { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: #fff; margin: 16px 0; }
+    .final-subtitle { color: var(--muted); font-size: 14px; margin-bottom: 24px; max-width: 500px; margin-left: auto; margin-right: auto; }
+    .final-stats { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin: 24px 0; }
+    .stat { text-align: center; }
+    .stat-num { font-family: 'Syne', sans-serif; font-size: 2.5rem; font-weight: 800; color: var(--accent); }
+    .stat-label { font-size: 12px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+
+    /* Anti-bot techniques */
+    .technique-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin: 10px 0; position: relative; overflow: hidden; }
+    .technique-card::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--accent); }
+    .technique-name { color: #fff; font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+    .technique-desc { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+    .technique-solution { font-size: 12px; color: var(--success); }
+
+    footer { border-top: 1px solid var(--border); margin-top: 80px; padding: 28px 24px; text-align: center; }
+    footer a { color: var(--accent); text-decoration: none; font-size: 13px; }
+    footer a:hover { text-decoration: underline; }
+    footer p { font-size: 12px; color: var(--muted); margin-top: 8px; }
+  </style>
+</head>
+<body>
+
+<div class="progress-bar-wrap"><div class="progress-bar-fill" id="pgbar"></div></div>
+
+<nav class="top-nav">
+  <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+  <div class="nav-center">
+    <a href="ai-08-multi-agentes.html" class="nav-prev">← Anterior</a>
+    <div class="nav-position">
+      <span class="track">🦀 OpenClaw</span> · Aula 50 / 50
+    </div>
+    <span class="nav-next disabled">Próxima →</span>
+  </div>
+</nav>
+
+<main class="page">
+
+  <!-- ═══════════════════════════════ HERO ═══════════════════════════════ -->
+  <section class="hero">
+    <div class="hero-eyebrow">
+      <span class="hero-badge">AULA 50</span>
+      <span class="hero-badge-final">✦ AULA FINAL ✦</span>
+      <span>🦀 OpenClaw + Stack Completo</span>
+    </div>
+    <h1>OpenClaw Avançado<br>+ Stack Completo</h1>
+    <div class="hero-meta">
+      <span>⏱ ~45 min</span>
+      <span>·</span>
+      <span>Expert</span>
+      <span>·</span>
+      <span>Projeto Final</span>
+    </div>
+    <div class="hero-tags">
+      <span class="tag accent">Anti-bot</span>
+      <span class="tag">Escalabilidade</span>
+      <span class="tag">n8n + OpenClaw</span>
+      <span class="tag">Monitoramento</span>
+      <span class="tag">Docker Deploy</span>
+      <span class="tag">Projeto Final</span>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ POR QUE IMPORTA ═══════════════════ -->
+  <section class="section">
+    <div class="section-label">Por que isso importa?</div>
+    <h2>Da automação local ao sistema em produção</h2>
+    <p>
+      Nas aulas anteriores construímos os fundamentos: configuração, tarefas core, Vision agents.
+      Agora vamos além — como fazer tudo isso funcionar <strong>em escala, 24/7, com sites
+      que ativamente tentam bloquear você</strong>, e integrando com o restante do stack
+      (n8n, GitHub Actions, Docker, monitoramento).
+    </p>
+    <p>
+      Esta é a diferença entre um script funcional no seu laptop e um
+      <strong>sistema de automação de produção</strong> que você pode mostrar num portfólio
+      ou usar em clientes reais.
+    </p>
+    <div class="callout callout-tip">
+      <div class="callout-title">🔥 O que você vai construir hoje</div>
+      Um sistema completo de monitoramento de preços: Playwright + anti-bot + extração Pydantic
+      + banco de dados + alertas via n8n + CI/CD com GitHub Actions + deploy em Docker +
+      dashboard de monitoramento. O projeto final que integra tudo do roadmap.
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ ANALOGIA ══════════════════════════ -->
+  <section class="section">
+    <div class="section-label">Analogia do Mundo Real</div>
+    <h2>O Negócio que Cresceu</h2>
+
+    <div class="analogy-card">
+      <div class="analogy-label">🏭 Analogia</div>
+      <div class="analogy-text">
+        Imagine um artesão que faz produtos à mão — excelente qualidade, mas limitado
+        pela sua própria capacidade. Para escalar, ele precisa: uma fábrica (infraestrutura),
+        processos padronizados (código confiável), controle de qualidade (testes e monitoramento),
+        sistema de distribuição (integração com outros sistemas), e um painel de controle
+        (observabilidade). Automação web escalável é exatamente essa transição — do script
+        artesanal para a fábrica digital.
+      </div>
+      <div class="analogy-mapping">
+        <div class="analogy-real">🔧 Script artesanal no laptop</div>
+        <div class="analogy-tech">Playwright básico sem resiliência</div>
+        <div class="analogy-real">🏭 Fábrica com processos</div>
+        <div class="analogy-tech">Sistema Docker + filas + retry</div>
+        <div class="analogy-real">🛡️ Controle de qualidade</div>
+        <div class="analogy-tech">Testes + monitoramento + alertas</div>
+        <div class="analogy-real">📦 Sistema de distribuição</div>
+        <div class="analogy-tech">n8n webhooks + integrações</div>
+        <div class="analogy-real">📊 Painel de controle</div>
+        <div class="analogy-tech">Grafana + métricas + logs</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ ANTI-BOT ══════════════════════════ -->
+  <section class="section">
+    <div class="section-label">Técnicas Avançadas</div>
+    <h2>Anti-bot: Como Sites Detectam e Como Contornar</h2>
+
+    <p>
+      Sites modernos usam múltiplas camadas para detectar automação. Entender o que
+      estão verificando é o primeiro passo para contornar eticamente.
+    </p>
+
+    <div class="technique-card">
+      <div class="technique-name">🕵️ User-Agent e Fingerprinting</div>
+      <div class="technique-desc">Headless browsers têm fingerprints distintos: navigator.webdriver=true, ausência de plugins, canvas fingerprint diferente.</div>
+      <div class="technique-solution">✅ Solução: playwright-stealth + rotação de user-agents reais + injetar navigator.webdriver=undefined</div>
+    </div>
+
+    <div class="technique-card">
+      <div class="technique-name">⏱️ Velocidade de Interação</div>
+      <div class="technique-desc">Bots clicam instantaneamente; humanos têm delays naturais. Movimento do mouse em linha reta é impossível humanamente.</div>
+      <div class="technique-solution">✅ Solução: typing delays, mouse movement curvado, waits aleatórios entre ações (1.5s-4s)</div>
+    </div>
+
+    <div class="technique-card">
+      <div class="technique-name">🍪 Cookies e Sessions</div>
+      <div class="technique-desc">Bots sem histórico de cookies parecem suspeitos. Sem cookies de sessão de visitas anteriores.</div>
+      <div class="technique-solution">✅ Solução: warm-up sessions (visitar homepage antes da página alvo), reutilizar auth_state.json entre runs</div>
+    </div>
+
+    <div class="technique-card">
+      <div class="technique-name">🔐 CAPTCHA e hCaptcha</div>
+      <div class="technique-desc">reCAPTCHA v3 é score-based (sem desafio), hCaptcha requer cliques, Cloudflare Turnstile é challenge automático.</div>
+      <div class="technique-solution">✅ Solução: 2captcha API / CapSolver para resolução automática, ou proxies residenciais que já têm score alto</div>
+    </div>
+
+    <div class="technique-card">
+      <div class="technique-name">🌐 Rate Limiting por IP</div>
+      <div class="technique-desc">Muitas requisições do mesmo IP em pouco tempo → ban temporário ou permanente.</div>
+      <div class="technique-solution">✅ Solução: pool de proxies residenciais, delays adaptativos, respeitar robots.txt e limitar a dados públicos</div>
+    </div>
+
+    <div class="code-label">stealth_browser.py — Browser com técnicas anti-detecção</div>
+    <pre><code class="language-python">import asyncio
+import random
+import math
+from playwright.async_api import async_playwright, Page, BrowserContext
+from contextlib import asynccontextmanager
+
+
+# JavaScript para mascarar fingerprint de automação
+STEALTH_SCRIPTS = """
+    // Remove webdriver
+    Object.defineProperty(navigator, 'webdriver', {
+        get: () => undefined,
+    });
+
+    // Adicionar plugins simulados
+    Object.defineProperty(navigator, 'plugins', {
+        get: () => [
+            {name: 'Chrome PDF Plugin', filename: 'internal-pdf-viewer'},
+            {name: 'Chrome PDF Viewer', filename: 'mhjfbmdgcfjbbpaeojofohoefgiehjai'},
+            {name: 'Native Client', filename: 'internal-nacl-plugin'},
+        ],
+    });
+
+    // Corrigir chrome object
+    window.chrome = {
+        runtime: {}, app: {}, csi: function(){},
+        loadTimes: function(){ return {}; }
+    };
+
+    // Simular permissões normais
+    const originalQuery = window.navigator.permissions.query;
+    window.navigator.permissions.query = (parameters) => (
+        parameters.name === 'notifications' ?
+            Promise.resolve({state: Notification.permission}) :
+            originalQuery(parameters)
+    );
+"""
+
+
+# User-agents reais de browsers modernos
+USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_2_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15",
+]
+
+
+async def movimento_humano(page: Page, dest_x: float, dest_y: float):
+    """
+    Move o mouse em curva Bezier simulando movimento humano.
+    Bots movem em linha reta; humanos fazem curvas naturais.
+    """
+    pos = await page.evaluate("() => ({x: 0, y: 0})")
+    start_x, start_y = pos["x"], pos["y"]
+
+    # Ponto de controle aleatório para curva Bezier
+    ctrl_x = (start_x + dest_x) / 2 + random.uniform(-100, 100)
+    ctrl_y = (start_y + dest_y) / 2 + random.uniform(-80, 80)
+
+    steps = random.randint(20, 40)
+    for i in range(steps + 1):
+        t = i / steps
+        # Fórmula Bezier quadrática
+        x = (1-t)**2 * start_x + 2*(1-t)*t * ctrl_x + t**2 * dest_x
+        y = (1-t)**2 * start_y + 2*(1-t)*t * ctrl_y + t**2 * dest_y
+
+        await page.mouse.move(x, y)
+        await asyncio.sleep(random.uniform(0.005, 0.015))
+
+    await asyncio.sleep(random.uniform(0.08, 0.2))
+
+
+async def digitar_humano(page: Page, selector: str, texto: str):
+    """
+    Digita texto com velocidade variável simulando digitação humana.
+    """
+    await page.click(selector)
+    await asyncio.sleep(random.uniform(0.3, 0.7))
+
+    for char in texto:
+        await page.keyboard.type(char)
+        # Velocidade varia: caracteres comuns mais rápidos, números/especiais mais lentos
+        delay = random.uniform(0.06, 0.15)
+        if char in "0123456789@.!?":
+            delay *= 1.5
+        await asyncio.sleep(delay)
+
+    await asyncio.sleep(random.uniform(0.2, 0.5))
+
+
+@asynccontextmanager
+async def stealth_context(proxy_url: str | None = None):
+    """
+    Cria contexto de browser com todas as técnicas anti-detecção aplicadas.
+    """
+    async with async_playwright() as p:
+        launch_args = {
+            "headless": True,
+            "args": [
+                "--disable-blink-features=AutomationControlled",
+                "--no-sandbox",
+                "--disable-web-security",
+                "--disable-features=IsolateOrigins",
+                f"--window-size={random.choice([1366, 1440, 1920])},{random.choice([768, 900, 1080])}",
+            ]
+        }
+
+        if proxy_url:
+            launch_args["proxy"] = {"server": proxy_url}
+
+        browser = await p.chromium.launch(**launch_args)
+
+        context_args = {
+            "user_agent": random.choice(USER_AGENTS),
+            "viewport": {"width": 1366, "height": 768},
+            "locale": "pt-BR",
+            "timezone_id": "America/Sao_Paulo",
+            "permissions": ["geolocation"],
+            "extra_http_headers": {
+                "Accept-Language": "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7",
+                "Accept-Encoding": "gzip, deflate, br",
+                "DNT": "1",
+            }
+        }
+
+        context: BrowserContext = await browser.new_context(**context_args)
+
+        # Injetar script de stealth em todas as páginas
+        await context.add_init_script(STEALTH_SCRIPTS)
+
+        try:
+            yield context
+        finally:
+            await browser.close()
+
+
+async def warm_up_session(context: BrowserContext, dominio: str):
+    """
+    Simula visita inicial ao site para construir cookies legítimos
+    antes de fazer scraping.
+    """
+    page = await context.new_page()
+
+    # Visitar homepage
+    await page.goto(f"https://{dominio}", wait_until="networkidle")
+    await asyncio.sleep(random.uniform(2, 4))
+
+    # Scrollar para parecer que está lendo
+    for _ in range(random.randint(2, 4)):
+        await page.mouse.wheel(0, random.randint(300, 700))
+        await asyncio.sleep(random.uniform(1, 2.5))
+
+    await page.close()
+
+
+# Uso prático
+async def scrape_com_stealth(url: str) -> str:
+    """Exemplo de scraping com todas as proteções aplicadas."""
+    async with stealth_context() as context:
+        from urllib.parse import urlparse
+        dominio = urlparse(url).netloc
+
+        # Warm-up antes de scraping
+        await warm_up_session(context, dominio)
+
+        page = await context.new_page()
+        await page.goto(url, wait_until="networkidle")
+
+        # Delay humano antes de interagir
+        await asyncio.sleep(random.uniform(1.5, 3))
+
+        content = await page.content()
+        await page.close()
+        return content</code></pre>
+
+    <div class="callout callout-warn">
+      <div class="callout-title">⚠️ Responsabilidade Legal e Ética</div>
+      Sempre verifique <code>robots.txt</code> e os Termos de Serviço antes de automatizar.
+      Limites de rate razoáveis, dados apenas públicos, sem contornar medidas de autenticação.
+      Esta aula é educacional — use com responsabilidade.
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ ESCALABILIDADE ═══════════════════ -->
+  <section class="section">
+    <div class="section-label">Escalabilidade</div>
+    <h2>Rodando em Escala: Filas + Workers</h2>
+
+    <p>
+      Para processar centenas ou milhares de URLs, precisamos de um sistema de filas.
+      <strong>Redis Queue (RQ)</strong> é a solução mais simples que funciona em produção.
+    </p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label">Diagrama — Arquitetura de Scraping em Escala</div>
+      <div class="mermaid">
+flowchart LR
+    SCHEDULER["⏰ Scheduler\n(APScheduler)"] -->|adiciona URLs| REDIS[("🗄️ Redis Queue")]
+    REDIS -->|distribui| W1["🔧 Worker 1\n(Playwright)"]
+    REDIS -->|distribui| W2["🔧 Worker 2\n(Playwright)"]
+    REDIS -->|distribui| W3["🔧 Worker 3\n(Playwright)"]
+    W1 & W2 & W3 -->|resultados| POSTGRES[("🐘 PostgreSQL")]
+    POSTGRES -->|novos dados| N8N["🔀 n8n\nWebhook Trigger"]
+    N8N -->|alertas| SLACK["💬 Slack/Telegram"]
+    N8N -->|relatórios| EMAIL["📧 Email"]
+    W1 & W2 & W3 -->|métricas| PROMETHEUS["📊 Prometheus"]
+    PROMETHEUS --> GRAFANA["📈 Grafana"]
+
+    style REDIS fill:#dc382d,color:#fff
+    style N8N fill:#10b981,color:#fff
+    style GRAFANA fill:#f59e0b,color:#000
+      </div>
+    </div>
+
+    <div class="code-label">workers.py — Sistema de workers com Redis Queue</div>
+    <pre><code class="language-python">import asyncio
+import json
+from datetime import datetime
+from redis import Redis
+from rq import Queue, Worker
+from rq.job import Job
+import psycopg2
+from dataclasses import dataclass, asdict
+from typing import Optional
+
+
+# Configuração Redis
+redis_conn = Redis(host="localhost", port=6379, db=0)
+scraping_queue = Queue("scraping", connection=redis_conn)
+priority_queue = Queue("priority", connection=redis_conn)
+
+
+@dataclass
+class ScrapeJob:
+    url: str
+    produto_id: str
+    prioridade: int = 0
+    max_retries: int = 3
+    notify_on_change: bool = True
+
+
+class ScrapingService:
+    """Serviço principal de scraping com filas."""
+
+    def __init__(self):
+        self.redis = redis_conn
+        self.db = self._conectar_db()
+
+    def _conectar_db(self):
+        return psycopg2.connect(
+            host="localhost", database="scraping_db",
+            user="postgres", password="senha"
+        )
+
+    def agendar_scraping(self, job: ScrapeJob) -> str:
+        """Adiciona URL na fila de scraping."""
+        queue = priority_queue if job.prioridade > 5 else scraping_queue
+
+        rq_job = queue.enqueue(
+            "workers.executar_scraping",  # função a executar
+            kwargs=asdict(job),
+            job_timeout=120,
+            retry=job.max_retries,
+            result_ttl=3600
+        )
+
+        print(f"📥 Job {rq_job.id} agendado para {job.url}")
+        return rq_job.id
+
+    def agendar_lote(self, urls: list[str], produto_ids: list[str]):
+        """Agenda múltiplas URLs de uma vez."""
+        job_ids = []
+        for url, pid in zip(urls, produto_ids):
+            job = ScrapeJob(url=url, produto_id=pid)
+            job_id = self.agendar_scraping(job)
+            job_ids.append(job_id)
+        return job_ids
+
+    def status_fila(self) -> dict:
+        """Retorna status atual das filas."""
+        return {
+            "scraping": {
+                "pendentes": len(scraping_queue),
+                "falhados": scraping_queue.failed_job_registry.count,
+                "concluidos": scraping_queue.finished_job_registry.count,
+            },
+            "priority": {
+                "pendentes": len(priority_queue),
+            }
+        }
+
+
+# Função executada pelos workers (deve ser importável pelo RQ)
+def executar_scraping(url: str, produto_id: str, notify_on_change: bool = True, **kwargs):
+    """
+    Função executada por cada worker.
+    Note: não pode ser async — RQ usa threads síncrono.
+    Use asyncio.run() para código async.
+    """
+    from stealth_browser import scrape_com_stealth
+    from research_agent import extract_product_vision
+    from playwright.sync_api import sync_playwright
+
+    print(f"🔧 Worker processando: {url}")
+
+    # Executar scraping
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        page.goto(url, wait_until="networkidle")
+
+        # Extrair dados (versão síncrona simplificada)
+        titulo = page.title()
+        preco_text = page.locator("[data-price], .price, .preco").first.inner_text()
+
+        import re
+        preco_match = re.search(r'[\d.,]+', preco_text.replace(".", "").replace(",", "."))
+        preco = float(preco_match.group()) if preco_match else None
+
+        browser.close()
+
+    resultado = {
+        "url": url,
+        "produto_id": produto_id,
+        "titulo": titulo,
+        "preco": preco,
+        "timestamp": datetime.now().isoformat()
+    }
+
+    # Salvar no banco e verificar mudança
+    salvar_resultado(resultado)
+    if notify_on_change and preco:
+        verificar_e_notificar(produto_id, preco)
+
+    return resultado
+
+
+def salvar_resultado(dados: dict):
+    """Salva resultado no PostgreSQL."""
+    conn = psycopg2.connect(
+        host="localhost", database="scraping_db",
+        user="postgres", password="senha"
+    )
+    with conn.cursor() as cur:
+        cur.execute("""
+            INSERT INTO price_history (produto_id, url, preco, titulo, coletado_em)
+            VALUES (%(produto_id)s, %(url)s, %(preco)s, %(titulo)s, %(timestamp)s)
+        """, dados)
+    conn.commit()
+    conn.close()
+
+
+def verificar_e_notificar(produto_id: str, preco_atual: float):
+    """Verifica se preço mudou e dispara webhook n8n se necessário."""
+    import httpx
+
+    conn = psycopg2.connect(
+        host="localhost", database="scraping_db",
+        user="postgres", password="senha"
+    )
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT preco FROM price_history
+            WHERE produto_id = %s
+            ORDER BY coletado_em DESC
+            LIMIT 2
+        """, (produto_id,))
+        rows = cur.fetchall()
+    conn.close()
+
+    if len(rows) >= 2:
+        preco_anterior = rows[1][0]
+        variacao = (preco_atual - preco_anterior) / preco_anterior
+
+        if abs(variacao) >= 0.05:  # Variação >= 5%
+            httpx.post(
+                "http://n8n:5678/webhook/price-alert",
+                json={
+                    "produto_id": produto_id,
+                    "preco_atual": preco_atual,
+                    "preco_anterior": float(preco_anterior),
+                    "variacao_pct": round(variacao * 100, 1)
+                }
+            )</code></pre>
+  </section>
+
+  <!-- ═══════════════════════════════ DOCKER + N8N ══════════════════════ -->
+  <section class="section">
+    <div class="section-label">Deploy Completo</div>
+    <h2>Docker Compose: Stack Completo em Produção</h2>
+
+    <div class="code-label">docker-compose.yml — Stack completo</div>
+    <pre><code class="language-yaml">version: "3.9"
+
+services:
+  # ─── Aplicação principal (scraper) ────────────────────
+  scraper:
+    build: .
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=postgresql://postgres:senha@postgres:5432/scraping_db
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - N8N_WEBHOOK_URL=http://n8n:5678/webhook/price-alert
+    depends_on:
+      - redis
+      - postgres
+    volumes:
+      - ./screenshots:/app/screenshots
+      - ./logs:/app/logs
+    restart: unless-stopped
+
+  # ─── Workers de scraping (escala horizontal) ──────────
+  worker:
+    build: .
+    command: rq worker scraping priority --with-scheduler
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=postgresql://postgres:senha@postgres:5432/scraping_db
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    depends_on:
+      - redis
+      - postgres
+    deploy:
+      replicas: 3  # 3 workers em paralelo
+    restart: unless-stopped
+
+  # ─── Redis (fila de jobs) ─────────────────────────────
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --save 60 1 --loglevel warning
+    restart: unless-stopped
+
+  # ─── PostgreSQL (banco de dados) ──────────────────────
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: scraping_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: senha
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+
+  # ─── n8n (automações e alertas) ───────────────────────
+  n8n:
+    image: n8nio/n8n:latest
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=senha_n8n
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_DATABASE=n8n_db
+      - DB_POSTGRESDB_USER=postgres
+      - DB_POSTGRESDB_PASSWORD=senha
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  # ─── Prometheus + Grafana (monitoramento) ─────────────
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+  # ─── RQ Dashboard (UI das filas) ──────────────────────
+  rq-dashboard:
+    image: eoranged/rq-dashboard:latest
+    ports:
+      - "9181:9181"
+    environment:
+      - RQ_DASHBOARD_REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+volumes:
+  redis_data:
+  postgres_data:
+  n8n_data:
+  prometheus_data:
+  grafana_data:</code></pre>
+
+    <div class="terminal">
+      <div class="terminal-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="terminal-title">bash — Deploy</span></div>
+      <div class="terminal-body">
+        <span class="comment"># Subir o stack completo</span><br>
+        <span class="prompt">$ </span>docker compose up -d<br>
+        <span class="out">✓ redis started</span><br>
+        <span class="out">✓ postgres started</span><br>
+        <span class="out">✓ n8n started</span><br>
+        <span class="out">✓ scraper started</span><br>
+        <span class="out">✓ worker (3 replicas) started</span><br>
+        <span class="out">✓ grafana started → http://localhost:3000</span><br>
+        <span class="out">✓ rq-dashboard → http://localhost:9181</span><br><br>
+        <span class="comment"># Escalar workers horizontalmente</span><br>
+        <span class="prompt">$ </span>docker compose up -d --scale worker=5<br><br>
+        <span class="comment"># Ver logs em tempo real</span><br>
+        <span class="prompt">$ </span>docker compose logs -f worker<br>
+        <span class="out">worker-1 | 🔧 Processando: https://www.loja.com/produto/1</span><br>
+        <span class="out">worker-2 | 🔧 Processando: https://www.loja.com/produto/2</span><br>
+        <span class="out">worker-3 | 🔧 Processando: https://www.loja.com/produto/3</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ CI/CD ════════════════════════════ -->
+  <section class="section">
+    <div class="section-label">GitHub Actions</div>
+    <h2>CI/CD: Deploy Automático</h2>
+
+    <div class="code-label">.github/workflows/deploy.yml</div>
+    <pre><code class="language-yaml">name: Test, Build & Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}/scraper
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          playwright install chromium --with-deps
+
+      - name: Run tests
+        run: pytest tests/ -v --cov=. --cov-report=xml
+        env:
+          REDIS_URL: redis://localhost:6379
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+
+  build-and-push:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd /opt/scraper
+            docker compose pull
+            docker compose up -d --scale worker=3
+            docker image prune -f
+            echo "✅ Deploy concluído em $(date)"</code></pre>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">🔥 Pro Tip — Monitoramento com Sentry</div>
+      <pre><code class="language-python">import sentry_sdk
+from sentry_sdk.integrations.rq import RqIntegration
+
+sentry_sdk.init(
+    dsn=os.getenv("SENTRY_DSN"),
+    integrations=[RqIntegration()],
+    traces_sample_rate=0.1,  # 10% das transações
+)
+# Agora erros nos workers são automaticamente reportados</code></pre>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ TABELA COMPARATIVA ═══════════════ -->
+  <section class="section">
+    <div class="section-label">Comparativo</div>
+    <h2>Ferramentas do Stack por Caso de Uso</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Necessidade</th>
+            <th>Ferramenta</th>
+            <th>Custo</th>
+            <th>Complexidade</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Fila de jobs</td>
+            <td>Redis + RQ</td>
+            <td><span class="badge badge-green">Grátis</span></td>
+            <td><span class="badge badge-green">Baixa</span></td>
+          </tr>
+          <tr>
+            <td>Banco de dados</td>
+            <td>PostgreSQL</td>
+            <td><span class="badge badge-green">Grátis</span></td>
+            <td><span class="badge badge-yellow">Média</span></td>
+          </tr>
+          <tr>
+            <td>Alertas/Automações</td>
+            <td>n8n self-hosted</td>
+            <td><span class="badge badge-green">Grátis</span></td>
+            <td><span class="badge badge-green">Baixa</span></td>
+          </tr>
+          <tr>
+            <td>Monitoramento</td>
+            <td>Prometheus + Grafana</td>
+            <td><span class="badge badge-green">Grátis</span></td>
+            <td><span class="badge badge-yellow">Média</span></td>
+          </tr>
+          <tr>
+            <td>Erros/Exceções</td>
+            <td>Sentry</td>
+            <td><span class="badge badge-yellow">Free tier</span></td>
+            <td><span class="badge badge-green">Baixa</span></td>
+          </tr>
+          <tr>
+            <td>Anti-bot leve</td>
+            <td>playwright-stealth</td>
+            <td><span class="badge badge-green">Grátis</span></td>
+            <td><span class="badge badge-green">Baixa</span></td>
+          </tr>
+          <tr>
+            <td>Anti-bot avançado</td>
+            <td>Proxies residenciais</td>
+            <td><span class="badge badge-red">$50-200/mês</span></td>
+            <td><span class="badge badge-yellow">Média</span></td>
+          </tr>
+          <tr>
+            <td>Vision extraction</td>
+            <td>GPT-4o Vision</td>
+            <td><span class="badge badge-yellow">Por uso</span></td>
+            <td><span class="badge badge-yellow">Média</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ ARMADILHAS ════════════════════════ -->
+  <section class="section">
+    <div class="section-label">Armadilhas Comuns</div>
+    <h2>Pitfalls em Produção</h2>
+
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Workers sem memória — acúmulo de processos Chromium</div>
+      <p style="color:var(--muted);font-size:14px;margin:0">
+        Playwright em workers pode vazar memória se o browser não for fechado corretamente
+        em caso de erro. Use sempre <code>try/finally</code> ou context managers para garantir
+        <code>browser.close()</code>. Adicione limite de memória no Docker:
+        <code>mem_limit: 512m</code>.
+      </p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Ban de IP em produção</div>
+      <p style="color:var(--muted);font-size:14px;margin:0">
+        Se o IP do seu servidor for banido, todos os workers param de funcionar.
+        Solução: use um VPS com IP diferente do development, implemente backoff
+        exponencial quando detectar bloqueio (resposta 403/429), e considere
+        proxies rotativos para alta frequência.
+      </p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Jobs presos na fila</div>
+      <p style="color:var(--muted);font-size:14px;margin:0">
+        Jobs que falham silenciosamente ficam em "started" infinitamente.
+        Configure <code>job_timeout</code> em todos os jobs e monitore
+        <code>started_job_registry</code> do RQ. Use RQ Dashboard para
+        inspecionar e reencaminhar jobs travados.
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ VÍDEOS ════════════════════════════ -->
+  <section class="section">
+    <div class="section-label">Curadoria de Vídeos</div>
+    <h2>Para Assistir</h2>
+
+    <div class="video-grid">
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">Web Scraping at Scale — Production Architecture</div>
+          <div class="video-channel">ArjanCodes · ~30 min</div>
+          <div class="video-why">Por que assistir: Arquitectura completa de scraping escalável com Python, Redis, workers e Docker. Exatamente o que implementamos nesta aula.</div>
+          <a href="https://www.youtube.com/results?search_query=web+scraping+at+scale+production+python+redis" target="_blank">Assistir →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">Bypassing Bot Detection — Playwright Stealth</div>
+          <div class="video-channel">John Watson Rooney · ~20 min</div>
+          <div class="video-why">Por que assistir: Demonstração prática de técnicas anti-detecção, mostra quais fingerprints são verificados e como passá-los com Playwright.</div>
+          <a href="https://www.youtube.com/results?search_query=playwright+stealth+bypass+bot+detection" target="_blank">Assistir →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">Grafana + Prometheus Monitoring Stack Setup</div>
+          <div class="video-channel">TechWorld with Nana · ~35 min</div>
+          <div class="video-why">Por que assistir: Setup completo de monitoramento com Docker Compose. Aprenda a criar dashboards profissionais para qualquer aplicação Python.</div>
+          <a href="https://www.youtube.com/results?search_query=grafana+prometheus+monitoring+docker+tutorial" target="_blank">Assistir →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">n8n Automation for Developers</div>
+          <div class="video-channel">Leon van Zyl · ~25 min</div>
+          <div class="video-why">Por que assistir: Como usar n8n como backend de automação para aplicações Python, configurar webhooks e criar workflows que reagem a eventos do seu sistema.</div>
+          <a href="https://www.youtube.com/results?search_query=n8n+automation+developers+webhook+python" target="_blank">Assistir →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ CHECKPOINT / PROJETO FINAL ═══════ -->
+  <section class="section">
+    <div class="checkpoint">
+      <h3>🏁 Projeto Final do Curso</h3>
+      <p>
+        <strong>Sistema de Inteligência de Mercado</strong> — Integre tudo o que aprendeu
+        nas 50 aulas para construir um sistema completo de automação inteligente.
+      </p>
+      <ul>
+        <li><strong>Coleta</strong>: Playwright com stealth monitorando 20+ produtos em 3 lojas</li>
+        <li><strong>Extração</strong>: Pydantic v2 com validação + fallback via Vision LLM (GPT-4o)</li>
+        <li><strong>Escala</strong>: Redis Queue com 3 workers Docker rodando em paralelo</li>
+        <li><strong>Banco</strong>: PostgreSQL com histórico de preços e análise de tendências</li>
+        <li><strong>Alertas</strong>: n8n webhook → Telegram/Slack quando preço cai &gt;10%</li>
+        <li><strong>IA</strong>: Agente CrewAI que gera relatório semanal de inteligência competitiva</li>
+        <li><strong>CI/CD</strong>: GitHub Actions com testes (pytest) e deploy automático via SSH</li>
+        <li><strong>Observabilidade</strong>: Grafana com métricas de jobs, latência e erros</li>
+      </ul>
+      <div class="checkpoint-hint">
+        💬 Dica: Comece pelo core (Playwright + PostgreSQL + uma loja), garanta que funciona,
+        depois adicione camada por camada: workers, n8n, IA, monitoramento.
+        Código incremental é mais robusto que big-bang. Use o template Docker Compose
+        desta aula como base — já tem tudo configurado.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ CARD FINAL ═══════════════════════ -->
+  <section class="section">
+    <div class="final-card">
+      <div style="font-size:48px">🎓</div>
+      <div class="final-title">Parabéns! Curso Concluído.</div>
+      <div class="final-subtitle">
+        Você percorreu todas as 50 aulas, do primeiro commit Git até sistemas multi-agente
+        com IA. Este é o stack que engenheiros seniores usam em produção hoje.
+      </div>
+      <div class="final-stats">
+        <div class="stat">
+          <div class="stat-num">50</div>
+          <div class="stat-label">Aulas</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">8</div>
+          <div class="stat-label">Tecnologias</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">~25h</div>
+          <div class="stat-label">Conteúdo</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">50</div>
+          <div class="stat-label">Checkpoints</div>
+        </div>
+      </div>
+      <div style="font-size:14px;color:var(--muted);margin-top:8px">
+        🐙 GitHub &nbsp;·&nbsp; 🌐 HTML/CSS &nbsp;·&nbsp; ⚡ JavaScript &nbsp;·&nbsp; 🐍 Python &nbsp;·&nbsp; 🐳 Docker &nbsp;·&nbsp; 🔀 n8n &nbsp;·&nbsp; 🤖 IA &nbsp;·&nbsp; 🦀 OpenClaw
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ VOLTAR AO ROADMAP ════════════════ -->
+  <section class="section" style="text-align:center">
+    <a href="../roadmaps_new.html" style="display:inline-flex;align-items:center;gap:10px;background:var(--accent-dim);border:1px solid var(--accent-border);color:var(--accent);padding:16px 32px;border-radius:10px;text-decoration:none;font-size:15px;font-weight:700;font-family:'Syne',sans-serif;transition:all 0.2s">
+      ← Voltar ao Roadmap Completo
+    </a>
+  </section>
+
+</main>
+
+<footer>
+  <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+  <p>Aula 50 / 50 · 🦀 OpenClaw · Stack Completo — Aula Final</p>
+</footer>
+
+<script>
+  // Progress bar
+  window.addEventListener('scroll', () => {
+    const el = document.getElementById('pgbar');
+    if (!el) return;
+    const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    el.style.width = Math.min(pct, 100) + '%';
+  });
+
+  // Mermaid
+  mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+
+  // Highlight.js
+  document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());
+</script>
+</body>
+</html>

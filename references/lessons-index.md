@@ -146,7 +146,7 @@ Todos os HTMLs ficam em `outputs/aulas/` com o nome exato da coluna **Arquivo**.
 | `47-OC-02` | `[x]` | 🦀 OpenClaw | OpenClaw — Setup & Tarefas Core | Setup & configuração · Tarefas básicas · Scraping estruturado · Autenticação | `oc-02-setup-core.html` |
 | `48-OC-03` | `[x]` | 🦀 OpenClaw | OpenClaw + IA — Vision & Agentes | Linguagem natural · Vision-based interaction · Agentes de pesquisa · Pipelines automáticos | `oc-03-ia-visao-agentes.html` |
 | `49-AI-08` | `[x]` | 🤖 IA | Multi-Agentes — CrewAI & LangGraph | Autogen/CrewAI · LangGraph · Padrões de design · Avaliação & guardrails | `ai-08-multi-agentes.html` |
-| `50-OC-04` | `[ ]` | 🦀 OpenClaw | OpenClaw Avançado + Stack Completo | Anti-bot & detecção · Escalabilidade · Integração n8n · Monitoramento | `oc-04-avancado-stack.html` |
+| `50-OC-04` | `[x]` | 🦀 OpenClaw | OpenClaw Avançado + Stack Completo | Anti-bot & detecção · Escalabilidade · Integração n8n · Monitoramento | `oc-04-avancado-stack.html` |
 
 ---
 
