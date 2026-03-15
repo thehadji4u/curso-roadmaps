@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenClaw + IA — Vision & Agentes · Aula 48</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #f97316;
+      --accent-dim: rgba(249,115,22,0.12);
+      --accent-border: rgba(249,115,22,0.35);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #fb923c); width: 0%; transition: width 0.1s; }
+
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; cursor: default; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #fb923c; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.08); border-color: var(--success); }
+    .callout-tip .callout-title { color: var(--success); }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(88,166,255,0.2); color: #79c0ff; }
+    .badge-orange { background: rgba(249,115,22,0.2); color: #fb923c; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    .terminal { background: #0d0d14; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 16px 0; }
+    .terminal-bar { background: #1a1a24; padding: 10px 16px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #ffbd2e; }
+    .dot-g { background: #28ca41; }
+    .terminal-title { font-size: 11px; color: var(--muted); margin-left: 8px; letter-spacing: 0.06em; }
+    .terminal-body { padding: 18px 20px; font-size: 13px; line-height: 1.7; color: #c9d1d9; }
+    .terminal-body .prompt { color: var(--accent); user-select: none; }
+    .terminal-body .comment { color: #8b949e; }
+    .terminal-body .out { color: #8b949e; padding-left: 18px; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+    .card-mini .icon { font-size: 22px; }
+
+    .video-grid { display: flex; flex-direction: column; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 48px; height: 48px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--accent); }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    .video-why { font-size: 12px; color: var(--text); margin-bottom: 8px; }
+    .video-info a { font-size: 12px; color: var(--accent); text-decoration: none; }
+    .video-info a:hover { text-decoration: underline; }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(249,115,22,0.1), rgba(251,146,60,0.05)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 32px; margin: 32px 0; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 16px; }
+    .checkpoint p { color: var(--text); margin-bottom: 14px; }
+    .checkpoint ul { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; display: flex; gap: 8px; }
+    .checkpoint ul li::before { content: '✦'; color: var(--accent); flex-shrink: 0; }
+    .checkpoint-hint { background: rgba(255,255,255,0.04); border-radius: 8px; padding: 14px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 20px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; font-size: 13px; margin-bottom: 8px; }
+
+    .next-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; display: flex; align-items: center; justify-content: space-between; gap: 20px; position: relative; overflow: hidden; }
+    .next-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .next-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+    .next-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; color: #fff; font-weight: 700; }
+    .next-desc { font-size: 13px; color: var(--muted); margin-top: 6px; }
+    .next-btn { flex-shrink: 0; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 10px 20px; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 600; white-space: nowrap; transition: all 0.2s; }
+    .next-btn:hover { background: rgba(249,115,22,0.2); }
+
+    /* Vision interaction cards */
+    .vision-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin: 12px 0; position: relative; overflow: hidden; }
+    .vision-card::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--accent); border-radius: 3px 0 0 3px; }
+    .vision-card h4 { color: var(--accent); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
+    .vision-card p { color: var(--muted); font-size: 13px; margin: 0; }
+
+    /* Agent loop visualization */
+    .agent-loop { display: flex; flex-direction: column; gap: 0; margin: 20px 0; }
+    .agent-step { display: flex; gap: 16px; }
+    .agent-step-connector { display: flex; flex-direction: column; align-items: center; gap: 0; }
+    .agent-step-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); flex-shrink: 0; margin-top: 4px; }
+    .agent-step-line { width: 2px; flex: 1; background: var(--accent-border); min-height: 20px; }
+    .agent-step-body { flex: 1; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; }
+    .agent-step-type { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+    .agent-step-text { font-size: 13px; color: var(--text); }
+
+    footer { border-top: 1px solid var(--border); margin-top: 80px; padding: 28px 24px; text-align: center; }
+    footer a { color: var(--accent); text-decoration: none; font-size: 13px; }
+    footer a:hover { text-decoration: underline; }
+    footer p { font-size: 12px; color: var(--muted); margin-top: 8px; }
+  </style>
+</head>
+<body>
+
+<div class="progress-bar-wrap"><div class="progress-bar-fill" id="pgbar"></div></div>
+
+<nav class="top-nav">
+  <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+  <div class="nav-center">
+    <a href="oc-02-setup-core.html" class="nav-prev">← Anterior</a>
+    <div class="nav-position">
+      <span class="track">🦀 OpenClaw</span> · Aula 48 / 50
+    </div>
+    <a href="ai-08-multi-agentes.html" class="nav-next">Próxima →</a>
+  </div>
+</nav>
+
+<main class="page">
+
+  <!-- ═══════════════════════════════ HERO ═══════════════════════════════ -->
+  <section class="hero">
+    <div class="hero-eyebrow">
+      <span class="hero-badge">AULA 48</span>
+      <span>🦀 OpenClaw</span>
+      <span>·</span>
+      <span>Browser Automation + IA</span>
+    </div>
+    <h1>Vision & Agentes<br>com OpenClaw + IA</h1>
+    <div class="hero-meta">
+      <span>⏱ ~35 min</span>
+      <span>·</span>
+      <span>Avançado</span>
+      <span>·</span>
+      <span>Hands-on</span>
+    </div>
+    <div class="hero-tags">
+      <span class="tag accent">Vision LLM</span>
+      <span class="tag">Screenshot Analysis</span>
+      <span class="tag">Natural Language</span>
+      <span class="tag">ReAct + Browser</span>
+      <span class="tag">Playwright + GPT-4o</span>
+      <span class="tag">Pipelines Automáticos</span>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ POR QUE IMPORTA ═══════════════════ -->
+  <section class="section">
+    <div class="section-label">Por que isso importa?</div>
+    <h2>O próximo nível da automação web</h2>
+    <p>
+      Automação tradicional com Playwright requer que você saiba exatamente qual seletor usar —
+      <code>button#submit</code>, <code>.checkout-btn</code>. Mas e quando o site muda o HTML?
+      E quando você precisa automatizar um site que nunca viu antes?
+    </p>
+    <p>
+      Com <strong>Vision LLMs</strong> (GPT-4o, Claude 3 Opus) você tira um screenshot da página,
+      manda para o modelo e pergunta: <em>"Onde está o botão de compra? Qual é o preço atual?"</em>.
+      O modelo enxerga a página como um humano — sem precisar de seletores.
+    </p>
+    <p>
+      Combinando Playwright + LLM Vision + ReAct pattern, você cria <strong>agentes que navegam
+      autonomamente</strong> — lêem, decidem, clicam, preenchem formulários, coletam dados —
+      tudo controlado por linguagem natural.
+    </p>
+    <div class="callout callout-tip">
+      <div class="callout-title">🔥 Por que um engenheiro sênior usa isso hoje?</div>
+      Times de QA usam Vision agents para testar UIs que mudam frequentemente sem precisar
+      atualizar seletores. Times de dados usam para fazer scraping resiliente em sites
+      com proteções anti-bot sofisticadas.
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ ANALOGIA ══════════════════════════ -->
+  <section class="section">
+    <div class="section-label">Analogia do Mundo Real</div>
+    <h2>O robô que aprendeu a ver</h2>
+
+    <div class="analogy-card">
+      <div class="analogy-label">🤖 Analogia</div>
+      <div class="analogy-text">
+        Imagine dois tipos de robôs numa fábrica. O robô antigo precisa de instruções precisas:
+        <em>"Mova o braço 30cm à direita, desça 15cm, feche a garra"</em>. Se qualquer coisa
+        mudar de posição, ele erra. O robô moderno tem câmera e IA: ele <em>vê</em> a peça,
+        reconhece o que é, e decide como pegar — mesmo que ela esteja em posição diferente.
+        Automação web com Vision LLM é a transição do robô "cego" para o robô que enxerga.
+      </div>
+      <div class="analogy-mapping">
+        <div class="analogy-real">🤖 Robô cego com coordenadas fixas</div>
+        <div class="analogy-tech">Playwright com seletores CSS/XPath</div>
+        <div class="analogy-real">📸 Câmera + IA que reconhece a peça</div>
+        <div class="analogy-tech">Screenshot + GPT-4o Vision</div>
+        <div class="analogy-real">🧠 Decisão autônoma de como agir</div>
+        <div class="analogy-tech">ReAct Agent com browser tools</div>
+        <div class="analogy-real">🔄 Adapta a mudanças de posição</div>
+        <div class="analogy-tech">Resiliente a mudanças de HTML</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ CONCEITO CENTRAL ═════════════════ -->
+  <section class="section">
+    <div class="section-label">Conceito Central</div>
+    <h2>Arquitetura: Vision + ReAct + Browser</h2>
+
+    <p>
+      A arquitetura combina três componentes: <strong>Playwright</strong> como executor de ações
+      no browser, <strong>Vision LLM</strong> como "olhos" que interpretam screenshots,
+      e o <strong>ReAct Loop</strong> como cérebro que decide qual ação tomar a seguir.
+    </p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label">Diagrama — Vision Agent Loop</div>
+      <div class="mermaid">
+flowchart TD
+    INPUT["🎯 Objetivo em Linguagem Natural\n'Encontre o produto X e adicione ao carrinho'"]
+    SCREENSHOT["📸 Screenshot da Página Atual\nPlaywright → PNG base64"]
+    LLM["🧠 Vision LLM (GPT-4o)\nAnalisa imagem + histórico + objetivo"]
+    THOUGHT["💭 THOUGHT\n'Vejo a página inicial. Preciso\nclicar em Search para buscar o produto'"]
+    ACTION["⚡ ACTION\nEscolhe tool: browser_click\nargs: {description: 'botão de pesquisa'}"]
+    VISION_LOCATE["👁️ Vision Locate\nAnalisa screenshot para encontrar\ncoordenadas do elemento descrito"]
+    EXECUTE["🖱️ Execute Action\nPlaywright executa o clique\nnas coordenadas identificadas"]
+    OBS["👁️ OBSERVATION\nNova screenshot após ação\n'Campo de busca está focado'"]
+    DONE{"✅ Objetivo\nalcançado?"}
+    RESULT["🏁 Resultado Final\nDados coletados ou\ntarefa concluída"]
+
+    INPUT --> SCREENSHOT
+    SCREENSHOT --> LLM
+    LLM --> THOUGHT
+    THOUGHT --> ACTION
+    ACTION --> VISION_LOCATE
+    VISION_LOCATE --> EXECUTE
+    EXECUTE --> OBS
+    OBS --> DONE
+    DONE -->|Não| LLM
+    DONE -->|Sim| RESULT
+
+    style LLM fill:#f97316,color:#fff,stroke:#fb923c
+    style VISION_LOCATE fill:#a855f7,color:#fff,stroke:#c084fc
+    style EXECUTE fill:#06b6d4,color:#fff,stroke:#22d3ee
+    style RESULT fill:#10b981,color:#fff,stroke:#34d399
+      </div>
+    </div>
+
+    <h3>O que é Vision-Based Interaction</h3>
+    <p>
+      Em vez de usar seletores, o agente descreve o elemento em texto — "o botão verde de
+      checkout" — e o Vision LLM localiza na screenshot atual. Isso torna a automação
+      <strong>semanticamente robusta</strong>: funciona mesmo se o HTML mudar, desde que a
+      aparência visual seja similar.
+    </p>
+
+    <div class="grid-2">
+      <div class="vision-card">
+        <h4>Seletor Tradicional</h4>
+        <p>Frágil: quebra se a classe CSS mudar</p>
+        <pre style="margin-top:8px"><code class="language-python">await page.click(
+  "#main-nav > ul > li:nth-child(3)"
+)</code></pre>
+      </div>
+      <div class="vision-card">
+        <h4>Vision-Based</h4>
+        <p>Robusto: entende o contexto visual</p>
+        <pre style="margin-top:8px"><code class="language-python">await agent.click(
+  "botão de login no canto superior direito"
+)</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ TABELA COMPARATIVA ═══════════════ -->
+  <section class="section">
+    <div class="section-label">Comparativo</div>
+    <h2>Abordagens de Automação com IA</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Abordagem</th>
+            <th>Como funciona</th>
+            <th>Custo</th>
+            <th>Robustez</th>
+            <th>Quando usar</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Playwright puro</strong></td>
+            <td>CSS/XPath seletores fixos</td>
+            <td><span class="badge badge-green">Grátis</span></td>
+            <td><span class="badge badge-red">Frágil</span></td>
+            <td>Sites estáveis que você controla</td>
+          </tr>
+          <tr>
+            <td><strong>LLM + DOM parsing</strong></td>
+            <td>HTML → texto → LLM sugere seletor</td>
+            <td><span class="badge badge-yellow">Baixo</span></td>
+            <td><span class="badge badge-yellow">Médio</span></td>
+            <td>Sites com HTML limpo, sem SPAs</td>
+          </tr>
+          <tr>
+            <td><strong>Vision LLM + Screenshot</strong></td>
+            <td>Screenshot → LLM → coordenadas</td>
+            <td><span class="badge badge-yellow">Médio</span></td>
+            <td><span class="badge badge-green">Alto</span></td>
+            <td>Sites complexos, canvas, SPAs</td>
+          </tr>
+          <tr>
+            <td><strong>ReAct Agent completo</strong></td>
+            <td>Loop autônomo: vê, pensa, age</td>
+            <td><span class="badge badge-red">Alto</span></td>
+            <td><span class="badge badge-green">Muito alto</span></td>
+            <td>Tarefas longas de múltiplos passos</td>
+          </tr>
+          <tr>
+            <td><strong>Browser-Use lib</strong></td>
+            <td>Framework pronto sobre Playwright</td>
+            <td><span class="badge badge-yellow">Médio</span></td>
+            <td><span class="badge badge-green">Alto</span></td>
+            <td>Prototipagem rápida de agentes</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ HANDS-ON ═════════════════════════ -->
+  <section class="section">
+    <div class="section-label">Hands-on</div>
+    <h2>Passo a Passo: Vision Agent do Zero</h2>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Instalar dependências</div>
+          <div class="step-desc">Playwright + OpenAI SDK + pillow para manipulação de imagens</div>
+          <div class="terminal">
+            <div class="terminal-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="terminal-title">bash</span></div>
+            <div class="terminal-body">
+              <span class="prompt">$ </span>pip install playwright openai pillow python-dotenv<br>
+              <span class="prompt">$ </span>playwright install chromium<br>
+              <span class="out"># Estrutura do projeto</span><br>
+              <span class="out">vision_agent/</span><br>
+              <span class="out">├── agent.py          # Lógica do agente</span><br>
+              <span class="out">├── browser_tools.py  # Ferramentas de browser</span><br>
+              <span class="out">├── vision.py         # Vision LLM helpers</span><br>
+              <span class="out">└── .env              # OPENAI_API_KEY</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Vision Helper — Screenshot → Base64 → LLM</div>
+          <div class="step-desc">Função que tira screenshot e pede ao GPT-4o para analisar</div>
+          <div class="code-label">vision.py</div>
+          <pre><code class="language-python">import base64
+from openai import AsyncOpenAI
+from playwright.async_api import Page
+
+client = AsyncOpenAI()
+
+async def screenshot_to_base64(page: Page) -> str:
+    """Tira screenshot e converte para base64."""
+    img_bytes = await page.screenshot(type="png", full_page=False)
+    return base64.b64encode(img_bytes).decode("utf-8")
+
+async def ask_vision(page: Page, question: str) -> str:
+    """Pergunta ao GPT-4o Vision sobre o estado atual da página."""
+    b64 = await screenshot_to_base64(page)
+
+    response = await client.chat.completions.create(
+        model="gpt-4o",
+        messages=[{
+            "role": "user",
+            "content": [
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/png;base64,{b64}",
+                        "detail": "high"
+                    }
+                },
+                {"type": "text", "text": question}
+            ]
+        }],
+        max_tokens=500
+    )
+    return response.choices[0].message.content
+
+async def find_element_coords(page: Page, description: str) -> dict | None:
+    """
+    Usa Vision para encontrar coordenadas (x, y) de um elemento descrito
+    em linguagem natural.
+    """
+    b64 = await screenshot_to_base64(page)
+
+    # Obtém dimensões da página para normalizar
+    vp = page.viewport_size
+    w, h = vp["width"], vp["height"]
+
+    prompt = f"""
+    Na screenshot desta página web (resolução {w}x{h}px):
+
+    Encontre: "{description}"
+
+    Responda SOMENTE com JSON no formato:
+    {{"found": true, "x": 350, "y": 120, "confidence": 0.95, "description": "botão verde 'Comprar'"}}
+
+    Se não encontrar:
+    {{"found": false, "reason": "elemento não visível na tela"}}
+
+    Use coordenadas absolutas em pixels. Aponte para o centro do elemento.
+    """
+
+    response = await client.chat.completions.create(
+        model="gpt-4o",
+        messages=[{
+            "role": "user",
+            "content": [
+                {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{b64}"}},
+                {"type": "text", "text": prompt}
+            ]
+        }],
+        response_format={"type": "json_object"},
+        max_tokens=200
+    )
+
+    import json
+    result = json.loads(response.choices[0].message.content)
+    return result if result.get("found") else None</code></pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Browser Tools — Ações executadas pelo agente</div>
+          <div class="step-desc">Conjunto de ferramentas que o agente pode chamar via Function Calling</div>
+          <div class="code-label">browser_tools.py</div>
+          <pre><code class="language-python">from playwright.async_api import Page
+from vision import find_element_coords, ask_vision
+
+# Definição das tools para o OpenAI Function Calling
+BROWSER_TOOLS = [
+    {
+        "type": "function",
+        "function": {
+            "name": "navigate",
+            "description": "Navega para uma URL específica",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "url": {"type": "string", "description": "URL de destino"}
+                },
+                "required": ["url"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "click_element",
+            "description": "Clica em um elemento descrito visualmente",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "description": {
+                        "type": "string",
+                        "description": "Descrição visual do elemento a clicar. Ex: 'botão azul de adicionar ao carrinho'"
+                    }
+                },
+                "required": ["description"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "fill_input",
+            "description": "Preenche um campo de input descrito visualmente",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "description": {"type": "string", "description": "Campo a preencher"},
+                    "text": {"type": "string", "description": "Texto a digitar"}
+                },
+                "required": ["description", "text"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "read_page",
+            "description": "Lê e analisa o conteúdo atual da página via Vision",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "question": {"type": "string", "description": "O que você quer saber sobre a página atual"}
+                },
+                "required": ["question"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "scroll_page",
+            "description": "Faz scroll na página",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "direction": {
+                        "type": "string",
+                        "enum": ["down", "up"],
+                        "description": "Direção do scroll"
+                    },
+                    "amount": {"type": "integer", "description": "Pixels para scrollar"}
+                },
+                "required": ["direction"]
+            }
+        }
+    }
+]
+
+
+class BrowserExecutor:
+    """Executa as browser tools chamadas pelo agente."""
+
+    def __init__(self, page: Page):
+        self.page = page
+        self.action_log: list[dict] = []
+
+    async def execute(self, tool_name: str, args: dict) -> str:
+        """Executa uma tool e retorna o resultado como string."""
+        match tool_name:
+            case "navigate":
+                return await self._navigate(**args)
+            case "click_element":
+                return await self._click_element(**args)
+            case "fill_input":
+                return await self._fill_input(**args)
+            case "read_page":
+                return await self._read_page(**args)
+            case "scroll_page":
+                return await self._scroll_page(**args)
+            case _:
+                return f"Tool desconhecida: {tool_name}"
+
+    async def _navigate(self, url: str) -> str:
+        await self.page.goto(url, wait_until="networkidle")
+        title = await self.page.title()
+        self._log("navigate", {"url": url})
+        return f"Navegou para {url}. Título da página: '{title}'"
+
+    async def _click_element(self, description: str) -> str:
+        coords = await find_element_coords(self.page, description)
+        if not coords:
+            return f"Elemento não encontrado: '{description}'"
+
+        x, y = coords["x"], coords["y"]
+        await self.page.mouse.click(x, y)
+        await self.page.wait_for_load_state("networkidle")
+        self._log("click", {"description": description, "coords": (x, y)})
+        return f"Clicou em '{description}' em ({x}, {y}). Confiança: {coords.get('confidence', '?')}"
+
+    async def _fill_input(self, description: str, text: str) -> str:
+        coords = await find_element_coords(self.page, description)
+        if not coords:
+            return f"Campo não encontrado: '{description}'"
+
+        x, y = coords["x"], coords["y"]
+        await self.page.mouse.click(x, y)
+        await self.page.keyboard.type(text, delay=50)
+        self._log("fill", {"description": description, "text": text})
+        return f"Preencheu '{description}' com '{text}'"
+
+    async def _read_page(self, question: str) -> str:
+        result = await ask_vision(self.page, question)
+        return result
+
+    async def _scroll_page(self, direction: str, amount: int = 500) -> str:
+        delta = amount if direction == "down" else -amount
+        await self.page.mouse.wheel(0, delta)
+        await self.page.wait_for_timeout(500)
+        return f"Scrollou {direction} {amount}px"
+
+    def _log(self, action: str, details: dict):
+        self.action_log.append({"action": action, **details})</code></pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">ReAct Agent — O Loop Principal</div>
+          <div class="step-desc">Agente que recebe objetivo em linguagem natural e age autonomamente</div>
+          <div class="code-label">agent.py</div>
+          <pre><code class="language-python">import json
+import asyncio
+from openai import AsyncOpenAI
+from playwright.async_api import async_playwright
+from browser_tools import BROWSER_TOOLS, BrowserExecutor
+
+client = AsyncOpenAI()
+
+SYSTEM_PROMPT = """Você é um agente de browser automation. Seu trabalho é completar
+tarefas em páginas web usando as ferramentas disponíveis.
+
+Abordagem:
+1. Sempre leia a página atual antes de agir (use read_page)
+2. Planeje seus próximos passos baseado no que você vê
+3. Execute uma ação por vez
+4. Verifique o resultado antes de continuar
+5. Se uma ação falhar, tente uma abordagem alternativa
+
+Nunca tente adivinhar elementos — use sempre read_page para ver o que está na tela.
+Responda em português do Brasil."""
+
+
+async def run_agent(objetivo: str, url_inicial: str, max_steps: int = 15):
+    """
+    Executa o agente de browser com objetivo em linguagem natural.
+
+    Args:
+        objetivo: O que o agente deve fazer (linguagem natural)
+        url_inicial: URL onde começar
+        max_steps: Máximo de ações antes de desistir
+
+    Returns:
+        dict com resultado e log de ações
+    """
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=False)  # headless=True em produção
+        page = await browser.new_page(viewport={"width": 1280, "height": 800})
+        executor = BrowserExecutor(page)
+
+        # Mensagens do conversation history
+        messages = [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {
+                "role": "user",
+                "content": f"""
+Objetivo: {objetivo}
+
+Comece navegando para: {url_inicial}
+
+Execute as ações necessárias para completar o objetivo.
+Quando terminar, responda com 'OBJETIVO CONCLUÍDO: [resultado]'
+"""
+            }
+        ]
+
+        step = 0
+        result = "Máximo de passos atingido"
+
+        while step < max_steps:
+            step += 1
+            print(f"\n{'='*50}")
+            print(f"PASSO {step}")
+
+            # Chamar o LLM
+            response = await client.chat.completions.create(
+                model="gpt-4o",
+                messages=messages,
+                tools=BROWSER_TOOLS,
+                tool_choice="auto",
+                max_tokens=1000
+            )
+
+            msg = response.choices[0].message
+            messages.append(msg)  # Adiciona ao histórico
+
+            # Verificar se terminou
+            if msg.content and "OBJETIVO CONCLUÍDO" in msg.content:
+                result = msg.content
+                print(f"✅ {result}")
+                break
+
+            # Verificar se há tool calls
+            if not msg.tool_calls:
+                print(f"💬 Agente: {msg.content}")
+                result = msg.content
+                break
+
+            # Executar cada tool call
+            tool_results = []
+            for tool_call in msg.tool_calls:
+                func_name = tool_call.function.name
+                func_args = json.loads(tool_call.function.arguments)
+
+                print(f"🔧 Chamando: {func_name}({func_args})")
+                observation = await executor.execute(func_name, func_args)
+                print(f"📊 Resultado: {observation[:200]}")
+
+                tool_results.append({
+                    "role": "tool",
+                    "tool_call_id": tool_call.id,
+                    "content": observation
+                })
+
+            messages.extend(tool_results)
+
+        await browser.close()
+
+        return {
+            "objetivo": objetivo,
+            "resultado": result,
+            "passos": step,
+            "acoes": executor.action_log
+        }
+
+
+# Exemplo de uso
+async def main():
+    resultado = await run_agent(
+        objetivo="Pesquise 'Python asyncio' no Google e me diga o título do primeiro resultado",
+        url_inicial="https://www.google.com"
+    )
+    print("\n" + "="*60)
+    print("RELATÓRIO FINAL")
+    print("="*60)
+    print(f"Objetivo: {resultado['objetivo']}")
+    print(f"Passos executados: {resultado['passos']}")
+    print(f"Resultado: {resultado['resultado']}")
+    print(f"Ações: {json.dumps(resultado['acoes'], indent=2, ensure_ascii=False)}")
+
+if __name__ == "__main__":
+    asyncio.run(main())</code></pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <div class="step-title">Executar o agente</div>
+          <div class="step-desc">Rode o agente e observe ele navegar autonomamente</div>
+          <div class="terminal">
+            <div class="terminal-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="terminal-title">bash</span></div>
+            <div class="terminal-body">
+              <span class="prompt">$ </span>python agent.py<br>
+              <span class="out">==================================================</span><br>
+              <span class="out">PASSO 1</span><br>
+              <span class="out">🔧 Chamando: navigate({'url': 'https://www.google.com'})</span><br>
+              <span class="out">📊 Resultado: Navegou para https://www.google.com. Título: 'Google'</span><br>
+              <span class="out">==================================================</span><br>
+              <span class="out">PASSO 2</span><br>
+              <span class="out">🔧 Chamando: click_element({'description': 'campo de busca do Google'})</span><br>
+              <span class="out">📊 Resultado: Clicou em 'campo de busca' em (640, 380). Confiança: 0.97</span><br>
+              <span class="out">==================================================</span><br>
+              <span class="out">PASSO 3</span><br>
+              <span class="out">🔧 Chamando: fill_input({'description': 'campo de busca', 'text': 'Python asyncio'})</span><br>
+              <span class="out">📊 Resultado: Preencheu campo com 'Python asyncio'</span><br>
+              <span class="out">✅ OBJETIVO CONCLUÍDO: O primeiro resultado é 'asyncio — Asynchronous I/O — Python docs'</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ RESEARCH AGENT ════════════════════ -->
+  <section class="section">
+    <div class="section-label">Padrão Avançado</div>
+    <h2>Research Agent — Coletando Dados Estruturados</h2>
+
+    <p>
+      Um caso de uso poderoso: agentes de <strong>pesquisa automática</strong> que navegam
+      em múltiplas páginas, coletam dados e retornam JSON estruturado. Combinamos
+      Vision LLM com extração via Pydantic para garantir a qualidade dos dados.
+    </p>
+
+    <div class="code-label">research_agent.py — Pesquisa de preços multi-site</div>
+    <pre><code class="language-python">import asyncio
+import json
+from pydantic import BaseModel, Field
+from typing import Optional
+from openai import AsyncOpenAI
+from playwright.async_api import async_playwright, Page
+from vision import ask_vision, screenshot_to_base64
+
+client = AsyncOpenAI()
+
+
+class ProductData(BaseModel):
+    """Schema para produto coletado via Vision."""
+    nome: str
+    preco: Optional[float] = None
+    preco_original: Optional[float] = None
+    disponivel: bool = True
+    avaliacao: Optional[float] = None
+    num_avaliacoes: Optional[int] = None
+    descricao: Optional[str] = None
+    url: str
+
+
+async def extract_product_vision(page: Page) -> ProductData:
+    """
+    Extrai dados de produto usando Vision LLM.
+    Funciona em qualquer loja — sem seletores específicos.
+    """
+    b64 = await screenshot_to_base64(page)
+    url = page.url
+
+    prompt = """
+    Analise esta página de produto e extraia as informações no formato JSON:
+
+    {
+      "nome": "nome completo do produto",
+      "preco": 99.90,
+      "preco_original": 149.90,
+      "disponivel": true,
+      "avaliacao": 4.5,
+      "num_avaliacoes": 1234,
+      "descricao": "breve descrição"
+    }
+
+    Use null para campos não encontrados. Preco deve ser número float.
+    Responda SOMENTE com o JSON, sem markdown.
+    """
+
+    response = await client.chat.completions.create(
+        model="gpt-4o",
+        messages=[{
+            "role": "user",
+            "content": [
+                {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{b64}"}},
+                {"type": "text", "text": prompt}
+            ]
+        }],
+        response_format={"type": "json_object"},
+        max_tokens=400
+    )
+
+    data = json.loads(response.choices[0].message.content)
+    return ProductData(url=url, **data)
+
+
+async def research_product_prices(produto: str, lojas: list[str]) -> list[ProductData]:
+    """
+    Pesquisa preços de um produto em múltiplas lojas usando Vision.
+
+    Args:
+        produto: Nome do produto para pesquisar
+        lojas: Lista de URLs de lojas para pesquisar
+
+    Returns:
+        Lista de ProductData com dados coletados de cada loja
+    """
+    resultados = []
+
+    async with async_playwright() as p:
+        browser = await p.chromium.launch()
+        context = await browser.new_context(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            viewport={"width": 1280, "height": 800}
+        )
+
+        for loja_url in lojas:
+            print(f"🔍 Pesquisando em {loja_url}...")
+            page = await context.new_page()
+
+            try:
+                # Navegar para a loja
+                await page.goto(loja_url, wait_until="networkidle", timeout=30000)
+
+                # Usar Vision para encontrar e clicar na busca
+                coords = await find_search_box(page)
+                if coords:
+                    await page.mouse.click(coords["x"], coords["y"])
+                    await page.keyboard.type(produto, delay=80)
+                    await page.keyboard.press("Enter")
+                    await page.wait_for_load_state("networkidle")
+
+                # Encontrar o primeiro resultado
+                first_result = await find_first_product(page, produto)
+                if first_result:
+                    await page.mouse.click(first_result["x"], first_result["y"])
+                    await page.wait_for_load_state("networkidle")
+
+                    # Extrair dados do produto
+                    produto_data = await extract_product_vision(page)
+                    resultados.append(produto_data)
+                    print(f"  ✅ {produto_data.nome}: R$ {produto_data.preco}")
+                else:
+                    print(f"  ⚠️  Produto não encontrado em {loja_url}")
+
+            except Exception as e:
+                print(f"  ❌ Erro: {e}")
+            finally:
+                await page.close()
+
+        await browser.close()
+
+    # Ordenar por preço
+    return sorted(resultados, key=lambda p: p.preco or float('inf'))
+
+
+async def find_search_box(page: Page) -> dict | None:
+    """Localiza campo de busca via Vision."""
+    from vision import find_element_coords
+    return await find_element_coords(
+        page,
+        "campo de busca ou barra de pesquisa no topo da página"
+    )
+
+
+async def find_first_product(page: Page, produto: str) -> dict | None:
+    """Localiza o primeiro produto relevante nos resultados."""
+    from vision import find_element_coords
+    return await find_element_coords(
+        page,
+        f"primeiro resultado de produto relacionado a '{produto}' na lista de resultados"
+    )
+
+
+# Executar pesquisa
+async def main():
+    resultados = await research_product_prices(
+        produto="iPhone 15 128GB",
+        lojas=[
+            "https://www.magazineluiza.com.br",
+            "https://www.americanas.com.br",
+            "https://www.casasbahia.com.br",
+        ]
+    )
+
+    print("\n📊 COMPARATIVO DE PREÇOS")
+    print("="*50)
+    for i, r in enumerate(resultados, 1):
+        economia = ""
+        if r.preco_original and r.preco and r.preco_original > r.preco:
+            economia = f" (-{((r.preco_original - r.preco)/r.preco_original*100):.0f}%)"
+        print(f"{i}. R$ {r.preco:.2f}{economia} — {r.url}")
+
+if __name__ == "__main__":
+    asyncio.run(main())</code></pre>
+
+    <div class="callout callout-warn">
+      <div class="callout-title">⚠️ Rate Limits e Custos</div>
+      GPT-4o Vision com imagem de alta resolução custa ~$0.003 por chamada.
+      Num scraping de 100 produtos com 3 screenshots cada = ~$0.90.
+      Para produção, use <code>detail: "low"</code> para reduzir custo em 75%
+      quando não precisar de alta precisão visual.
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ PIPELINE AUTOMÁTICO ══════════════ -->
+  <section class="section">
+    <div class="section-label">Pipeline Completo</div>
+    <h2>Pipeline Automático: Monitor de Preços com Alertas</h2>
+
+    <p>
+      Combinando tudo: agente Vision que monitora preços, salva no banco de dados,
+      e dispara alertas via n8n webhook quando o preço cai abaixo de um threshold.
+    </p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label">Diagrama — Pipeline Automático Completo</div>
+      <div class="mermaid">
+flowchart LR
+    SCHED["⏰ Scheduler\n(cada 4h)"]
+    AGENT["🤖 Vision Agent\nPlaywright + GPT-4o"]
+    EXTRACT["📦 Extract\nProductData\n(Pydantic)"]
+    DB["🗄️ SQLite\nprice_history"]
+    COMPARE["📊 Comparar\ncom histórico"]
+    ALERT{"💰 Preço\ncaiu >10%?"}
+    N8N["🔀 n8n Webhook\nDispara alerta"]
+    NOTIF["📱 Telegram/Slack\nNotificação"]
+    SKIP["✅ Salvar\nsem alerta"]
+
+    SCHED --> AGENT
+    AGENT --> EXTRACT
+    EXTRACT --> DB
+    DB --> COMPARE
+    COMPARE --> ALERT
+    ALERT -->|Sim| N8N
+    ALERT -->|Não| SKIP
+    N8N --> NOTIF
+
+    style AGENT fill:#f97316,color:#fff
+    style N8N fill:#10b981,color:#fff
+    style NOTIF fill:#a855f7,color:#fff
+      </div>
+    </div>
+
+    <div class="code-label">pipeline.py — Monitor de preços completo</div>
+    <pre><code class="language-python">import asyncio
+import sqlite3
+from datetime import datetime
+from dataclasses import dataclass
+import httpx
+from research_agent import extract_product_vision, ProductData
+from playwright.async_api import async_playwright
+
+N8N_WEBHOOK_URL = "https://n8n.seu-dominio.com/webhook/price-alert"
+ALERT_THRESHOLD = 0.10  # 10% de queda
+
+
+@dataclass
+class PriceRecord:
+    produto_url: str
+    preco: float
+    timestamp: str
+
+
+class PriceMonitorDB:
+    def __init__(self, db_path: str = "prices.db"):
+        self.conn = sqlite3.connect(db_path)
+        self._create_tables()
+
+    def _create_tables(self):
+        self.conn.execute("""
+            CREATE TABLE IF NOT EXISTS price_history (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                produto_url TEXT NOT NULL,
+                nome TEXT,
+                preco REAL NOT NULL,
+                timestamp TEXT NOT NULL
+            )
+        """)
+        self.conn.commit()
+
+    def get_last_price(self, url: str) -> float | None:
+        cur = self.conn.execute(
+            "SELECT preco FROM price_history WHERE produto_url=? ORDER BY timestamp DESC LIMIT 1",
+            (url,)
+        )
+        row = cur.fetchone()
+        return row[0] if row else None
+
+    def save_price(self, produto: ProductData):
+        self.conn.execute(
+            "INSERT INTO price_history (produto_url, nome, preco, timestamp) VALUES (?,?,?,?)",
+            (produto.url, produto.nome, produto.preco, datetime.now().isoformat())
+        )
+        self.conn.commit()
+
+
+async def send_price_alert(produto: ProductData, preco_anterior: float):
+    """Envia alerta via n8n webhook."""
+    queda_pct = (preco_anterior - produto.preco) / preco_anterior * 100
+
+    payload = {
+        "produto": produto.nome,
+        "url": produto.url,
+        "preco_atual": produto.preco,
+        "preco_anterior": preco_anterior,
+        "queda_percentual": round(queda_pct, 1),
+        "timestamp": datetime.now().isoformat()
+    }
+
+    async with httpx.AsyncClient() as client:
+        resp = await client.post(N8N_WEBHOOK_URL, json=payload)
+        print(f"🚨 Alerta enviado! Status: {resp.status_code}")
+
+
+async def monitor_url(url: str, db: PriceMonitorDB):
+    """Monitora uma URL específica."""
+    async with async_playwright() as p:
+        browser = await p.chromium.launch()
+        page = await browser.new_page()
+        await page.goto(url, wait_until="networkidle")
+
+        produto = await extract_product_vision(page)
+        await browser.close()
+
+    if not produto.preco:
+        print(f"⚠️  Sem preço para {url}")
+        return
+
+    preco_anterior = db.get_last_price(url)
+    db.save_price(produto)
+
+    print(f"📦 {produto.nome}: R$ {produto.preco:.2f}")
+
+    if preco_anterior:
+        queda = (preco_anterior - produto.preco) / preco_anterior
+        if queda >= ALERT_THRESHOLD:
+            await send_price_alert(produto, preco_anterior)
+        else:
+            print(f"  (anterior: R$ {preco_anterior:.2f}, variação: {queda*100:+.1f}%)")
+
+
+async def run_monitor(urls: list[str]):
+    """Executa monitoramento em todas as URLs."""
+    db = PriceMonitorDB()
+
+    # Monitorar em paralelo com semáforo (máx 3 simultâneos)
+    sem = asyncio.Semaphore(3)
+
+    async def monitor_with_sem(url):
+        async with sem:
+            await monitor_url(url, db)
+
+    await asyncio.gather(*[monitor_with_sem(url) for url in urls])
+
+
+if __name__ == "__main__":
+    urls_para_monitorar = [
+        "https://www.loja.com/produto/iphone-15",
+        "https://www.loja.com/produto/macbook-air",
+    ]
+    asyncio.run(run_monitor(urls_para_monitorar))</code></pre>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">🔥 Pro Tip — Agendar com APScheduler</div>
+      <pre><code class="language-python">from apscheduler.schedulers.asyncio import AsyncIOScheduler
+
+scheduler = AsyncIOScheduler()
+scheduler.add_job(
+    lambda: asyncio.create_task(run_monitor(urls_para_monitorar)),
+    'interval',
+    hours=4
+)
+scheduler.start()</code></pre>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ ARMADILHAS ════════════════════════ -->
+  <section class="section">
+    <div class="section-label">Armadilhas Comuns</div>
+    <h2>Pitfalls a Evitar</h2>
+
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Screenshots em alta resolução consomem muito token</div>
+      <p style="color:var(--muted);font-size:14px;margin:0">
+        Uma screenshot fullpage de 1920x1080 usa ~1500 tokens de imagem. Use <code>full_page=False</code>
+        e <code>detail: "low"</code> sempre que possível. Considere recortar apenas a área relevante
+        com <code>page.screenshot(clip={"x": 0, "y": 0, "width": 800, "height": 600})</code>.
+      </p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Coordenadas incorretas em telas com deviceScaleFactor</div>
+      <p style="color:var(--muted);font-size:14px;margin:0">
+        Em Retina/HiDPI, a screenshot tem 2x a resolução do viewport. Se o GPT-4o retornar
+        coordenadas baseadas na imagem (2x), você precisa dividir por <code>deviceScaleFactor</code>
+        antes de passar para <code>page.mouse.click()</code>. Solução: sempre usar
+        <code>new_context(device_scale_factor=1)</code>.
+      </p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Agente em loop infinito</div>
+      <p style="color:var(--muted);font-size:14px;margin:0">
+        Sem um <code>max_steps</code> rígido, um agente pode executar 50+ chamadas ao LLM
+        se ficar confuso. Sempre implemente limite de passos e timeout total.
+        Monitore custo com <code>usage.total_tokens</code> em cada resposta.
+      </p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Pop-ups e cookies bloqueando a visão</div>
+      <p style="color:var(--muted);font-size:14px;margin:0">
+        Banners de cookies e pop-ups aparecem em screenshots e confundem o Vision LLM.
+        Adicione um passo inicial: pedir ao agente para "fechar qualquer pop-up ou banner
+        de cookies visível" antes de executar o objetivo principal.
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ BROWSER-USE LIB ══════════════════ -->
+  <section class="section">
+    <div class="section-label">Framework Pronto</div>
+    <h2>browser-use — Abstração de Alto Nível</h2>
+
+    <p>
+      Para quem não quer implementar todo o loop do zero, o <strong>browser-use</strong>
+      é uma biblioteca open-source que encapsula exatamente a arquitetura que vimos —
+      Playwright + Vision LLM + ReAct — com uma API limpa.
+    </p>
+
+    <div class="terminal">
+      <div class="terminal-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="terminal-title">bash</span></div>
+      <div class="terminal-body">
+        <span class="prompt">$ </span>pip install browser-use langchain-openai<br>
+        <span class="prompt">$ </span>playwright install
+      </div>
+    </div>
+
+    <div class="code-label">exemplo com browser-use</div>
+    <pre><code class="language-python">import asyncio
+from browser_use import Agent
+from langchain_openai import ChatOpenAI
+
+
+async def main():
+    # Setup simples — browser-use cuida de todo o loop
+    agent = Agent(
+        task="Vá para github.com/trending e me liste os 5 repositórios mais populares desta semana com suas estrelas",
+        llm=ChatOpenAI(model="gpt-4o"),
+    )
+
+    result = await agent.run()
+    print(result)
+
+    # Uso com histórico persistente
+    agent2 = Agent(
+        task="Pesquise 'FastAPI tutorial' no YouTube e me dê o título e duração do primeiro vídeo",
+        llm=ChatOpenAI(model="gpt-4o"),
+        max_actions_per_step=5,  # Limite por passo
+    )
+    result2 = await agent2.run(max_steps=10)
+    print(result2)
+
+asyncio.run(main())</code></pre>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Implementação própria</th>
+            <th>browser-use</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Controle total</td>
+            <td><span class="badge badge-green">Total</span></td>
+            <td><span class="badge badge-yellow">Parcial</span></td>
+          </tr>
+          <tr>
+            <td>Tempo de setup</td>
+            <td><span class="badge badge-red">Horas</span></td>
+            <td><span class="badge badge-green">Minutos</span></td>
+          </tr>
+          <tr>
+            <td>Multi-LLM</td>
+            <td><span class="badge badge-green">Qualquer</span></td>
+            <td><span class="badge badge-green">LangChain</span></td>
+          </tr>
+          <tr>
+            <td>Customização de tools</td>
+            <td><span class="badge badge-green">Total</span></td>
+            <td><span class="badge badge-yellow">Limitado</span></td>
+          </tr>
+          <tr>
+            <td>Debugging</td>
+            <td><span class="badge badge-green">Fácil</span></td>
+            <td><span class="badge badge-yellow">Moderado</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ VÍDEOS ════════════════════════════ -->
+  <section class="section">
+    <div class="section-label">Curadoria de Vídeos</div>
+    <h2>Para Assistir</h2>
+
+    <div class="video-grid">
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">I gave an AI access to my computer (it browsed the web)</div>
+          <div class="video-channel">Fireship · ~8 min</div>
+          <div class="video-why">Por que assistir: Demonstração visual impressionante de agentes de browser, explica os riscos e casos de uso reais em ritmo acelerado.</div>
+          <a href="https://www.youtube.com/results?search_query=fireship+AI+browser+automation" target="_blank">Assistir →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">Build a Web Browser Agent with GPT-4 Vision</div>
+          <div class="video-channel">AI Jason · ~20 min</div>
+          <div class="video-why">Por que assistir: Tutorial técnico completo construindo um agente de browser do zero com GPT-4o Vision e Playwright, exatamente o que fizemos aqui.</div>
+          <a href="https://www.youtube.com/results?search_query=GPT-4+vision+browser+automation+playwright" target="_blank">Assistir →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">browser-use: Web Browsing for AI Agents</div>
+          <div class="video-channel">Greg Kamradt · ~15 min</div>
+          <div class="video-why">Por que assistir: Overview da biblioteca browser-use, demonstrações práticas e comparação de performance com abordagem manual.</div>
+          <a href="https://www.youtube.com/results?search_query=browser-use+library+AI+agents" target="_blank">Assistir →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">GPT-4 Vision API Complete Tutorial</div>
+          <div class="video-channel">AssemblyAI · ~25 min</div>
+          <div class="video-why">Por que assistir: Explica a fundo como funciona a API de Vision do GPT-4o, bounding boxes, tokens de imagem, e estratégias de custo.</div>
+          <a href="https://www.youtube.com/results?search_query=GPT-4+Vision+API+tutorial+complete" target="_blank">Assistir →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ CHECKPOINT ═══════════════════════ -->
+  <section class="section">
+    <div class="checkpoint">
+      <h3>🏁 Checkpoint — Desafio Final</h3>
+      <p>
+        Construa um <strong>Vision Agent de Pesquisa</strong> que, dado um produto em linguagem
+        natural, navega até o Google Shopping, coleta dados dos 3 primeiros resultados
+        (nome, preço, loja) e retorna um JSON comparativo. O agente deve funcionar
+        sem seletores CSS hardcoded.
+      </p>
+      <ul>
+        <li>Use <code>find_element_coords()</code> para localizar a barra de busca</li>
+        <li>Use <code>extract_product_vision()</code> adaptado para resultados de busca</li>
+        <li>Valide o output com Pydantic (<code>list[ProductData]</code>)</li>
+        <li>Salve o resultado em <code>resultado_{timestamp}.json</code></li>
+        <li>Adicione retry com backoff exponencial para falhas de Vision</li>
+      </ul>
+      <div class="checkpoint-hint">
+        💬 Dica: Google Shopping pode exigir scroll para mostrar mais resultados. Use
+        <code>scroll_page("down", 500)</code> e um segundo <code>read_page()</code> para
+        capturar todos os resultados. Considere usar <code>detail: "high"</code> para
+        leitura de preços (pequenos e precisos) e <code>detail: "low"</code> para
+        navegação geral.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ PRÓXIMA AULA ═════════════════════ -->
+  <section class="section">
+    <div class="next-card">
+      <div>
+        <div class="next-label">Próxima Aula</div>
+        <div class="next-title">Multi-Agentes — CrewAI & LangGraph</div>
+        <div class="next-desc">Orquestre múltiplos agentes especializados, workflows complexos e sistemas autônomos de longo prazo.</div>
+      </div>
+      <a href="ai-08-multi-agentes.html" class="next-btn">Continuar →</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+  <p>Aula 48 / 50 · 🦀 OpenClaw · Vision & Agentes</p>
+</footer>
+
+<script>
+  // Progress bar
+  window.addEventListener('scroll', () => {
+    const el = document.getElementById('pgbar');
+    if (!el) return;
+    const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    el.style.width = Math.min(pct, 100) + '%';
+  });
+
+  // Mermaid
+  mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+
+  // Highlight.js
+  document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());
+</script>
+</body>
+</html>
