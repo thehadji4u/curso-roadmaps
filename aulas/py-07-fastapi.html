@@ -7,7 +7,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
@@ -54,7 +54,7 @@
     .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
     .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
     .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
-    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero h1 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
     .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
     .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
     .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
@@ -62,8 +62,8 @@
 
     .section { margin-bottom: 64px; }
     .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
-    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
-    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section h2 { font-family: 'Space Grotesk', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
     .section p { color: var(--text); margin-bottom: 16px; }
 
     .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
@@ -134,7 +134,7 @@
 
     .checkpoint { background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(96,165,250,0.04)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; margin-bottom: 40px; }
     .checkpoint-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; font-weight: 600; }
-    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint h3 { font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
     .checkpoint p { margin-bottom: 14px; }
     .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
     .checkpoint ul li { color: var(--text); font-size: 14px; }
@@ -147,7 +147,7 @@
     .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
     .next-card:hover { background: var(--accent-dim); }
     .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
-    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-card-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
     .next-arrow { font-size: 1.5rem; color: var(--accent); }
 
     code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #60a5fa; }
@@ -179,6 +179,50 @@
       .page { padding: 32px 16px 80px; }
       .analogy-mapping { grid-template-columns: 1fr; }
     }
+  
+    /* ─── Mobile Responsive ─────────────────────────────────── */
+    @media (max-width: 768px) {
+      .top-nav { padding: 10px 16px; gap: 8px; }
+      .nav-back { display: none; }
+      .nav-center { gap: 6px; width: 100%; justify-content: space-between; }
+      .nav-position { font-size: 10px; letter-spacing: 0; }
+      .nav-prev, .nav-next { padding: 5px 10px; font-size: 11px; }
+      .page { padding: 28px 16px 64px; }
+      .hero { padding: 32px 0 24px; margin-bottom: 36px; }
+      .hero h1 { font-size: clamp(1.6rem, 8vw, 2.4rem) !important; }
+      .hero-meta { gap: 10px; font-size: 12px; }
+      .section { margin-bottom: 48px; }
+      .section h2 { font-size: 1.25rem !important; }
+      .section h3 { font-size: 1rem !important; }
+      .grid-2 { grid-template-columns: 1fr !important; }
+      .analogy-mapping { grid-template-columns: 1fr !important; }
+      .table-wrap { font-size: 12px; }
+      thead th { padding: 8px 10px; font-size: 10px; }
+      tbody td { padding: 8px 10px; }
+      .step { flex-direction: column; gap: 10px; }
+      .step-num { width: 28px; height: 28px; font-size: 12px; }
+      .checkpoint { padding: 22px 18px; }
+      .next-card { flex-direction: column; gap: 12px; }
+      .terminal-body { font-size: 12px !important; padding: 14px; }
+      pre { font-size: 12px !important; }
+      code { font-size: 12px !important; }
+      .mermaid-wrap { padding: 18px 10px; overflow-x: auto; }
+      .video-card { flex-direction: column; gap: 10px; }
+      .video-thumb { width: 44px; height: 44px; font-size: 18px; }
+      .hero-tags { gap: 6px; }
+      .tag { font-size: 10px !important; padding: 3px 8px !important; }
+      .callout { padding: 14px 16px; }
+      .card-mini { padding: 16px; }
+    }
+    @media (max-width: 480px) {
+      .top-nav { padding: 8px 12px; }
+      .nav-prev, .nav-next { padding: 5px 8px; font-size: 10px; letter-spacing: 0; }
+      .nav-position { display: none; }
+      .hero h1 { font-size: clamp(1.3rem, 9vw, 1.8rem) !important; }
+      .hero-eyebrow { gap: 8px; flex-wrap: wrap; }
+      .stat-num { font-size: 1.8rem; }
+      .final-stats { gap: 16px; }
+    }
   </style>
 </head>
 <body>
@@ -186,15 +230,15 @@
   <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress"></div></div>
 
   <nav class="top-nav">
-    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
-    <div class="nav-center">
-      <a href="py-06-pandas-numpy.html" class="nav-prev">← Anterior</a>
-      <div class="nav-position">
-        <span class="track">🐍 Python</span> · Aula 26 / 50
-      </div>
-      <a href="py-08-backend-completo.html" class="nav-next">Próxima →</a>
+  <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+  <div class="nav-center">
+    <a href="py-06-pandas-numpy.html" class="nav-prev">← Anterior</a>
+    <div class="nav-position">
+      <span class="track">🐍 Python</span> · Aula 26 / 50
     </div>
-  </nav>
+    <a href="py-08-backend-completo.html" class="nav-next">Próxima →</a>
+  </div>
+</nav>
 
   <div class="page">
 
@@ -734,10 +778,10 @@ async def get_data():
       <div class="next-arrow">→</div>
     </a>
 
-    <div class="footer">
+    <footer>
       <span>🐍 Python · Aula 26 / 50</span>
       <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
-    </div>
+    </footer>
 
   </div>
 

@@ -6,7 +6,7 @@
   <title>GitHub no Stack Completo · Aula 35</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <style>
@@ -31,15 +31,15 @@
     .hero{padding:52px 0 40px;border-bottom:1px solid var(--border);margin-bottom:56px}
     .hero-eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:20px;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)}
     .hero-badge{background:var(--accent-dim);border:1px solid var(--accent-border);color:var(--accent);padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600}
-    .hero h1{font-family:'Syne',sans-serif;font-size:clamp(2rem,5vw,3rem);font-weight:800;line-height:1.1;letter-spacing:-0.02em;margin-bottom:20px;background:linear-gradient(135deg,#fff 40%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(2rem,5vw,3rem);font-weight:800;line-height:1.1;letter-spacing:-0.02em;margin-bottom:20px;background:linear-gradient(135deg,#fff 40%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
     .hero-meta{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--muted);margin-bottom:24px}
     .hero-tags{display:flex;flex-wrap:wrap;gap:8px}
     .tag{background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--muted);padding:4px 12px;border-radius:4px;font-size:11px;letter-spacing:0.06em}
     .tag.accent{background:var(--accent-dim);border-color:var(--accent-border);color:var(--accent)}
     .section{margin-bottom:64px}
     .section-label{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;font-weight:600}
-    .section h2{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:700;margin-bottom:20px;color:#fff}
-    .section h3{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:700;margin:32px 0 14px;color:#fff}
+    .section h2{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700;margin-bottom:20px;color:#fff}
+    .section h3{font-family:'Space Grotesk',sans-serif;font-size:1.15rem;font-weight:700;margin:32px 0 14px;color:#fff}
     .section p{color:var(--text);margin-bottom:16px}
     .callout{border-radius:8px;padding:18px 20px;margin:20px 0;border-left:3px solid}
     .callout-title{font-weight:700;margin-bottom:6px;font-size:13px}
@@ -96,7 +96,7 @@
     .video-watch:hover{text-decoration:underline}
     .checkpoint{background:linear-gradient(135deg,rgba(88,166,255,0.08),rgba(0,0,0,0));border:1px solid var(--accent-border);border-radius:12px;padding:28px;margin-bottom:40px}
     .checkpoint-label{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;font-weight:600}
-    .checkpoint h3{font-family:'Syne',sans-serif;font-size:1.2rem;color:var(--accent);margin-bottom:12px}
+    .checkpoint h3{font-family:'Space Grotesk',sans-serif;font-size:1.2rem;color:var(--accent);margin-bottom:12px}
     .checkpoint p{margin-bottom:14px}
     .checkpoint ul{padding-left:0;list-style:none;display:flex;flex-direction:column;gap:8px}
     .checkpoint ul li{color:var(--text);font-size:14px}
@@ -107,7 +107,7 @@
     .next-card{display:flex;align-items:center;justify-content:space-between;padding:22px 24px;background:var(--surface);border:1px solid var(--accent-border);border-radius:10px;text-decoration:none;transition:all 0.2s;margin-top:24px}
     .next-card:hover{background:var(--accent-dim)}
     .next-card-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:4px;font-weight:600}
-    .next-card-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:#fff}
+    .next-card-title{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;color:#fff}
     .next-arrow{font-size:1.5rem;color:var(--accent)}
     .footer{display:flex;justify-content:space-between;align-items:center;padding:24px 0;margin-top:32px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)}
     .footer a{color:var(--muted);text-decoration:none}
@@ -122,16 +122,62 @@
     .t-prompt{color:#58a6ff}.t-cmd{color:#e8e8f0}.t-out{color:#8585a8}.t-comment{color:#555;font-style:italic}
     .integration-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin:10px 0;border-left:3px solid var(--accent)}
     .integration-title{color:var(--accent);font-weight:700;margin-bottom:6px;font-size:14px}
+  
+    /* ─── Mobile Responsive ─────────────────────────────────── */
+    @media (max-width: 768px) {
+      .top-nav { padding: 10px 16px; gap: 8px; }
+      .nav-back { display: none; }
+      .nav-center { gap: 6px; width: 100%; justify-content: space-between; }
+      .nav-position { font-size: 10px; letter-spacing: 0; }
+      .nav-prev, .nav-next { padding: 5px 10px; font-size: 11px; }
+      .page { padding: 28px 16px 64px; }
+      .hero { padding: 32px 0 24px; margin-bottom: 36px; }
+      .hero h1 { font-size: clamp(1.6rem, 8vw, 2.4rem) !important; }
+      .hero-meta { gap: 10px; font-size: 12px; }
+      .section { margin-bottom: 48px; }
+      .section h2 { font-size: 1.25rem !important; }
+      .section h3 { font-size: 1rem !important; }
+      .grid-2 { grid-template-columns: 1fr !important; }
+      .analogy-mapping { grid-template-columns: 1fr !important; }
+      .table-wrap { font-size: 12px; }
+      thead th { padding: 8px 10px; font-size: 10px; }
+      tbody td { padding: 8px 10px; }
+      .step { flex-direction: column; gap: 10px; }
+      .step-num { width: 28px; height: 28px; font-size: 12px; }
+      .checkpoint { padding: 22px 18px; }
+      .next-card { flex-direction: column; gap: 12px; }
+      .terminal-body { font-size: 12px !important; padding: 14px; }
+      pre { font-size: 12px !important; }
+      code { font-size: 12px !important; }
+      .mermaid-wrap { padding: 18px 10px; overflow-x: auto; }
+      .video-card { flex-direction: column; gap: 10px; }
+      .video-thumb { width: 44px; height: 44px; font-size: 18px; }
+      .hero-tags { gap: 6px; }
+      .tag { font-size: 10px !important; padding: 3px 8px !important; }
+      .callout { padding: 14px 16px; }
+      .card-mini { padding: 16px; }
+    }
+    @media (max-width: 480px) {
+      .top-nav { padding: 8px 12px; }
+      .nav-prev, .nav-next { padding: 5px 8px; font-size: 10px; letter-spacing: 0; }
+      .nav-position { display: none; }
+      .hero h1 { font-size: clamp(1.3rem, 9vw, 1.8rem) !important; }
+      .hero-eyebrow { gap: 8px; flex-wrap: wrap; }
+      .stat-num { font-size: 1.8rem; }
+      .final-stats { gap: 16px; }
+    }
   </style>
 </head>
 <body>
-<div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+<div class="progress-bar-wrap"><div class="progress-bar-fill" id="pgbar"></div></div>
 
 <nav class="top-nav">
   <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
   <div class="nav-center">
     <a href="n8n-04-avancado.html" class="nav-prev">← Anterior</a>
-    <div class="nav-position"><span class="track">🐙 GitHub</span> · Aula 35 / 50</div>
+    <div class="nav-position">
+      <span class="track">🐙 GitHub</span> · Aula 35 / 50
+    </div>
     <a href="html-06-a11y-seo.html" class="nav-next">Próxima →</a>
   </div>
 </nav>
@@ -644,18 +690,18 @@ jobs:
     </a>
   </div>
 
-  <div class="footer">
+  <footer>
     <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
     <span>🐙 GitHub no Stack Completo · Aula 35 / 50</span>
     <a href="html-06-a11y-seo.html">Próxima →</a>
-  </div>
+  </footer>
 </div>
 
 <script>
   mermaid.initialize({ startOnLoad: true, theme: 'dark' });
   window.addEventListener('scroll', () => {
     const p = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
-    document.getElementById('progressBar').style.width = p + '%';
+    document.getElementById('pgbar').style.width = p + '%';
   });
   document.addEventListener('DOMContentLoaded', () => { if (typeof hljs !== 'undefined') hljs.highlightAll(); });
 </script>

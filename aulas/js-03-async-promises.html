@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
     rel="stylesheet">
 
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
@@ -285,7 +285,7 @@
     }
 
     .hero h1 {
-      font-family: 'Syne', sans-serif;
+      font-family: 'Space Grotesk', sans-serif;
       font-size: clamp(2rem, 5vw, 3rem);
       font-weight: 800;
       line-height: 1.1;
@@ -341,7 +341,7 @@
     }
 
     .section h2 {
-      font-family: 'Syne', sans-serif;
+      font-family: 'Space Grotesk', sans-serif;
       font-size: 1.6rem;
       font-weight: 700;
       margin-bottom: 20px;
@@ -349,7 +349,7 @@
     }
 
     .section h3 {
-      font-family: 'Syne', sans-serif;
+      font-family: 'Space Grotesk', sans-serif;
       font-size: 1.1rem;
       font-weight: 700;
       margin: 32px 0 14px;
@@ -797,7 +797,7 @@
     }
 
     .checkpoint h3 {
-      font-family: 'Syne', sans-serif;
+      font-family: 'Space Grotesk', sans-serif;
       font-size: 1.2rem;
       font-weight: 700;
       color: #fff;
@@ -852,7 +852,7 @@
     }
 
     .next-card-info h3 {
-      font-family: 'Syne', sans-serif;
+      font-family: 'Space Grotesk', sans-serif;
       font-size: 1.1rem;
       font-weight: 700;
       color: #fff;
@@ -1009,27 +1009,33 @@
     .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
     .next-card:hover { background: var(--accent-dim); }
     .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
-    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-card-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
     .next-arrow { font-size: 1.5rem; color: var(--accent); }
-</style>
+
+
+    footer { border-top: 1px solid var(--border); margin-top: 80px; padding: 28px 24px; text-align: center; }
+    footer a { color: var(--accent); text-decoration: none; font-size: 13px; }
+    footer a:hover { text-decoration: underline; }
+    footer p { font-size: 12px; color: var(--muted); margin-top: 8px; }
+  </style>
 </head>
 
 <body>
   <div class="progress-bar-wrap">
-    <div class="progress-bar-fill" id="progressBar"></div>
+    <div class="progress-bar-fill" id="pgbar"></div>
   </div>
 
   <!-- NAV -->
   <nav class="top-nav">
-    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
-    <div class="nav-center">
-      <a href="js-02-objetos-es6.html" class="nav-prev">← Anterior</a>
-      <div class="nav-position">
-        <span class="track">⚡ JavaScript</span> · Aula 14 / 50
-      </div>
-      <a href="py-05-http-bibliotecas.html" class="nav-next">Próxima →</a>
+  <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+  <div class="nav-center">
+    <a href="js-02-objetos-es6.html" class="nav-prev">← Anterior</a>
+    <div class="nav-position">
+      <span class="track">⚡ JavaScript</span> · Aula 14 / 50
     </div>
-  </nav>
+    <a href="py-05-http-bibliotecas.html" class="nav-next">Próxima →</a>
+  </div>
+</nav>
 
   <div class="page">
 
@@ -1951,6 +1957,12 @@ gantt
 
   </div><!-- /page -->
 
+<footer>
+  <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+  <p>Aula 14 / 50 · ⚡ JavaScript · JavaScript — Async & Promises</p>
+</footer>
+
+
   <script>
     // Syntax highlighting
     hljs.highlightAll();
@@ -1963,7 +1975,7 @@ gantt
       const scrollTop = window.scrollY;
       const docHeight = document.body.scrollHeight - window.innerHeight;
       const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-      document.getElementById('progressBar').style.width = progress + '%';
+      document.getElementById('pgbar').style.width = progress + '%';
     }
     window.addEventListener('scroll', updateProgress, { passive: true });
     updateProgress();
