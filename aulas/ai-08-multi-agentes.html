@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multi-Agentes — CrewAI & LangGraph · Aula 49</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #a855f7;
+      --accent-dim: rgba(168,85,247,0.12);
+      --accent-border: rgba(168,85,247,0.35);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #c084fc); width: 0%; transition: width 0.1s; }
+
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; cursor: default; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #c084fc; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.08); border-color: var(--success); }
+    .callout-tip .callout-title { color: var(--success); }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-blue { background: rgba(88,166,255,0.2); color: #79c0ff; }
+    .badge-purple { background: rgba(168,85,247,0.2); color: #c084fc; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    .terminal { background: #0d0d14; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 16px 0; }
+    .terminal-bar { background: #1a1a24; padding: 10px 16px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #ffbd2e; }
+    .dot-g { background: #28ca41; }
+    .terminal-title { font-size: 11px; color: var(--muted); margin-left: 8px; letter-spacing: 0.06em; }
+    .terminal-body { padding: 18px 20px; font-size: 13px; line-height: 1.7; color: #c9d1d9; }
+    .terminal-body .prompt { color: var(--accent); user-select: none; }
+    .terminal-body .comment { color: #8b949e; }
+    .terminal-body .out { color: #8b949e; padding-left: 18px; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+    .card-mini .icon { font-size: 22px; }
+
+    .video-grid { display: flex; flex-direction: column; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 48px; height: 48px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--accent); }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    .video-why { font-size: 12px; color: var(--text); margin-bottom: 8px; }
+    .video-info a { font-size: 12px; color: var(--accent); text-decoration: none; }
+    .video-info a:hover { text-decoration: underline; }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(168,85,247,0.1), rgba(192,132,252,0.05)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 32px; margin: 32px 0; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 16px; }
+    .checkpoint p { color: var(--text); margin-bottom: 14px; }
+    .checkpoint ul { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; display: flex; gap: 8px; }
+    .checkpoint ul li::before { content: '✦'; color: var(--accent); flex-shrink: 0; }
+    .checkpoint-hint { background: rgba(255,255,255,0.04); border-radius: 8px; padding: 14px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 20px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; font-size: 13px; margin-bottom: 8px; }
+
+    .next-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; display: flex; align-items: center; justify-content: space-between; gap: 20px; position: relative; overflow: hidden; }
+    .next-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .next-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+    .next-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; color: #fff; font-weight: 700; }
+    .next-desc { font-size: 13px; color: var(--muted); margin-top: 6px; }
+    .next-btn { flex-shrink: 0; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 10px 20px; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 600; white-space: nowrap; transition: all 0.2s; }
+    .next-btn:hover { background: rgba(168,85,247,0.2); }
+
+    /* Agent role cards */
+    .agent-role { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; position: relative; overflow: hidden; }
+    .agent-role::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--accent); }
+    .agent-role-name { color: var(--accent); font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+    .agent-role-desc { color: var(--muted); font-size: 13px; }
+
+    /* LangGraph node styles */
+    .graph-node { background: var(--surface2); border: 1px solid var(--accent-border); border-radius: 8px; padding: 14px 18px; text-align: center; }
+    .graph-node-title { color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: 0.06em; }
+    .graph-node-desc { color: var(--muted); font-size: 11px; margin-top: 4px; }
+
+    .pattern-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
+    .pattern-card h4 { color: #fff; font-size: 14px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .pattern-card p { color: var(--muted); font-size: 13px; margin: 0; }
+
+    footer { border-top: 1px solid var(--border); margin-top: 80px; padding: 28px 24px; text-align: center; }
+    footer a { color: var(--accent); text-decoration: none; font-size: 13px; }
+    footer a:hover { text-decoration: underline; }
+    footer p { font-size: 12px; color: var(--muted); margin-top: 8px; }
+  </style>
+</head>
+<body>
+
+<div class="progress-bar-wrap"><div class="progress-bar-fill" id="pgbar"></div></div>
+
+<nav class="top-nav">
+  <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+  <div class="nav-center">
+    <a href="oc-03-ia-visao-agentes.html" class="nav-prev">← Anterior</a>
+    <div class="nav-position">
+      <span class="track">🤖 IA</span> · Aula 49 / 50
+    </div>
+    <a href="oc-04-avancado-stack.html" class="nav-next">Próxima →</a>
+  </div>
+</nav>
+
+<main class="page">
+
+  <!-- ═══════════════════════════════ HERO ═══════════════════════════════ -->
+  <section class="hero">
+    <div class="hero-eyebrow">
+      <span class="hero-badge">AULA 49</span>
+      <span>🤖 Inteligência Artificial</span>
+      <span>·</span>
+      <span>Sistemas Multi-Agente</span>
+    </div>
+    <h1>Multi-Agentes —<br>CrewAI & LangGraph</h1>
+    <div class="hero-meta">
+      <span>⏱ ~40 min</span>
+      <span>·</span>
+      <span>Avançado</span>
+      <span>·</span>
+      <span>Hands-on</span>
+    </div>
+    <div class="hero-tags">
+      <span class="tag accent">CrewAI</span>
+      <span class="tag">LangGraph</span>
+      <span class="tag">AutoGen</span>
+      <span class="tag">Agent Orchestration</span>
+      <span class="tag">State Machines</span>
+      <span class="tag">Guardrails</span>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ POR QUE IMPORTA ═══════════════════ -->
+  <section class="section">
+    <div class="section-label">Por que isso importa?</div>
+    <h2>Um agente sozinho não é suficiente</h2>
+    <p>
+      Um único agente LLM tem limitações claras: contexto limitado, falta de especialização
+      profunda, e dificuldade em manter estado consistente em tarefas longas. Para problemas
+      complexos — como "analise este mercado, escreva um relatório e poste no LinkedIn" —
+      a solução é <strong>dividir para conquistar</strong>.
+    </p>
+    <p>
+      Sistemas <strong>multi-agente</strong> permitem que agentes especializados colaborem:
+      um pesquisa, outro analisa, outro escreve, outro revisa. Cada um faz o que faz melhor,
+      com um <strong>orquestrador</strong> coordenando o fluxo.
+    </p>
+    <div class="callout callout-tip">
+      <div class="callout-title">🔥 Por que um engenheiro sênior usa hoje?</div>
+      Empresas como Deloitte, McKinsey e Bloomberg já usam sistemas multi-agente para
+      análise financeira, geração de relatórios e due diligence. É a arquitetura de
+      IA mais importante de 2025.
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ ANALOGIA ══════════════════════════ -->
+  <section class="section">
+    <div class="section-label">Analogia do Mundo Real</div>
+    <h2>A Equipe de Consultoria</h2>
+
+    <div class="analogy-card">
+      <div class="analogy-label">🏢 Analogia</div>
+      <div class="analogy-text">
+        Imagine contratar uma única pessoa para fazer toda uma consultoria: ela pesquisa o mercado,
+        analisa dados, escreve o relatório, revisa, e apresenta ao cliente. Impossível ser
+        excelente em tudo. Agora imagine uma firma de consultoria: um pesquisador de mercado,
+        um analista financeiro, um redator sênior, e um gerente de projeto coordenando tudo.
+        Cada um especialista na sua área, trabalhando em paralelo, entregando qualidade superior.
+        <em>Sistemas multi-agente são essa firma de consultoria.</em>
+      </div>
+      <div class="analogy-mapping">
+        <div class="analogy-real">🎯 Gerente de Projeto</div>
+        <div class="analogy-tech">Orchestrator / Manager Agent</div>
+        <div class="analogy-real">🔍 Pesquisador de Mercado</div>
+        <div class="analogy-tech">Research Agent (web search tools)</div>
+        <div class="analogy-real">📊 Analista Financeiro</div>
+        <div class="analogy-tech">Analyst Agent (pandas/code tools)</div>
+        <div class="analogy-real">✍️ Redator Sênior</div>
+        <div class="analogy-tech">Writer Agent (output formatter)</div>
+        <div class="analogy-real">🔎 Revisor de Qualidade</div>
+        <div class="analogy-tech">Critic Agent (guardrail checker)</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ CONCEITO CENTRAL ═════════════════ -->
+  <section class="section">
+    <div class="section-label">Conceito Central</div>
+    <h2>Padrões de Design Multi-Agente</h2>
+
+    <p>
+      Existem quatro padrões fundamentais em sistemas multi-agente. Entender qual usar
+      em cada situação é a habilidade-chave do engenheiro de IA.
+    </p>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label">Diagrama — Os 4 Padrões de Orquestração</div>
+      <div class="mermaid">
+flowchart TD
+    subgraph P1["🔗 Sequential (Pipeline)"]
+        A1["Agent A"] -->|output| B1["Agent B"] -->|output| C1["Agent C"]
+    end
+
+    subgraph P2["⭐ Hierarchical (Manager)"]
+        M["Manager Agent"]
+        M --> W1["Worker 1"]
+        M --> W2["Worker 2"]
+        M --> W3["Worker 3"]
+        W1 & W2 & W3 -->|results| M
+    end
+
+    subgraph P3["🔄 Collaborative (Debate)"]
+        D1["Agent A\n(propose)"] <-->|critique| D2["Agent B\n(critique)"]
+        D2 -->|improved| D3["Consensus\nOutput"]
+    end
+
+    subgraph P4["📊 LangGraph (State Machine)"]
+        S["State"] --> N1["Node 1"]
+        N1 --> COND{"Condition"}
+        COND -->|path A| N2["Node 2"]
+        COND -->|path B| N3["Node 3"]
+        N2 & N3 -->|update| S
+    end
+
+    style M fill:#a855f7,color:#fff
+    style S fill:#06b6d4,color:#fff
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:24px">
+      <div class="pattern-card">
+        <h4>🔗 Sequential Pipeline</h4>
+        <p>Saída de um agente é entrada do próximo. Simples, previsível. Ideal para: transformações lineares de dados.</p>
+      </div>
+      <div class="pattern-card">
+        <h4>⭐ Hierarchical (Manager)</h4>
+        <p>Um Manager delega tarefas e agrega resultados. Ideal para: divisão de trabalho paralela com supervisor.</p>
+      </div>
+      <div class="pattern-card">
+        <h4>🔄 Collaborative / Debate</h4>
+        <p>Agentes debatem e criticam uns aos outros até consenso. Ideal para: melhorar qualidade de outputs.</p>
+      </div>
+      <div class="pattern-card">
+        <h4>📊 LangGraph State Machine</h4>
+        <p>Estado compartilhado + nós com lógica + arestas condicionais. Ideal para: workflows complexos com branching.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ CREWAI ════════════════════════════ -->
+  <section class="section">
+    <div class="section-label">Framework 1 — CrewAI</div>
+    <h2>CrewAI: Tripulação de Agentes</h2>
+
+    <p>
+      <strong>CrewAI</strong> usa metáforas de equipe: você define <em>Agentes</em> com papéis,
+      backstories e objetivos, e <em>Tasks</em> com descrições e outputs esperados. O framework
+      orquestra automaticamente o fluxo.
+    </p>
+
+    <div class="terminal">
+      <div class="terminal-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="terminal-title">bash</span></div>
+      <div class="terminal-body">
+        <span class="prompt">$ </span>pip install crewai crewai-tools<br>
+        <span class="prompt">$ </span>pip install langchain-openai duckduckgo-search
+      </div>
+    </div>
+
+    <div class="code-label">crew_research.py — Time de análise de mercado</div>
+    <pre><code class="language-python">import os
+from crewai import Agent, Task, Crew, Process
+from crewai_tools import SerperDevTool, WebsiteSearchTool
+from langchain_openai import ChatOpenAI
+
+# Configuração do LLM
+llm = ChatOpenAI(model="gpt-4o", temperature=0.2)
+
+# Ferramentas disponíveis
+search_tool = SerperDevTool()  # Google Search via Serper API
+web_tool = WebsiteSearchTool()
+
+
+# ─── AGENTES ────────────────────────────────────────────────────────────────
+
+pesquisador = Agent(
+    role="Analista de Mercado Sênior",
+    goal=(
+        "Coletar dados abrangentes e factuais sobre o mercado de {topic}. "
+        "Foco em tendências recentes, players principais, e oportunidades."
+    ),
+    backstory=(
+        "Você tem 15 anos de experiência em pesquisa de mercado. "
+        "É meticuloso com fontes, sempre verifica fatos antes de reportar, "
+        "e tem experiência no setor de tecnologia."
+    ),
+    tools=[search_tool, web_tool],
+    llm=llm,
+    verbose=True,
+    allow_delegation=False,
+    max_iter=5  # Máximo de iterações para evitar loops
+)
+
+analista = Agent(
+    role="Analista Estratégico",
+    goal=(
+        "Analisar os dados coletados sobre {topic} e identificar insights "
+        "estratégicos, oportunidades e riscos."
+    ),
+    backstory=(
+        "Consultor estratégico com MBA pela Wharton e experiência em BCG. "
+        "Transforma dados em estratégias acionáveis usando frameworks como "
+        "SWOT, Porter's Five Forces e análise PESTLE."
+    ),
+    llm=llm,
+    verbose=True,
+    allow_delegation=False
+)
+
+redator = Agent(
+    role="Redator Executivo",
+    goal=(
+        "Transformar análises técnicas sobre {topic} em relatório executivo "
+        "claro, conciso e persuasivo para tomada de decisão."
+    ),
+    backstory=(
+        "Jornalista econômico com 10 anos de experiência na The Economist. "
+        "Especialista em traduzir complexidade para clareza executiva."
+    ),
+    llm=llm,
+    verbose=True,
+    allow_delegation=False
+)
+
+
+# ─── TASKS ──────────────────────────────────────────────────────────────────
+
+task_pesquisa = Task(
+    description=(
+        "Pesquise o mercado de {topic} em profundidade. Colete:\n"
+        "1. Tamanho do mercado e projeção de crescimento (TAM/SAM/SOM)\n"
+        "2. Top 5 players e suas market shares\n"
+        "3. Principais tendências de 2024-2025\n"
+        "4. Regulamentações relevantes\n"
+        "5. Casos de uso mais adotados\n\n"
+        "Use fontes recentes (últimos 6 meses). Cite URLs."
+    ),
+    expected_output=(
+        "Relatório de pesquisa estruturado em markdown com dados quantitativos, "
+        "URLs das fontes, e organizado nas 5 seções solicitadas."
+    ),
+    agent=pesquisador
+)
+
+task_analise = Task(
+    description=(
+        "Com base na pesquisa fornecida, realize análise estratégica do mercado de {topic}:\n"
+        "1. Análise SWOT completa\n"
+        "2. 3 oportunidades de entrada no mercado rankeadas por potencial\n"
+        "3. Principais riscos e como mitigá-los\n"
+        "4. Recomendação estratégica para uma startup entrando neste mercado"
+    ),
+    expected_output=(
+        "Análise estratégica em markdown com SWOT visual, análise de oportunidades "
+        "com critérios objetivos e recomendação final justificada."
+    ),
+    agent=analista,
+    context=[task_pesquisa]  # Recebe output da task anterior
+)
+
+task_relatorio = Task(
+    description=(
+        "Compile pesquisa e análise num relatório executivo profissional sobre {topic}. "
+        "O relatório deve:\n"
+        "- Ter no máximo 2 páginas\n"
+        "- Usar linguagem executiva (não técnica)\n"
+        "- Incluir sumário executivo de 3 bullets\n"
+        "- Terminar com próximos passos recomendados\n"
+        "- Formato: markdown com headers claros"
+    ),
+    expected_output=(
+        "Relatório executivo completo em markdown, pronto para apresentação "
+        "a investidores ou board. Máximo 800 palavras."
+    ),
+    agent=redator,
+    context=[task_pesquisa, task_analise],
+    output_file="relatorio_mercado.md"  # Salva automaticamente
+)
+
+
+# ─── CREW ───────────────────────────────────────────────────────────────────
+
+crew = Crew(
+    agents=[pesquisador, analista, redator],
+    tasks=[task_pesquisa, task_analise, task_relatorio],
+    process=Process.sequential,  # ou Process.hierarchical
+    verbose=2,  # 0=silencioso, 1=basic, 2=detalhado
+    memory=True,  # Mantém memória entre runs
+    max_rpm=10   # Rate limit para APIs
+)
+
+
+if __name__ == "__main__":
+    resultado = crew.kickoff(inputs={"topic": "IA Generativa no Brasil"})
+    print("\n" + "="*60)
+    print("RELATÓRIO FINAL:")
+    print("="*60)
+    print(resultado)</code></pre>
+
+    <div class="callout callout-info">
+      <div class="callout-title">💡 Process.hierarchical vs sequential</div>
+      <strong>Sequential</strong>: cada task executa em ordem, output vira input da próxima.
+      <strong>Hierarchical</strong>: um Manager Agent (criado automaticamente) decide qual Worker
+      deve realizar cada task e em que ordem. Use hierarchical quando as tasks podem se beneficiar
+      de ordem dinâmica.
+    </div>
+
+    <h3>CrewAI com Tools Customizadas</h3>
+    <p>Você pode criar tools próprias com o decorator <code>@tool</code>:</p>
+
+    <div class="code-label">custom_tools.py</div>
+    <pre><code class="language-python">from crewai_tools import BaseTool
+from pydantic import BaseModel, Field
+import httpx
+
+
+class BuscaEmpresaInput(BaseModel):
+    cnpj: str = Field(description="CNPJ da empresa no formato 00.000.000/0000-00")
+
+
+class BuscaEmpresaTool(BaseTool):
+    name: str = "Buscar Dados de Empresa"
+    description: str = (
+        "Busca dados cadastrais de uma empresa brasileira pelo CNPJ. "
+        "Retorna razão social, situação cadastral, porte e atividade principal."
+    )
+    args_schema: type[BaseModel] = BuscaEmpresaInput
+
+    def _run(self, cnpj: str) -> str:
+        """Consulta API pública da Receita Federal."""
+        cnpj_limpo = cnpj.replace(".", "").replace("/", "").replace("-", "")
+        resp = httpx.get(
+            f"https://brasilapi.com.br/api/cnpj/v1/{cnpj_limpo}",
+            timeout=10
+        )
+        if resp.status_code != 200:
+            return f"CNPJ não encontrado: {cnpj}"
+
+        data = resp.json()
+        return (
+            f"Razão Social: {data.get('razao_social')}\n"
+            f"Situação: {data.get('descricao_situacao_cadastral')}\n"
+            f"Porte: {data.get('porte')}\n"
+            f"Atividade: {data.get('cnae_fiscal_descricao')}\n"
+            f"Município: {data.get('municipio')}/{data.get('uf')}"
+        )
+
+
+# Usar a tool customizada
+busca_empresa = BuscaEmpresaTool()
+agente_compliance = Agent(
+    role="Analista de Compliance",
+    goal="Verificar situação cadastral de empresas parceiras",
+    tools=[busca_empresa],
+    llm=llm
+)</code></pre>
+  </section>
+
+  <!-- ═══════════════════════════════ LANGGRAPH ════════════════════════ -->
+  <section class="section">
+    <div class="section-label">Framework 2 — LangGraph</div>
+    <h2>LangGraph: State Machines para Agentes</h2>
+
+    <p>
+      Enquanto CrewAI é alto nível e orientado a "equipes", <strong>LangGraph</strong>
+      é baixo nível e orientado a <strong>grafos de estado</strong>. Você define:
+      <em>State</em> (dados compartilhados), <em>Nodes</em> (funções que transformam o estado)
+      e <em>Edges</em> (conexões, incluindo condicionais).
+    </p>
+
+    <p>É a escolha de engenheiros quando precisam de controle total sobre o fluxo do agente.</p>
+
+    <div class="terminal">
+      <div class="terminal-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="terminal-title">bash</span></div>
+      <div class="terminal-body">
+        <span class="prompt">$ </span>pip install langgraph langchain-openai langchain-community
+      </div>
+    </div>
+
+    <div class="code-label">langgraph_agent.py — Agente de pesquisa com human-in-the-loop</div>
+    <pre><code class="language-python">import json
+from typing import TypedDict, Annotated, Sequence
+from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, ToolMessage
+from langchain_openai import ChatOpenAI
+from langchain_community.tools.ddg_search import DuckDuckGoSearchRun
+from langgraph.graph import StateGraph, END
+from langgraph.prebuilt import ToolNode
+import operator
+
+
+# ─── STATE ──────────────────────────────────────────────────────────────────
+# Define o estado compartilhado entre todos os nós do grafo
+
+class AgentState(TypedDict):
+    messages: Annotated[Sequence[BaseMessage], operator.add]  # acumula mensagens
+    next_step: str        # controla o fluxo
+    pesquisa_concluida: bool
+    relatorio_draft: str
+    aprovado_humano: bool
+    iteracoes: int
+
+
+# ─── TOOLS ──────────────────────────────────────────────────────────────────
+
+search = DuckDuckGoSearchRun()
+tools = [search]
+
+llm = ChatOpenAI(model="gpt-4o", temperature=0)
+llm_com_tools = llm.bind_tools(tools)
+
+
+# ─── NODES (funções que transformam o estado) ────────────────────────────────
+
+def node_pesquisar(state: AgentState) -> dict:
+    """Nó de pesquisa: usa o LLM com tools para buscar informações."""
+    print("🔍 Pesquisando...")
+    response = llm_com_tools.invoke(state["messages"])
+    return {
+        "messages": [response],
+        "iteracoes": state.get("iteracoes", 0) + 1
+    }
+
+
+def node_executar_tools(state: AgentState) -> dict:
+    """Nó executor de tools: roda as tool calls do LLM."""
+    tool_node = ToolNode(tools)
+    result = tool_node.invoke(state)
+    return result
+
+
+def node_analisar(state: AgentState) -> dict:
+    """Nó de análise: sintetiza os dados coletados."""
+    print("📊 Analisando dados...")
+    msgs = state["messages"]
+
+    prompt = HumanMessage(content=
+        "Com base em todas as pesquisas acima, escreva um draft de relatório "
+        "em 3 parágrafos: Contexto, Principais Achados e Conclusão. "
+        "Seja específico e use os dados encontrados."
+    )
+
+    response = llm.invoke(msgs + [prompt])
+    return {
+        "messages": [response],
+        "relatorio_draft": response.content,
+        "pesquisa_concluida": True
+    }
+
+
+def node_revisao_humana(state: AgentState) -> dict:
+    """
+    Nó de revisão humana (Human-in-the-Loop).
+    Em produção, isso pausaria o grafo e esperaria input do usuário.
+    """
+    print("\n" + "="*50)
+    print("📝 DRAFT DO RELATÓRIO:")
+    print("="*50)
+    print(state["relatorio_draft"])
+    print("="*50)
+
+    # Simular aprovação (em produção: input real do usuário via UI/webhook)
+    aprovado = input("\n✅ Aprovar relatório? (s/n): ").strip().lower() == "s"
+
+    return {"aprovado_humano": aprovado}
+
+
+def node_finalizar(state: AgentState) -> dict:
+    """Nó final: formata e salva o relatório."""
+    print("✅ Finalizando relatório...")
+    relatorio_final = f"""
+# RELATÓRIO DE ANÁLISE
+**Gerado automaticamente por LangGraph Agent**
+
+{state["relatorio_draft"]}
+
+---
+*Iterações de pesquisa: {state.get('iteracoes', 0)}*
+*Status: {'Aprovado pelo Revisor' if state['aprovado_humano'] else 'Publicado sem revisão'}*
+    """
+    with open("relatorio_final.md", "w") as f:
+        f.write(relatorio_final)
+
+    return {"messages": [AIMessage(content="Relatório salvo em relatorio_final.md")]}
+
+
+def node_refinar(state: AgentState) -> dict:
+    """Nó de refinamento: melhora o relatório com base no feedback."""
+    print("🔄 Refinando relatório...")
+    msgs = state["messages"]
+
+    prompt = HumanMessage(content=
+        "O relatório foi rejeitado. Por favor, revise-o tornando-o mais "
+        "detalhado, com dados mais específicos e conclusões mais claras."
+    )
+
+    response = llm.invoke(msgs + [prompt])
+    return {
+        "messages": [response],
+        "relatorio_draft": response.content,
+        "aprovado_humano": False
+    }
+
+
+# ─── EDGES CONDICIONAIS ──────────────────────────────────────────────────────
+
+def decidir_apos_pesquisa(state: AgentState) -> str:
+    """Decide o próximo nó após pesquisa."""
+    msgs = state["messages"]
+    ultima_msg = msgs[-1]
+
+    # Se o LLM chamou tools, executá-las
+    if hasattr(ultima_msg, "tool_calls") and ultima_msg.tool_calls:
+        return "executar_tools"
+
+    # Máximo de iterações atingido
+    if state.get("iteracoes", 0) >= 3:
+        return "analisar"
+
+    # Continuar pesquisando
+    return "analisar"
+
+
+def decidir_apos_revisao(state: AgentState) -> str:
+    """Decide o próximo nó após revisão humana."""
+    if state["aprovado_humano"]:
+        return "finalizar"
+    return "refinar"
+
+
+# ─── CONSTRUIR O GRAFO ───────────────────────────────────────────────────────
+
+grafo = StateGraph(AgentState)
+
+# Adicionar nós
+grafo.add_node("pesquisar", node_pesquisar)
+grafo.add_node("executar_tools", node_executar_tools)
+grafo.add_node("analisar", node_analisar)
+grafo.add_node("revisao_humana", node_revisao_humana)
+grafo.add_node("finalizar", node_finalizar)
+grafo.add_node("refinar", node_refinar)
+
+# Definir ponto de entrada
+grafo.set_entry_point("pesquisar")
+
+# Arestas condicionais
+grafo.add_conditional_edges(
+    "pesquisar",
+    decidir_apos_pesquisa,
+    {
+        "executar_tools": "executar_tools",
+        "analisar": "analisar"
+    }
+)
+
+grafo.add_conditional_edges(
+    "revisao_humana",
+    decidir_apos_revisao,
+    {
+        "finalizar": "finalizar",
+        "refinar": "refinar"
+    }
+)
+
+# Arestas diretas
+grafo.add_edge("executar_tools", "pesquisar")
+grafo.add_edge("analisar", "revisao_humana")
+grafo.add_edge("refinar", "revisao_humana")
+grafo.add_edge("finalizar", END)
+
+# Compilar o grafo
+app = grafo.compile()
+
+
+# ─── EXECUTAR ────────────────────────────────────────────────────────────────
+
+if __name__ == "__main__":
+    resultado = app.invoke({
+        "messages": [HumanMessage(
+            content="Pesquise as principais tendências de IA no Brasil em 2025. "
+                   "Foque em adoção corporativa e startups promissoras."
+        )],
+        "pesquisa_concluida": False,
+        "relatorio_draft": "",
+        "aprovado_humano": False,
+        "iteracoes": 0
+    })
+    print("\n🏁 Pipeline concluído!")</code></pre>
+
+    <div class="mermaid-wrap">
+      <div class="mermaid-label">Diagrama — Grafo LangGraph com Human-in-the-Loop</div>
+      <div class="mermaid">
+stateDiagram-v2
+    [*] --> pesquisar
+    pesquisar --> executar_tools : tem tool calls
+    pesquisar --> analisar : sem tool calls ou max iter
+    executar_tools --> pesquisar : loop de pesquisa
+    analisar --> revisao_humana
+    revisao_humana --> finalizar : aprovado
+    revisao_humana --> refinar : rejeitado
+    refinar --> revisao_humana
+    finalizar --> [*]
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ COMPARATIVO ═══════════════════════ -->
+  <section class="section">
+    <div class="section-label">Comparativo</div>
+    <h2>CrewAI vs LangGraph vs AutoGen</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Framework</th>
+            <th>Abstração</th>
+            <th>Curva de Aprendizado</th>
+            <th>Controle</th>
+            <th>Melhor para</th>
+            <th>Produção</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>CrewAI</strong></td>
+            <td><span class="badge badge-green">Alta (intuitiva)</span></td>
+            <td><span class="badge badge-green">Baixa</span></td>
+            <td><span class="badge badge-yellow">Médio</span></td>
+            <td>Workflows de equipes, prototipagem</td>
+            <td><span class="badge badge-green">✓ Sim</span></td>
+          </tr>
+          <tr>
+            <td><strong>LangGraph</strong></td>
+            <td><span class="badge badge-yellow">Média (grafos)</span></td>
+            <td><span class="badge badge-yellow">Média</span></td>
+            <td><span class="badge badge-green">Total</span></td>
+            <td>Workflows complexos, Human-in-the-Loop</td>
+            <td><span class="badge badge-green">✓ Sim</span></td>
+          </tr>
+          <tr>
+            <td><strong>AutoGen</strong></td>
+            <td><span class="badge badge-yellow">Média (chat)</span></td>
+            <td><span class="badge badge-yellow">Média</span></td>
+            <td><span class="badge badge-yellow">Médio</span></td>
+            <td>Debates entre agentes, código gerado</td>
+            <td><span class="badge badge-yellow">~ Parcial</span></td>
+          </tr>
+          <tr>
+            <td><strong>OpenAI Swarm</strong></td>
+            <td><span class="badge badge-green">Alta (simples)</span></td>
+            <td><span class="badge badge-green">Muito baixa</span></td>
+            <td><span class="badge badge-yellow">Médio</span></td>
+            <td>Handoffs simples, demos rápidas</td>
+            <td><span class="badge badge-red">Experimental</span></td>
+          </tr>
+          <tr>
+            <td><strong>Custom (raw)</strong></td>
+            <td><span class="badge badge-red">Nenhuma</span></td>
+            <td><span class="badge badge-red">Alta</span></td>
+            <td><span class="badge badge-green">Total</span></td>
+            <td>Necessidades muito específicas</td>
+            <td><span class="badge badge-green">✓ Sim</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ GUARDRAILS ═══════════════════════ -->
+  <section class="section">
+    <div class="section-label">Guardrails & Avaliação</div>
+    <h2>Controlando Qualidade e Segurança</h2>
+
+    <p>
+      Sistemas multi-agente podem aluciná-los mutuamente — um agente inventa algo e o próximo
+      usa como fato. <strong>Guardrails</strong> são verificações que interceptam e bloqueiam
+      outputs problemáticos.
+    </p>
+
+    <div class="code-label">guardrails.py — Validação de outputs com Pydantic + LLM</div>
+    <pre><code class="language-python">from pydantic import BaseModel, field_validator
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+import re
+
+
+# ─── GUARDRAIL 1: Pydantic Schema Validation ────────────────────────────────
+
+class RelatorioOutput(BaseModel):
+    titulo: str
+    sumario_executivo: str  # Máximo 3 bullets
+    achados: list[str]       # Pelo menos 3 achados com dados
+    conclusao: str
+    fontes: list[str]        # Mínimo 2 URLs
+
+    @field_validator("sumario_executivo")
+    @classmethod
+    def validar_sumario(cls, v):
+        bullets = v.count("•") + v.count("-") + v.count("*")
+        if bullets > 5:
+            raise ValueError("Sumário deve ter no máximo 5 bullets")
+        return v
+
+    @field_validator("fontes")
+    @classmethod
+    def validar_fontes(cls, v):
+        urls = [f for f in v if f.startswith("http")]
+        if len(urls) < 2:
+            raise ValueError("Necessário mínimo 2 URLs como fonte")
+        return v
+
+    @field_validator("achados")
+    @classmethod
+    def validar_achados_tem_dados(cls, v):
+        # Verifica se pelo menos metade dos achados tem números
+        com_dados = sum(1 for a in v if re.search(r'\d+[%$R$€]?', a))
+        if com_dados < len(v) // 2:
+            raise ValueError("Achados devem incluir dados quantitativos")
+        return v
+
+
+# ─── GUARDRAIL 2: LLM-as-Judge ──────────────────────────────────────────────
+
+class QualityScore(BaseModel):
+    score: int  # 0-10
+    problemas: list[str]
+    aprovado: bool
+
+
+llm_judge = ChatOpenAI(model="gpt-4o", temperature=0)
+
+JUDGE_PROMPT = ChatPromptTemplate.from_messages([
+    ("system", """Você é um juiz de qualidade de relatórios executivos.
+    Avalie o relatório nos seguintes critérios (0-10 cada):
+    - Factualidade (sem afirmações sem evidência)
+    - Clareza (linguagem executiva, sem jargão desnecessário)
+    - Completude (cobre todos os aspectos solicitados)
+    - Fontes (cita fontes verificáveis)
+
+    Responda em JSON: {{"score": 7, "problemas": ["..."], "aprovado": true}}
+    Aprovado se score >= 7 e sem problemas críticos."""),
+    ("human", "Relatório para avaliar:\n\n{relatorio}")
+])
+
+
+async def avaliar_qualidade(relatorio: str) -> QualityScore:
+    """Usa LLM como juiz para avaliar qualidade do output."""
+    chain = JUDGE_PROMPT | llm_judge.with_structured_output(QualityScore)
+    return await chain.ainvoke({"relatorio": relatorio})
+
+
+# ─── GUARDRAIL 3: PII Detection ─────────────────────────────────────────────
+
+PII_PATTERNS = [
+    (r'\b\d{3}\.\d{3}\.\d{3}-\d{2}\b', "CPF"),
+    (r'\b\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}\b', "CNPJ"),
+    (r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', "Email"),
+    (r'\b(?:\+55\s?)?(?:\(?\d{2}\)?\s?)?\d{4,5}[-\s]?\d{4}\b', "Telefone"),
+]
+
+
+def detectar_pii(texto: str) -> list[dict]:
+    """Detecta Informações Pessoais Identificáveis no output."""
+    encontrados = []
+    for pattern, tipo in PII_PATTERNS:
+        matches = re.findall(pattern, texto)
+        if matches:
+            encontrados.append({"tipo": tipo, "ocorrencias": len(matches)})
+    return encontrados
+
+
+def aplicar_guardrails(output: str) -> tuple[bool, list[str]]:
+    """
+    Aplica todos os guardrails num output de agente.
+
+    Returns:
+        (passou, lista_de_problemas)
+    """
+    problemas = []
+
+    # 1. PII check
+    pii = detectar_pii(output)
+    if pii:
+        problemas.extend([f"PII detectado: {p['tipo']}" for p in pii])
+
+    # 2. Tamanho mínimo
+    if len(output.split()) < 100:
+        problemas.append("Output muito curto (< 100 palavras)")
+
+    # 3. Verifica se tem alucinações óbvias (números impossíveis)
+    numeros = re.findall(r'\b(\d{1,3}(?:\.\d{3})*(?:,\d+)?)\s*%', output)
+    for num in numeros:
+        valor = float(num.replace(".", "").replace(",", "."))
+        if valor > 100:
+            problemas.append(f"Percentual impossível encontrado: {valor}%")
+
+    passou = len(problemas) == 0
+    return passou, problemas
+
+
+# Exemplo de uso integrado com CrewAI
+class RelatorioComGuardrail(Task):
+    def execute(self, *args, **kwargs):
+        output = super().execute(*args, **kwargs)
+
+        passou, problemas = aplicar_guardrails(str(output))
+        if not passou:
+            print(f"⚠️ GUARDRAIL ACIONADO: {problemas}")
+            # Re-executar com instrução de correção
+            # ...
+
+        return output</code></pre>
+  </section>
+
+  <!-- ═══════════════════════════════ ARMADILHAS ════════════════════════ -->
+  <section class="section">
+    <div class="section-label">Armadilhas Comuns</div>
+    <h2>Pitfalls em Sistemas Multi-Agente</h2>
+
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Alucinação em cascata (Cascading Hallucination)</div>
+      <p style="color:var(--muted);font-size:14px;margin:0">
+        Agente A alucina um fato → Agente B usa como verdade → Agente C escreve relatório
+        com dado falso. Solução: adicione um Critic Agent entre passos críticos que verifica
+        claims com search tools antes de passar adiante.
+      </p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Context window overflow</div>
+      <p style="color:var(--muted);font-size:14px;margin:0">
+        Ao passar o output completo de um agente para o próximo, você pode estourar o contexto.
+        Use <strong>summarization entre nós</strong>: antes de passar para o próximo agente,
+        resuma o output. Em LangGraph, implemente um nó de sumarização se
+        <code>len(state["messages"]) > 20</code>.
+      </p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Custo descontrolado em produção</div>
+      <p style="color:var(--muted);font-size:14px;margin:0">
+        Um Crew de 5 agentes com Process.hierarchical pode fazer 20+ chamadas ao GPT-4o
+        por run. Monitore com <code>langfuse</code> ou <code>langsmith</code>.
+        Regra: use GPT-4o apenas para tarefas de raciocínio complexo; use gpt-4o-mini
+        para tarefas simples de formatação ou extração.
+      </p>
+    </div>
+
+    <div class="pitfall">
+      <div class="pitfall-title">⚠️ Deadlock por dependências circulares</div>
+      <p style="color:var(--muted);font-size:14px;margin:0">
+        Em LangGraph, uma aresta condicional que volta para um nó anterior sem condição
+        de saída cria loop infinito. Sempre adicione <code>iteracoes</code> no state
+        com máximo definido como condição de escape.
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ VÍDEOS ════════════════════════════ -->
+  <section class="section">
+    <div class="section-label">Curadoria de Vídeos</div>
+    <h2>Para Assistir</h2>
+
+    <div class="video-grid">
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">CrewAI Tutorial — Build Multi Agent Apps</div>
+          <div class="video-channel">TechWorld with Nana · ~45 min</div>
+          <div class="video-why">Por que assistir: Tutorial completo de CrewAI com projeto real, explica Agents/Tasks/Tools/Process com exemplos práticos e deploy.</div>
+          <a href="https://www.youtube.com/results?search_query=crewai+tutorial+multi+agent+complete" target="_blank">Assistir →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">LangGraph — Build Stateful AI Agents</div>
+          <div class="video-channel">LangChain · ~35 min</div>
+          <div class="video-why">Por que assistir: Explicação oficial da LangChain sobre LangGraph, com visualização do grafo em tempo real e exemplos de human-in-the-loop.</div>
+          <a href="https://www.youtube.com/results?search_query=langgraph+stateful+ai+agents+tutorial" target="_blank">Assistir →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">AI Agent Design Patterns in 2025</div>
+          <div class="video-channel">Andrew Ng / DeepLearning.AI · ~20 min</div>
+          <div class="video-why">Por que assistir: Andrew Ng explica os 4 padrões de design de agentes (Reflection, Tools, Planning, Multi-Agent) com visão estratégica de mercado.</div>
+          <a href="https://www.youtube.com/results?search_query=andrew+ng+agentic+AI+design+patterns" target="_blank">Assistir →</a>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-info">
+          <div class="video-title">CrewAI vs LangGraph — Which Should You Use?</div>
+          <div class="video-channel">Sam Witteveen · ~18 min</div>
+          <div class="video-why">Por que assistir: Comparação prática side-by-side, mostra quando cada framework é superior, com código de ambos para o mesmo problema.</div>
+          <a href="https://www.youtube.com/results?search_query=crewai+vs+langgraph+comparison" target="_blank">Assistir →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ CHECKPOINT ═══════════════════════ -->
+  <section class="section">
+    <div class="checkpoint">
+      <h3>🏁 Checkpoint — Desafio Final</h3>
+      <p>
+        Construa um <strong>sistema multi-agente de análise competitiva</strong> usando
+        CrewAI. O sistema deve receber o nome de uma empresa e produzir um relatório
+        completo com: perfil da empresa, análise de concorrentes, oportunidades e riscos.
+      </p>
+      <ul>
+        <li>Mínimo 3 agentes: Pesquisador, Analista e Redator</li>
+        <li>Use pelo menos 2 tools: web search + uma tool customizada (ex: consulta CNPJ)</li>
+        <li>Implemente guardrail de qualidade com LLM-as-Judge (score mínimo 7)</li>
+        <li>Se o relatório não passar no guardrail, o Redator deve refinar automaticamente</li>
+        <li>Output final salvo em markdown com timestamp</li>
+      </ul>
+      <div class="checkpoint-hint">
+        💬 Dica: Comece com <code>Process.sequential</code> para entender o fluxo.
+        Depois migre para <code>Process.hierarchical</code> e observe como o Manager
+        Agent reorganiza as tasks automaticamente. Compare o output dos dois modos —
+        em geral, hierarchical produz resultados melhores para tarefas analíticas.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ PRÓXIMA AULA ═════════════════════ -->
+  <section class="section">
+    <div class="next-card">
+      <div>
+        <div class="next-label">Próxima Aula — ÚLTIMA!</div>
+        <div class="next-title">OpenClaw Avançado + Stack Completo</div>
+        <div class="next-desc">Anti-bot avançado, escalabilidade, integração total com n8n, monitoramento e o projeto final do curso.</div>
+      </div>
+      <a href="oc-04-avancado-stack.html" class="next-btn">Continuar →</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <a href="../roadmaps_new.html">← Voltar ao Roadmap</a>
+  <p>Aula 49 / 50 · 🤖 IA · Multi-Agentes: CrewAI & LangGraph</p>
+</footer>
+
+<script>
+  // Progress bar
+  window.addEventListener('scroll', () => {
+    const el = document.getElementById('pgbar');
+    if (!el) return;
+    const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    el.style.width = Math.min(pct, 100) + '%';
+  });
+
+  // Mermaid
+  mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+
+  // Highlight.js
+  document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());
+</script>
+</body>
+</html>
