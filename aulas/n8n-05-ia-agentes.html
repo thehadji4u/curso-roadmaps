@@ -158,7 +158,7 @@
     /* ─── Mobile Responsive ─────────────────────────────────── */
     @media (max-width: 768px) {
       .top-nav { padding: 10px 16px; gap: 8px; }
-      .nav-back { display: none; }
+      .nav-back { font-size: 10px; padding: 4px 8px; letter-spacing: 0; }
       .nav-center { gap: 6px; width: 100%; justify-content: space-between; }
       .nav-position { font-size: 10px; letter-spacing: 0; }
       .nav-prev, .nav-next { padding: 5px 10px; font-size: 11px; }
@@ -182,6 +182,7 @@
       pre { font-size: 12px !important; }
       code { font-size: 12px !important; }
       .mermaid-wrap { padding: 18px 10px; overflow-x: auto; }
+      .mermaid svg { min-width: 480px; }
       .video-card { flex-direction: column; gap: 10px; }
       .video-thumb { width: 44px; height: 44px; font-size: 18px; }
       .hero-tags { gap: 6px; }
@@ -219,9 +220,8 @@
   <!-- ── HERO ──────────────────────────────────────────────── -->
   <div class="hero">
     <div class="hero-eyebrow">
-      <span class="hero-badge">🔀 n8n</span>
-      <span>Aula 41 · Prioridade 9</span>
-      <span>⏱ ~35 min</span>
+      <span>🔀 n8n</span>
+      <span class="hero-badge">Aula 41</span>
     </div>
     <h1>n8n + IA —<br>AI Agent Node &amp; LLMs</h1>
     <div class="hero-meta">
@@ -243,7 +243,7 @@
 
   <!-- ── 01. POR QUE ISSO IMPORTA ─────────────────────────── -->
   <div class="section">
-    <div class="section-label">01 · Motivação</div>
+    <div class="section-label">// motivação</div>
     <h2>Por que unir n8n e IA importa agora?</h2>
 
     <p>Durante anos, automação e inteligência artificial viveram em mundos separados. O n8n conectava sistemas, APIs e bancos de dados — mas seguia regras rígidas e pré-definidas. Os LLMs raciocinam, interpretam linguagem natural, geram conteúdo — mas ficavam isolados em chatbots sem integração com o mundo real.</p>
@@ -293,7 +293,7 @@
 
   <!-- ── 02. ANALOGIA ──────────────────────────────────────── -->
   <div class="section">
-    <div class="section-label">02 · Analogia</div>
+    <div class="section-label">// analogia</div>
     <h2>O maestro e a orquestra</h2>
     <div class="analogy-card">
       <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
@@ -321,7 +321,7 @@
 
   <!-- ── 03. ARQUITETURA ───────────────────────────────────── -->
   <div class="section">
-    <div class="section-label">03 · Arquitetura</div>
+    <div class="section-label">// arquitetura</div>
     <h2>Arquitetura do AI Agent no n8n</h2>
 
     <p>O AI Agent Node é o coração da integração IA no n8n. Ele implementa o padrão ReAct (Reasoning + Acting): o LLM raciocina sobre a tarefa, decide uma ação, executa via tool, observa o resultado, e itera até a resposta estar completa.</p>
@@ -380,7 +380,7 @@ flowchart TD
 
   <!-- ── 04. CONFIGURANDO CREDENCIAIS ─────────────────────── -->
   <div class="section">
-    <div class="section-label">04 · Setup</div>
+    <div class="section-label">// setup</div>
     <h2>Configurando OpenAI / Anthropic no n8n</h2>
 
     <p>Antes de usar o AI Agent Node, você precisa registrar as credenciais dos provedores de LLM no n8n. O processo é idêntico para OpenAI e Anthropic — apenas os campos específicos diferem.</p>
@@ -487,7 +487,7 @@ flowchart TD
 
   <!-- ── 05. AI AGENT NODE CONFIG ─────────────────────────── -->
   <div class="section">
-    <div class="section-label">05 · AI Agent Node</div>
+    <div class="section-label">// ai agent node</div>
     <h2>AI Agent Node — Configuração completa</h2>
 
     <p>O AI Agent Node é o nó central da automação inteligente. Ele recebe uma mensagem ou tarefa, consulta o LLM configurado, usa as tools disponíveis de forma autônoma, e retorna o resultado. A escolha do <strong>Agent Type</strong> determina a estratégia de raciocínio.</p>
@@ -561,7 +561,7 @@ INSTRUÇÕES:
 
   <!-- ── 06. TOOLS ─────────────────────────────────────────── -->
   <div class="section">
-    <div class="section-label">06 · Tools</div>
+    <div class="section-label">// tools</div>
     <h2>Tools disponíveis para o AI Agent</h2>
 
     <p>Tools são as "mãos" do agente — permitem que ele interaja com o mundo além do que está no contexto. O agente decide autonomamente quando e como usar cada tool com base na tarefa recebida.</p>
@@ -654,7 +654,7 @@ INSTRUÇÕES:
 
   <!-- ── 07. MEMORY ────────────────────────────────────────── -->
   <div class="section">
-    <div class="section-label">07 · Memory</div>
+    <div class="section-label">// memory</div>
     <h2>Memory no n8n — Mantendo contexto de conversação</h2>
 
     <p>Por padrão, cada execução do AI Agent Node é stateless — o agente não lembra de execuções anteriores. O módulo de Memory resolve isso, permitindo conversas com contexto persistente.</p>
@@ -714,7 +714,7 @@ INSTRUÇÕES:
 
   <!-- ── 08. RAG PIPELINE ──────────────────────────────────── -->
   <div class="section">
-    <div class="section-label">08 · Exemplo Completo</div>
+    <div class="section-label">// exemplo completo</div>
     <h2>Pipeline RAG no n8n — Q&amp;A sobre documentos</h2>
 
     <p>RAG (Retrieval-Augmented Generation) é a técnica de enriquecer o contexto do LLM com informações buscadas dinamicamente em uma base de conhecimento. No n8n, isso se divide em dois workflows: <strong>ingestão</strong> (preparar os documentos) e <strong>consulta</strong> (responder perguntas).</p>
@@ -846,7 +846,7 @@ nos documentos fornecidos. Siga estas regras:
 
   <!-- ── 09. TRIAGEM DE EMAILS ─────────────────────────────── -->
   <div class="section">
-    <div class="section-label">09 · Exemplo Completo</div>
+    <div class="section-label">// exemplo completo</div>
     <h2>Agente de Triagem Inteligente de E-mails</h2>
 
     <p>Um dos casos de uso mais práticos e imediatos: um agente que lê e-mails assim que chegam, classifica, extrai informações relevantes e toma a ação correta — tudo automaticamente, sem intervenção humana para 80% dos casos.</p>
@@ -938,7 +938,7 @@ Corpo: {{ $json.text }}</code></pre>
 
   <!-- ── 10. ARMADILHAS COMUNS ─────────────────────────────── -->
   <div class="section">
-    <div class="section-label">10 · Armadilhas</div>
+    <div class="section-label">// armadilhas</div>
     <h2>Erros comuns e como evitá-los</h2>
 
     <div class="pitfall">
@@ -980,7 +980,7 @@ Corpo: {{ $json.text }}</code></pre>
 
   <!-- ── 11. TABELA COMPARATIVA ────────────────────────────── -->
   <div class="section">
-    <div class="section-label">11 · Referência</div>
+    <div class="section-label">// referência</div>
     <h2>Tabela comparativa — Tipos de Agente no n8n</h2>
 
     <div class="table-wrap">
@@ -1043,7 +1043,7 @@ Corpo: {{ $json.text }}</code></pre>
 
   <!-- ── 12. VIDEOS ────────────────────────────────────────── -->
   <div class="section">
-    <div class="section-label">12 · Curadoria</div>
+    <div class="section-label">// curadoria</div>
     <h2>Vídeos recomendados</h2>
     <p>Seleção de vídeos práticos e diretos ao ponto para consolidar o conteúdo desta aula.</p>
     <div class="video-grid">
@@ -1113,7 +1113,7 @@ Corpo: {{ $json.text }}</code></pre>
 
   <!-- ── 14. PRÓXIMOS PASSOS ───────────────────────────────── -->
   <div class="section">
-    <div class="section-label">14 · Próximos passos</div>
+    <div class="section-label">// próximos passos</div>
     <h2>O que vem a seguir</h2>
     <p>Você dominou o AI Agent Node do n8n — a peça central que une automação visual com raciocínio de LLMs. O próximo passo aprofunda a fundação técnica do RAG que você usou nesta aula: como embeddings funcionam matematicamente, como escolher e operar Vector Stores em produção, e como otimizar busca semântica para alta precisão.</p>
 

@@ -140,7 +140,7 @@
     /* ─── Mobile Responsive ─────────────────────────────────── */
     @media (max-width: 768px) {
       .top-nav { padding: 10px 16px; gap: 8px; }
-      .nav-back { display: none; }
+      .nav-back { font-size: 10px; padding: 4px 8px; letter-spacing: 0; }
       .nav-center { gap: 6px; width: 100%; justify-content: space-between; }
       .nav-position { font-size: 10px; letter-spacing: 0; }
       .nav-prev, .nav-next { padding: 5px 10px; font-size: 11px; }
@@ -164,6 +164,7 @@
       pre { font-size: 12px !important; }
       code { font-size: 12px !important; }
       .mermaid-wrap { padding: 18px 10px; overflow-x: auto; }
+      .mermaid svg { min-width: 480px; }
       .video-card { flex-direction: column; gap: 10px; }
       .video-thumb { width: 44px; height: 44px; font-size: 18px; }
       .hero-tags { gap: 6px; }
@@ -199,9 +200,8 @@
   <!-- ── HERO ──────────────────────────────────────────────── -->
   <div class="hero">
     <div class="hero-eyebrow">
-      <span class="hero-badge">🤖 INTELIGÊNCIA ARTIFICIAL</span>
-      <span>Aula 40 · Prioridade 8</span>
-      <span>⏱ ~30 min</span>
+      <span>🤖 IA</span>
+      <span class="hero-badge">Aula 40</span>
     </div>
     <h1>APIs de LLM —<br>OpenAI, Anthropic &amp; Gemini</h1>
     <div class="hero-meta">
@@ -224,7 +224,7 @@
 
   <!-- ── 01. POR QUE ISSO IMPORTA ─────────────────────────── -->
   <div class="section">
-    <div class="section-label">01 · Motivação</div>
+    <div class="section-label">// motivação</div>
     <h2>Por que integrar APIs de LLM diretamente?</h2>
     <p>ChatGPT e Claude.ai são interfaces para usuários finais. Um engenheiro sênior vai além: ele <strong>integra capacidades de IA diretamente nas suas aplicações</strong> via API — dando controle total sobre modelo, contexto, temperatura, custo e comportamento.</p>
     <p>Seja um pipeline de processamento de documentos, um chatbot corporativo, um sistema de análise de código ou um agente autônomo, tudo começa com uma chamada HTTP para um dos três grandes provedores: OpenAI, Anthropic e Google Gemini.</p>
@@ -265,7 +265,7 @@
 
   <!-- ── 02. ANALOGIA ──────────────────────────────────────── -->
   <div class="section">
-    <div class="section-label">02 · Analogia</div>
+    <div class="section-label">// analogia</div>
     <h2>Especialistas por hora vs. funcionário fixo</h2>
     <div class="analogy-card">
       <div class="analogy-label">🌍 Mundo Real → Tecnologia</div>
@@ -286,7 +286,7 @@
 
   <!-- ── 03. ARQUITETURA GERAL ─────────────────────────────── -->
   <div class="section">
-    <div class="section-label">03 · Arquitetura</div>
+    <div class="section-label">// arquitetura</div>
     <h2>Como uma chamada de API funciona de ponta a ponta</h2>
     <p>Antes de ver código, entenda o fluxo completo. Toda chamada a uma API de LLM segue o mesmo padrão: sua aplicação usa um SDK para serializar a requisição, enviar via HTTPS com autenticação, e receber a resposta — seja completa (JSON) ou em chunks (streaming SSE).</p>
 
@@ -327,7 +327,7 @@ sequenceDiagram
 
   <!-- ── 04. OPENAI API ────────────────────────────────────── -->
   <div class="section">
-    <div class="section-label">04 · OpenAI</div>
+    <div class="section-label">// openai</div>
     <h2>OpenAI API — Chat Completions</h2>
 
     <div class="provider-card provider-openai">
@@ -479,7 +479,7 @@ if message.tool_calls:
 
   <!-- ── 05. ANTHROPIC API ──────────────────────────────────── -->
   <div class="section">
-    <div class="section-label">05 · Anthropic</div>
+    <div class="section-label">// anthropic</div>
     <h2>Anthropic API — Messages com Claude</h2>
 
     <div class="provider-card provider-anthropic">
@@ -591,7 +591,7 @@ if response.stop_reason == "tool_use":
 
   <!-- ── 06. GOOGLE GEMINI ──────────────────────────────────── -->
   <div class="section">
-    <div class="section-label">06 · Google Gemini</div>
+    <div class="section-label">// google gemini</div>
     <h2>Google Gemini API — Texto e Multimodal</h2>
 
     <div class="provider-card provider-gemini">
@@ -688,7 +688,7 @@ print()</code></pre>
 
   <!-- ── 07. TABELA COMPARATIVA ────────────────────────────── -->
   <div class="section">
-    <div class="section-label">07 · Comparativo</div>
+    <div class="section-label">// comparativo</div>
     <h2>OpenAI vs Anthropic vs Gemini — qual escolher?</h2>
     <p>A resposta é "depende". Cada provedor tem forças distintas. Na prática, equipes sênior usam múltiplos modelos em paralelo — cada um para o que faz melhor.</p>
 
@@ -803,7 +803,7 @@ print()</code></pre>
 
   <!-- ── 08. AUTENTICAÇÃO SEGURA ───────────────────────────── -->
   <div class="section">
-    <div class="section-label">08 · Segurança</div>
+    <div class="section-label">// segurança</div>
     <h2>Autenticação segura — nunca hardcode uma API key</h2>
     <p>Esse ponto parece óbvio, mas chaves de API da OpenAI com billing ativo vazadas em repositórios públicos geram contas de <strong>milhares de dólares em horas</strong>. Isso acontece com frequência — GitHub scans detectam e bots exploram automaticamente.</p>
 
@@ -887,7 +887,7 @@ if not openai_key:
 
   <!-- ── 09. RATE LIMITING E RETRY ────────────────────────── -->
   <div class="section">
-    <div class="section-label">09 · Resiliência</div>
+    <div class="section-label">// resiliência</div>
     <h2>Rate limiting e retry com exponential backoff</h2>
     <p>APIs de LLM têm limites de requisições por minuto (RPM) e tokens por minuto (TPM). Em produção, você <em>vai</em> atingir esses limites. A solução padrão é <strong>exponential backoff</strong> com jitter — esperar cada vez mais tempo entre tentativas, com um delay aleatório para evitar thundering herd.</p>
 
@@ -976,7 +976,7 @@ async def chamar_llm_async(prompt: str) -> str:
 
   <!-- ── 10. AVALIAÇÃO DE RESPOSTAS ────────────────────────── -->
   <div class="section">
-    <div class="section-label">10 · Avaliação</div>
+    <div class="section-label">// avaliação</div>
     <h2>Avaliando a qualidade das respostas — LLM-as-Judge</h2>
     <p>Como você sabe se suas respostas são boas? Métricas clássicas de NLP (BLEU, ROUGE) são ruins para LLMs — textos com mesmas informações têm pontuações baixas por diferença de vocabulário. A abordagem moderna é <strong>LLM-as-Judge</strong>: usar outro LLM (ou o mesmo) para avaliar as respostas.</p>
 
@@ -1060,7 +1060,7 @@ print(results)
 
   <!-- ── 11. COST OPTIMIZATION ─────────────────────────────── -->
   <div class="section">
-    <div class="section-label">11 · Otimização de custo</div>
+    <div class="section-label">// otimização de custo</div>
     <h2>Cost optimization — uso eficiente de tokens</h2>
     <p>O custo de APIs de LLM pode surpreender em produção. Um sistema processando 10.000 documentos/dia com GPT-4o pode custar centenas de dólares diários. A boa notícia: com estratégias simples, você reduz o custo em 80–95% sem perda significativa de qualidade.</p>
 
@@ -1185,7 +1185,7 @@ model = escolher_modelo("Classifique este email como spam ou não-spam")
 
   <!-- ── 12. CURADORIA DE VÍDEOS ───────────────────────────── -->
   <div class="section">
-    <div class="section-label">12 · Curadoria</div>
+    <div class="section-label">// curadoria</div>
     <h2>Referências em vídeo</h2>
     <p>Vídeos específicos para aprofundar o uso de APIs de LLM:</p>
     <div class="video-grid">
@@ -1230,7 +1230,7 @@ model = escolher_modelo("Classifique este email como spam ou não-spam")
 
   <!-- ── 13. PITFALLS ──────────────────────────────────────── -->
   <div class="section">
-    <div class="section-label">13 · Armadilhas</div>
+    <div class="section-label">// armadilhas</div>
     <h2>Erros comuns ao usar APIs de LLM em produção</h2>
 
     <div class="pitfall">
@@ -1284,7 +1284,7 @@ except ValidationError as e:
 
   <!-- ── PRÓXIMA AULA ───────────────────────────────────────── -->
   <div class="section">
-    <div class="section-label">14 · Próximos Passos</div>
+    <div class="section-label">// próximos passos</div>
     <h2>O que vem depois?</h2>
     <p>Com as APIs de LLM dominadas — autenticação, streaming, function calling e otimização de custo — chegou a hora de construir sistemas mais complexos: <strong>agentes autônomos com n8n</strong>. Vamos combinar os LLMs que você aprendeu aqui com fluxos de automação, ferramentas externas e loops de raciocínio para criar agentes que executam tarefas reais sem intervenção humana.</p>
     <a href="n8n-05-ia-agentes.html" class="next-card">

@@ -113,7 +113,7 @@
     /* ─── Mobile Responsive ─────────────────────────────────── */
     @media (max-width: 768px) {
       .top-nav { padding: 10px 16px; gap: 8px; }
-      .nav-back { display: none; }
+      .nav-back { font-size: 10px; padding: 4px 8px; letter-spacing: 0; }
       .nav-center { gap: 6px; width: 100%; justify-content: space-between; }
       .nav-position { font-size: 10px; letter-spacing: 0; }
       .nav-prev, .nav-next { padding: 5px 10px; font-size: 11px; }
@@ -137,6 +137,7 @@
       pre { font-size: 12px !important; }
       code { font-size: 12px !important; }
       .mermaid-wrap { padding: 18px 10px; overflow-x: auto; }
+      .mermaid svg { min-width: 480px; }
       .video-card { flex-direction: column; gap: 10px; }
       .video-thumb { width: 44px; height: 44px; font-size: 18px; }
       .hero-tags { gap: 6px; }
@@ -171,9 +172,8 @@
 
   <div class="hero">
     <div class="hero-eyebrow">
-      <span class="hero-badge">🤖 INTELIGÊNCIA ARTIFICIAL</span>
-      <span>Aula 39 · Prioridade 7</span>
-      <span>⏱ ~35 min</span>
+      <span>🤖 IA</span>
+      <span class="hero-badge">Aula 39</span>
     </div>
     <h1>Prompt Engineering<br>Avançado</h1>
     <div class="hero-meta">
@@ -193,7 +193,7 @@
   </div>
 
   <div class="section">
-    <div class="section-label">01 · Motivação</div>
+    <div class="section-label">// motivação</div>
     <h2>Quando os fundamentos não bastam</h2>
     <p>Zero-shot, few-shot e CoT resolvem a maioria dos problemas. Mas para tarefas complexas — planejamento de múltiplos passos, raciocínio com busca, pipelines automatizados — precisamos de técnicas mais sofisticadas.</p>
     <div class="grid-2" style="margin:24px 0">
@@ -205,7 +205,7 @@
   </div>
 
   <div class="section">
-    <div class="section-label">02 · Analogia</div>
+    <div class="section-label">// analogia</div>
     <h2>O Consultor que Delibera</h2>
     <div class="analogy-card">
       <div class="analogy-label">🧩 Analogia</div>
@@ -220,7 +220,7 @@
   </div>
 
   <div class="section">
-    <div class="section-label">03 · Tree-of-Thought</div>
+    <div class="section-label">// tree-of-thought</div>
     <h2>Tree-of-Thought (ToT) — Exploração de Caminhos</h2>
     <p>Tree-of-Thought generaliza o CoT permitindo explorar múltiplos ramos de raciocínio, avaliar cada um e escolher o melhor. Publicado no paper "Tree of Thoughts: Deliberate Problem Solving with LLMs" (Princeton, 2023).</p>
 
@@ -279,7 +279,7 @@ Resposta:"""</code></pre>
   </div>
 
   <div class="section">
-    <div class="section-label">04 · Self-Consistency</div>
+    <div class="section-label">// self-consistency</div>
     <h2>Self-Consistency — Votação nas Respostas</h2>
     <p>Self-Consistency gera múltiplas respostas independentes (com temperature > 0) e seleciona a resposta mais frequente. Técnica simples mas extremamente eficaz para reduzir alucinações em tarefas de raciocínio.</p>
 
@@ -329,7 +329,7 @@ resultado = self_consistency(
   </div>
 
   <div class="section">
-    <div class="section-label">05 · ReAct</div>
+    <div class="section-label">// react</div>
     <h2>ReAct — Raciocínio + Ação em Loop</h2>
     <p>ReAct (Reasoning + Acting) é o padrão que permite ao modelo <strong>intercalar raciocínio e ações</strong> — buscar informações, executar ferramentas, tomar decisões baseadas nos resultados. É a base de todos os agentes de IA.</p>
 
@@ -414,7 +414,7 @@ def run_react_loop(user_question: str, tools: dict, max_steps: int = 10):
   </div>
 
   <div class="section">
-    <div class="section-label">06 · Prompt Chaining</div>
+    <div class="section-label">// prompt chaining</div>
     <h2>Prompt Chaining — Pipelines de LLM</h2>
     <p>Prompt Chaining divide tarefas complexas em sequência de prompts menores, onde o output de cada um alimenta o próximo. Mais confiável que um prompt único gigante.</p>
 
@@ -481,7 +481,7 @@ graph LR
   </div>
 
   <div class="section">
-    <div class="section-label">07 · JSON Mode & Meta-prompting</div>
+    <div class="section-label">// json mode & meta-prompting</div>
     <h2>JSON Mode e Meta-prompting</h2>
 
     <h3>JSON Mode — Output estruturado garantido</h3>
@@ -556,7 +556,7 @@ Se a mensagem contiver: "ignore", "pretend", "new instructions", "you are now",
   </div>
 
   <div class="section">
-    <div class="section-label">08 · Comparativo</div>
+    <div class="section-label">// comparativo</div>
     <h2>Quando usar cada técnica</h2>
     <div class="table-wrap">
       <table>
@@ -575,7 +575,7 @@ Se a mensagem contiver: "ignore", "pretend", "new instructions", "you are now",
   </div>
 
   <div class="section">
-    <div class="section-label">09 · Curadoria</div>
+    <div class="section-label">// curadoria</div>
     <h2>Referências para Assistir</h2>
     <div class="video-grid">
       <div class="video-card">
@@ -623,7 +623,7 @@ Se a mensagem contiver: "ignore", "pretend", "new instructions", "you are now",
   </div>
 
   <div class="section">
-    <div class="section-label">10 · Próximos Passos</div>
+    <div class="section-label">// próximos passos</div>
     <h2>O que vem depois?</h2>
     <p>Com todas as técnicas de prompting dominadas, vamos colocar em prática integrando as principais APIs de LLM — OpenAI, Anthropic e Gemini — com streaming, autenticação e avaliação de respostas.</p>
     <a href="ai-04-apis-llm.html" class="next-card">

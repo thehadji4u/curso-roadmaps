@@ -121,7 +121,7 @@
     /* ─── Mobile Responsive ─────────────────────────────────── */
     @media (max-width: 768px) {
       .top-nav { padding: 10px 16px; gap: 8px; }
-      .nav-back { display: none; }
+      .nav-back { font-size: 10px; padding: 4px 8px; letter-spacing: 0; }
       .nav-center { gap: 6px; width: 100%; justify-content: space-between; }
       .nav-position { font-size: 10px; letter-spacing: 0; }
       .nav-prev, .nav-next { padding: 5px 10px; font-size: 11px; }
@@ -145,6 +145,7 @@
       pre { font-size: 12px !important; }
       code { font-size: 12px !important; }
       .mermaid-wrap { padding: 18px 10px; overflow-x: auto; }
+      .mermaid svg { min-width: 480px; }
       .video-card { flex-direction: column; gap: 10px; }
       .video-thumb { width: 44px; height: 44px; font-size: 18px; }
       .hero-tags { gap: 6px; }
@@ -181,9 +182,8 @@
 
   <div class="hero">
     <div class="hero-eyebrow">
-      <span class="hero-badge">🌐 HTML/CSS</span>
-      <span>Aula 36 · Prioridade 6</span>
-      <span>⏱ ~30 min</span>
+      <span>🌐 HTML/CSS</span>
+      <span class="hero-badge">Aula 36</span>
     </div>
     <h1>Acessibilidade & SEO<br>WCAG · ARIA · Core Web Vitals</h1>
     <div class="hero-meta">
@@ -205,7 +205,7 @@
 
   <!-- POR QUE -->
   <div class="section">
-    <div class="section-label">01 · Motivação</div>
+    <div class="section-label">// motivação</div>
     <h2>Por que acessibilidade e SEO andam juntos?</h2>
     <p>Sites acessíveis tendem a ter melhor SEO — e vice-versa. Isso não é coincidência: tanto leitores de tela quanto crawlers do Google entendem melhor um HTML semântico, com estrutura clara e conteúdo significativo.</p>
     <div class="grid-2" style="margin:24px 0">
@@ -220,7 +220,7 @@
 
   <!-- ANALOGIA -->
   <div class="section">
-    <div class="section-label">02 · Analogia</div>
+    <div class="section-label">// analogia</div>
     <h2>O Prédio com Rampa e Placa Visível</h2>
     <div class="analogy-card">
       <div class="analogy-label">🏢 Analogia</div>
@@ -237,7 +237,7 @@
 
   <!-- WCAG -->
   <div class="section">
-    <div class="section-label">03 · WCAG 2.1</div>
+    <div class="section-label">// wcag 2.1</div>
     <h2>WCAG — As Diretrizes de Acessibilidade</h2>
     <p>WCAG (Web Content Accessibility Guidelines) é o padrão internacional de acessibilidade web, mantido pelo W3C. Organizado em 4 princípios: <strong>Perceptível, Operável, Compreensível, Robusto</strong> (POUR).</p>
 
@@ -294,7 +294,7 @@
 
   <!-- ARIA -->
   <div class="section">
-    <div class="section-label">04 · ARIA</div>
+    <div class="section-label">// aria</div>
     <h2>ARIA — Accesssible Rich Internet Applications</h2>
     <p>ARIA adiciona semântica a elementos HTML que não têm significado acessível nativo. A regra de ouro: <strong>use HTML semântico primeiro</strong> — ARIA é para quando o HTML nativo não é suficiente.</p>
 
@@ -359,7 +359,7 @@
 
   <!-- SEO -->
   <div class="section">
-    <div class="section-label">05 · SEO Técnico</div>
+    <div class="section-label">// seo técnico</div>
     <h2>SEO — Sendo Encontrado pelos Motores de Busca</h2>
 
     <h3>Meta tags essenciais</h3>
@@ -480,7 +480,7 @@ graph LR
 
   <!-- PITFALLS -->
   <div class="section">
-    <div class="section-label">06 · Armadilhas</div>
+    <div class="section-label">// armadilhas</div>
     <h2>⚠️ Erros Comuns</h2>
     <div class="pitfall">
       <div class="pitfall-title">⚠️ alt="imagem" ou alt="foto"</div>
@@ -502,7 +502,7 @@ graph LR
 
   <!-- VÍDEOS -->
   <div class="section">
-    <div class="section-label">07 · Curadoria</div>
+    <div class="section-label">// curadoria</div>
     <h2>Referências para Assistir</h2>
     <div class="video-grid">
       <div class="video-card">
@@ -561,7 +561,7 @@ graph LR
   </div>
 
   <div class="section">
-    <div class="section-label">08 · Próximos Passos</div>
+    <div class="section-label">// próximos passos</div>
     <h2>O que vem depois?</h2>
     <p>Com acessibilidade e SEO dominados, começamos a trilha mais empolgante do roadmap: <strong>Inteligência Artificial</strong>. Primeiro, entendemos como os LLMs realmente funcionam por dentro — tokens, transformers, atenção e temperatura.</p>
     <a href="ai-01-como-llms-funcionam.html" class="next-card">

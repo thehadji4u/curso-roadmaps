@@ -132,7 +132,7 @@
     /* ─── Mobile Responsive ─────────────────────────────────── */
     @media (max-width: 768px) {
       .top-nav { padding: 10px 16px; gap: 8px; }
-      .nav-back { display: none; }
+      .nav-back { font-size: 10px; padding: 4px 8px; letter-spacing: 0; }
       .nav-center { gap: 6px; width: 100%; justify-content: space-between; }
       .nav-position { font-size: 10px; letter-spacing: 0; }
       .nav-prev, .nav-next { padding: 5px 10px; font-size: 11px; }
@@ -156,6 +156,7 @@
       pre { font-size: 12px !important; }
       code { font-size: 12px !important; }
       .mermaid-wrap { padding: 18px 10px; overflow-x: auto; }
+      .mermaid svg { min-width: 480px; }
       .video-card { flex-direction: column; gap: 10px; }
       .video-thumb { width: 44px; height: 44px; font-size: 18px; }
       .hero-tags { gap: 6px; }
@@ -196,9 +197,8 @@
   <!-- ── HERO ──────────────────────────────────────────────── -->
   <div class="hero">
     <div class="hero-eyebrow">
-      <span class="hero-badge">🤖 INTELIGÊNCIA ARTIFICIAL</span>
-      <span>Aula 43 · Prioridade 10</span>
-      <span>⏱ ~35 min</span>
+      <span>🤖 IA</span>
+      <span class="hero-badge">Aula 43</span>
     </div>
     <h1>Pipeline RAG<br>Completo</h1>
     <div class="hero-meta">
@@ -220,7 +220,7 @@
 
   <!-- ── 01. POR QUE ISSO IMPORTA ─────────────────────────── -->
   <div class="section">
-    <div class="section-label">01 · Motivação</div>
+    <div class="section-label">// motivação</div>
     <h2>Por que RAG é a técnica dominante de grounding para LLMs?</h2>
     <p>LLMs são impressionantes mas têm um problema fundamental: eles só sabem o que estava nos dados de treino. Sua empresa tem documentos internos, manuais atualizados semanalmente, contratos, wikis, bases de suporte — nada disso está no GPT-4o. <strong>RAG (Retrieval-Augmented Generation)</strong> é a ponte entre o conhecimento privado da sua organização e a capacidade de raciocínio do LLM.</p>
     <p>Mais do que isso, RAG <em>resolve o problema das alucinações</em> de forma sistemática. Em vez de perguntar "o que você sabe sobre X?", você passa os documentos relevantes diretamente no prompt: "dado este contexto específico, responda X". O modelo não precisa inventar — ele sintetiza a partir de fontes reais que você fornece.</p>
@@ -263,7 +263,7 @@
 
   <!-- ── 02. ANALOGIA ──────────────────────────────────────── -->
   <div class="section">
-    <div class="section-label">02 · Analogia</div>
+    <div class="section-label">// analogia</div>
     <h2>O advogado que vai à biblioteca antes de responder</h2>
 
     <div class="analogy-card">
@@ -290,7 +290,7 @@
 
   <!-- ── 03. ARQUITETURA ────────────────────────────────────── -->
   <div class="section">
-    <div class="section-label">03 · Arquitetura</div>
+    <div class="section-label">// arquitetura</div>
     <h2>Visão completa dos dois pipelines</h2>
 
     <p>Um sistema RAG tem dois pipelines distintos com momentos de execução diferentes. O pipeline de <strong>ingestão</strong> roda offline (uma vez, ou quando documentos mudam). O pipeline de <strong>consulta</strong> roda online, em tempo real a cada pergunta do usuário.</p>
@@ -335,7 +335,7 @@ flowchart TD
 
   <!-- ── 04. FASE 1 — LOADING ───────────────────────────────── -->
   <div class="section">
-    <div class="section-label">04 · Implementação</div>
+    <div class="section-label">// implementação</div>
     <h2>Construindo o pipeline passo a passo</h2>
 
     <div class="phase-header">
@@ -662,7 +662,7 @@ for doc in resultado["source_documents"]:
 
   <!-- ── 05. AVALIAÇÃO COM RAGAS ────────────────────────────── -->
   <div class="section">
-    <div class="section-label">05 · Avaliação quantitativa</div>
+    <div class="section-label">// avaliação quantitativa</div>
     <h2>Medir a qualidade do RAG com RAGAS</h2>
 
     <p>"Parece estar funcionando bem" não é avaliação. <strong>RAGAS</strong> (RAG Assessment) é o framework padrão para medir objetivamente a qualidade de sistemas RAG com quatro métricas complementares. Sem isso, você não sabe se suas mudanças melhoraram ou pioraram o sistema.</p>
@@ -770,7 +770,7 @@ print(resultado.to_pandas())
 
   <!-- ── 06. TÉCNICAS AVANÇADAS ────────────────────────────── -->
   <div class="section">
-    <div class="section-label">06 · Técnicas avançadas</div>
+    <div class="section-label">// técnicas avançadas</div>
     <h2>Além do RAG básico</h2>
 
     <p>RAG básico funciona. RAG avançado funciona <em>bem</em>. Estas técnicas resolvem problemas específicos que aparecem em produção:</p>
@@ -814,7 +814,7 @@ docs = retriever_mq.invoke("Como configurar JWT no FastAPI?")</code></pre>
 
   <!-- ── 07. ARMADILHAS ────────────────────────────────────── -->
   <div class="section">
-    <div class="section-label">07 · Armadilhas</div>
+    <div class="section-label">// armadilhas</div>
     <h2>Erros comuns que destroem RAG pipelines</h2>
 
     <div class="pitfall">
@@ -850,7 +850,7 @@ docs = retriever_mq.invoke("Como configurar JWT no FastAPI?")</code></pre>
 
   <!-- ── 08. VÍDEOS ────────────────────────────────────────── -->
   <div class="section">
-    <div class="section-label">08 · Curadoria</div>
+    <div class="section-label">// curadoria</div>
     <h2>Vídeos essenciais sobre RAG</h2>
     <div class="video-grid">
       <div class="video-card">
@@ -913,7 +913,7 @@ docs = retriever_mq.invoke("Como configurar JWT no FastAPI?")</code></pre>
 
   <!-- ── PRÓXIMOS PASSOS ────────────────────────────────────── -->
   <div class="section">
-    <div class="section-label">09 · Continuação</div>
+    <div class="section-label">// continuação</div>
     <h2>O que vem a seguir</h2>
     <p>Com RAG dominado, o próximo passo é construir sistemas que não só buscam e respondem — mas que <strong>agem</strong>. Agentes com tools podem executar código, consultar APIs, navegar na web e tomar decisões multi-passo. RAG é o fundamento; Agentes são a evolução.</p>
     <a href="ai-07-agentes-tools.html" class="next-card">

@@ -144,7 +144,7 @@
     /* ─── Mobile Responsive ─────────────────────────────────── */
     @media (max-width: 768px) {
       .top-nav { padding: 10px 16px; gap: 8px; }
-      .nav-back { display: none; }
+      .nav-back { font-size: 10px; padding: 4px 8px; letter-spacing: 0; }
       .nav-center { gap: 6px; width: 100%; justify-content: space-between; }
       .nav-position { font-size: 10px; letter-spacing: 0; }
       .nav-prev, .nav-next { padding: 5px 10px; font-size: 11px; }
@@ -168,6 +168,7 @@
       pre { font-size: 12px !important; }
       code { font-size: 12px !important; }
       .mermaid-wrap { padding: 18px 10px; overflow-x: auto; }
+      .mermaid svg { min-width: 480px; }
       .video-card { flex-direction: column; gap: 10px; }
       .video-thumb { width: 44px; height: 44px; font-size: 18px; }
       .hero-tags { gap: 6px; }
@@ -208,9 +209,8 @@
   <!-- ── HERO ──────────────────────────────────────────────── -->
   <div class="hero">
     <div class="hero-eyebrow">
-      <span class="hero-badge">🤖 INTELIGÊNCIA ARTIFICIAL</span>
-      <span>Aula 42 · Prioridade 9</span>
-      <span>⏱ ~30 min</span>
+      <span>🤖 IA</span>
+      <span class="hero-badge">Aula 42</span>
     </div>
     <h1>Embeddings &amp;<br>Vector Stores</h1>
     <div class="hero-meta">
@@ -232,7 +232,7 @@
 
   <!-- ── 01. POR QUE ISSO IMPORTA ─────────────────────────── -->
   <div class="section">
-    <div class="section-label">01 · Motivação</div>
+    <div class="section-label">// motivação</div>
     <h2>Por que embeddings são a espinha dorsal da IA moderna?</h2>
     <p>Embeddings são a tecnologia subjacente de praticamente toda aplicação de IA que vai além de uma simples chamada de chat. <strong>Busca semântica, RAG pipelines, sistemas de recomendação, detecção de similaridade, clustering de documentos</strong> — tudo depende de representar texto (ou imagens, áudio, código) como vetores numéricos comparáveis.</p>
     <p>Sem entender embeddings, você não consegue construir um RAG pipeline funcional. Você não sabe por que sua busca retorna resultados ruins. Você não consegue diagnosticar por que o modelo "confunde" conceitos semanticamente próximos. Embeddings são a camada de fundação invisível que sustenta tudo.</p>
@@ -274,7 +274,7 @@
 
   <!-- ── 02. ANALOGIA ──────────────────────────────────────── -->
   <div class="section">
-    <div class="section-label">02 · Analogia</div>
+    <div class="section-label">// analogia</div>
     <h2>O mapa GPS dos conceitos</h2>
 
     <div class="analogy-card">
@@ -302,7 +302,7 @@
 
   <!-- ── 03. CONCEITO TÉCNICO ──────────────────────────────── -->
   <div class="section">
-    <div class="section-label">03 · Conceito Técnico</div>
+    <div class="section-label">// conceito técnico</div>
     <h2>O que são Embeddings — por dentro</h2>
 
     <p>Um embedding é um <strong>vetor numérico de alta dimensionalidade</strong> que captura o significado semântico de um texto. O modelo de embedding transforma uma string de comprimento arbitrário num vetor de tamanho fixo, onde textos semanticamente similares ficam próximos no espaço vetorial.</p>
@@ -345,7 +345,7 @@ flowchart LR
 
   <!-- ── 04. GERAÇÃO DE EMBEDDINGS ─────────────────────────── -->
   <div class="section">
-    <div class="section-label">04 · Código</div>
+    <div class="section-label">// código</div>
     <h2>Gerando Embeddings com Python</h2>
 
     <h3>OpenAI Embeddings (cloud, alta qualidade)</h3>
@@ -422,7 +422,7 @@ print(f"Shape: {vetores.shape}")  # (3, 384)
 
   <!-- ── 05. SIMILARIDADE COSSENO ──────────────────────────── -->
   <div class="section">
-    <div class="section-label">05 · Matemática</div>
+    <div class="section-label">// matemática</div>
     <h2>Similaridade Cosseno — Como funciona</h2>
 
     <p>A similaridade cosseno mede o <strong>ângulo entre dois vetores</strong>, não a distância entre eles. Isso é fundamental: dois textos curtos e dois textos longos sobre o mesmo tema terão vetores de magnitudes diferentes, mas apontando na mesma direção — e o cosseno ignora a magnitude, focando apenas na direção.</p>
@@ -482,7 +482,7 @@ print(f"v1 vs v3 (Python vs Futebol): {sim_13:.4f}")   # ~0.31
 
   <!-- ── 06. CHROMA ────────────────────────────────────────── -->
   <div class="section">
-    <div class="section-label">06 · Vector Stores</div>
+    <div class="section-label">// vector stores</div>
     <h2>Chroma — Local, ideal para desenvolvimento</h2>
 
     <p>Chroma é o vector store mais fácil de começar: <code>pip install chromadb</code>, zero configuração de servidor, persiste em arquivo local. Perfeito para desenvolvimento, prototipagem e projetos pequenos/médios. Para produção em larga escala, migre para Pinecone ou Qdrant.</p>
@@ -554,7 +554,7 @@ print(f"Total: {colecao.count()}")</code></pre>
 
   <!-- ── 07. PINECONE ──────────────────────────────────────── -->
   <div class="section">
-    <div class="section-label">07 · Vector Stores</div>
+    <div class="section-label">// vector stores</div>
     <h2>Pinecone — Cloud gerenciado para produção</h2>
 
     <p>Pinecone é o vector store mais usado em produção: escalabilidade automática, SLA garantido, filtragem avançada de metadados, suporte a bilhões de vetores. O custo é por uso, mas o free tier permite prototipagem e aplicações pequenas.</p>
@@ -620,7 +620,7 @@ print(f"Total de vetores: {stats['total_vector_count']}")</code></pre>
 
   <!-- ── 08. PGVECTOR ──────────────────────────────────────── -->
   <div class="section">
-    <div class="section-label">08 · Vector Stores</div>
+    <div class="section-label">// vector stores</div>
     <h2>pgvector — PostgreSQL com superpowers</h2>
 
     <p>Se sua stack já usa PostgreSQL, pgvector é a opção mais pragmática: você mantém tudo num único banco, aproveita SQL completo para filtragem complexa, transações ACID, joins com outras tabelas. Perfeito para quando você quer busca semântica integrada ao seu modelo relacional existente.</p>
@@ -710,7 +710,7 @@ conn.close()</code></pre>
 
   <!-- ── 09. QDRANT ────────────────────────────────────────── -->
   <div class="section">
-    <div class="section-label">09 · Vector Stores</div>
+    <div class="section-label">// vector stores</div>
     <h2>Qdrant — Recursos avançados, cloud e self-hosted</h2>
 
     <p>Qdrant é um vector store de código aberto escrito em Rust, com foco em performance e recursos avançados: payloads ricos, filtragem sofisticada, quantização de vetores para reduzir memória, e tanto cloud gerenciado quanto Docker self-hosted gratuito.</p>
@@ -797,7 +797,7 @@ print(f"Total de pontos: {len(pontos)}")</code></pre>
 
   <!-- ── 10. TABELA COMPARATIVA ────────────────────────────── -->
   <div class="section">
-    <div class="section-label">10 · Comparação</div>
+    <div class="section-label">// comparação</div>
     <h2>Qual Vector Store escolher?</h2>
 
     <div class="table-wrap">
@@ -880,7 +880,7 @@ print(f"Total de pontos: {len(pontos)}")</code></pre>
 
   <!-- ── 11. CHUNKING ──────────────────────────────────────── -->
   <div class="section">
-    <div class="section-label">11 · Preparação de Dados</div>
+    <div class="section-label">// preparação de dados</div>
     <h2>Chunking — Preparando textos para embeddings</h2>
 
     <p>Modelos de embedding têm um limite de tokens (geralmente 512 a 8192). Mas mais importante: <strong>chunks maiores produzem embeddings "médios" imprecisos</strong>. Um chunk de 3000 palavras tem seu embedding contaminado por muitos temas diferentes, tornando a recuperação vaga. O tamanho ideal de chunk depende do seu caso de uso — tipicamente 200 a 600 tokens, com overlap de 10-20%.</p>
@@ -966,7 +966,7 @@ print(chunks_com_meta[0].metadata)</code></pre>
 
   <!-- ── 12. ARMADILHAS ────────────────────────────────────── -->
   <div class="section">
-    <div class="section-label">12 · Armadilhas</div>
+    <div class="section-label">// armadilhas</div>
     <h2>Erros comuns que custam horas de debugging</h2>
 
     <div class="pitfall">
@@ -1002,7 +1002,7 @@ print(chunks_com_meta[0].metadata)</code></pre>
 
   <!-- ── 13. VÍDEOS ────────────────────────────────────────── -->
   <div class="section">
-    <div class="section-label">13 · Curadoria</div>
+    <div class="section-label">// curadoria</div>
     <h2>Vídeos recomendados</h2>
 
     <div class="video-grid">
@@ -1065,7 +1065,7 @@ print(chunks_com_meta[0].metadata)</code></pre>
 
   <!-- ── 15. PRÓXIMOS PASSOS ───────────────────────────────── -->
   <div class="section">
-    <div class="section-label">15 · Próximos Passos</div>
+    <div class="section-label">// próximos passos</div>
     <h2>O que vem depois</h2>
     <p>Você acabou de dominar os blocos fundamentais: gerar embeddings, calcular similaridade, e armazenar/recuperar vetores eficientemente. Agora é hora de montar o pipeline completo que usa tudo isso em conjunto com um LLM para criar respostas baseadas nos seus próprios documentos.</p>
 

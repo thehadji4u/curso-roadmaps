@@ -122,7 +122,7 @@
     /* ─── Mobile Responsive ─────────────────────────────────── */
     @media (max-width: 768px) {
       .top-nav { padding: 10px 16px; gap: 8px; }
-      .nav-back { display: none; }
+      .nav-back { font-size: 10px; padding: 4px 8px; letter-spacing: 0; }
       .nav-center { gap: 6px; width: 100%; justify-content: space-between; }
       .nav-position { font-size: 10px; letter-spacing: 0; }
       .nav-prev, .nav-next { padding: 5px 10px; font-size: 11px; }
@@ -146,6 +146,7 @@
       pre { font-size: 12px !important; }
       code { font-size: 12px !important; }
       .mermaid-wrap { padding: 18px 10px; overflow-x: auto; }
+      .mermaid svg { min-width: 480px; }
       .video-card { flex-direction: column; gap: 10px; }
       .video-thumb { width: 44px; height: 44px; font-size: 18px; }
       .hero-tags { gap: 6px; }
@@ -180,9 +181,8 @@
 
   <div class="hero">
     <div class="hero-eyebrow">
-      <span class="hero-badge">🤖 INTELIGÊNCIA ARTIFICIAL</span>
-      <span>Aula 38 · Prioridade 7</span>
-      <span>⏱ ~30 min</span>
+      <span>🤖 IA</span>
+      <span class="hero-badge">Aula 38</span>
     </div>
     <h1>Prompt Engineering<br>Fundamentos</h1>
     <div class="hero-meta">
@@ -202,7 +202,7 @@
   </div>
 
   <div class="section">
-    <div class="section-label">01 · Motivação</div>
+    <div class="section-label">// motivação</div>
     <h2>Por que Prompt Engineering importa?</h2>
     <p>O mesmo modelo de IA pode dar respostas completamente diferentes dependendo de como você formula a instrução. Prompt Engineering é a habilidade de <strong>comunicar intenção com precisão</strong> para um LLM — a diferença entre um assistente medíocre e um especialista virtual.</p>
     <div class="grid-3" style="margin:24px 0">
@@ -217,7 +217,7 @@
   </div>
 
   <div class="section">
-    <div class="section-label">02 · Analogia</div>
+    <div class="section-label">// analogia</div>
     <h2>O Assistente Brilhante mas Literal</h2>
     <div class="analogy-card">
       <div class="analogy-label">🧑‍💼 Analogia</div>
@@ -232,7 +232,7 @@
   </div>
 
   <div class="section">
-    <div class="section-label">03 · System vs User Prompt</div>
+    <div class="section-label">// system vs user prompt</div>
     <h2>Anatomia de uma Conversa com LLM</h2>
     <p>A maioria das APIs de LLM tem dois (ou três) tipos de mensagem: <strong>system</strong>, <strong>user</strong> e <strong>assistant</strong>. Entender a diferença é fundamental.</p>
 
@@ -305,7 +305,7 @@ Sempre responda com:
   </div>
 
   <div class="section">
-    <div class="section-label">04 · Técnicas Fundamentais</div>
+    <div class="section-label">// técnicas fundamentais</div>
     <h2>Zero-shot, Few-shot e Chain-of-Thought</h2>
 
     <div class="technique-card" style="margin-bottom:16px">
@@ -368,7 +368,7 @@ Vou calcular passo a passo:
   </div>
 
   <div class="section">
-    <div class="section-label">05 · Role Prompting</div>
+    <div class="section-label">// role prompting</div>
     <h2>Role Prompting — Dando Persona ao Modelo</h2>
     <p>Atribuir um papel específico ao modelo ativa padrões de resposta associados a esse papel no treinamento. "Você é um médico" faz o modelo ser mais cauteloso; "Você é um hacker ético" faz o modelo ser mais técnico e direto.</p>
 
@@ -419,7 +419,7 @@ Analise o código fornecido e identifique:
   </div>
 
   <div class="section">
-    <div class="section-label">06 · Controle de Output</div>
+    <div class="section-label">// controle de output</div>
     <h2>Controlando o Formato da Resposta</h2>
     <p>Especificar o formato de saída elimina pós-processamento e torna a integração em código muito mais simples.</p>
 
@@ -477,7 +477,7 @@ prompt = CODE_REVIEW_TEMPLATE.substitute(
   </div>
 
   <div class="section">
-    <div class="section-label">07 · Armadilhas</div>
+    <div class="section-label">// armadilhas</div>
     <h2>⚠️ Erros Comuns em Prompting</h2>
     <div class="pitfall">
       <div class="pitfall-title">⚠️ Prompt ambíguo — instrução que pode ser interpretada de várias formas</div>
@@ -498,7 +498,7 @@ prompt = CODE_REVIEW_TEMPLATE.substitute(
   </div>
 
   <div class="section">
-    <div class="section-label">08 · Curadoria</div>
+    <div class="section-label">// curadoria</div>
     <h2>Referências para Assistir</h2>
     <div class="video-grid">
       <div class="video-card">
@@ -546,7 +546,7 @@ prompt = CODE_REVIEW_TEMPLATE.substitute(
   </div>
 
   <div class="section">
-    <div class="section-label">09 · Próximos Passos</div>
+    <div class="section-label">// próximos passos</div>
     <h2>O que vem depois?</h2>
     <p>Com os fundamentos dominados, passamos às técnicas avançadas: Tree-of-Thought, Self-Consistency, ReAct, JSON mode e defesa contra jailbreaks.</p>
     <a href="ai-03-prompt-eng-avancado.html" class="next-card">

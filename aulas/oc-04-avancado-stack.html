@@ -178,7 +178,7 @@
     /* ─── Mobile Responsive ─────────────────────────────────── */
     @media (max-width: 768px) {
       .top-nav { padding: 10px 16px; gap: 8px; }
-      .nav-back { display: none; }
+      .nav-back { font-size: 10px; padding: 4px 8px; letter-spacing: 0; }
       .nav-center { gap: 6px; width: 100%; justify-content: space-between; }
       .nav-position { font-size: 10px; letter-spacing: 0; }
       .nav-prev, .nav-next { padding: 5px 10px; font-size: 11px; }
@@ -202,6 +202,7 @@
       pre { font-size: 12px !important; }
       code { font-size: 12px !important; }
       .mermaid-wrap { padding: 18px 10px; overflow-x: auto; }
+      .mermaid svg { min-width: 480px; }
       .video-card { flex-direction: column; gap: 10px; }
       .video-thumb { width: 44px; height: 44px; font-size: 18px; }
       .hero-tags { gap: 6px; }
@@ -240,9 +241,9 @@
   <!-- ═══════════════════════════════ HERO ═══════════════════════════════ -->
   <section class="hero">
     <div class="hero-eyebrow">
-      <span class="hero-badge">AULA 50</span>
-      <span class="hero-badge-final">✦ AULA FINAL ✦</span>
       <span>🦀 OpenClaw + Stack Completo</span>
+      <span class="hero-badge">Aula 50</span>
+      <span class="hero-badge-final">✦ AULA FINAL ✦</span>
     </div>
     <h1>OpenClaw Avançado<br>+ Stack Completo</h1>
     <div class="hero-meta">
@@ -264,7 +265,7 @@
 
   <!-- ═══════════════════════════════ POR QUE IMPORTA ═══════════════════ -->
   <section class="section">
-    <div class="section-label">Por que isso importa?</div>
+    <div class="section-label">// por que isso importa?</div>
     <h2>Da automação local ao sistema em produção</h2>
     <p>
       Nas aulas anteriores construímos os fundamentos: configuração, tarefas core, Vision agents.
@@ -287,7 +288,7 @@
 
   <!-- ═══════════════════════════════ ANALOGIA ══════════════════════════ -->
   <section class="section">
-    <div class="section-label">Analogia do Mundo Real</div>
+    <div class="section-label">// analogia do mundo real</div>
     <h2>O Negócio que Cresceu</h2>
 
     <div class="analogy-card">
@@ -317,7 +318,7 @@
 
   <!-- ═══════════════════════════════ ANTI-BOT ══════════════════════════ -->
   <section class="section">
-    <div class="section-label">Técnicas Avançadas</div>
+    <div class="section-label">// técnicas avançadas</div>
     <h2>Anti-bot: Como Sites Detectam e Como Contornar</h2>
 
     <p>
@@ -542,7 +543,7 @@ async def scrape_com_stealth(url: str) -> str:
 
   <!-- ═══════════════════════════════ ESCALABILIDADE ═══════════════════ -->
   <section class="section">
-    <div class="section-label">Escalabilidade</div>
+    <div class="section-label">// escalabilidade</div>
     <h2>Rodando em Escala: Filas + Workers</h2>
 
     <p>
@@ -745,7 +746,7 @@ def verificar_e_notificar(produto_id: str, preco_atual: float):
 
   <!-- ═══════════════════════════════ DOCKER + N8N ══════════════════════ -->
   <section class="section">
-    <div class="section-label">Deploy Completo</div>
+    <div class="section-label">// deploy completo</div>
     <h2>Docker Compose: Stack Completo em Produção</h2>
 
     <div class="code-label">docker-compose.yml — Stack completo</div>
@@ -888,7 +889,7 @@ volumes:
 
   <!-- ═══════════════════════════════ CI/CD ════════════════════════════ -->
   <section class="section">
-    <div class="section-label">GitHub Actions</div>
+    <div class="section-label">// github actions</div>
     <h2>CI/CD: Deploy Automático</h2>
 
     <div class="code-label">.github/workflows/deploy.yml</div>
@@ -993,7 +994,7 @@ sentry_sdk.init(
 
   <!-- ═══════════════════════════════ TABELA COMPARATIVA ═══════════════ -->
   <section class="section">
-    <div class="section-label">Comparativo</div>
+    <div class="section-label">// comparativo</div>
     <h2>Ferramentas do Stack por Caso de Uso</h2>
 
     <div class="table-wrap">
@@ -1062,7 +1063,7 @@ sentry_sdk.init(
 
   <!-- ═══════════════════════════════ ARMADILHAS ════════════════════════ -->
   <section class="section">
-    <div class="section-label">Armadilhas Comuns</div>
+    <div class="section-label">// armadilhas comuns</div>
     <h2>Pitfalls em Produção</h2>
 
     <div class="pitfall">
@@ -1098,7 +1099,7 @@ sentry_sdk.init(
 
   <!-- ═══════════════════════════════ VÍDEOS ════════════════════════════ -->
   <section class="section">
-    <div class="section-label">Curadoria de Vídeos</div>
+    <div class="section-label">// curadoria de vídeos</div>
     <h2>Para Assistir</h2>
 
     <div class="video-grid">

@@ -126,7 +126,7 @@
     /* ─── Mobile Responsive ─────────────────────────────────── */
     @media (max-width: 768px) {
       .top-nav { padding: 10px 16px; gap: 8px; }
-      .nav-back { display: none; }
+      .nav-back { font-size: 10px; padding: 4px 8px; letter-spacing: 0; }
       .nav-center { gap: 6px; width: 100%; justify-content: space-between; }
       .nav-position { font-size: 10px; letter-spacing: 0; }
       .nav-prev, .nav-next { padding: 5px 10px; font-size: 11px; }
@@ -150,6 +150,7 @@
       pre { font-size: 12px !important; }
       code { font-size: 12px !important; }
       .mermaid-wrap { padding: 18px 10px; overflow-x: auto; }
+      .mermaid svg { min-width: 480px; }
       .video-card { flex-direction: column; gap: 10px; }
       .video-thumb { width: 44px; height: 44px; font-size: 18px; }
       .hero-tags { gap: 6px; }
@@ -186,9 +187,8 @@
 
   <div class="hero">
     <div class="hero-eyebrow">
-      <span class="hero-badge">🐙 GITHUB</span>
-      <span>Aula 35 · Prioridade 6</span>
-      <span>⏱ ~35 min</span>
+      <span>🐙 GitHub</span>
+      <span class="hero-badge">Aula 35</span>
     </div>
     <h1>GitHub no Stack Completo<br>Docker · n8n · Python · Pages · Monorepo</h1>
     <div class="hero-meta">
@@ -210,7 +210,7 @@
 
   <!-- POR QUE -->
   <div class="section">
-    <div class="section-label">01 · Motivação</div>
+    <div class="section-label">// motivação</div>
     <h2>GitHub como centro nervoso do stack</h2>
     <p>Nas aulas anteriores estudamos cada ferramenta isoladamente. Nesta aula, vamos ver como o <strong>GitHub conecta tudo</strong> — cada push, PR ou tag pode disparar pipelines que envolvem Docker, Python, n8n e GitHub Pages em uma única automação coesa.</p>
     <div class="grid-3" style="margin:24px 0">
@@ -226,7 +226,7 @@
 
   <!-- ANALOGIA -->
   <div class="section">
-    <div class="section-label">02 · Analogia</div>
+    <div class="section-label">// analogia</div>
     <h2>O GitHub como Torre de Controle</h2>
     <div class="analogy-card">
       <div class="analogy-label">✈️ Analogia</div>
@@ -243,7 +243,7 @@
 
   <!-- GITHUB + DOCKER -->
   <div class="section">
-    <div class="section-label">03 · Integração 1</div>
+    <div class="section-label">// integração 1</div>
     <h2>GitHub + Docker — CI/CD Completo</h2>
     <p>O workflow mais comum em produção: a cada push no main, o Actions constrói a imagem Docker, publica no GHCR e faz deploy no servidor via SSH.</p>
 
@@ -320,7 +320,7 @@ jobs:
 
   <!-- GITHUB + N8N -->
   <div class="section">
-    <div class="section-label">04 · Integração 2</div>
+    <div class="section-label">// integração 2</div>
     <h2>GitHub + n8n — Webhooks e Automações</h2>
     <p>O GitHub pode disparar eventos para o n8n em tempo real via webhooks: novo PR, novo issue, release publicada, commit no main — tudo pode acionar um workflow n8n.</p>
 
@@ -394,7 +394,7 @@ return [{ json: { event, repo: payload.repository.name, pusher: payload.pusher?.
 
   <!-- GITHUB + PYTHON -->
   <div class="section">
-    <div class="section-label">05 · Integração 3</div>
+    <div class="section-label">// integração 3</div>
     <h2>GitHub + Python — CI com Qualidade de Código</h2>
     <p>Para projetos Python, o Actions garante que todo PR passa por testes, análise estática e verificação de cobertura antes de ser mergeado.</p>
 
@@ -455,7 +455,7 @@ jobs:
 
   <!-- GITHUB PAGES -->
   <div class="section">
-    <div class="section-label">06 · GitHub Pages</div>
+    <div class="section-label">// github pages</div>
     <h2>GitHub Pages — Deploy Estático Automático</h2>
     <p>GitHub Pages publica qualquer conteúdo estático (HTML/CSS/JS) diretamente do repositório, com HTTPS gratuito. Ideal para documentação, portfolios, sites de curso e landing pages.</p>
 
@@ -513,7 +513,7 @@ jobs:
 
   <!-- MONOREPO -->
   <div class="section">
-    <div class="section-label">07 · Monorepo</div>
+    <div class="section-label">// monorepo</div>
     <h2>Monorepo — Tudo em Um Só Repositório</h2>
     <p>Um <strong>monorepo</strong> é um único repositório Git que contém múltiplos projetos ou pacotes relacionados (frontend, backend, libs compartilhadas). Usado por Google, Meta, Vercel e muitas empresas de referência.</p>
 
@@ -611,7 +611,7 @@ jobs:
 
   <!-- PITFALLS -->
   <div class="section">
-    <div class="section-label">08 · Armadilhas</div>
+    <div class="section-label">// armadilhas</div>
     <h2>⚠️ Erros Comuns</h2>
     <div class="pitfall">
       <div class="pitfall-title">⚠️ Secrets expostos em logs do Actions</div>
@@ -629,7 +629,7 @@ jobs:
 
   <!-- VÍDEOS -->
   <div class="section">
-    <div class="section-label">09 · Curadoria</div>
+    <div class="section-label">// curadoria</div>
     <h2>Referências para Assistir</h2>
     <div class="video-grid">
       <div class="video-card">
@@ -678,7 +678,7 @@ jobs:
   </div>
 
   <div class="section">
-    <div class="section-label">10 · Próximos Passos</div>
+    <div class="section-label">// próximos passos</div>
     <h2>O que vem depois?</h2>
     <p>Com o stack completo integrado via GitHub, partimos para a trilha de HTML/CSS avançado — Acessibilidade (WCAG/ARIA) e SEO técnico, habilidades essenciais para qualquer front-end profissional.</p>
     <a href="html-06-a11y-seo.html" class="next-card">

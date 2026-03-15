@@ -145,7 +145,7 @@
     /* ─── Mobile Responsive ─────────────────────────────────── */
     @media (max-width: 768px) {
       .top-nav { padding: 10px 16px; gap: 8px; }
-      .nav-back { display: none; }
+      .nav-back { font-size: 10px; padding: 4px 8px; letter-spacing: 0; }
       .nav-center { gap: 6px; width: 100%; justify-content: space-between; }
       .nav-position { font-size: 10px; letter-spacing: 0; }
       .nav-prev, .nav-next { padding: 5px 10px; font-size: 11px; }
@@ -169,6 +169,7 @@
       pre { font-size: 12px !important; }
       code { font-size: 12px !important; }
       .mermaid-wrap { padding: 18px 10px; overflow-x: auto; }
+      .mermaid svg { min-width: 480px; }
       .video-card { flex-direction: column; gap: 10px; }
       .video-thumb { width: 44px; height: 44px; font-size: 18px; }
       .hero-tags { gap: 6px; }
@@ -207,9 +208,8 @@
   <!-- ═══════════════════════════════════════════════════════════ HERO -->
   <div class="hero">
     <div class="hero-eyebrow">
-      <span class="hero-badge">🐳 DOCKER</span>
-      <span>Aula 33 · Prioridade 6</span>
-      <span>⏱ ~35 min</span>
+      <span>🐳 Docker</span>
+      <span class="hero-badge">Aula 33</span>
     </div>
     <h1>Docker em Produção<br>Registry, CI/CD & Swarm</h1>
     <div class="hero-meta">
@@ -231,7 +231,7 @@
 
   <!-- ═══════════════════════════════════════════════════════ POR QUE -->
   <div class="section">
-    <div class="section-label">01 · Motivação</div>
+    <div class="section-label">// motivação</div>
     <h2>Por que isso importa em produção?</h2>
     <p>Nas aulas anteriores, você aprendeu a criar imagens Docker, escrever Dockerfiles e orquestrar múltiplos containers com Compose. Mas quando chega a hora de <strong>levar para produção</strong>, surgem perguntas reais:</p>
 
@@ -261,7 +261,7 @@
 
   <!-- ═══════════════════════════════════════════════════════ ANALOGIA -->
   <div class="section">
-    <div class="section-label">02 · Analogia do Mundo Real</div>
+    <div class="section-label">// analogia do mundo real</div>
     <h2>A Fábrica, o Armazém e a Frota de Caminhões</h2>
     <div class="analogy-card">
       <div class="analogy-label">🏭 Analogia</div>
@@ -287,7 +287,7 @@
 
   <!-- ════════════════════════════════════════════════════ REGISTRIES -->
   <div class="section">
-    <div class="section-label">03 · Conceito Central</div>
+    <div class="section-label">// conceito central</div>
     <h2>Docker Registries — Onde Vivem Suas Imagens</h2>
 
     <p>Um <strong>Registry</strong> é um servidor que armazena e distribui imagens Docker. Toda imagem que você baixa com <code>docker pull</code> vem de um registry. Por padrão, o Docker usa o Docker Hub — mas você pode usar registries privados ou gerenciados na nuvem.</p>
@@ -363,7 +363,7 @@ graph LR
 
   <!-- ═══════════════════════════════════════════════════════ CI/CD -->
   <div class="section">
-    <div class="section-label">04 · CI/CD com Docker</div>
+    <div class="section-label">// ci/cd com docker</div>
     <h2>Pipeline Automatizado: Build → Push → Deploy</h2>
 
     <p>Um pipeline CI/CD com Docker segue sempre o mesmo padrão: a cada novo commit, a imagem é construída, testada e publicada no registry — podendo ainda disparar o deploy automático no servidor.</p>
@@ -498,7 +498,7 @@ jobs:
 
   <!-- ═══════════════════════════════════════════════════════ SWARM -->
   <div class="section">
-    <div class="section-label">05 · Docker Swarm</div>
+    <div class="section-label">// docker swarm</div>
     <h2>Orquestração Nativa: Docker Swarm</h2>
 
     <p>Docker Swarm é o modo de orquestração <strong>nativo do Docker</strong> — baked in, sem instalação adicional. Com um único comando, você transforma múltiplos hosts Docker em um cluster gerenciado, capaz de distribuir containers, fazer rolling updates e se recuperar de falhas automaticamente.</p>
@@ -777,7 +777,7 @@ configs:
 
   <!-- ═══════════════════════════════════════════════════════ HANDS-ON -->
   <div class="section">
-    <div class="section-label">06 · Hands-on</div>
+    <div class="section-label">// hands-on</div>
     <h2>Projeto Prático: API + CI/CD + Swarm Local</h2>
     <p>Vamos montar do zero um pipeline completo: API Node.js → Registry → Swarm local (simulado com um único nó).</p>
 
@@ -897,7 +897,7 @@ CMD ["node", "app.js"]</code></pre>
 
   <!-- ═══════════════════════════════════════════════════════ PITFALLS -->
   <div class="section">
-    <div class="section-label">07 · Armadilhas Comuns</div>
+    <div class="section-label">// armadilhas comuns</div>
     <h2>⚠️ Erros que Todo Mundo Comete</h2>
 
     <div class="pitfall">
@@ -923,7 +923,7 @@ CMD ["node", "app.js"]</code></pre>
 
   <!-- ════════════════════════════════════════════════════════ VÍDEOS -->
   <div class="section">
-    <div class="section-label">08 · Curadoria de Vídeos</div>
+    <div class="section-label">// curadoria de vídeos</div>
     <h2>Referências para Assistir</h2>
     <div class="video-grid">
       <div class="video-card">
@@ -983,7 +983,7 @@ CMD ["node", "app.js"]</code></pre>
 
   <!-- ═════════════════════════════════════════════════ PRÓXIMOS PASSOS -->
   <div class="section">
-    <div class="section-label">09 · Próximos Passos</div>
+    <div class="section-label">// próximos passos</div>
     <h2>O que vem depois?</h2>
     <p>Com Registry, CI/CD e Swarm dominados, você tem um stack de produção real. Na próxima aula, vamos ao n8n avançado — sub-workflows, self-hosting e criação de custom nodes em TypeScript.</p>
     <a href="n8n-04-avancado.html" class="next-card">

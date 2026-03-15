@@ -128,7 +128,7 @@
     /* ─── Mobile Responsive ─────────────────────────────────── */
     @media (max-width: 768px) {
       .top-nav { padding: 10px 16px; gap: 8px; }
-      .nav-back { display: none; }
+      .nav-back { font-size: 10px; padding: 4px 8px; letter-spacing: 0; }
       .nav-center { gap: 6px; width: 100%; justify-content: space-between; }
       .nav-position { font-size: 10px; letter-spacing: 0; }
       .nav-prev, .nav-next { padding: 5px 10px; font-size: 11px; }
@@ -152,6 +152,7 @@
       pre { font-size: 12px !important; }
       code { font-size: 12px !important; }
       .mermaid-wrap { padding: 18px 10px; overflow-x: auto; }
+      .mermaid svg { min-width: 480px; }
       .video-card { flex-direction: column; gap: 10px; }
       .video-thumb { width: 44px; height: 44px; font-size: 18px; }
       .hero-tags { gap: 6px; }
@@ -188,9 +189,8 @@
 
   <div class="hero">
     <div class="hero-eyebrow">
-      <span class="hero-badge">🤖 INTELIGÊNCIA ARTIFICIAL</span>
-      <span>Aula 37 · Prioridade 7</span>
-      <span>⏱ ~35 min</span>
+      <span>🤖 IA</span>
+      <span class="hero-badge">Aula 37</span>
     </div>
     <h1>Como LLMs Funcionam<br>Transformers · Tokens · Temperature</h1>
     <div class="hero-meta">
@@ -212,7 +212,7 @@
 
   <!-- POR QUE -->
   <div class="section">
-    <div class="section-label">01 · Motivação</div>
+    <div class="section-label">// motivação</div>
     <h2>Por que entender como LLMs funcionam?</h2>
     <p>Você pode usar GPT-4 sem entender como ele funciona — assim como pode dirigir um carro sem saber mecânica. Mas quando o modelo <strong>alucina, recusa ou se comporta de forma inesperada</strong>, entender a mecânica interna é o que separa quem debugga em minutos de quem fica horas tentando.</p>
     <div class="grid-3" style="margin:24px 0">
@@ -228,7 +228,7 @@
 
   <!-- ANALOGIA -->
   <div class="section">
-    <div class="section-label">02 · Analogia</div>
+    <div class="section-label">// analogia</div>
     <h2>O Escritor Estatístico Ultra-Sofisticado</h2>
     <div class="analogy-card">
       <div class="analogy-label">✍️ Analogia</div>
@@ -245,7 +245,7 @@
 
   <!-- TOKENS -->
   <div class="section">
-    <div class="section-label">03 · Conceito Central</div>
+    <div class="section-label">// conceito central</div>
     <h2>Tokens — A Unidade Fundamental dos LLMs</h2>
     <p>LLMs não processam palavras — processam <strong>tokens</strong>. Um token é um pedaço de texto, geralmente uma palavra ou parte dela. O modelo usa um vocabulário fixo (ex: GPT-4 tem ~100k tokens) e representa todo texto como sequência de números inteiros.</p>
 
@@ -284,7 +284,7 @@ for token_id in tokens:
 
   <!-- TRANSFORMERS -->
   <div class="section">
-    <div class="section-label">04 · Arquitetura</div>
+    <div class="section-label">// arquitetura</div>
     <h2>Transformers — A Arquitetura por Trás de Tudo</h2>
     <p>Todos os LLMs modernos (GPT, Claude, Gemini, Llama) são baseados na arquitetura <strong>Transformer</strong>, proposta no paper <em>"Attention Is All You Need"</em> (Google, 2017). O componente chave é o <strong>mecanismo de atenção</strong>.</p>
 
@@ -331,7 +331,7 @@ graph TB
 
   <!-- EMBEDDINGS -->
   <div class="section">
-    <div class="section-label">05 · Embeddings</div>
+    <div class="section-label">// embeddings</div>
     <h2>Embeddings — Significado como Números</h2>
     <p>Um <strong>embedding</strong> é a representação de um token (ou texto) como um vetor numérico de alta dimensão (ex: 1536 dimensões no text-embedding-ada-002 da OpenAI). Textos semanticamente similares ficam próximos no espaço vetorial.</p>
 
@@ -380,7 +380,7 @@ print(cosine_similarity(e1, e3))  # ~0.15 — bem diferente</code></pre>
 
   <!-- CONTEXT WINDOW + TEMPERATURA -->
   <div class="section">
-    <div class="section-label">06 · Parâmetros de Geração</div>
+    <div class="section-label">// parâmetros de geração</div>
     <h2>Context Window, Temperature & Sampling</h2>
 
     <h3>Context Window — A Memória do Modelo</h3>
@@ -470,7 +470,7 @@ historia = gerar_resposta(
 
   <!-- TREINAMENTO -->
   <div class="section">
-    <div class="section-label">07 · Como São Treinados</div>
+    <div class="section-label">// como são treinados</div>
     <h2>Pré-treinamento, Fine-tuning e RLHF</h2>
 
     <div class="mermaid-wrap">
@@ -507,7 +507,7 @@ graph LR
 
   <!-- COMPARATIVO -->
   <div class="section">
-    <div class="section-label">08 · Comparativo</div>
+    <div class="section-label">// comparativo</div>
     <h2>Os Principais LLMs em 2024–2025</h2>
 
     <div class="grid-2" style="margin:16px 0">
@@ -569,7 +569,7 @@ graph LR
 
   <!-- PITFALLS -->
   <div class="section">
-    <div class="section-label">09 · Armadilhas</div>
+    <div class="section-label">// armadilhas</div>
     <h2>⚠️ Conceitos que Geram Confusão</h2>
     <div class="pitfall">
       <div class="pitfall-title">⚠️ LLMs não "sabem" — eles predizem</div>
@@ -591,7 +591,7 @@ graph LR
 
   <!-- VÍDEOS -->
   <div class="section">
-    <div class="section-label">10 · Curadoria</div>
+    <div class="section-label">// curadoria</div>
     <h2>Referências para Assistir</h2>
     <div class="video-grid">
       <div class="video-card">
@@ -649,7 +649,7 @@ graph LR
   </div>
 
   <div class="section">
-    <div class="section-label">11 · Próximos Passos</div>
+    <div class="section-label">// próximos passos</div>
     <h2>O que vem depois?</h2>
     <p>Com a mecânica dos LLMs compreendida, partimos para o que é mais prático e imediato: <strong>Prompt Engineering</strong>. Como escrever prompts que realmente funcionam — zero-shot, few-shot, Chain-of-Thought e mais.</p>
     <a href="ai-02-prompt-eng-fundamentos.html" class="next-card">

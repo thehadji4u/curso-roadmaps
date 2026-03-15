@@ -144,7 +144,7 @@
     /* ─── Mobile Responsive ─────────────────────────────────── */
     @media (max-width: 768px) {
       .top-nav { padding: 10px 16px; gap: 8px; }
-      .nav-back { display: none; }
+      .nav-back { font-size: 10px; padding: 4px 8px; letter-spacing: 0; }
       .nav-center { gap: 6px; width: 100%; justify-content: space-between; }
       .nav-position { font-size: 10px; letter-spacing: 0; }
       .nav-prev, .nav-next { padding: 5px 10px; font-size: 11px; }
@@ -168,6 +168,7 @@
       pre { font-size: 12px !important; }
       code { font-size: 12px !important; }
       .mermaid-wrap { padding: 18px 10px; overflow-x: auto; }
+      .mermaid svg { min-width: 480px; }
       .video-card { flex-direction: column; gap: 10px; }
       .video-thumb { width: 44px; height: 44px; font-size: 18px; }
       .hero-tags { gap: 6px; }
@@ -206,9 +207,8 @@
   <!-- ═══════════════════════════════════════════════════════════ HERO -->
   <div class="hero">
     <div class="hero-eyebrow">
-      <span class="hero-badge">🔀 N8N</span>
-      <span>Aula 34 · Prioridade 6</span>
-      <span>⏱ ~35 min</span>
+      <span>🔀 n8n</span>
+      <span class="hero-badge">Aula 34</span>
     </div>
     <h1>n8n Avançado<br>Sub-workflows, Self-hosting<br>& Custom Nodes</h1>
     <div class="hero-meta">
@@ -230,7 +230,7 @@
 
   <!-- ═══════════════════════════════════════════════════════ POR QUE -->
   <div class="section">
-    <div class="section-label">01 · Motivação</div>
+    <div class="section-label">// motivação</div>
     <h2>Por que ir além dos workflows básicos?</h2>
 
     <p>Nas aulas anteriores você criou workflows, integrou APIs e automatizou processos reais. Mas conforme as automações crescem, surgem desafios de <strong>manutenção, reuso e escala</strong>:</p>
@@ -261,7 +261,7 @@
 
   <!-- ═══════════════════════════════════════════════════════ ANALOGIA -->
   <div class="section">
-    <div class="section-label">02 · Analogia do Mundo Real</div>
+    <div class="section-label">// analogia do mundo real</div>
     <h2>Funções, Servidor Próprio e Plug-ins</h2>
     <div class="analogy-card">
       <div class="analogy-label">🏗️ Analogia</div>
@@ -283,7 +283,7 @@
 
   <!-- ════════════════════════════════════════════════════ SUB-WORKFLOWS -->
   <div class="section">
-    <div class="section-label">03 · Sub-workflows</div>
+    <div class="section-label">// sub-workflows</div>
     <h2>Modularizando com Sub-workflows</h2>
 
     <p>Um <strong>sub-workflow</strong> é um workflow n8n que pode ser chamado por outros workflows usando o <strong>Execute Workflow node</strong>. É o equivalente a funções em programação — encapsula lógica, recebe parâmetros e retorna resultados.</p>
@@ -420,7 +420,7 @@ return [{ json: { ...result, processedBy: 'main-workflow' } }]</code></pre>
 
   <!-- ════════════════════════════════════════════════════ SELF-HOSTING -->
   <div class="section">
-    <div class="section-label">04 · Self-hosting</div>
+    <div class="section-label">// self-hosting</div>
     <h2>Rodando n8n no Seu Próprio Servidor</h2>
 
     <p>Self-hosting significa instalar e manter o n8n na sua própria infraestrutura — um VPS, servidor dedicado ou mesmo um Raspberry Pi. Você tem controle total sobre dados, sem limites de execuções e sem custo mensal crescente.</p>
@@ -579,7 +579,7 @@ N8N_ADMIN_PASSWORD=outrasenhaforte456</code></pre>
 
   <!-- ════════════════════════════════════════════════════ CUSTOM NODES -->
   <div class="section">
-    <div class="section-label">05 · Custom Nodes</div>
+    <div class="section-label">// custom nodes</div>
     <h2>Criando Nodes Customizados em TypeScript</h2>
 
     <p>Custom nodes são extensões que você escreve em TypeScript e instala no n8n. Eles aparecem na interface como nodes normais e podem fazer qualquer coisa que JavaScript permita — chamadas HTTP, processamento de dados, integração com SDKs.</p>
@@ -808,7 +808,7 @@ export class ViaCep implements INodeType {
 
   <!-- ═══════════════════════════════════════════════════════ HANDS-ON -->
   <div class="section">
-    <div class="section-label">06 · Hands-on</div>
+    <div class="section-label">// hands-on</div>
     <h2>Projeto Prático: Sistema de Notificações Modulares</h2>
     <p>Construa um sistema onde qualquer workflow pode enviar notificações via um único sub-workflow centralizado.</p>
 
@@ -867,7 +867,7 @@ return [{
 
   <!-- ═══════════════════════════════════════════════════════ PITFALLS -->
   <div class="section">
-    <div class="section-label">07 · Armadilhas Comuns</div>
+    <div class="section-label">// armadilhas comuns</div>
     <h2>⚠️ Erros que Todo Mundo Comete</h2>
 
     <div class="pitfall">
@@ -893,7 +893,7 @@ return [{
 
   <!-- ════════════════════════════════════════════════════════ VÍDEOS -->
   <div class="section">
-    <div class="section-label">08 · Curadoria de Vídeos</div>
+    <div class="section-label">// curadoria de vídeos</div>
     <h2>Referências para Assistir</h2>
     <div class="video-grid">
       <div class="video-card">
@@ -952,7 +952,7 @@ return [{
 
   <!-- ═════════════════════════════════════════════════ PRÓXIMOS PASSOS -->
   <div class="section">
-    <div class="section-label">09 · Próximos Passos</div>
+    <div class="section-label">// próximos passos</div>
     <h2>O que vem depois?</h2>
     <p>Com sub-workflows, self-hosting e custom nodes dominados, você tem um n8n verdadeiramente profissional. Na próxima aula, vamos integrar tudo no GitHub — Docker, n8n, Python e GitHub Pages num stack completo.</p>
     <a href="gh-07-stack-completo.html" class="next-card">
