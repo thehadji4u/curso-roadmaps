@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenClaw — Setup &amp; Tarefas Core · Aula 47</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#c9d1d9;background:#0d1117}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#ff7b72}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#d2a8ff}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#79c0ff}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#a5d6ff}.hljs-built_in,.hljs-symbol{color:#ffa657}.hljs-comment,.hljs-code,.hljs-formula{color:#8b949e}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#7ee787}.hljs-subst{color:#c9d1d9}.hljs-section{color:#1f6feb;font-weight:700}.hljs-bullet{color:#f2cc60}.hljs-emphasis{color:#c9d1d9;font-style:italic}.hljs-strong{color:#c9d1d9;font-weight:700}.hljs-addition{color:#aff5b4;background-color:#033a16}.hljs-deletion{color:#ffdcd7;background-color:#67060c}
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --border: #1e1e2e;
+      --text: #e8e8f0;
+      --muted: #8585a8;
+      --accent: #f97316;
+      --accent-dim: rgba(249,115,22,0.15);
+      --accent-border: rgba(249,115,22,0.35);
+      --success: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --info: #06b6d4;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.75; }
+
+    .progress-bar-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 1000; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #fb923c); width: 0%; transition: width 0.1s; }
+
+    .top-nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,10,15,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-back { text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s; }
+    .nav-back:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-center { display: flex; align-items: center; gap: 10px; }
+    .nav-position { font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+    .nav-position .track { color: var(--accent); font-weight: 600; }
+    .nav-prev, .nav-next { display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 12px; letter-spacing: 0.05em; padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; transition: all 0.2s; }
+    .nav-prev:hover, .nav-next:hover { color: var(--text); border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+    .nav-prev.disabled { opacity: 0.3; pointer-events: none; cursor: default; }
+    .nav-next { border-color: var(--accent-border); color: var(--accent); }
+    .nav-next:hover { background: var(--accent-dim); color: #fb923c; }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .hero-badge { background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 0.06em; }
+    .tag.accent { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+    .section { margin-bottom: 64px; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+    .section h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+    .section h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin: 32px 0 14px; color: #fff; }
+    .section p { color: var(--text); margin-bottom: 16px; }
+
+    .callout { border-radius: 8px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; }
+    .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 13px; }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--info); }
+    .callout-info .callout-title { color: var(--info); }
+    .callout-warn { background: rgba(245,158,11,0.08); border-color: var(--warn); }
+    .callout-warn .callout-title { color: var(--warn); }
+    .callout-tip { background: rgba(16,185,129,0.08); border-color: var(--success); }
+    .callout-tip .callout-title { color: var(--success); }
+
+    .analogy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; overflow: hidden; }
+    .analogy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .analogy-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .analogy-text { font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8; }
+    .analogy-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .analogy-real { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+    .analogy-tech { background: var(--accent-dim); border: 1px solid var(--accent-border); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--accent); }
+
+    .mermaid-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 20px; margin: 24px 0; overflow: auto; }
+    .mermaid-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 2px solid var(--accent-border); }
+    thead th { text-align: left; padding: 10px 14px; color: var(--accent); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    tbody td { padding: 11px 14px; color: var(--text); vertical-align: top; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+    .badge-red { background: rgba(239,68,68,0.2); color: #f87171; }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .badge-orange { background: rgba(249,115,22,0.2); color: #fb923c; }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step { display: flex; gap: 18px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+    .step-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+    pre { background: #0d1117 !important; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 13px; }
+    pre code { font-family: 'JetBrains Mono', monospace; }
+    .code-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 10px 16px 0; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+    .card-mini:hover { border-color: var(--accent-border); }
+    .card-mini h4 { color: #fff; font-size: 14px; margin: 10px 0 6px; }
+    .card-mini p { color: var(--muted); font-size: 13px; margin: 0; }
+
+    .video-grid { display: grid; gap: 14px; }
+    .video-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; transition: border-color 0.2s; }
+    .video-card:hover { border-color: var(--accent-border); }
+    .video-thumb { flex-shrink: 0; width: 52px; height: 52px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .video-info { flex: 1; }
+    .video-title { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+    .video-channel { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .video-why { color: var(--text); font-size: 12px; margin-bottom: 10px; }
+    .video-info a { font-size: 12px; color: var(--accent); text-decoration: none; }
+    .video-info a:hover { text-decoration: underline; }
+
+    .checkpoint { background: linear-gradient(135deg, rgba(249,115,22,0.08), rgba(251,146,60,0.04)); border: 1px solid var(--accent-border); border-radius: 12px; padding: 28px; }
+    .checkpoint h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: var(--accent); margin-bottom: 12px; }
+    .checkpoint p { margin-bottom: 14px; }
+    .checkpoint ul { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checkpoint ul li { color: var(--text); font-size: 14px; }
+    .checkpoint ul li::before { content: '✦ '; color: var(--accent); }
+    .checkpoint-hint { margin-top: 16px; padding: 12px 16px; background: rgba(249,115,22,0.06); border-radius: 6px; font-size: 13px; color: var(--muted); }
+
+    .pitfall { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .pitfall-title { color: #f87171; font-weight: 700; margin-bottom: 8px; }
+
+    .next-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; background: var(--surface); border: 1px solid var(--accent-border); border-radius: 10px; text-decoration: none; transition: all 0.2s; margin-top: 24px; }
+    .next-card:hover { background: var(--accent-dim); }
+    .next-card-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .next-card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .next-arrow { font-size: 1.5rem; color: var(--accent); }
+
+    code:not(.hljs) { background: rgba(255,255,255,0.07); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #fb923c; }
+
+    .terminal { background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .terminal-bar { background: #1a1a1a; padding: 8px 14px; display: flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ef4444; } .dot-yellow { background: #f59e0b; } .dot-green { background: #10b981; }
+    .terminal-title { font-size: 11px; color: #555; margin-left: 6px; }
+    .terminal-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; }
+    .t-prompt { color: #10b981; } .t-cmd { color: #e8e8f0; } .t-out { color: #8585a8; } .t-comment { color: #444; font-style: italic; }
+
+    .task-card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 20px; margin: 12px 0; }
+    .task-name { color: var(--accent); font-weight: 700; font-size: 13px; margin-bottom: 6px; }
+    .task-desc { color: var(--text); font-size: 13px; }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar"></div>
+  </div>
+
+  <nav class="top-nav">
+    <a href="../roadmaps_new.html" class="nav-back">← Roadmap</a>
+    <div class="nav-center">
+      <a href="oc-01-playwright-fundamentos.html" class="nav-prev">← Anterior</a>
+      <div class="nav-position">
+        <span class="track">🦀 OpenClaw</span> · Aula 47 / 50
+      </div>
+      <a href="oc-03-ia-visao-agentes.html" class="nav-next">Próxima →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span>🦀 OpenClaw</span>
+        <span class="hero-badge">Aula 47</span>
+      </div>
+      <h1>OpenClaw — Setup &amp; Tarefas Core</h1>
+      <div class="hero-meta">
+        <span>⏱ ~35 min de leitura</span>
+        <span>🎯 Intermediário–Avançado</span>
+        <span>🔧 Hands-on incluído</span>
+      </div>
+      <div class="hero-tags">
+        <span class="tag accent">OpenClaw</span>
+        <span class="tag accent">Setup</span>
+        <span class="tag accent">Scraping Estruturado</span>
+        <span class="tag accent">Autenticação</span>
+        <span class="tag accent">Tasks</span>
+        <span class="tag">Playwright</span>
+        <span class="tag">Pipeline</span>
+        <span class="tag">Anti-detection</span>
+      </div>
+    </div>
+
+    <!-- 1. POR QUE IMPORTA -->
+    <div class="section">
+      <div class="section-label">// motivação</div>
+      <h2>Por que isso importa?</h2>
+      <p>Playwright resolve o "como" da automação. OpenClaw resolve o "o quê" — ele é uma camada de alto nível construída sobre Playwright que fornece <strong>tarefas prontas, pipelines reutilizáveis e integração com IA</strong> para as situações mais comuns de automação de browser.</p>
+      <p>Pense assim: Playwright é o motor; OpenClaw é o carro completo. Com o motor você pode fazer qualquer coisa, mas o carro te dá volante, câmbio, espelhos, GPS — tudo pronto. Um engenheiro sênior usa OpenClaw para entregar pipelines de automação em horas, não em dias.</p>
+
+      <div class="callout callout-info">
+        <div class="callout-title">💡 O que é OpenClaw?</div>
+        OpenClaw é um framework de automação de browser construído sobre Playwright, focado em três pilares: <strong>tarefas estruturadas</strong> (actions reutilizáveis), <strong>scraping inteligente</strong> (extração tipada com validação) e <strong>integração com IA</strong> (visão computacional + LLMs para navegar em páginas complexas). Esta aula cobre o setup e as tarefas core; a próxima (Aula 48) aborda a camada de IA.
+      </div>
+
+      <div class="grid-2" style="margin-top:24px;">
+        <div class="card-mini">
+          <div style="font-size:24px;">📋</div>
+          <h4>Tasks Declarativas</h4>
+          <p>Descreve "o que" fazer, não "como" fazer. OpenClaw cuida dos waits, retries e erros automaticamente.</p>
+        </div>
+        <div class="card-mini">
+          <div style="font-size:24px;">🔐</div>
+          <h4>Auth Gerenciada</h4>
+          <p>Login, sessão, cookies e tokens gerenciados automaticamente — autentique uma vez, reutilize em todas as tasks.</p>
+        </div>
+        <div class="card-mini">
+          <div style="font-size:24px;">🔄</div>
+          <h4>Pipelines Compostos</h4>
+          <p>Encadeie tasks em pipelines: login → navegar → extrair → validar → exportar. Tudo rastreável.</p>
+        </div>
+        <div class="card-mini">
+          <div style="font-size:24px;">🛡</div>
+          <h4>Anti-Detection</h4>
+          <p>Fingerprinting realista, delays humanizados e rotação de user-agents embutidos por padrão.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. ANALOGIA -->
+    <div class="section">
+      <div class="section-label">// analogia</div>
+      <h2>Analogia do Mundo Real</h2>
+      <div class="analogy-card">
+        <div class="analogy-label">🏭 Linha de Montagem vs Artesão</div>
+        <div class="analogy-text">
+          Playwright puro é como um <strong>artesão habilidoso</strong>: ele pode construir qualquer coisa do zero, com total controle, mas precisa criar cada peça individualmente. OpenClaw é como uma <strong>linha de montagem moderna</strong>: você define o produto desejado (tarefa), e a linha executa automaticamente cada etapa — posicionamento, encaixe, verificação, retry se falhar — sem precisar especificar cada movimento do braço robótico.
+        </div>
+        <div class="analogy-mapping">
+          <div class="analogy-real">🔧 Ferramentas do artesão</div>
+          <div class="analogy-tech">API do Playwright (click, fill, etc)</div>
+          <div class="analogy-real">🏭 Linha de montagem</div>
+          <div class="analogy-tech">OpenClaw Task Pipeline</div>
+          <div class="analogy-real">📦 Especificação do produto</div>
+          <div class="analogy-tech">Task definition (o que extrair)</div>
+          <div class="analogy-real">🔁 Retry automático de defeito</div>
+          <div class="analogy-tech">Retry + fallback strategies</div>
+          <div class="analogy-real">📊 Controle de qualidade</div>
+          <div class="analogy-tech">Schema validation (Pydantic)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. SETUP -->
+    <div class="section">
+      <div class="section-label">// instalação</div>
+      <h2>Setup do Ambiente</h2>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Instalar OpenClaw e dependências</div>
+            <div class="step-desc">OpenClaw depende do Playwright — certifique-se que os browsers estão instalados</div>
+            <div class="terminal">
+              <div class="terminal-bar">
+                <div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div>
+                <div class="terminal-title">bash</div>
+              </div>
+              <div class="terminal-body">
+                <span class="t-comment"># Criar ambiente virtual</span><br>
+                <span class="t-prompt">$</span> <span class="t-cmd">python -m venv .venv && source .venv/bin/activate</span><br><br>
+                <span class="t-comment"># Instalar OpenClaw + Playwright</span><br>
+                <span class="t-prompt">$</span> <span class="t-cmd">pip install openclaw playwright pydantic python-dotenv</span><br>
+                <span class="t-prompt">$</span> <span class="t-cmd">playwright install chromium</span><br><br>
+                <span class="t-comment"># Verificar instalação</span><br>
+                <span class="t-prompt">$</span> <span class="t-cmd">python -c "import openclaw; print(openclaw.__version__)"</span><br>
+                <span class="t-out">0.4.2</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Estrutura de projeto recomendada</div>
+            <div class="step-desc">Organização para projetos de automação escaláveis</div>
+            <div class="code-label">estrutura do projeto</div>
+            <pre><code class="language-bash">meu-scraper/
+├── .env                    # API keys, credenciais (nunca commitar)
+├── .gitignore
+├── pyproject.toml
+├── main.py                 # entrypoint
+├── config.py               # configurações centralizadas
+├── tasks/                  # tarefas reutilizáveis
+│   ├── __init__.py
+│   ├── auth.py             # login e gestão de sessão
+│   ├── navigation.py       # navegação entre páginas
+│   └── extraction.py       # extração de dados
+├── models/                 # schemas Pydantic
+│   ├── produto.py
+│   └── pedido.py
+├── pipelines/              # composição de tasks
+│   ├── scrape_produtos.py
+│   └── monitorar_precos.py
+├── storage/                # persistência
+│   ├── json_writer.py
+│   └── db_writer.py
+└── tests/
+    └── test_tasks.py</code></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Configuração central</div>
+            <div class="step-desc">Settings com variáveis de ambiente e defaults seguros</div>
+            <div class="code-label">python — config.py</div>
+            <pre><code class="language-python">from pydantic_settings import BaseSettings
+from pathlib import Path
+
+class Settings(BaseSettings):
+    # Browser
+    headless: bool = True
+    slow_mo: int = 0           # ms entre ações (0 = máxima velocidade)
+    timeout: int = 30_000      # ms — timeout padrão dos seletores
+
+    # Anti-detection
+    user_agent: str = (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/121.0.0.0 Safari/537.36"
+    )
+    viewport_width: int = 1280
+    viewport_height: int = 720
+    locale: str = "pt-BR"
+    timezone: str = "America/Sao_Paulo"
+
+    # Retry
+    max_retries: int = 3
+    retry_delay: float = 2.0   # segundos entre tentativas
+
+    # Storage
+    output_dir: Path = Path("./output")
+
+    # Credenciais (carregadas do .env)
+    site_usuario: str = ""
+    site_senha: str = ""
+
+    class Config:
+        env_file = ".env"
+        env_file_encoding = "utf-8"
+
+settings = Settings()
+settings.output_dir.mkdir(exist_ok=True)
+</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. BROWSER FACTORY -->
+    <div class="section">
+      <div class="section-label">// core</div>
+      <h2>Browser Factory — Instância Configurada e Reutilizável</h2>
+      <p>Em vez de configurar o browser em cada script, centralize toda a configuração (stealth, viewport, user-agent) num único factory reutilizável.</p>
+
+      <div class="code-label">python — browser_factory.py</div>
+      <pre><code class="language-python">import asyncio
+from contextlib import asynccontextmanager
+from playwright.async_api import async_playwright, Browser, BrowserContext, Page
+from config import settings
+
+@asynccontextmanager
+async def novo_contexto(browser: Browser):
+    """Cria um contexto isolado com configurações anti-detection."""
+    contexto = await browser.new_context(
+        viewport={"width": settings.viewport_width, "height": settings.viewport_height},
+        user_agent=settings.user_agent,
+        locale=settings.locale,
+        timezone_id=settings.timezone,
+        # Simula permissões reais do browser
+        permissions=["geolocation"],
+        # Headers extras para parecer mais real
+        extra_http_headers={
+            "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        }
+    )
+    # Ocultar flag webdriver (detecção básica de bot)
+    await contexto.add_init_script("""
+        Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+        Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3] });
+        window.chrome = { runtime: {} };
+    """)
+    try:
+        yield contexto
+    finally:
+        await contexto.close()
+
+@asynccontextmanager
+async def nova_sessao():
+    """Context manager completo: Playwright → Browser → Context → Page."""
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(
+            headless=settings.headless,
+            slow_mo=settings.slow_mo,
+            args=[
+                "--no-sandbox",
+                "--disable-blink-features=AutomationControlled",
+                "--disable-web-security",
+            ]
+        )
+        async with novo_contexto(browser) as contexto:
+            page = await contexto.new_page()
+            page.set_default_timeout(settings.timeout)
+            try:
+                yield page, contexto
+            finally:
+                await browser.close()
+</code></pre>
+    </div>
+
+    <!-- 5. AUTH -->
+    <div class="section">
+      <div class="section-label">// autenticação</div>
+      <h2>Autenticação Gerenciada — Login uma vez, reutilize sempre</h2>
+      <p>O padrão mais importante em projetos de automação: fazer login uma única vez, salvar o estado da sessão (cookies + localStorage) em disco, e reutilizar em todas as execuções seguintes — evitando logins repetidos e reduzindo chances de detecção.</p>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// fluxo de autenticação com cache</div>
+        <div class="mermaid">
+flowchart TD
+    A([Iniciar sessão]) --> B{auth_state.json\nexiste?}
+    B -->|Sim| C[Carregar estado salvo]
+    C --> D{Sessão ainda\nválida?}
+    D -->|Sim| G([✅ Pronto para usar])
+    D -->|Não — expirou| E
+    B -->|Não| E[Executar login\ncompleto]
+    E --> F[Salvar estado\nem auth_state.json]
+    F --> G
+        </div>
+      </div>
+
+      <div class="code-label">python — tasks/auth.py</div>
+      <pre><code class="language-python">import json
+from pathlib import Path
+from playwright.async_api import BrowserContext, Page
+from config import settings
+
+AUTH_STATE_FILE = Path("./auth_state.json")
+
+async def fazer_login(page: Page, url_login: str) -> bool:
+    """Executa o fluxo de login no site."""
+    try:
+        await page.goto(url_login)
+        await page.wait_for_selector("#email, input[type='email']")
+
+        await page.fill("#email", settings.site_usuario)
+        await page.fill("#password", settings.site_senha)
+
+        # Delay humanizado antes de clicar
+        await page.wait_for_timeout(800)
+        await page.click("button[type='submit']")
+
+        # Aguarda confirmação de login (URL muda ou elemento aparece)
+        await page.wait_for_url("**/dashboard", timeout=15_000)
+        print("✅ Login realizado com sucesso")
+        return True
+
+    except Exception as e:
+        print(f"❌ Falha no login: {e}")
+        return False
+
+async def salvar_estado_auth(contexto: BrowserContext) -> None:
+    """Salva cookies e localStorage em disco."""
+    estado = await contexto.storage_state()
+    AUTH_STATE_FILE.write_text(json.dumps(estado, ensure_ascii=False))
+    print(f"💾 Estado de autenticação salvo em {AUTH_STATE_FILE}")
+
+async def carregar_estado_auth(contexto: BrowserContext) -> bool:
+    """Carrega estado de autenticação salvo anteriormente."""
+    if not AUTH_STATE_FILE.exists():
+        return False
+    estado = json.loads(AUTH_STATE_FILE.read_text())
+    await contexto.add_cookies(estado.get("cookies", []))
+    print("🔑 Estado de autenticação carregado")
+    return True
+
+async def verificar_autenticado(page: Page, selector_logado: str = ".user-menu") -> bool:
+    """Verifica se a sessão ainda é válida."""
+    try:
+        await page.goto("https://site.com/dashboard")
+        await page.wait_for_selector(selector_logado, timeout=5_000)
+        return True
+    except Exception:
+        return False
+
+async def garantir_autenticado(page: Page, contexto: BrowserContext, url_login: str) -> bool:
+    """Fluxo completo: carrega cache → verifica → faz login se necessário."""
+    # Tentar carregar sessão salva
+    if await carregar_estado_auth(contexto):
+        if await verificar_autenticado(page):
+            print("✅ Sessão reutilizada do cache")
+            return True
+        print("⚠ Sessão expirada, fazendo novo login...")
+
+    # Fazer login e salvar
+    sucesso = await fazer_login(page, url_login)
+    if sucesso:
+        await salvar_estado_auth(contexto)
+    return sucesso
+</code></pre>
+    </div>
+
+    <!-- 6. SCRAPING ESTRUTURADO -->
+    <div class="section">
+      <div class="section-label">// extração tipada</div>
+      <h2>Scraping Estruturado com Pydantic</h2>
+      <p>Cada item extraído é validado contra um schema Pydantic. Dados inválidos são descartados ou corrigidos automaticamente — nunca chegam corrompidos ao banco de dados.</p>
+
+      <div class="code-label">python — models/produto.py</div>
+      <pre><code class="language-python">from pydantic import BaseModel, field_validator, HttpUrl
+from typing import Optional
+from datetime import datetime
+
+class Produto(BaseModel):
+    id: str
+    nome: str
+    preco: float
+    preco_original: Optional[float] = None
+    desconto_pct: Optional[float] = None
+    avaliacao: Optional[float] = None
+    num_avaliacoes: int = 0
+    em_estoque: bool = True
+    url: str
+    coletado_em: datetime = datetime.now()
+
+    @field_validator("preco", "preco_original", mode="before")
+    @classmethod
+    def limpar_preco(cls, v):
+        """Converte 'R$ 1.299,90' → 1299.90"""
+        if isinstance(v, str):
+            return float(
+                v.replace("R$", "").replace(".", "").replace(",", ".").strip()
+            )
+        return v
+
+    @field_validator("avaliacao", mode="before")
+    @classmethod
+    def limpar_avaliacao(cls, v):
+        if isinstance(v, str):
+            return float(v.replace(",", ".").strip() or 0)
+        return v
+
+    def model_post_init(self, __context):
+        if self.preco_original and self.preco_original > self.preco:
+            self.desconto_pct = round(
+                (1 - self.preco / self.preco_original) * 100, 1
+            )
+</code></pre>
+
+      <div class="code-label">python — tasks/extraction.py</div>
+      <pre><code class="language-python">import asyncio
+from playwright.async_api import Page
+from models.produto import Produto
+from config import settings
+
+async def extrair_produto(item) -> Produto | None:
+    """Extrai dados de um card de produto com tratamento robusto de erros."""
+    try:
+        id_elem = await item.get_attribute("data-product-id") or ""
+        nome   = (await item.locator(".product-title").text_content() or "").strip()
+        preco  = (await item.locator(".price-current").text_content() or "0").strip()
+
+        preco_orig_el = item.locator(".price-original")
+        preco_orig = None
+        if await preco_orig_el.count() > 0:
+            preco_orig = (await preco_orig_el.text_content() or "").strip()
+
+        avaliacao_el = item.locator("[data-rating]")
+        avaliacao = None
+        if await avaliacao_el.count() > 0:
+            avaliacao = await avaliacao_el.get_attribute("data-rating")
+
+        num_av_el = item.locator(".review-count")
+        num_avaliacoes = "0"
+        if await num_av_el.count() > 0:
+            num_avaliacoes = await num_av_el.text_content() or "0"
+        num_avaliacoes = int(''.join(filter(str.isdigit, num_avaliacoes)) or 0)
+
+        url_el = item.locator("a[href]").first
+        url = await url_el.get_attribute("href") or ""
+        if url.startswith("/"):
+            url = f"https://loja.exemplo.com{url}"
+
+        estoque_el = item.locator(".out-of-stock")
+        em_estoque = await estoque_el.count() == 0
+
+        return Produto(
+            id=id_elem,
+            nome=nome,
+            preco=preco,
+            preco_original=preco_orig,
+            avaliacao=avaliacao,
+            num_avaliacoes=num_avaliacoes,
+            em_estoque=em_estoque,
+            url=url
+        )
+    except Exception as e:
+        print(f"  ⚠ Produto inválido ignorado: {e}")
+        return None
+
+async def extrair_pagina_produtos(page: Page) -> list[Produto]:
+    """Extrai todos os produtos válidos da página atual."""
+    await page.wait_for_selector(".product-card", state="visible")
+    items = await page.locator(".product-card").all()
+
+    # Extrair em paralelo (limitado para não sobrecarregar)
+    semaphore = asyncio.Semaphore(5)
+
+    async def extrair_com_limite(item):
+        async with semaphore:
+            return await extrair_produto(item)
+
+    resultados = await asyncio.gather(*[extrair_com_limite(i) for i in items])
+    validos = [r for r in resultados if r is not None]
+    print(f"  ✓ {len(validos)}/{len(items)} produtos extraídos com sucesso")
+    return validos
+</code></pre>
+    </div>
+
+    <!-- 7. PIPELINE COMPLETO -->
+    <div class="section">
+      <div class="section-label">// composição</div>
+      <h2>Pipeline Completo — Login → Navegar → Extrair → Salvar</h2>
+
+      <div class="mermaid-wrap">
+        <div class="mermaid-label">// pipeline de scraping autenticado</div>
+        <div class="mermaid">
+flowchart LR
+    A([🚀 Iniciar]) --> B[Browser Factory\nnova_sessao]
+    B --> C[Auth\ngarantir_autenticado]
+    C --> D{Auth OK?}
+    D -->|Não| E([❌ Abortar])
+    D -->|Sim| F[Navegar para\ncategoria alvo]
+    F --> G[Extrair produtos\npágina atual]
+    G --> H{Tem próxima\npágina?}
+    H -->|Sim| I[Clicar próxima\nwait networkidle]
+    I --> G
+    H -->|Não| J[Salvar JSON + CSV]
+    J --> K([✅ Concluído])
+        </div>
+      </div>
+
+      <div class="code-label">python — pipelines/scrape_produtos.py</div>
+      <pre><code class="language-python">import asyncio, json, csv
+from dataclasses import asdict
+from pathlib import Path
+from browser_factory import nova_sessao
+from tasks.auth import garantir_autenticado
+from tasks.extraction import extrair_pagina_produtos
+from config import settings
+
+async def pipeline_scrape_produtos(
+    url_categoria: str,
+    max_paginas: int = 20
+) -> list[dict]:
+    """Pipeline completo de scraping autenticado com paginação."""
+
+    todos_produtos = []
+
+    async with nova_sessao() as (page, contexto):
+        print("🔐 Verificando autenticação...")
+        autenticado = await garantir_autenticado(
+            page, contexto,
+            url_login="https://loja.exemplo.com/login"
+        )
+        if not autenticado:
+            raise RuntimeError("Falha na autenticação — abortando pipeline")
+
+        print(f"🌐 Navegando para: {url_categoria}")
+        await page.goto(url_categoria)
+
+        for num_pagina in range(1, max_paginas + 1):
+            print(f"\n📄 Processando página {num_pagina}...")
+            produtos = await extrair_pagina_produtos(page)
+            todos_produtos.extend([p.model_dump() for p in produtos])
+
+            # Verificar paginação
+            proximo = page.locator("a.pagination-next:not(.disabled), button.next-page")
+            if await proximo.count() == 0 or not await proximo.is_enabled():
+                print(f"✅ Última página alcançada ({num_pagina} páginas processadas)")
+                break
+
+            await proximo.click()
+            await page.wait_for_load_state("networkidle")
+
+            # Delay humanizado entre páginas
+            await asyncio.sleep(1.5 + asyncio.get_event_loop().time() % 1)
+
+    return todos_produtos
+
+async def salvar_resultados(produtos: list[dict], nome_arquivo: str = "produtos"):
+    """Salva em JSON e CSV."""
+    saida = settings.output_dir
+
+    # JSON
+    json_path = saida / f"{nome_arquivo}.json"
+    json_path.write_text(
+        json.dumps(produtos, ensure_ascii=False, indent=2, default=str)
+    )
+
+    # CSV
+    if produtos:
+        csv_path = saida / f"{nome_arquivo}.csv"
+        with csv_path.open("w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=produtos[0].keys())
+            writer.writeheader()
+            writer.writerows(produtos)
+
+    print(f"\n💾 {len(produtos)} produtos salvos:")
+    print(f"   JSON → {json_path}")
+    print(f"   CSV  → {csv_path}")
+
+async def main():
+    produtos = await pipeline_scrape_produtos(
+        url_categoria="https://loja.exemplo.com/eletronicos",
+        max_paginas=5
+    )
+    await salvar_resultados(produtos, "eletronicos")
+
+    # Estatísticas rápidas
+    if produtos:
+        precos = [p["preco"] for p in produtos if p.get("preco")]
+        print(f"\n📊 Resumo:")
+        print(f"   Total de produtos: {len(produtos)}")
+        print(f"   Preço mínimo: R$ {min(precos):.2f}")
+        print(f"   Preço máximo: R$ {max(precos):.2f}")
+        print(f"   Preço médio:  R$ {sum(precos)/len(precos):.2f}")
+        com_desconto = [p for p in produtos if p.get("desconto_pct")]
+        print(f"   Com desconto: {len(com_desconto)} ({len(com_desconto)/len(produtos)*100:.1f}%)")
+
+asyncio.run(main())
+</code></pre>
+    </div>
+
+    <!-- 8. RETRY -->
+    <div class="section">
+      <div class="section-label">// resiliência</div>
+      <h2>Retry e Resiliência — Lidar com Falhas Graciosamente</h2>
+
+      <div class="code-label">python — utils/retry.py</div>
+      <pre><code class="language-python">import asyncio, functools
+from typing import TypeVar, Callable, Any
+
+T = TypeVar("T")
+
+def retry_async(
+    max_tentativas: int = 3,
+    delay: float = 2.0,
+    backoff: float = 2.0,
+    excecoes: tuple = (Exception,)
+):
+    """Decorator de retry com backoff exponencial para funções async."""
+    def decorator(func: Callable) -> Callable:
+        @functools.wraps(func)
+        async def wrapper(*args, **kwargs) -> Any:
+            tentativa = 0
+            delay_atual = delay
+
+            while tentativa < max_tentativas:
+                try:
+                    return await func(*args, **kwargs)
+                except excecoes as e:
+                    tentativa += 1
+                    if tentativa >= max_tentativas:
+                        print(f"❌ {func.__name__} falhou após {max_tentativas} tentativas: {e}")
+                        raise
+                    print(f"⚠ {func.__name__} falhou (tentativa {tentativa}/{max_tentativas}): {e}")
+                    print(f"  Aguardando {delay_atual:.1f}s antes de tentar novamente...")
+                    await asyncio.sleep(delay_atual)
+                    delay_atual *= backoff
+
+        return wrapper
+    return decorator
+
+# Uso:
+@retry_async(max_tentativas=3, delay=2.0, backoff=2.0)
+async def extrair_pagina_resiliente(page):
+    await page.wait_for_selector(".product-card", timeout=10_000)
+    return await extrair_pagina_produtos(page)
+</code></pre>
+    </div>
+
+    <!-- 9. PITFALLS -->
+    <div class="section">
+      <div class="section-label">// armadilhas</div>
+      <h2>⚠️ Armadilhas Comuns</h2>
+
+      <div class="pitfall">
+        <div class="pitfall-title">💾 Salvar auth_state.json no git</div>
+        O arquivo de estado de autenticação contém cookies e tokens reais. <strong>Adicione ao .gitignore</strong>: <code>auth_state.json</code>, <code>*.cookies</code>, <code>session_*.json</code>.
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">⚡ Velocidade sobre-humana</div>
+        Clicar e preencher campos em milissegundos é um sinal claro de bot. Use <code>slow_mo=100</code> em desenvolvimento e adicione <code>await asyncio.sleep(random.uniform(0.5, 2.0))</code> entre ações críticas.
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">🔄 Não validar dados extraídos</div>
+        Sem Pydantic, um campo ausente ou mal formatado pode silenciosamente salvar <code>None</code> ou string vazia no banco. Use sempre schemas com validators para falhar rápido e explicitamente.
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">📄 Processar páginas sem verificar paginação</div>
+        Extrair apenas a primeira página e assumir que são todos os dados é um bug comum. Sempre verifique se há próxima página <em>após</em> extrair a atual, não antes.
+      </div>
+
+      <div class="pitfall">
+        <div class="pitfall-title">🧠 Não fechar contextos e browsers</div>
+        Cada <code>browser.new_context()</code> cria um processo. Sem fechar, acumulam-se processos Chromium zumbis que consomem memória. Use sempre context managers (<code>async with</code>).
+      </div>
+    </div>
+
+    <!-- 10. VÍDEOS -->
+    <div class="section">
+      <div class="section-label">// curadoria</div>
+      <h2>Vídeos Recomendados</h2>
+      <div class="video-grid">
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Advanced Web Scraping with Playwright Python</div>
+            <div class="video-channel">John Watson Rooney · ~40 min</div>
+            <div class="video-why">Por que assistir: Cobre padrões avançados de scraping: autenticação, paginação, exportação de dados e tratamento de erros.</div>
+            <a href="https://www.youtube.com/watch?v=H2-5ecFwHHQ" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Python Web Scraping Project — Full Pipeline</div>
+            <div class="video-channel">Tech With Tim · ~1h</div>
+            <div class="video-why">Por que assistir: Projeto completo do zero: setup, scraping, limpeza de dados, banco de dados — o ciclo completo de um pipeline real.</div>
+            <a href="https://www.youtube.com/watch?v=XVv6mJpFOb0" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Pydantic Data Validation Tutorial</div>
+            <div class="video-channel">ArjanCodes · ~25 min</div>
+            <div class="video-why">Por que assistir: Pydantic v2 para validação de dados scraped — validators, field_validator, custom types e tratamento de erros.</div>
+            <a href="https://www.youtube.com/watch?v=502XOB0u8OY" target="_blank">Assistir →</a>
+          </div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb">▶</div>
+          <div class="video-info">
+            <div class="video-title">Avoiding Bot Detection — Playwright Stealth</div>
+            <div class="video-channel">Leon van Zyl · ~20 min</div>
+            <div class="video-why">Por que assistir: Técnicas de anti-detection: playwright-stealth, user-agent rotation, fingerprinting e comportamento humanizado.</div>
+            <a href="https://www.youtube.com/watch?v=6Qx4Yv8Hhyg" target="_blank">Assistir →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 11. CHECKPOINT -->
+    <div class="section">
+      <div class="checkpoint">
+        <h3>🏁 Checkpoint — Pipeline de Monitoramento de Preços</h3>
+        <p>Construa um pipeline completo de monitoramento de preços usando os padrões desta aula:</p>
+        <ul>
+          <li>Criar schema Pydantic <code>Produto</code> com validação de preço e avaliação</li>
+          <li>Implementar <code>Browser Factory</code> com configurações anti-detection</li>
+          <li>Criar task de autenticação com cache em <code>auth_state.json</code></li>
+          <li>Implementar extração com <code>retry_async</code> decorator (3 tentativas)</li>
+          <li>Montar pipeline: login → navegar para categoria → extrair 3 páginas → salvar</li>
+          <li>Comparar preços com execução anterior (carregar JSON anterior e detectar variações &gt; 10%)</li>
+          <li>Logar alertas: <em>"Produto X baixou de R$500 para R$450 (-10%)"</em></li>
+        </ul>
+        <div class="checkpoint-hint">💬 Dica: Para o monitoramento de variações, salve cada execução com timestamp no nome do arquivo (<code>produtos_20250314.json</code>) e compare com o arquivo mais recente anterior. Use <code>Path("output").glob("produtos_*.json")</code> + <code>sorted()</code> para encontrar o arquivo anterior.</div>
+      </div>
+    </div>
+
+    <!-- 12. PRÓXIMOS PASSOS -->
+    <div class="section">
+      <div class="section-label">// próximos passos</div>
+      <h2>O que vem a seguir?</h2>
+      <p>Com o OpenClaw estruturado dominado, é hora de adicionar inteligência ao pipeline: visão computacional para interagir com elementos visuais e agentes de IA que decidem autonomamente como navegar em sites complexos.</p>
+      <a href="oc-03-ia-visao-agentes.html" class="next-card">
+        <div>
+          <div class="next-card-label">Próxima aula · Aula 48</div>
+          <div class="next-card-title">OpenClaw + IA — Vision &amp; Agentes</div>
+        </div>
+        <div class="next-arrow">→</div>
+      </a>
+    </div>
+
+  </div><!-- /page -->
+
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+    hljs.highlightAll();
+    const bar = document.getElementById('progressBar');
+    window.addEventListener('scroll', () => {
+      const p = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+      bar.style.width = p + '%';
+    });
+  </script>
+</body>
+</html>

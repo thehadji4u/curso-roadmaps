@@ -143,7 +143,7 @@ Todos os HTMLs ficam em `outputs/aulas/` com o nome exato da coluna **Arquivo**.
 | ID | Status | Trilha | Título da Aula | Cards agrupados | Arquivo |
 |---|---|---|---|---|---|
 | `46-OC-01` | `[x]` | 🦀 OpenClaw | Playwright & Fundamentos de Automação | Browser automation · Playwright/Puppeteer · XPath & CSS selectors · HTTP intercept | `oc-01-playwright-fundamentos.html` |
-| `47-OC-02` | `[ ]` | 🦀 OpenClaw | OpenClaw — Setup & Tarefas Core | Setup & configuração · Tarefas básicas · Scraping estruturado · Autenticação | `oc-02-setup-core.html` |
+| `47-OC-02` | `[x]` | 🦀 OpenClaw | OpenClaw — Setup & Tarefas Core | Setup & configuração · Tarefas básicas · Scraping estruturado · Autenticação | `oc-02-setup-core.html` |
 | `48-OC-03` | `[ ]` | 🦀 OpenClaw | OpenClaw + IA — Vision & Agentes | Linguagem natural · Vision-based interaction · Agentes de pesquisa · Pipelines automáticos | `oc-03-ia-visao-agentes.html` |
 | `49-AI-08` | `[ ]` | 🤖 IA | Multi-Agentes — CrewAI & LangGraph | Autogen/CrewAI · LangGraph · Padrões de design · Avaliação & guardrails | `ai-08-multi-agentes.html` |
 | `50-OC-04` | `[ ]` | 🦀 OpenClaw | OpenClaw Avançado + Stack Completo | Anti-bot & detecção · Escalabilidade · Integração n8n · Monitoramento | `oc-04-avancado-stack.html` |
